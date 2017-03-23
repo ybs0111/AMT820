@@ -1,0 +1,1 @@
+01/18/11 10:49:05 : [ABNORMAL]#0 Card, 0 Port, not enable

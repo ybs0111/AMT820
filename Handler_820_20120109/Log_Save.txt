@@ -1,0 +1,194 @@
+Log_Normal("작업 설정 보드가 없음. 대기");
+
+Log_Motor_XY("X, Y Axis UNLOAD BUFFER 이동", m_dmotor_pos[0], m_dmotor_pos[1]);
+
+Log_Motor_XY("X, Y Axis UNLOAD BUFFER 이동 완료", m_dmotor_pos[0], m_dmotor_pos[1]);
+
+Log_Normal("LOWER BUF 대기 상태 확인");
+
+Log_Motor_XY("X, Y Axis UNLOAD BUFFER 이동", m_dmotor_pos[0], m_dmotor_pos[1]);
+
+Log_Motor_XY("UNLOAD BUF 이동 완료", m_dmotor_pos[0], m_dmotor_pos[1]);
+
+Log_Motor_Z("Z Axis UNLOAD BUFFER PLACE 이동", m_dmotor_pos[0]);
+
+Log_Motor_Z("Z Axis UNLOAD BUFFER PLACE 이동 완료", m_dmotor_pos[0]);
+
+Log_Picker("UNLOAD 피커 하강 동작", m_npicker_onoff[0]);
+
+Log_Picker("UNLOAD 피커 하강 동작완료", m_npicker_onoff[0]);
+
+Log_Gripper("UNLOAD 놓기 동작", m_ngrip_onoff[0]);
+
+Log_Picker("UNLOAD 피커 상승 동작", m_npicker_onoff[1]);
+
+Log_Picker("UNLOAD 피커 상승 동작 완료", m_npicker_onoff[1]);
+
+Log_Motor_Z("Z Axis UNLOAD 작업 후 READY 이동", m_dmotor_pos[0]);
+
+Log_Motor_Z("Z Axis UNLOAD 작업 후 READY 이동 완료", m_dmotor_pos[0]);
+
+Log_Gripper("UNLOAD 작업 완료", m_ngrip_onoff[0]);
+
+Log_Normal("LOAD 작업");
+
+Log_Motor_XY("X, Y Axis LOAD BUFFER 이동", m_dmotor_pos[0], m_dmotor_pos[1]);
+
+Log_Motor_XY("X, Y Axis LOAD BUFFER 이동 완료", m_dmotor_pos[0], m_dmotor_pos[1]);
+
+Log_Motor_Z("Z Axis LOAD 피커 PICK 이동", m_dmotor_pos[0]);
+
+Log_Motor_Z("Z Axis LOAD 피커 PICK 이동 완료", m_dmotor_pos[0]);
+
+Log_Pikcer("(2 - 10) LOAD 피커 하강동작", m_npicker_onoff[0]);
+
+Log_Pikcer("(2 - 10) LOAD 피커 하강 동작완료", m_npicker_onoff[0]);
+
+Log_Gripper("LOAD GRIPPER 잡기 동작", m_ngrip_onoff[0]);
+
+Log_Pikcer("(2 - 10) LOAD 피커 상승 동작", m_npicker_onoff[1]);
+
+Log_Pikcer("(2 - 10) LOAD 피커 상승 동작 완료", m_npicker_onoff[1]);
+
+Log_Motor_Z("Z Axis LOAD 작업 후 READY 이동", m_dmotor_pos[0]);
+
+Log_Motor_Z("Z Axis LOAD 작업 후 READY 이동 완료", m_dmotor_pos[0]);
+
+Log_Normal("2 - 10 피커 LOAD 작업 완료");
+
+Log_Motor_XY("X, Y Axis LOAD BUFFER 이동", m_dmotor_pos[0], m_dmotor_pos[1]); 
+
+Log_Motor_XY("X, Y Axis LOAD BUFFER 이동 완료", m_dmotor_pos[0], m_dmotor_pos[1]); 
+
+Log_Motor_Z("Z Axis LOAD 피커 PICK 이동", m_dmotor_pos[0]);
+
+Log_Motor_Z("Z Axis LOAD 피커 PICK 이동 완료", m_dmotor_pos[0]);
+
+Log_Pikcer("(1) LOAD 피커 하강 동작", m_npicker_onoff[0]);
+
+Log_Pikcer("(1) LOAD 피커 하강 동작 완료", m_npicker_onoff[0]);
+
+Log_Gripper("LOAD GRIPPER 잡기 동작", m_ngrip_onoff[0]);
+
+Log_Pikcer("(1) LOAD 피커 상승 동작", m_npicker_onoff[1]);
+
+Log_Pikcer("(1) LOAD 피커 상승 동작 완료", m_npicker_onoff[1]);
+
+Log_Motor_Z("Z Axis LOAD 작업 후 READY 이동 완료");
+
+Log_Normal("1 피커 LOAD 작업 완료");
+
+Log_Motor_XY("X, Y Axis READY 이동", m_dmotor_pos[0], m_dmotor_pos[1]); 
+
+Log_Motor_XY("X, Y Axis READY 이동 완료", m_dmotor_pos[0], m_dmotor_pos[1]); 
+
+Log_Motor_Z("Z Axis LOAD 작업 후 READY 이동");
+
+Log_Normal("1 피커 LOAD 작업");
+
+Log_Normal("2 피커 LOAD 작업");
+
+Log_Normal("5 피커 LOAD 작업");
+
+Log_Normal("6 피커 LOAD 작업");
+
+Log_Normal("9 피커 LOAD 작업");
+
+Log_Normal("10 피커 LOAD 작업");
+
+Log_Normal("1 피커 UNLOAD 작업");
+
+Log_Normal("2 피커 UNLOAD 작업");
+
+Log_Normal("5 피커 UNLOAD 작업");
+
+Log_Normal("6 피커 UNLOAD 작업");
+
+Log_Normal("9 피커 UNLOAD 작업");
+
+Log_Normal("10 피커 UNLOAD 작업");
+
+strTmp.Format("X, Y Axis [%d]BOARD LOAD 이동", m_nboard_pos);
+Log_Motor_XY(strTmp, m_dmotor_pos[0], m_dmotor_pos[1]);
+				
+strTmp.Format("X, Y Axis [%d]BOARD UNLOAD 이동", m_nboard_pos);
+Log_Motor_XY(strTmp, m_dmotor_pos[0], m_dmotor_pos[1]);
+			
+strTmp.Format("X, Y Axis [%d]BOARD LOAD 이동 완료", m_nboard_pos);
+Log_Motor_XY(strTmp, m_dmotor_pos[0], m_dmotor_pos[1]);	
+
+strTmp.Format("X, Y Axis [%d]BOARD UNLOAD 이동 완료", m_nboard_pos);
+Log_Motor_XY(strTmp, m_dmotor_pos[0], m_dmotor_pos[1]);
+
+Log_Normal("Ejector 실린더 하강");
+
+strTmp.Format("[%d]BOARD UNLOAD 피커 하강 작업", m_nboard_pos);
+Log_Picker(strTmp, m_npicker_onoff[0]);
+
+strTmp.Format("[%d]BOARD UNLOAD 피커 하강 작업 완료", m_nboard_pos);
+Log_Picker(strTmp, m_npicker_onoff[0]);
+
+strTmp.Format("Z Axis [%d]BOARD EJECTOR 이동", m_nboard_pos);
+Log_Motor_Z(strTmp, m_dmotor_pos[0]);
+
+strTmp.Format("Z Axis [%d]BOARD EJECTOR 이동 완료", m_nboard_pos);
+Log_Motor_Z(strTmp, m_dmotor_pos[0]);
+
+Log_Normal("Ejector 실린더 상승 작업");
+
+strTmp.Format("Z Axis [%d]BOARD Pick 이동", m_nboard_pos);
+Log_Motor_Z(strTmp, m_dmotor_pos[0]);
+
+strTmp.Format("[%d]BOARD 그리퍼 Close", m_nboard_pos);
+Log_Gripper(strTmp, m_ngrip_onoff[0]);
+
+strTmp.Format("Z Axis [%d]BOARD UNLOAD 작업 후 이동", m_nboard_pos);
+Log_Motor_Z(strTmp, m_dmotor_pos[0]);
+
+strTmp.Format("Z Axis [%d]BOARD UNLOAD 작업 후 이동 완료", m_nboard_pos);
+Log_Motor_Z(strTmp, m_dmotor_pos[0]);
+
+strTmp.Format("[%d]BOARD UNLOAD 피커 상승 작업", m_nboard_pos);
+Log_Picker(strTmp, m_npicker_onoff[1]);
+
+strTmp.Format("[%d]BOARD UNLOAD 피커 상승 작업 완료", m_nboard_pos);
+Log_Picker(strTmp, m_npicker_onoff[1]);
+
+Log_Normal("1 피커 LOAD 작업");
+
+Log_Normal("2 피커 LOAD 작업");
+
+Log_Normal("5 피커 LOAD 작업");
+
+Log_Normal("6 피커 LOAD 작업");
+
+Log_Normal("9 피커 LOAD 작업");
+
+Log_Normal("10 피커 LOAD 작업");
+
+strTmp.Format("X, Y Axis [%d]BOARD LOAD 이동", m_nboard_pos);
+Log_Motor_XY(strTmp, m_dmotor_pos[0], m_dmotor_pos[1]);
+
+strTmp.Format("X, Y Axis [%d]BOARD LOAD 이동 완료", m_nboard_pos);
+Log_Motor_XY(strTmp, m_dmotor_pos[0], m_dmotor_pos[1]);
+
+strTmp.Format("Z Axis [%d]BOARD PLACE 이동", m_nboard_pos);
+Log_Motor_Z(strTmp, m_dmotor_pos[0]);
+
+strTmp.Format("Z Axis [%d]BOARD PLACE 이동 완료", m_nboard_pos);
+Log_Motor_Z(strTmp, m_dmotor_pos[0]);
+
+strTmp.Format("[%d]BOARD LOAD 피커 하강 작업", m_nboard_pos);
+Log_Picker(strTmp, m_npicker_onoff[0]);
+
+strTmp.Format("[%d]BOARD LOAD 피커 하강 작업 완료", m_nboard_pos);
+Log_Picker(strTmp, m_npicker_onoff[0]);
+
+strTmp.Format("[%d]BOARD 그리퍼 Open", m_nboard_pos);
+Log_Gripper(strTmp, m_ngrip_onoff[0]);
+
+strTmp.Format("Z Axis [%d]BOARD PRESS 이동", m_nboard_pos);
+Log_Motor_Z(strTmp, m_dmotor_pos[0]);
+
+strTmp.Format("Z Axis [%d]BOARD PRESS 이동 완료", m_nboard_pos);
+Log_Motor_Z(strTmp, m_dmotor_pos[0]);

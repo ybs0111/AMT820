@@ -1,0 +1,262 @@
+// APartTray.h: interface for the APartTray class.
+//
+//////////////////////////////////////////////////////////////////////
+
+#if !defined(AFX_APARTTRAY_H__3B578633_0F74_49F9_B988_2D5674B676F9__INCLUDED_)
+#define AFX_APARTTRAY_H__3B578633_0F74_49F9_B988_2D5674B676F9__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#include <vector>
+#include "PartFunction.h"
+
+enum ETRAY_POS
+{
+	TPOS_NONE,
+	TPOS_LOADING_CV,		// 2014.12.29 - Bredmin.
+	TPOS_STAKCER,
+	TPOS_VISION,
+	TPOS_UNLOADER_LANE,
+	TPOS_UNLOADER_GOOD,
+	TPOS_UNLOADER_FAIL,
+	TPOS_TRAYTRANSFER_FRONT,
+	
+	TPOS_PARTIAL1_STACKER,
+	TPOS_PARTIAL1_DUMPING,
+	TPOS_PARTIAL1_ULD,
+	
+	TPOS_PARTIAL2_STACKER,
+	TPOS_PARTIAL2_DUMPING,
+	TPOS_PARTIAL2_ULD,
+	
+	TPOS_PARTIAL_BUFFER,
+	TPOS_TRAYTRANSFER_REAR,
+	TPOS_GOOD_STACKER,
+	TPOS_GOOD_STACKER_WAIT,
+	TPOS_GOOD_ULD_STACKER,
+	TPOS_FAIL_STACKER,
+	TPOS_FAIL_STACKER_WAIT,
+	TPOS_FAIL_ULD_STACKER,
+
+	TPOS_DIVERTER,
+	TPOS_OUT,
+	MAX_TPOS,
+};
+
+#define T_MAX_MODULE		600
+
+class ATray
+{
+public:
+	ATray();
+	virtual ~ATray();
+
+	// Get
+	ETRAY_POS	GetPos() { return m_trayPos; }
+	ETRAY_POS	GetTargetPos() { return m_trayTargetPos; }
+	bool		GetLastMdl() { return m_bLastMdl; }
+	CString		GetStrLotID() { return m_strLotID; }
+	CString		GetStrRunID() { return m_strRunID; }
+	CString		GetStrPartID() { return m_strPartID; }
+	CString		GetStrStepSeq() { return m_strStepSeq; }
+	CString		GetStrPKGName() { return m_strPKGName; }
+	int			GetResult() { return m_iResult; }
+	int			GetGoodCount();
+	int			GetFailCount();
+	int			GetEmptyCount();
+	int			GetWrongCount();
+	int			GetBin4Count();
+	int			GetBin9Count();					// CoverTray는 9으로 온다. 2K14/11/07/ViboX
+	int			GetCount() { return m_nCnt; }
+		
+	// Set
+	void		SetPos( ETRAY_POS pos ) { m_trayPos = pos; }
+	void		SetTargetPos( ETRAY_POS pos ) { m_trayTargetPos = pos; }
+	void		SetLastMdl( bool bVal ) { m_bLastMdl = bVal; }
+	void		SetLotID( CString strVal ) { m_strLotID = strVal; }
+	
+	void		SetTrayInfo( CString strLotID, CString strRunID, CString strPartID, CString strStepSeq, CString strPKGName, bool bLastMdl );
+
+	void		SetModule( int nIdx, ADevice device ) { m_device[nIdx] = device; }
+	void		SetResult( int iVal ) { m_iResult = iVal; }
+	void		SetCount( int iVal ) { m_nCnt = iVal; }
+
+	bool		IsExistModule( int iIdx ) { return m_device[iIdx].IsExsist(); }
+
+	ADevice&	GetModule( int iIdx )	{ return m_device[iIdx]; }
+	void		Clear();
+
+protected:
+	ETRAY_POS	m_trayPos;
+	ETRAY_POS	m_trayTargetPos;
+
+	bool		m_bLastMdl;
+	int			m_nCnt;
+	CString		m_strLotID;
+	CString		m_strRunID;
+	CString		m_strPartID;
+	CString		m_strStepSeq;
+	CString		m_strPKGName;
+	int			m_iResult;
+
+	ADevice		m_device[T_MAX_MODULE];
+};
+
+
+#define MAX_TRAY		30
+
+class APartTray  
+{
+public:
+	APartTray();
+	virtual ~APartTray();
+
+	ATray& GetTray( int iIdx ) { return m_tray[iIdx]; }
+
+protected:
+	ATray	m_tray[MAX_TRAY];
+
+
+public:
+	void AddTray( ATray tray );
+	void TrayMoved( ETRAY_POS posFrom, ETRAY_POS posTo );
+	void CheckAfterTrayMoved( int iIdx, ETRAY_POS posFrom, ETRAY_POS posTo );
+
+	CString GetStrPos( ETRAY_POS epos );
+
+	bool IsEnablePos( ETRAY_POS epos);
+
+
+	int GetRejSelectedTray();
+	void SetRejSelected( int iSel );
+	int GetRejSelected() { return m_nRejSelected; }
+
+	void SetSelectedTray(int iSel) { m_nSelectedTray = iSel; }
+	int GetSelectedTray() { return m_nSelectedTray; }
+
+	int GetIdxByPos( ETRAY_POS  epos );
+
+protected:
+	std::vector<int>	m_vecRej;
+	int					m_nRejSelected;
+	int					m_nSelectedTray;
+};
+extern APartTray g_Tray;
+
+
+class APartStacker
+{
+public:
+	APartStacker();
+	virtual ~APartStacker();
+	
+	ATray& GetLastTray();
+	ATray& GetTray( int iIdx );
+	void AddTray( ATray tray );
+	void DeleteTray();
+	void DeleteTray( int iIdx );
+	void DeleteLastTray();
+	void DeleteAll() { m_vecStacker.clear(); }
+	int GetTrayCount() { return m_vecStacker.size(); }
+	
+protected:
+	ATray	m_tray[MAX_TRAY];
+	std::vector<ATray>	m_vecStacker;
+	ATray	m_dummyStacker;
+};
+//extern APartStacker g_Stacker1;		// 2014.12.19 - Bredmin.
+//extern APartStacker g_Stacker2;		// 2014.12.19 - Bredmin.
+extern APartStacker g_GoodStacker;
+
+
+// 2014.12.19 - Bredmin.
+class APartPStacker
+{
+public:
+	APartPStacker();
+	virtual ~APartPStacker();
+	
+	ATray& GetFirstTray();
+	ATray& GetLastTray();
+	ATray& GetTray( int iIdx );
+	void AddTray( ATray tray );
+	void DeleteTray();
+	void DeleteTray( int iIdx );
+	void DeleteLastTray();
+	void DeleteAll() { m_vecPStacker.clear(); }
+	int GetTrayCount() { return m_vecPStacker.size(); }
+	
+protected:
+	ATray	m_tray[MAX_TRAY];
+	std::vector<ATray>	m_vecPStacker;
+	ATray	m_dummyStacker;
+};
+extern APartPStacker g_Stacker1;
+extern APartPStacker g_Stacker2;
+
+
+class APartEmptyStacker
+{
+public:
+	APartEmptyStacker();
+	virtual ~APartEmptyStacker();
+	
+	CString GetFirstTray();
+	CString GetLastTray();
+	CString GetTray( int iIdx );
+	void AddTray( CString strTraySize );
+	void AddLastTray( CString strTraySize );
+	void DeleteTray();
+	void DeleteTray( int iIdx );
+	void DeleteLastTray();
+	void DeleteAll() { m_vecEmptyStackerTray.clear(); }
+	int GetTrayCount() { return m_vecEmptyStackerTray.size(); }
+
+	//=====================================================================
+	// 2014.11.29 - Bredmin.
+	//=====================================================================
+	int GetFindTray( CString strTraySize );
+	CString GetCMBTray( int iIdx );
+	//=====================================================================
+	
+protected:
+	std::vector<CString>	m_vecEmptyStackerTray;
+	CString	m_strEmptyStackerTray;
+};
+extern APartEmptyStacker g_EmptyStacker;
+extern APartEmptyStacker g_EmptyUldStacker;
+
+extern APartEmptyStacker g_CmbLdEmptyTraySize;		// 2014.11.29 - Bredmin.
+extern APartEmptyStacker g_CmbUldEmptyTraySize;		// 2014.11.29 - Bredmin.
+
+
+// NG버퍼 트레이들을 기억해야 한다. 2K14/11/30/ViboX
+class APartNGBuffer
+{
+public:
+	APartNGBuffer();
+	virtual ~APartNGBuffer();
+	
+	CString GetFirstTray();
+	CString GetLastTray();
+	CString GetTray( int iIdx );
+	void AddTray( CString strTrayInfo );
+	void AddLastTray( CString strTrayInfo );
+	void DeleteFirstTray();
+	void DeleteTray( int iIdx );
+	void DeleteLastTray();
+	void DeleteAll() { m_vecNgBuffer.clear(); 
+						if ( st_handler.cwnd_main != NULL )
+							st_handler.cwnd_main->PostMessage(WM_WORK_END, MAIN_NGBUFFER_INFO, 0);}
+	int GetTrayCount() { return m_vecNgBuffer.size(); }
+	
+protected:
+	std::vector<CString>	m_vecNgBuffer;
+	CString	m_strNgBuffer;
+};
+extern APartNGBuffer g_NgBuffer;
+
+#endif // !defined(AFX_APARTTRAY_H__3B578633_0F74_49F9_B988_2D5674B676F9__INCLUDED_)
+
