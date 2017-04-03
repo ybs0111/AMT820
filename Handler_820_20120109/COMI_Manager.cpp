@@ -42,7 +42,6 @@ int COMI_Manager::HomeCheck_Mot(int n_Axis, int n_HomeMode, int n_TimeOut)
 	int iRtn = CTLBD_RET_GOOD;
 	if( st_handler.mn_virtual_mode == 1 )
 	{
-		iRtn = CTL_Lib.Single_Move(n_Axis, 0, COMI.md_spd_home[n_Axis]);
 	}
 	else
 	{
@@ -72,8 +71,8 @@ long COMI_Manager::_cmmSxIsDone(long Axis, long *IsDone)
 	long nRtn = cmERR_NONE;
 	if( st_handler.mn_virtual_mode == 1 )
 	{
-		std::string strTarget = g_sm.GetData( (SM_TYPE)(SMT_MOTOR_TRAY_1_TARGET + Axis) );
-		std::string strPosition = g_sm.GetData( (SM_TYPE)(SMT_MOTOR_TRAY_1_POSITION + Axis) );
+		std::string strTarget = g_sm.GetData( (SM_TYPE)(SMT_MOTOR_BIN_1_Z_TARGET + Axis) );
+		std::string strPosition = g_sm.GetData( (SM_TYPE)(SMT_MOTOR_BIN_1_Z_POSITION + Axis) );
 		int iXTarget = atoi( strTarget.c_str() );
 		int iXPosition = atoi( strPosition.c_str() );
 
@@ -106,7 +105,7 @@ long COMI_Manager::_cmmCfgSetSpeedPattern_T(long Axis, long SpeedMode, double Wo
 	}
 	else
 	{
-		iRtn = cmmCfgSetSpeedPattern_T( Axis, SpeedMode, WorkSpeed, Accel, Decel );
+		iRtn = cmmCfgSetSpeedPattern_T( Axis, SpeedMode, WorkSpeed, Accel, Decel );// cmmCfgSetSpeedPattern_T( Axis, SpeedMode, WorkSpeed, Accel, Decel );
 	}
 	return iRtn;
 }
@@ -133,7 +132,7 @@ long COMI_Manager::_cmmSxMoveToStart(long Axis, double Position)
 		// target ¼³Á¤.
 		char strData[32];
 		itoa( Position, strData, 10 );
-		g_sm.SetData( (SM_TYPE)(SMT_MOTOR_TRAY_1_TARGET + Axis), strData );
+		g_sm.SetData( (SM_TYPE)(SMT_MOTOR_ROBOT_X_TARGET + Axis), strData );
 	}
 	else
 	{
@@ -147,7 +146,7 @@ double COMI_Manager::Get_MotCurrentPos(int n_Axis)
 	double nRtn = CTLBD_RET_ERROR;
 	if( st_handler.mn_virtual_mode == 1 )
 	{
-		std::string strPos = g_sm.GetData( (SM_TYPE)(SMT_MOTOR_TRAY_1_POSITION + n_Axis) );
+		std::string strPos = g_sm.GetData( (SM_TYPE)(SMT_MOTOR_ROBOT_X_POSITION + n_Axis) );
 		int iPos = atoi( strPos.c_str() );
 		nRtn = iPos;
 	}
@@ -186,11 +185,11 @@ long COMI_Manager::_cmmIxIsDone( long MapIndex, long *IsDone )
 
 		if( MapIndex == 0 )
 		{
-			strXTarget = g_sm.GetData( SMT_MOTOR_TRANSFER1_X_TARGET );
-			strYTarget = g_sm.GetData( SMT_MOTOR_TRANSFER1_Y_TARGET );
+			strXTarget = g_sm.GetData( SMT_MOTOR_ROBOT_X_TARGET );
+			strYTarget = g_sm.GetData( SMT_MOTOR_ROBOT_Y_TARGET );
 
-			strXPos = g_sm.GetData( SMT_MOTOR_TRANSFER1_X_POSITION );
-			strYPos = g_sm.GetData( SMT_MOTOR_TRANSFER1_Y_POSITION );
+			strXPos = g_sm.GetData( SMT_MOTOR_ROBOT_X_POSITION );
+			strYPos = g_sm.GetData( SMT_MOTOR_ROBOT_Y_POSITION );
 		}
 		else
 		{
@@ -230,10 +229,10 @@ long COMI_Manager::_cmmIxLineToStart( long MapIndex, double* PosList )
 		if( MapIndex == 0 )
 		{
 			itoa( PosList[0], strData, 10 );
-			g_sm.SetData( SMT_MOTOR_TRANSFER1_X_TARGET, strData );
+			g_sm.SetData( SMT_MOTOR_ROBOT_X_TARGET, strData );
 
 			itoa( PosList[1], strData, 10 );
-			g_sm.SetData( SMT_MOTOR_TRANSFER1_Y_TARGET, strData );
+			g_sm.SetData( SMT_MOTOR_ROBOT_Y_TARGET, strData );
 		}
 		else
 		{
@@ -249,4 +248,9 @@ long COMI_Manager::_cmmIxLineToStart( long MapIndex, double* PosList )
 		iRtn = cmmIxLineToStart( MapIndex, PosList );
 	}
 	return iRtn;
+}
+
+void COMI_Manager::OnMain_Motor_Setting()
+{
+
 }

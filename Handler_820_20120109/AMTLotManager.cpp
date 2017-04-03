@@ -91,6 +91,13 @@ void ALot::AddInputCnt( int nPrimeCum )
 	g_lotMgr.AddInputCnt( nPrimeCum );
 }
 
+void ALot::AddHeatSinkInputCnt( int nPrimeCum )
+{
+	m_nCntHsInput[nPrimeCum]++;
+	
+	g_lotMgr.AddHeatSinkInputCnt( nPrimeCum );
+}
+
 void ALot::AddPassCnt( int nPrimeCum )
 {
 	m_nCntPass[nPrimeCum]++;
@@ -376,6 +383,16 @@ void AMTLotManager::ClearCountData()
 		strVal.Format( "%s_%d", REG_VAL_COUNT_BIN, i + 1 );
 		AMTRegistry::RegWriteInt( REG_KEY_COUNT, strVal, 0 );
 	}
+}
+
+void AMTLotManager::AddHeatSinkInputCnt( int nPrimeCum )
+{
+	m_nCntHsInput[nPrimeCum]++;
+	
+	if( nPrimeCum == PRIME )
+		AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_HSCOUNT_INPUT_PRIME, m_nCntHsInput[nPrimeCum] );
+	else
+		AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_HSCOUNT_INPUT_CUM, m_nCntHsInput[nPrimeCum] );
 }
 
 void AMTLotManager::AddInputCnt( int nPrimeCum )

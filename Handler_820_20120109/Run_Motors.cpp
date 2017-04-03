@@ -32,7 +32,7 @@ CRun_Motors::~CRun_Motors()
 
 void CRun_Motors::Thread_Run()
 {
-	for( int i=0; i<MOTOR_COUNT; i++ )
+	for( int i=0; i<M_MOTOR_COUNT; i++ )
 	{
 		m_motor[i].MotorMoving_repeat();
 		m_motormap[i].MotorLMoving_repeat();

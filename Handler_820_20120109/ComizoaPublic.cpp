@@ -102,6 +102,27 @@ CComizoaPublic::~CComizoaPublic()
 
 }
 
+void CComizoaPublic::Set_MotorType_Init(int n_Axis, int nServoStep_Type) //james 2016.0819 추가 
+{
+	
+	mn_type[n_Axis] = nServoStep_Type; //james 2016.0818 추가  Servo 또는 step motor 관련 셋팅 확인 건. (Inposition, home check 방법, comm처리 문제로 추가
+	
+
+	if (mn_simulation_mode == 1)
+	{
+		return;
+	}
+
+	if( nServoStep_Type == MOT_SERVO ) // 2016.0819.ViboX
+	{
+		cmmCfgSetMioProperty( n_Axis, cmINP_EN, cmTRUE );
+	}
+	else
+	{
+		cmmCfgSetMioProperty( n_Axis, cmINP_EN, cmFALSE );
+	}
+}
+
 int CComizoaPublic::Initialize_MotBoard(CString s_file) //보드 초기화 
 {
 	int nRet = -1;
@@ -111,6 +132,11 @@ int CComizoaPublic::Initialize_MotBoard(CString s_file) //보드 초기화
 //1. 커미조아 라이브러리를 응용프로그램 공간에 로딩한다 
 //2. 모터보드(하드웨어)를 로그하고 장치를 초기화 한다   
 //3. 모터 스피드를 셋팅한다 cmmCfgSetSpeedPattern(nAxis, nSpeedMode, d_work, d_accel, d_decel);
+
+	if (mn_simulation_mode == 1)
+	{
+		return BD_GOOD;
+	}
 
 	nRet = cmmLoadDll(); //라이브러리 로드 - 응용 프로그램의 메모리 공간으로 커미조아 라이브러리 로드 
 
@@ -134,7 +160,7 @@ int CComizoaPublic::Initialize_MotBoard(CString s_file) //보드 초기화
 
 	if (nRet == cmERR_NONE) //수행성공 의미, nNumAxes=모션제어축의 개수를 반환  
 	{
-		nRet = cmmGnInitFromFile(s_file); //("c:\\AMT7000\\Setting\\amt7000.cme2");
+		nRet = cmmGnInitFromFile(s_file); //("c:\\AMT820\\Setting\\amt820.cme2");
 		if (nRet != cmERR_NONE)
 		{
 			return BD_ERROR; //MOT_OPEN_FAIL;
@@ -182,6 +208,10 @@ int CComizoaPublic::Set_CMD_CTL_Mode(int n_axis, int n_cmd_type)
 //	cmCTRL_OPEN, // Open loop control mode
 //	cmCTRL_SEMI_C, // Semi-closed loop control mode (applied only to absolute in-position commands)
 //	cmCTRL_FULL_C // Full-closed loop control mode (this is not supported at current version)
+	if( mn_simulation_mode == 1 )
+	{
+		return BD_GOOD;
+	}
 
 	cmmCfgSetCtrlMode(n_axis, n_cmd_type);//cmCTRL_SEMI_C , 엔코더,(피드백기준) 기준으로 목표좌표를 설정하여 이송합니다
 	return BD_GOOD;
@@ -201,6 +231,11 @@ typedef enum _TCmMioPropId{
 }TCmMioPropId;
 */
 	//CMM_EXTERN long (WINAPI *cmmCfgSetMioProperty)	(long Axis, long PropId, long PropVal);
+
+	if (mn_simulation_mode == 1)
+	{
+		return BD_GOOD;
+	}
 
 	//우선 InPosition On/Off 기능을 사용한다 
 	nRet = cmmCfgSetMioProperty(n_Axis, n_PropId, n_OnOff);
@@ -228,7 +263,12 @@ typedef enum _TCmMioPropId{
 int CComizoaPublic::Set_MotPower(int n_Axis, int n_OnOff) 
 {
 	int nRet = -1, nRet_2=BD_ERROR;
-	double dCurrentPos = 0, dGetPos = 0; 	
+	double dCurrentPos = 0, dGetPos = 0; 
+	
+	if( mn_simulation_mode == 1 )
+	{
+		return BD_GOOD;
+	}
 
 	nRet = cmmGnSetServoOn(n_Axis, n_OnOff);
 	if (nRet == cmERR_NONE)
@@ -862,7 +902,8 @@ int CComizoaPublic::Set_Override_Speed(int n_Axis, double d_Speed, int n_SpeedMo
 {
 	int  nRet = BD_ERROR, nFlag = 0;
 	
-	nFlag = cmmCfgSetSpeedPattern_T(n_Axis, n_SpeedMode, d_Speed, md_spd_vel[n_Axis][1], md_spd_vel[n_Axis][2]);
+// 	nFlag = cmmCfgSetSpeedPattern_T(n_Axis, n_SpeedMode, d_Speed, md_spd_vel[n_Axis][1], md_spd_vel[n_Axis][2]);
+	nRet = cmmCfgSetSpeedPattern(n_Axis, n_SpeedMode, d_Speed, md_spd_vel[n_Axis][1], md_spd_vel[n_Axis][2]);
 	
 	if (nFlag == cmERR_NONE)
 	{
@@ -893,6 +934,10 @@ int CComizoaPublic::Set_MotUnitSpeed(int n_Axis, double n_UnitSpeed) //2011.1104
 	// cmmCfgSetSpeedPattern(n_axis, cmSMODE_C, 50, 0,0);
 	// cmmSxMove(n_axis, 10); //50mm/sec의 속도로 10mm 이동
 	
+	if( mn_simulation_mode == 1 )
+	{
+		return BD_GOOD;
+	}
 	
 	nFlag = cmmCfgSetUnitSpeed(n_Axis, n_UnitSpeed);
 
@@ -961,6 +1006,22 @@ int CComizoaPublic::Set_MotSpeed(int n_SpeedCase, int n_Axis, int n_SpeedMode, d
 	{
 
 	}
+
+	dAccPPS = (d_work - md_initial_speed[n_Axis]) / (d_accel_time / 1000);
+	dDecPPS = (d_work - md_initial_speed[n_Axis]) / (d_decel_time / 1000);
+		
+	
+	if (dAccPPS > 1000) //2011.0122 30ms 까지 가감속 처리 13000000) //(dAccPPS > 6500000)
+	{
+		dAccPPS = 1000; //2011.0122 30ms 까지 가감속 처리 13000000; //최소 50ms 저장 //6500000;
+	}
+	
+	if (dDecPPS > 1000) //2011.0122 30ms 까지 가감속 처리 13000000) //(dDecPPS > 6500000)
+	{
+		dDecPPS = 1000; //2011.0122 30ms 까지 가감속 처리 13000000; //6500000;
+	}
+
+
 	
 	n_SpeedMode = cmSMODE_S; //동작모드 정의 
 
@@ -972,7 +1033,8 @@ int CComizoaPublic::Set_MotSpeed(int n_SpeedCase, int n_Axis, int n_SpeedMode, d
 			d_work = 2;
 		}
 
-		nRet = cmmHomeSetSpeedPattern_T(n_Axis, cmSMODE_T, d_work, d_accel_time/(double)1000, d_decel_time/(double)1000, 1);//2011.0122 1000);
+		//nRet = cmmHomeSetSpeedPattern_T(n_Axis, cmSMODE_T, d_work, d_accel_time/(double)1000, d_decel_time/(double)1000, 1);//2011.0122 1000);
+		nRet = cmmHomeSetSpeedPattern(n_Axis, cmSMODE_T, d_work, d_accel_time/(double)1000, d_decel_time/(double)1000, 1);
 
 		if (nRet == cmERR_NONE)
 		{			
@@ -991,7 +1053,7 @@ int CComizoaPublic::Set_MotSpeed(int n_SpeedCase, int n_Axis, int n_SpeedMode, d
 	else //정상동작시 속도셋팅모드 
 	{
 		//if (mn_run_status == CTL_dRUN)
-		if (mn_run_status == CTL_dRUN || mn_run_status == CTL_dMAINT)	// 2015.07.01 - Bredmin.
+		if (mn_run_status == CTL_dRUN )//|| mn_run_status == CTL_dMAINT)	// 2015.07.01 - Bredmin.
 		{
 			if (mn_runspeed_rate < 10) mn_runspeed_rate = 10;
 			dVel = d_work * (double)(((double)mn_runspeed_rate / (double)100)); //d_work // double형 추가. 추가전에 계산이 되지않아 장비 작동 안됨
@@ -1007,7 +1069,6 @@ int CComizoaPublic::Set_MotSpeed(int n_SpeedCase, int n_Axis, int n_SpeedMode, d
 			dVel = 1000;
 		}
 
-//		nRet = cmmCfgSetSpeedPattern_T(n_Axis, n_SpeedMode, dVel, d_accel_time/(double)1000, d_decel_time/(double)1000);//2011.0122 1000);
 		nRet = g_comiMgr._cmmCfgSetSpeedPattern_T(n_Axis, n_SpeedMode, dVel, d_accel_time/(double)1000, d_decel_time/(double)1000);
 
         if (nRet == cmERR_NONE)
@@ -1057,7 +1118,14 @@ int CComizoaPublic::Set_MotSpeed_Ratio(int n_Axis, int n_SpeedMode, double d_wor
 int CComizoaPublic::Set_MotUnitDist(int n_Axis, double n_UnitDist)
 {
 	int  nRet = BD_ERROR, nFlag = 0;
+
+	if( mn_simulation_mode == 1 )
+	{
+		return BD_GOOD;
+	}
 	
+
+
 	nFlag = cmmCfgSetUnitDist(n_Axis, n_UnitDist);
 	if (nFlag == cmERR_NONE) 
 	{
@@ -1445,6 +1513,7 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 
 //	double dp_Vel[3]; 
 	double d_Speed[3];
+	double dp_Pos[2];	
 /*
 //	double dRatio[3]; 
 	long lErrorCode;
@@ -1463,6 +1532,12 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 
 	if (nRet != BD_GOOD)
 	{
+		if( nRet == CTL_DOOROPEN)
+		{
+			cmmSxStop(n_Axis, false, false)
+			return BD_ERROR;
+		}
+
 		if (mn_retry_cnt[n_Axis] < mn_max_retry_cnt) //2011.0201 조건 추가 
 		{//반복 동작을 진행한다 
 			if (mn_retry_cnt[n_Axis] == 0)
@@ -1534,6 +1609,10 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 			ml_retry_time_wait[n_Axis][1] = GetCurrentTime();
 			ml_retry_time_wait[n_Axis][2] = ml_retry_time_wait[n_Axis][1] - ml_retry_time_wait[n_Axis][0];
 			
+			if (ml_retry_time_wait[n_Axis][2] <= 0)
+			{
+				ml_retry_time_wait[n_Axis][0] = GetCurrentTime();
+			}
 			if (ml_retry_time_wait[n_Axis][2] < 1000)
 			{
 				return BD_RETRY;
@@ -1565,6 +1644,7 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 				sprintf(mc_normal_msg, "[%d] cmmSxIsDone start single_return", n_Axis);
 				Debug_File_Create(0, mc_normal_msg);
 			}
+			CTL_Lib.Alarm_Error_Occurrence(3000, CTL_dWARNING, mc_alarmcode);
 			return BD_ERROR;
 		}
 		else
@@ -1614,6 +1694,7 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 			sprintf(mc_normal_msg, "[%d] Set_MotSpeed start single_return", n_Axis);
 			Debug_File_Create(0, mc_normal_msg);
 		} 
+		CTL_Lib.Alarm_Error_Occurrence(3001, CTL_dWARNING, mc_alarmcode);
 		return BD_ERROR;
 	}
 
@@ -1627,7 +1708,8 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 		{
 			sprintf(mc_normal_msg, "[%d] cmmSxSetSpeedRatio start single_return", n_Axis);
 			Debug_File_Create(0, mc_normal_msg);
-		} 
+		}
+		CTL_Lib.Alarm_Error_Occurrence(3002, CTL_dWARNING, mc_alarmcode);
 		return BD_ERROR;
 	}
 
@@ -1681,7 +1763,7 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 				cmmSxStopEmg(n_Axis);
 				
 				mn_retry_cnt[n_Axis] = 0;
-
+				CTL_Lib.Alarm_Error_Occurrence(3003, CTL_dWARNING, mc_alarmcode);
 				return BD_ERROR;
 			}
 			else
@@ -1711,6 +1793,7 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 //		dCurrPos = Get_MotCurrentPos(n_Axis);  // 모터 특정 축의 현재 위치 리턴 함수
 		dCurrPos = g_comiMgr.Get_MotCurrentPos(n_Axis);  // 모터 특정 축의 현재 위치 리턴 함수
 		cmmSxStopEmg(n_Axis);
+		CTL_Lib.Alarm_Error_Occurrence(3004, CTL_dWARNING, mc_alarmcode);
 		return BD_ERROR;
 	}
 
@@ -1737,6 +1820,11 @@ int CComizoaPublic::Check_SingleMove(int n_Axis, double d_Distance)
 	nRet = CTL_Lib.Motor_SafetyCheck(2, n_Axis, d_Distance);
 	if (nRet == BD_ERROR)
 	{
+		if( nRet == CTL_DOOROPEN)
+		{
+			cmmSxStop(n_Axis, false, false);//2016.0330
+			return BD_ERROR;
+		}
 		if (mn_retry_cnt[n_Axis] < mn_max_retry_cnt)   
 		{//반복 동작을 진행한다 
 			if (mn_retry_cnt[n_Axis] == 0)
@@ -1751,13 +1839,13 @@ int CComizoaPublic::Check_SingleMove(int n_Axis, double d_Distance)
 			//반복 횟수 보다 크면 정상적으로 리턴 내용 처리 
 			ml_retry_time_wait[n_Axis][1] = GetCurrentTime();
 			ml_retry_time_wait[n_Axis][2] = ml_retry_time_wait[n_Axis][1] - ml_retry_time_wait[n_Axis][0];
+			if (ml_retry_time_wait[n_Axis][2] <= 0)
+			{
+				ml_retry_time_wait[n_Axis][0] = GetCurrentTime();
+			}
 			if (ml_retry_time_wait[n_Axis][2] < 500) //500ms 이하 일때는 반복 동작을 한다 
 			{
 				return BD_PROCEED; //2011.0224 추가 적용 //우선 기능 제외 return BD_RET_PROCEED;
-			}
-			else if (ml_retry_time_wait[n_Axis][2] < 0)
-			{
-				ml_retry_time_wait[n_Axis][0] = GetCurrentTime();
 			}
 		}
 
@@ -1816,7 +1904,8 @@ int CComizoaPublic::Check_SingleMove(int n_Axis, double d_Distance)
 						{
 							sprintf(mc_normal_msg, "[%d] Check_MotPosRange Target= %4.3f, CurPos= %4.3f", n_Axis, d_Distance, dCurrPos[0]);
 							Debug_File_Create(0, mc_normal_msg);
-						} 
+						}
+						CTL_Lib.Alarm_Error_Occurrence(3010, CTL_dWARNING, mc_alarmcode);
 						return BD_ERROR;
 					}
 					else
@@ -1825,7 +1914,7 @@ int CComizoaPublic::Check_SingleMove(int n_Axis, double d_Distance)
 						return BD_RETRY;								
 					}
 				}
-				else if (ml_motion_move_time[n_Axis][2] < 0)
+				else if (ml_motion_move_time[n_Axis][2] <= 0)
 				{
 					ml_motion_move_time[n_Axis][0] = GetCurrentTime();
 				}
@@ -1849,7 +1938,8 @@ int CComizoaPublic::Check_SingleMove(int n_Axis, double d_Distance)
 						{
 							sprintf(mc_normal_msg, "[%d] Check_MotPosRange Target= %4.3f, CurPos= %4.3f", n_Axis, d_Distance, dCurrPos[0]);
 							Debug_File_Create(0, mc_normal_msg);
-						} 
+						}
+						CTL_Lib.Alarm_Error_Occurrence(3011, CTL_dWARNING, mc_alarmcode);
 						return BD_ERROR;
 				}
 				else
@@ -1887,7 +1977,8 @@ int CComizoaPublic::Check_SingleMove(int n_Axis, double d_Distance)
 				{
 					sprintf(mc_normal_msg, "[%d] Check_MotPosRange Target= %4.3f, CurPos= %4.3f", n_Axis, d_Distance, dCurrPos[0]);
 					Debug_File_Create(0, mc_normal_msg);
-				} 
+				}
+				CTL_Lib.Alarm_Error_Occurrence(3012, CTL_dWARNING, mc_alarmcode);
 				return BD_ERROR;
 		}
 		else
@@ -1935,6 +2026,7 @@ int CComizoaPublic::Start_LinearMove(int n_MapIndex, double *dp_PosList, double 
 				sprintf(mc_normal_msg, "[%d] Create_IxIndexMapAxis return error", n_MapIndex);
 				Debug_File_Create(0, mc_normal_msg);
 			}
+			CTL_Lib.Alarm_Error_Occurrence(3012, CTL_dWARNING, mc_alarmcode);
 			return BD_ERROR;  
 		}
 	}
@@ -1948,6 +2040,14 @@ int CComizoaPublic::Start_LinearMove(int n_MapIndex, double *dp_PosList, double 
 			sprintf(mc_normal_msg, "[%d] ml_axiscnt[n_MapIndex] < 2 return error", n_MapIndex);
 			Debug_File_Create(0, mc_normal_msg);
 		}
+		CTL_Lib.Alarm_Error_Occurrence(3013, CTL_dWARNING, mc_alarmcode);
+		return BD_ERROR;
+	}
+
+	nRet_l = CTL_Lib.Motor_LinearSafety(n_MapIndex,dp_PosList);
+	if( nRet_l == BD_ERROR)
+	{
+		cmmIxStop(n_MapIndex, false, false);
 		return BD_ERROR;
 	}
 
@@ -3282,7 +3382,7 @@ int CComizoaPublic::Check_Motion_State(int n_Axis, long l_State)
 			// jtkim 20150608
 			//ml_alarmcode_id = nRet;    
 			//CTL_Lib.Motor_Error_Occurrence(3, n_Axis, ml_alarmcode_id, _T("Check_Motion_State_cmmStReadMotionState_lMotionStateValue_Error"));	
-			if(st_motor_info[n_Axis].n_sd_mv_chk == 1) //sd를 조건을 확인하기 위해 이동한다 
+			if(st_motor[n_Axis].n_sd_mv_chk == 1) //sd를 조건을 확인하기 위해 이동한다 
 			{
 				ml_alarmcode_id = nRet;    
 				CTL_Lib.Motor_Error_Occurrence(3, n_Axis, ml_alarmcode_id, _T("Check_Motion_State_cmmStReadMotionState_lMotionStateValue_Error"));
@@ -3298,7 +3398,7 @@ int CComizoaPublic::Check_Motion_State(int n_Axis, long l_State)
 	else
 	{
 		//20150507 추가
-		if(st_motor_info[n_Axis].n_sd_mv_chk == 1) //sd를 조건을 확인하기 위해 이동한다 
+		if(st_motor[n_Axis].n_sd_mv_chk == 1) //sd를 조건을 확인하기 위해 이동한다 
 		{
 			if(nRet == cmERR_STOP_BY_SD)//-5012
 			{

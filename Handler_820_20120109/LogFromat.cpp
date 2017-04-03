@@ -5,8 +5,9 @@
 //#include "Variable.h"
 //#include "io.h"			// 파일 존재 유무 검사 함수 호출하기 위해서는 반드시 필요
 #include "AlgMemory.h"
-#include "PublicFunction.h"
+#include "Public_Function.h"
 #include "LogFromat.h"
+#include "AMTLotManager.h"
 
 
 #define LOG_NAME_W			"LOG_SHAREMEM_W"
@@ -29,7 +30,7 @@ CLogFromat::CLogFromat(void)
 									 PAGE_READWRITE,
 									 0,
 									 sizeof(LOG_QUEUE_W),
-									 (LPCWSTR)LOG_NAME_W);
+									 (LPCTSTR)LOG_NAME_W);//(LPCWSTR)LOG_NAME_W);
 
 	if (m_hMemMapLogW != NULL)
 	{
@@ -102,12 +103,12 @@ CString	CLogFromat::OnCharToString(char chData[], int nLength)
 
 void CLogFromat::OnStringToChar(CString strData, char chData[])
 {
-	int nCnt;
-	wchar_t *chBuf;
-
-	chBuf = strData.GetBuffer(strData.GetLength());
-	nCnt  = WideCharToMultiByte(CP_ACP, 0, chBuf, -1, NULL, 0, NULL, NULL);
-	WideCharToMultiByte(CP_ACP, 0, chBuf, -1, chData, nCnt, 0, 0);
+// 	int nCnt;
+// 	wchar_t *chBuf;
+// 
+// 	chBuf = strData.GetBuffer(strData.GetLength());
+// 	nCnt  = WideCharToMultiByte(CP_ACP, 0, chBuf, -1, NULL, 0, NULL, NULL);
+// 	WideCharToMultiByte(CP_ACP, 0, chBuf, -1, chData, nCnt, 0, 0);
 }
 
 
@@ -158,7 +159,8 @@ void CLogFromat::OnLogWrite(CString strMsg)
 			return;
 		}
 
-		OnStringToChar(strMsg, m_pQueueLogW->m_chMsg[m_pQueueLogW->m_nRear]);
+		//OnStringToChar(strMsg, m_pQueueLogW->m_chMsg[m_pQueueLogW->m_nRear]);
+		sprintf(m_pQueueLogW->m_chMsg[m_pQueueLogW->m_nRear], "%s", strMsg);
 
 		m_pQueueLogW->m_nRear++;
 
@@ -167,595 +169,6 @@ void CLogFromat::OnLogWrite(CString strMsg)
 		m_pQueueLogW->m_nCount++;
 	}
 }
-
-void CLogFromat::OnLogTestSite(int nMode, int nSite, int nLfToRi, tagTEST_SITE_INFO &test_site)
-{
-	CFileFind filefind;
-	CString mstr_cur_year, mstr_cur_month, mstr_cur_day, str_display_time; // 현재 년, 월, 일 정보 문자형으로 변환하여 저장할 변수 
-	int mn_cur_year, mn_cur_month, mn_cur_day, mn_cur_hour; // 현재 년, 월, 일 정보 저장 변수 
-	CString mstr_file_name;		// 마지막으로 생성된 파일 이름 저장 변수 
-	CString mstr_create_file;	// 알람 정보 저장할 파일에 대한 [폴더]+[파일명]+[확장자] 설정 변수 
-	CString mstr_list_name, mstr_temp_data;  // 각 부분별 알람 발생 횟수 정보 저장할 로그 파일 정보 저장 변수 
-	CString mstr_content;		// 한 라인에 출력할 문자열 정보 저장 변수 
-	COleDateTime time_cur;		// 검사할 시간 정보 저장 변수 
-	CTime m_time_current;		// 간략한 헝식의 현재 시간 정보 저장 변수
-	int mn_existence;			// 파일 존재 유무 설정 플래그 
-	char fileName[256];			// 검색할 파일 정보 설정 함수 
-	char chFileName[256];
-	char chBackName[256];
-	FILE  *fp ;					// 파일에 대한 포인터 설정 변수
-
-	int nRet;
-	int i;
-	//kwlee 2016.1228
-	int nTotal; 
-	double dYield;
-	//
-
-	CString strTemp;
-	CString strBd;
-	CString strMsg;
-	CString BackupName;
-	CString mstr_cur_hour, mstr_cur_min, mstr_cur_sec;
-
-	// **************************************************************************
-	// 파일 이름으로 사용할 날짜 정보를 얻는다                                   
-	// **************************************************************************
-	time_cur = COleDateTime::GetCurrentTime();  // 현재 시간 정보를 얻는다. 
-
-	m_time_current = CTime::GetCurrentTime() ;  // 간략한 형식의 현재 시간 정보 얻는다. 
-
-	mn_cur_year = time_cur.GetYear();  
-
-	mn_cur_month = time_cur.GetMonth();  
-
-    mn_cur_day = time_cur.GetDay();  
-
-	mn_cur_hour = time_cur.GetHour();
-	// **************************************************************************
-
-	// **************************************************************************
-	// 날짜 정보를 문자형으로 변환하여 변수에 설정한다                           
-	// **************************************************************************
-	mstr_cur_year.Format(_T("%04d"), mn_cur_year);  
-	mstr_cur_month.Format(_T("%02d"), mn_cur_month);
-	mstr_cur_day.Format(_T("%02d"), mn_cur_day);
-
-	// **************************************************************************
-	// 현재 시간 정보 얻는다                                                     
-	// **************************************************************************
-	mn_cur_hour = time_cur.GetHour();				// 현재 시간 정보를 설정한다. 
-	mstr_cur_hour.Format(_T("%d"),time_cur.GetHour());	// 현재 시간 정보를 설정한다.
-	mstr_cur_min.Format(_T("%d"),time_cur.GetMinute());	// 현재 분 정보를 설정한다. 
-	mstr_cur_sec.Format(_T("%d"),time_cur.GetSecond());	// 현재 초 정보를 설정한다. 
-	str_display_time = m_time_current.Format(_T("%c"));	// 리스트 파일에 출력할 타이틀 시간 정보 설정 
-	// **************************************************************************
-
-	mstr_file_name = mstr_cur_year;
-	mstr_file_name += mstr_cur_month; 
-	mstr_file_name += mstr_cur_day; 
-	mstr_file_name += _T("_"); 
-	strTemp.Format(_T("%s_%s"), st_basic_info.strEqp, test_site.strEqpID);
-	mstr_file_name += strTemp;
-	mstr_create_file = st_path_info.strInterface + mstr_file_name;
-
-	mstr_create_file += _T(".TXT");
-
-	OnStringToChar(mstr_create_file, fileName);
-
-	mn_existence = filefind.FindFile(mstr_create_file,0);
-	
-	if (mn_existence == -1)
-	{
-		mstr_file_name = mstr_cur_year;
-		mstr_file_name += mstr_cur_month; 
-		mstr_file_name += mstr_cur_day; 
-		mstr_file_name += _T("_"); 
-		strTemp.Format(_T("%s_%s"), st_basic_info.strEqp, test_site.strEqpID);
-		mstr_file_name += strTemp;
-		mstr_create_file = st_path_info.strInterface + mstr_file_name;
-
-		mstr_create_file += _T(".TXT");
-		// **********************************************************************
-	}
-
-	nRet = OnFileSizeCheck(mstr_create_file, 1048576, YES); //size and rename
-	
-	if(nRet == 1) //file size over
-	{
-		BackupName = mstr_create_file + mstr_cur_hour + mstr_cur_min +  mstr_cur_sec + _T(".bak") ;
-		
-		OnStringToChar(mstr_create_file, chFileName);
-		OnStringToChar(BackupName, chBackName);
-
-		rename(chFileName, chBackName);
-	}
-
-	// **************************************************************************
-	// 알람 발생 횟수 정보 저장 파일에 추가 가능한 형태 파일로 생성              
-	// **************************************************************************
-	char chMode[10];
-
-	OnStringToChar(_T("a+"), chMode);
-
-	fopen_s(&fp, fileName, "a+");
-	if(!fp)
-	{
-		return;
-	}
-	// **************************************************************************
-
-	// **************************************************************************
-	// 로그 파일에 현재 발생한 알람 정보 저장한다                                
-	// **************************************************************************
-	if (st_handler_info.strUserId != _T(""))
-	{
-		mstr_content += "[";
-		mstr_content += st_handler_info.strUserId;
-		mstr_content += "] ";
-	}
-	
-	if (nMode == 0)
-	{
-		// insert
-		if (nLfToRi == 0) strMsg = _T("INSERT 1");
-		else strMsg = _T("INSERT 2");
-		strMsg += _T("\n");
-
-		for (i=0; i<8; i++)
-		{
-			strTemp.Format(_T("DUT[%02d]"), i + 1);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-			if (test_site.st_pcb_info[i].nBin != BD_DATA_GOOD &&
-				test_site.st_pcb_info[i].nBin != BD_DATA_REJECT &&
-				test_site.st_pcb_info[i].nBin != BD_DATA_RETEST)
-			{
-				strTemp.Format(_T("%s %s"), test_site.st_pcb_info[i].strBarcode1D[0],
-					test_site.st_pcb_info[i].strBarcode1D[1]);
-				strMsg += strTemp;
-				strMsg += _T("\t");
-
-				strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nYesNo);
-				strMsg += strTemp;
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strMsg += _T("  ");
-				strMsg += _T("\t");
-
-				strMsg += _T("0");
-				strMsg += _T("\t");
-			}
-
-			if (test_site.st_pcb_info[i].nEnable == YES)
-			{
-				strMsg += _T("USED");
-				strMsg += _T("\t");
-
-				strMsg += _T("USED");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strMsg += _T("NO");
-				strMsg += _T("\t");
-
-				strMsg += _T("NO");
-				strMsg += _T("\t");
-			}
-
-			strMsg += test_site.strLotNo;
-			strMsg += _T("\n");
-		}
-	}
-	else if (nMode == 1)
-	{
-		// insert
-		strMsg = _T("READY");
-		strMsg += _T("\n");
-
-		for (i=0; i<8; i++)
-		{
-			strTemp.Format(_T("DUT[%02d]"), i + 1);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-			strTemp.Format(_T("%s %s"), test_site.st_pcb_info[i].strBarcode1D[0],
-										test_site.st_pcb_info[i].strBarcode1D[1]);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nYesNo);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nEnable == YES)
-			{
-				strMsg += _T("USED");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strMsg += _T("NO");
-				strMsg += _T("\t");
-			}
-
-			strMsg += test_site.strLotNo;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nRetestCnt == 0)
-			{
-				strMsg += _T("P");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strTemp.Format(_T("%dR"), test_site.st_pcb_info[i].nRetestCnt);
-				strMsg += strTemp;
-				strMsg += _T("\t");
-			}
-			strMsg += _T("\n");
-		}
-	}
-	else if (nMode == 2)
-	{
-		// insert
-		strMsg = _T("MDL INFO");
-		strMsg += _T("\n");
-
-		for (i=0; i<8; i++)
-		{
-			strTemp.Format(_T("DUT[%02d]"), i + 1);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-			strTemp.Format(_T("%s %s"), test_site.st_pcb_info[i].strBarcode1D[0],
-										test_site.st_pcb_info[i].strBarcode1D[1]);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nYesNo);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nEnable == YES)
-			{
-				strMsg += _T("USED");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strMsg += _T("NO");
-				strMsg += _T("\t");
-			}
-
-			strMsg += test_site.strLotNo;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nRetestCnt == 0)
-			{
-				strMsg += _T("P");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strTemp.Format(_T("%dR"), test_site.st_pcb_info[i].nRetestCnt);
-				strMsg += strTemp;
-				strMsg += _T("\t");
-				//kwlee 2016.1018
-				//if (test_site.st_pcb_info[i].nRetestCnt > st_basic_info.nRetestCount)
-				if (test_site.st_pcb_info[i].nRetestCnt > st_recipe.nTestRetest_Count)
-				{
-					strMsg += _T("F");
-					strMsg += _T("\t");
-				}
-				else
-				{
-					strMsg += _T("I");
-					strMsg += _T("\t");
-				}
-			}
-			strMsg += _T("\n");
-		}
-	}
-	else if (nMode == 3)
-	{
-		// insert
-		strMsg = _T("START");
-		strMsg += _T("\n");
-
-		for (i=0; i<8; i++)
-		{
-			strTemp.Format(_T("DUT[%02d]"), i + 1);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-			strTemp.Format(_T("%s %s"), test_site.st_pcb_info[i].strBarcode1D[0],
-										test_site.st_pcb_info[i].strBarcode1D[1]);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nYesNo);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nEnable == YES)
-			{
-				strMsg += _T("USED");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strMsg += _T("NO");
-				strMsg += _T("\t");
-			}
-
-			strMsg += test_site.strLotNo;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nRetestCnt == 0)
-			{
-				strMsg += _T("P");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strTemp.Format(_T("%dR"), test_site.st_pcb_info[i].nRetestCnt);
-				strMsg += strTemp;
-				strMsg += _T("\t");
-			}
-			strMsg += _T("\n");
-		}
-	}
-	else if (nMode == 4)
-	{
-		// insert
-		strMsg = _T("CHAMBER CLOSE");
-		strMsg += _T("\n");
-
-		for (i=0; i<8; i++)
-		{
-			strTemp.Format(_T("DUT[%02d]"), i + 1);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-			strTemp.Format(_T("%s %s"), test_site.st_pcb_info[i].strBarcode1D[0],
-										test_site.st_pcb_info[i].strBarcode1D[1]);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nYesNo);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nEnable == YES)
-			{
-				strMsg += _T("USED");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strMsg += _T("NO");
-				strMsg += _T("\t");
-			}
-
-			strMsg += test_site.strLotNo;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nRetestCnt == 0)
-			{
-				strMsg += _T("P");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strTemp.Format(_T("%dR"), test_site.st_pcb_info[i].nRetestCnt);
-				strMsg += strTemp;
-				strMsg += _T("\t");
-			}
-			strMsg += _T("\n");
-		}
-	}
-	else if (nMode == 5)
-	{
-		// insert
-		strMsg = _T("RESULT");
-		strMsg += _T("\n");
-
-		for (i=0; i<8; i++)
-		{
-			strTemp.Format(_T("DUT[%02d]"), i + 1);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-			strTemp.Format(_T("%s %s"), test_site.st_pcb_info[i].strBarcode1D[0],
-										test_site.st_pcb_info[i].strBarcode1D[1]);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nYesNo);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nEnable == YES)
-			{
-				strMsg += _T("USED");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strMsg += _T("NO");
-				strMsg += _T("\t");
-			}
-
-			strMsg += test_site.strLotNo;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nRetestCnt == 1)
-			{
-				strMsg += _T("P");
-				strMsg += _T("\t");
-			}
-			else
-			{
-				strTemp.Format(_T("%dR"), test_site.st_pcb_info[i].nRetestCnt - 1);
-				strMsg += strTemp;
-				strMsg += _T("\t");
-			}
-
-			strMsg += test_site.st_pcb_info[i].strBin;
-			strMsg += _T("\t");
-
-			//kwlee 2016.1228
-// 			if (test_site.st_pcb_info[i].nBin != BD_DATA_GOOD)
-// 			{	
-// 				strTemp.Format(_T("%s_%d"),test_site.st_pcb_info[i].strBin,test_site.st_pcb_info[i].nBinFailCnt[test_site.st_pcb_info[i].nScrCode]);
-// 				strMsg += strTemp;
-// 				strMsg += _T("\t");
-// 
-// 				nTotal = test_site.st_pcb_info[i].nFailCount + test_site.st_pcb_info[i].nBinGoodCnt;
-// 				dYield = (double)test_site.st_pcb_info[i].nBinGoodCnt / (double)nTotal * (double)100;
-// 
-// 				strTemp.Format(_T("%0.2f"),dYield);
-// 				strMsg += strTemp;
-// 				strMsg += _T("\t");
-// 				///////////
-// 			}
-			strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nTemp[0]);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nTemp[1]);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nTemp[2]);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nTemp[3]);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			strMsg += test_site.st_pcb_info[i].strBdTime;
-			strMsg += _T("\t");
-
-			
-			strMsg += _T("\n");
-		}
-		//2016.1018
-// 		if(test_site.strLotNo == st_lot_display_info[0].strLotNo)
-// 		{
-// 			strTemp.Format(_T("PART_NO=%s"), st_lot_display_info[0].strPartNo);
-// 			strMsg += strTemp;
-// 			strMsg += _T("\n");
-// 			strTemp.Format(_T("OPT=%s"), st_lot_display_info[0].strOptcode);
-// 			strMsg += strTemp;
-// 			strMsg += _T("\n");
-// 			strTemp.Format(_T("LOT=%s"), st_lot_display_info[0].strLotNo);
-// 			strMsg += strTemp;
-// 			strMsg += _T("\n");	
-// 			strTemp.Format(_T("FAB=%s"), st_lot_display_info[0].strFabSite);
-// 			strMsg += strTemp;
-// 			strMsg += _T("\n");	
-// 		}
-// 		else if( test_site.strLotNo == st_lot_display_info[1].strLotNo)
-// 		{
-// 			strTemp.Format(_T("PART_NO=%s"), st_lot_display_info[1].strPartNo);
-// 			strMsg += strTemp;
-// 			strMsg += _T("\n");
-// 			strTemp.Format(_T("OPT=%s"), st_lot_display_info[1].strOptcode);
-// 			strMsg += strTemp;
-// 			strMsg += _T("\n");
-// 			strTemp.Format(_T("LOT=%s"), st_lot_display_info[1].strLotNo);
-// 			strMsg += strTemp;
-// 			strMsg += _T("\n");	
-// 			strTemp.Format(_T("FAB=%s"), st_lot_display_info[1].strFabSite);
-// 			strMsg += strTemp;
-// 			strMsg += _T("\n");	
-// 		}
-
-		//kwlee 2017.0105
-		strTemp.Format(_T("PART_NO=%s"), test_site.strPartNo);
-		strMsg += strTemp;
-		strMsg += _T("\n");
-		strTemp.Format(_T("OPT=%s"), test_site.strOptCode);
-		strMsg += strTemp;
-		strMsg += _T("\n");
-		strTemp.Format(_T("LOT=%s"), test_site.strLotNo);
-		strMsg += strTemp;
-		strMsg += _T("\n");	
-		strTemp.Format(_T("FAB=%s"), test_site.strFabSite);
-		strMsg += strTemp;
-		strMsg += _T("\n");	
-	}
-	else if (nMode == 6)
-	{
-		// PCB OUT
-		//2016.1018
-		if (nLfToRi == 0) strMsg = _T("PICK START 1");
-		else strMsg = _T("PICK START 2");
-//		else strMsg = _T("PICK END");
-
-		strMsg += _T("\n");
-
-		for (i=0; i<8; i++)
-		{
-			strTemp.Format(_T("DUT[%02d]"), i + 1);
-			strMsg += strTemp;
-			strMsg += _T("\t");
-
-			if (test_site.st_pcb_info[i].nBin == BD_DATA_GOOD ||
-				test_site.st_pcb_info[i].nBin == BD_DATA_GOOD ||
-				test_site.st_pcb_info[i].nBin == BD_DATA_GOOD )
-			{
-				strTemp.Format(_T("%s %s"), test_site.st_pcb_info[i].strBarcode1D[0],
-					test_site.st_pcb_info[i].strBarcode1D[1]);
-				strMsg += strTemp;
-				strMsg += _T("\t");
-
-				strTemp.Format(_T("%d"), test_site.st_pcb_info[i].nYesNo);
-				strMsg += strTemp;
-				strMsg += _T("\t");
-
-			}
-
-			strMsg += _T("\n");
-		}
-	}
-
-	mstr_content += str_display_time;
-	mstr_content += _T("\r\n");
-	mstr_content += strMsg;
-	mstr_content += _T("\n");
-
-	char chData[20000];
-
-	if (mstr_content.GetLength() > 20000) 
-	{
-		fclose(fp);
-
-		return ;
-	}
-
-	OnStringToChar(mstr_content, chData);
-
-	fprintf(fp, chData) ;
-
-	if (ferror(fp))  
-	{
-		if (st_handler_info.cWndList != NULL)  // 리스트 바 화면 존재
-		{
-			clsMem.OnNormalMessageWrite(_T("File save failure."));
-		}
-
-		fclose(fp);
-
-		return ;
-	}
-	// **************************************************************************
-	fclose(fp);  // 파일을 종료한다.
-}
-
-
-
 
 void CLogFromat::OnAddKeyAlarm(CString strDevice, CString strEvent, int nKey, CString *strKey, CString *strValue)
 {
@@ -819,78 +232,70 @@ CString CLogFromat::GetMotorName(int nAxis)
 
 	switch (nAxis)
 	{
-		case M_LD_CV_LR_SHIFTER:
-			strRet = _T("LOADING_TRAY_CONVEYOR_LR_SHIFTER");
+		case M_TRAY1_Z:
+			strRet = _T("TRAY1_Z");
 			break;
-		case M_LD_ELV:
-			strRet = _T("LOAD_TRAY_STACKER_ELEVATOR");
+		case M_TRAY2_Z:
+			strRet = _T("TRAY2_Z");
 			break;
-		case M_EMPTY_ELV:
-			strRet = _T("EMPTY_TRAY_STACKER_ELEVATOR");
+		case M_PRESS_Y:
+			strRet = _T("PRESS_Y");
 			break;
-		case M_ULD_1_ELV:
-			strRet = _T("UNLOAD_TRAY#1_TRAY_STACKER_ELEVATOR");
+		case M_EPOXY_TRANSFER_X:
+			strRet = _T("EPOXY_TRANSFER_X");
 			break;
-		case M_ULD_2_ELV:
-			strRet = _T("UNLOAD_TRAY#2_TRAY_STACKER_ELEVATOR");
+		case M_EPOXY_TRANSFER_Y:
+			strRet = _T("EPOXY_TRANSFER_Y");
 			break;
-		case M_RJ_EMPTY_ELV:
-			strRet = _T("REJECT_TRAY_EMPTY_STACKER_ELEVATOR");
+		case M_EPOXY_TRANSFER_Z:
+			strRet = _T("EPOXY_TRANSFER_Z");
 			break;
-		case	M_RJ_ULD_1_ELV:
-			strRet = _T("REJECT_TRAY#1_STACKER_ELEVATOR");
+		case M_EPOXY_SCREW:
+			strRet = _T("EPOXY_SCREW");
 			break;
-		case M_RJ_ULD_2_ELV:
-			strRet = _T("REJECT_TRAY#2_STACKER_ELEVATOR");
+		case M_CARRIER_X:
+			strRet = _T("CARRIER_X");
 			break;
 		// 2번째 보드(8축)	
 		
-		case M_WORK_RBT_Y:
-			strRet = _T("WORK_ROBOT_Y");
+		case M_LOADER_TRANSFER_Y:
+			strRet = _T("LOADER_TRANSFER_Y");
 			break;
-		case M_WORK_RBT_X:
-			strRet = _T("WORK_ROBOT_X");
+		case M_LOADER_TRANSFER_Z:
+			strRet = _T("LOADER_TRANSFER_Z");
 			break;
-		case M_WORK_RBT_Z:
-			strRet = _T("WORK_ROBOT_Z");
+		case M_HEATSINK_TRANSFER_X:
+			strRet = _T("HEATSINK_TRANSFER_X");
 			break;
-		case M_LD_BUF_SHIFTER_Y:
-			strRet = _T("LOAD_BUFFER_SHIFTER_Y");
+		case M_HEATSINK_TRANSFER_Y:
+			strRet = _T("HEATSINK_TRANSFER_Y");
 			break;
-		case M_LD_BUF_ROTATOR:
-			strRet = _T("LOAD_BUFFER_ROTATOR");
+		case M_HEATSINK_TRANSFER_Z:
+			strRet = _T("HEATSINK_TRANSFER_Z");
 			break;
-		case M_ULD_BUF_SHIFTER_Y:
-			strRet = _T("UNLOAD_BUFFER_SHIFTER_Y");
+		case M_UNLOADER_TRANSFER_X:
+			strRet = _T("UNLOADER_TRANSFER_X");
 			break;
-		case M_ULD_BUF_ROTATOR:
-			strRet = _T("UNLOAD_BUFFER_ROTATOR");
+		case M_UNLOADER_TRANSFER_Y:
+			strRet = _T("UNLOADER_TRANSFER_Y");
 			break;
-		//M_SPARE_1						,			//15: spare 1
-		// 3번째 보드(8축)	
-		case M_RETEST_BUF_1_ROTATOR:
-			strRet = _T("RETEST_BUFFER#1_ROTATOR");
+		case M_UNLOADER_TRANSFER_Z:
+			strRet = _T("UNLOADER_TRANSFER_Z");
+			break;
+		case M_DISPENSER_Y:
+			strRet = _T("DISPENSER_Y");
 			break;		
-		case M_RETEST_BUF_2_ROTATOR:
-			strRet = _T("RETEST_BUFFER#2_ROTATOR");
+		case M_TRAY_REMOVE_X:
+			strRet = _T("TRAY_REMOVE_X");
 			break;
-		case M_WORKTRAY_TRANSFER:
-			strRet = _T("WORK_TRAY_TRANSFER");
+		case M_HEATSINK_INSPECT_Y:
+			strRet = _T("HEATSINK_INSPECT_Y");
 			break;
-		case M_REJECTTRAY_TRANSFER:
-			strRet = _T("REJECT_TRAY_TRANSFER");
+		case M_HEATSINK_INSPECT_Z:
+			strRet = _T("HEATSINK_INSPECT_Z");
 			break;
-		case M_TEST_RBT_Y:
-			strRet = _T("TEST_ROBOT_Y");
-			break;
-		case M_TEST_RBT_X:
-			strRet = _T("TEST_ROBOT_X");
-			break;
-		case M_TEST_RBT_Z:
-			strRet = _T("TEST_ROBOT_Z");
-			break;
-		case M_TEST_DVC_EJECT_Z://23
-			strRet = _T("TEST_ROBOT_DEVICE_EJECT_Z");
+		case M_HEATSINK_PICKER_PITCH:
+			strRet = _T("HEATSINK_PICKER_PITCH");
 			break;
 	}
 
@@ -903,78 +308,70 @@ CString CLogFromat::GetDeviceID(int nAxis)
 
 	switch (nAxis)
 	{
-		case M_LD_CV_LR_SHIFTER:
-			strRet = _T("LOADING_TRAY_CONVEYOR_LR_SHIFTER");
+		case M_TRAY1_Z:
+			strRet = _T("TRAY1_Z");
 			break;
-		case M_LD_ELV:
-			strRet = _T("LOAD_TRAY_STACKER_ELEVATOR");
+		case M_TRAY2_Z:
+			strRet = _T("TRAY2_Z");
 			break;
-		case M_EMPTY_ELV:
-			strRet = _T("EMPTY_TRAY_STACKER_ELEVATOR");
+		case M_PRESS_Y:
+			strRet = _T("PRESS_Y");
 			break;
-		case M_ULD_1_ELV:
-			strRet = _T("UNLOAD_TRAY#1_TRAY_STACKER_ELEVATOR");
+		case M_EPOXY_TRANSFER_X:
+			strRet = _T("EPOXY_TRANSFER_X");
 			break;
-		case M_ULD_2_ELV:
-			strRet = _T("UNLOAD_TRAY#2_TRAY_STACKER_ELEVATOR");
+		case M_EPOXY_TRANSFER_Y:
+			strRet = _T("EPOXY_TRANSFER_Y");
 			break;
-		case M_RJ_EMPTY_ELV:
-			strRet = _T("REJECT_TRAY_EMPTY_STACKER_ELEVATOR");
+		case M_EPOXY_TRANSFER_Z:
+			strRet = _T("EPOXY_TRANSFER_Z");
 			break;
-		case	M_RJ_ULD_1_ELV:
-			strRet = _T("REJECT_TRAY#1_STACKER_ELEVATOR");
+		case M_EPOXY_SCREW:
+			strRet = _T("EPOXY_SCREW");
 			break;
-		case M_RJ_ULD_2_ELV:
-			strRet = _T("REJECT_TRAY#2_STACKER_ELEVATOR");
+		case M_CARRIER_X:
+			strRet = _T("CARRIER_X");
 			break;
 		// 2번째 보드(8축)	
 		
-		case M_WORK_RBT_Y:
-			strRet = _T("WORK_ROBOT_Y");
+		case M_LOADER_TRANSFER_Y:
+			strRet = _T("LOADER_TRANSFER_Y");
 			break;
-		case M_WORK_RBT_X:
-			strRet = _T("WORK_ROBOT_X");
+		case M_LOADER_TRANSFER_Z:
+			strRet = _T("LOADER_TRANSFER_Z");
 			break;
-		case M_WORK_RBT_Z:
-			strRet = _T("WORK_ROBOT_Z");
+		case M_HEATSINK_TRANSFER_X:
+			strRet = _T("HEATSINK_TRANSFER_X");
 			break;
-		case M_LD_BUF_SHIFTER_Y:
-			strRet = _T("LOAD_BUFFER_SHIFTER_Y");
+		case M_HEATSINK_TRANSFER_Y:
+			strRet = _T("HEATSINK_TRANSFER_Y");
 			break;
-		case M_LD_BUF_ROTATOR:
-			strRet = _T("LOAD_BUFFER_ROTATOR");
+		case M_HEATSINK_TRANSFER_Z:
+			strRet = _T("HEATSINK_TRANSFER_Z");
 			break;
-		case M_ULD_BUF_SHIFTER_Y:
-			strRet = _T("UNLOAD_BUFFER_SHIFTER_Y");
+		case M_UNLOADER_TRANSFER_X:
+			strRet = _T("UNLOADER_TRANSFER_X");
 			break;
-		case M_ULD_BUF_ROTATOR:
-			strRet = _T("UNLOAD_BUFFER_ROTATOR");
+		case M_UNLOADER_TRANSFER_Y:
+			strRet = _T("UNLOADER_TRANSFER_Y");
 			break;
-		//M_SPARE_1						,			//15: spare 1
-		// 3번째 보드(8축)	
-		case M_RETEST_BUF_1_ROTATOR:
-			strRet = _T("RETEST_BUFFER#1_ROTATOR");
+		case M_UNLOADER_TRANSFER_Z:
+			strRet = _T("UNLOADER_TRANSFER_Z");
+			break;
+		case M_DISPENSER_Y:
+			strRet = _T("DISPENSER_Y");
 			break;		
-		case M_RETEST_BUF_2_ROTATOR:
-			strRet = _T("RETEST_BUFFER#2_ROTATOR");
+		case M_TRAY_REMOVE_X:
+			strRet = _T("TRAY_REMOVE_X");
 			break;
-		case M_WORKTRAY_TRANSFER:
-			strRet = _T("WORK_TRAY_TRANSFER");
+		case M_HEATSINK_INSPECT_Y:
+			strRet = _T("HEATSINK_INSPECT_Y");
 			break;
-		case M_REJECTTRAY_TRANSFER:
-			strRet = _T("REJECT_TRAY_TRANSFER");
+		case M_HEATSINK_INSPECT_Z:
+			strRet = _T("HEATSINK_INSPECT_Z");
 			break;
-		case M_TEST_RBT_Y:
-			strRet = _T("TEST_ROBOT_Y");
-			break;
-		case M_TEST_RBT_X:
-			strRet = _T("TEST_ROBOT_X");
-			break;
-		case M_TEST_RBT_Z:
-			strRet = _T("TEST_ROBOT_Z");
-			break;
-		case M_TEST_DVC_EJECT_Z://23
-			strRet = _T("TEST_ROBOT_DEVICE_EJECT_Z");
+		case M_HEATSINK_PICKER_PITCH:
+			strRet = _T("HEATSINK_PICKER_PITCH");
 			break;
 	}
 
@@ -987,83 +384,70 @@ CString CLogFromat::GetSiteName(int nSite)
 
 	switch (nSite)
 	{
-		case THD_LD_CV_STACKER_LEFT:
-			strRet = _T("LOADING_CONVEYOR_LEFT_SHIFTER_SITE");
-			break;
-		case THD_LD_CV_STACKER_RIGHT:
-			strRet = _T("LOADING_CONVEYOR_RIGHT_SHIFTER_SITE");
-			break;
-		case THD_LD_STACKER:
-			strRet = _T("LOAD_TRAY_STACKER_SITE");
-			break;
-		case THD_LD_TRAY_PLATE:
-			strRet = _T("LOAD_TRAY_PLATE_SITE");
-			break;
-		case THD_EMPTY_STACKER:
-			strRet = _T("EMPTY_STACKER_SITE");
-			break;
-		case THD_ULD_1_STACKER:
-			strRet = _T("UNLOAD_TRAY#1_STACKER_SITE");
-			break;
-		case THD_ULD_2_STACKER:
-			strRet = _T("UNLOAD_TRAY#2_STACKER_SITE");
-			break;
-		case THD_REJECT_EMPTY_STACKER:
-			strRet = _T("REJECT_EMPTY_STACKER_SITE");
-			break;
-		case THD_REJECT_OUT_1_STACKER:
-			strRet = _T("REJECT_OUT#1_STACKER_SITE");
-			break;
-		case THD_REJECT_OUT_2_STACKER:
-			strRet = _T("REJECT_OUT#2_STACKER_SITE");
-			break;
-		case THD_WORK_RBT:
-			strRet = _T("WORK_ROBOT_SITE");
-			break;
-		case THD_TEST_RBT:
-			strRet = _T("TEST_ROBOT_SITE");
-			break;
-		case THD_LD_BUFF:
-			strRet = _T("LOAD_BUFFER_SITE");
-			break;
-		case THD_ULD_BUFF:
-			strRet = _T("UNLOAD_BUFFER_SITE");
-			break;
-		case THD_RETEST_1_BUFF:
-			strRet = _T("RETEST_BUFFER#1_SITE");
-			break;
-		case THD_RETEST_2_BUFF:
-			strRet = _T("RETEST_BUFFER#2_SITE");
-			break;
-		case THD_WORK_TRANSFER:
-			strRet = _T("WORK_TRANSFER_SITE");
-			break;
-		case THD_REJECT_TRANSFER:
-			strRet = _T("REJECT_TRANSFER_SITE");
-			break;
-		case THD_TESTSITE_1:
-			strRet = _T("TESTSITE_#1_SITE");
-			break;
-		case THD_TESTSITE_2:
-			strRet = _T("TESTSITE_#2_SITE");
-			break;
-		case THD_TESTSITE_3:
-			strRet = _T("TESTSITE_#3_SITE");
-			break;
-		case THD_TESTSITE_4:
-			strRet = _T("TESTSITE_#4_SITE");
-			break;
-		case THD_TESTSITE_5:
-			strRet = _T("TESTSITE_#5_SITE");
-			break;
-		case THD_TESTSITE_6:
-			strRet = _T("TESTSITE_#6_SITE");
-			break;
-		case THD_TESTSITE_7:
-			strRet = _T("TESTSITE_#7_SITE");
-			break;
-		case THD_TESTSITE_8:
-			strRet = _T("TESTSITE_#8_SITE");
+	case M_TRAY1_Z:
+		strRet = _T("TRAY1_Z");
+		break;
+	case M_TRAY2_Z:
+		strRet = _T("TRAY2_Z");
+		break;
+	case M_PRESS_Y:
+		strRet = _T("PRESS_Y");
+		break;
+	case M_EPOXY_TRANSFER_X:
+		strRet = _T("EPOXY_TRANSFER_X");
+		break;
+	case M_EPOXY_TRANSFER_Y:
+		strRet = _T("EPOXY_TRANSFER_Y");
+		break;
+	case M_EPOXY_TRANSFER_Z:
+		strRet = _T("EPOXY_TRANSFER_Z");
+		break;
+	case M_EPOXY_SCREW:
+		strRet = _T("EPOXY_SCREW");
+		break;
+	case M_CARRIER_X:
+		strRet = _T("CARRIER_X");
+		break;
+		// 2번째 보드(8축)	
+		
+	case M_LOADER_TRANSFER_Y:
+		strRet = _T("LOADER_TRANSFER_Y");
+		break;
+	case M_LOADER_TRANSFER_Z:
+		strRet = _T("LOADER_TRANSFER_Z");
+		break;
+	case M_HEATSINK_TRANSFER_X:
+		strRet = _T("HEATSINK_TRANSFER_X");
+		break;
+	case M_HEATSINK_TRANSFER_Y:
+		strRet = _T("HEATSINK_TRANSFER_Y");
+		break;
+	case M_HEATSINK_TRANSFER_Z:
+		strRet = _T("HEATSINK_TRANSFER_Z");
+		break;
+	case M_UNLOADER_TRANSFER_X:
+		strRet = _T("UNLOADER_TRANSFER_X");
+		break;
+	case M_UNLOADER_TRANSFER_Y:
+		strRet = _T("UNLOADER_TRANSFER_Y");
+		break;
+	case M_UNLOADER_TRANSFER_Z:
+		strRet = _T("UNLOADER_TRANSFER_Z");
+		break;
+	case M_DISPENSER_Y:
+		strRet = _T("DISPENSER_Y");
+		break;		
+	case M_TRAY_REMOVE_X:
+		strRet = _T("TRAY_REMOVE_X");
+		break;
+	case M_HEATSINK_INSPECT_Y:
+		strRet = _T("HEATSINK_INSPECT_Y");
+		break;
+	case M_HEATSINK_INSPECT_Z:
+		strRet = _T("HEATSINK_INSPECT_Z");
+		break;
+	case M_HEATSINK_PICKER_PITCH:
+		strRet = _T("HEATSINK_PICKER_PITCH");
 			break;
 	}
 		return strRet;
@@ -1073,7 +457,7 @@ CString CLogFromat::GetRunStatus()
 {
 	CString strRet;
 
-	switch (st_handler_info.nRunStatus)
+	switch (st_work.mn_run_status)
 	{
 		case dSTOP:
 			strRet = _T("STOP");
@@ -1081,10 +465,6 @@ CString CLogFromat::GetRunStatus()
 
 		case dRUN:
 			strRet = _T("RUN");
-			break;
-
-		case dIDLE:
-			strRet = _T("IDLE");
 			break;
 
 		case dJAM:
@@ -1138,7 +518,7 @@ void CLogFromat::OnLogMotorMove(int nAxis, int nStatus, double dPos)
 	CString strMaterialType = _T("");
 	CString strMaterialId	= _T("");
 
-	int i, j;
+//	int i, j;
 	strDvcID	= GetDeviceID(nAxis);
 	strAxis		= GetMotorName(nAxis);
 	strPos.Format(_T("%0.3f"), dPos);
@@ -1168,120 +548,7 @@ void CLogFromat::OnLogMotorMove(int nAxis, int nStatus, double dPos)
 
 	switch(nAxis)
 	{
-		case M_LD_CV_LR_SHIFTER:
-			break;
-
-		case M_LD_ELV:
-			for (i=0; i<st_recipe.nTrayX; i++)
-			{
-				for (j=0; j<st_recipe.nTrayY; j++)
-				{
-					if (st_tray_info[THD_LD_TRAY_PLATE].st_pcb_info[i][j].nYesNo == YES)
-					{
-						//st_tray_info[THD_LD_TRAY_PLATE].st_pcb_info[y][x].strLotNo	= st_tray_info[THD_LD_STACKER].strLotNo;
-						strMaterialId	= st_tray_info[THD_LD_TRAY_PLATE].st_pcb_info[i][j].strLotNo;
-						strMaterialType = _T("CDIMM");
-						break;
-					}
-				}
-			}
-			break;
-			
-		case M_EMPTY_ELV:
-			break;
-			
-		case M_ULD_1_ELV:
-			break;
-	
-		case M_ULD_2_ELV:
-			break;
-	
-		case M_RJ_EMPTY_ELV:
-			break;
-		case	M_RJ_ULD_1_ELV:
-			break;
-		case M_RJ_ULD_2_ELV:
-			break;
-		case M_WORK_RBT_Y:
-		case M_WORK_RBT_X:
-		case M_WORK_RBT_Z:
-			if (st_picker[THD_WORK_RBT].st_pcb_info[0].nYesNo == YES)
-			{
-				strMaterialId	= st_picker[THD_WORK_RBT].st_pcb_info[0].strSerialNo;
-				strMaterialType = _T("CDIMM");					
-			}
-			break;
-
-		case M_LD_BUF_SHIFTER_Y:
-		case M_LD_BUF_ROTATOR:
-			for(i = 0; i < 4; i++)
-			{
-				if( st_buffer_info[THD_LD_BUFF].st_pcb_info[i].nYesNo == YES)
-				{
-						strMaterialId	= st_buffer_info[THD_LD_BUFF].st_pcb_info[i].strSerialNo;
-						strMaterialType = _T("CDIMM");
-						break;
-				}
-			}
-			break;
-
-		case M_ULD_BUF_SHIFTER_Y:		
-		case M_ULD_BUF_ROTATOR:
-			for(i = 0; i < 4; i++)
-			{
-				if( st_buffer_info[THD_ULD_BUFF].st_pcb_info[i].nYesNo == YES)
-				{
-						strMaterialId	= st_buffer_info[THD_ULD_BUFF].st_pcb_info[i].strSerialNo;
-						strMaterialType = _T("CDIMM");
-						break;
-				}
-			}
-			break;
-			
-		//M_SPARE_1						,			//15: spare 1
-		// 3번째 보드(8축)	
-		case M_RETEST_BUF_1_ROTATOR:
-			for( i = 0; i < st_recipe.st_recipe_info; i++)
-			{
-				if( st_buffer_info[THD_RETEST_1_BUFF].st_pcb_info[i].nYesNo == YES)
-				{
-						strMaterialId	= st_buffer_info[THD_RETEST_1_BUFF].st_pcb_info[i].strSerialNo;
-						strMaterialType = _T("CDIMM");
-						break;
-				}
-			}
-			break;		
-		case M_RETEST_BUF_2_ROTATOR:
-			for( i = 0; i < st_recipe.st_recipe_info; i++)
-			{
-				if( st_buffer_info[THD_RETEST_2_BUFF].st_pcb_info[i].nYesNo == YES)
-				{
-						strMaterialId	= st_buffer_info[THD_RETEST_2_BUFF].st_pcb_info[i].strSerialNo;
-						strMaterialType = _T("CDIMM");
-						break;
-				}
-			}
-			break;
-
-		case M_WORKTRAY_TRANSFER:
-			break;
-		case M_REJECTTRAY_TRANSFER:
-			break;
-
-		case M_TEST_RBT_Y:
-		case M_TEST_RBT_X:
-		case M_TEST_RBT_Z:
-			for( i = 0; i < 4; i++ )
-			{
-				if (st_picker[THD_TEST_RBT].st_pcb_info[i].nYesNo == YES)
-				{
-					strMaterialId	= st_picker[THD_TEST_RBT].st_pcb_info[i].strSerialNo;
-					strMaterialType = _T("CDIMM");	
-					break;
-				}
-			}
-			break;
-		case M_TEST_DVC_EJECT_Z://23
+		case M_HEATSINK_PICKER_PITCH:
 			break;
 	
 	}
@@ -1462,9 +729,9 @@ void CLogFromat::LogFunction(CString strID, CString strEvent, int nStatus, CStri
 	strLog += strTemp;
 
 	strKey[nDataCount]		= _T("LOTID");
-	strData[nDataCount]		= st_lot_info[LOT_CURR].strLotNo;
+	strData[nDataCount]		= g_lotMgr.GetLotAt(0).GetLotID();
 	strKey[nDataCount + 1]	= _T("RECIPE");
-	strData[nDataCount + 1]	= st_basic_info.strDeviceName;
+	strData[nDataCount + 1]	= st_basic.mstr_device_name;// _info.strDeviceName;
 
 	nAdd = 0;
 	for (i=0; i<nDataCount + 2; i++)

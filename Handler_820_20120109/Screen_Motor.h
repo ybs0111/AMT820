@@ -20,9 +20,9 @@
 #include "GradientStatic.h" // 그라데이션 칼라 텍스트 박스 생성 클래스 추가 
 #include "PictureEx.h"		// GIF 파일을 로딩하기 위한 클래스 추가 
 #include "BmpImageST.h"		// 알람 비트맵 로딩 클래스 추가 
-#include "CheckerCtrl.h"
-#include "CharSetCtrl.h"
+//#include "CharSetCtrl.h"
 #include "FloatST.h"
+//#include "FastechPublic.h"
 #include "GridControlAlg.h"
 #include "MatrixStatic.h"
 #include "Picture.h"
@@ -35,14 +35,21 @@
 class CScreen_Motor : public CFormView
 {
 public:
-	CPicture		m_p_bmp_view;
+	int				m_n_part_cnt;
+	int				m_n_part_axis_cnt[20];
+	int				m_n_part_axis[20][10];
+	
+	CString			m_str_part_info[20];
+	CString			m_str_part_name[20];
+	CString			m_str_part_axis_name[20][10];
 
 	TSpread			*m_grid_part;
 	TSpread			*m_grid_motor;
 
+	CPicture		m_p_bmp_view;
 	GridControlAlg	m_p_grid;
 public:
-	CFont* mp_main_font;
+ 	CFont* mp_main_font;
 public:
 	CScreen_Motor();           // protected constructor used by dynamic creation
 	DECLARE_DYNCREATE(CScreen_Motor)
@@ -51,6 +58,7 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Motor)
 	enum { IDD = IDD_SCREEN_MOTOR };
+	CMacButton	m_btn_motor_speed;
 	CXPGroupBox	m_group_part_information;
 	CXPGroupBox	m_group_motor_part;
 	//}}AFX_DATA
@@ -61,7 +69,7 @@ public:
 // Operations
 public:
 	void Init_Motor_Grid();
-	void OnMotor_Part_List(int n_col);
+	void OnMotor_Part_List(int n_col, int n_axis);
 	void Init_Group();
 	void Init_Part_Grid();
 
@@ -86,6 +94,10 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CScreen_Motor)
 	afx_msg void OnPaint();
+	afx_msg void OnBtnMotorSpeed();
+	afx_msg void OnBtnTeachWrite();
+	afx_msg void OnBtnTeachRead();
+	afx_msg void OnBtnLogTrayMotorPos();
 	//}}AFX_MSG
 	afx_msg void OnCellClick(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnMotor_Work_Message(WPARAM wParam,LPARAM lParam); 

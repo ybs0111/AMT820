@@ -39,6 +39,11 @@ public:
 	int m_nRobot_Y;
 	int m_nRobot_Z;
 
+	int m_nPickerPara;
+	int m_nRobotSite;
+	int m_nRobot_Z_Stop_Flag;
+
+	int m_nMove_Flag[2];
 	CString m_strLotNo[2];
 	CString m_strPartNo[2];
 
@@ -51,15 +56,37 @@ public:
 	long m_motFlag[3];
 	DWORD m_dwWaitUntil[3];
 
+	int m_nPickRetry_Cnt;
 	long m_motPickFlag[3];
 	long m_motPlaceFlag[3];
 	double m_dpTargetPosList[3];
 	double m_dTemp_CalTargetPos_X;
-	double m_dTemp_CalTargetPos_Y
+	double m_dTemp_CalTargetPos_Y;
+
+
+	int	m_npPicker_OutputStatus[4];// output 상태를 체크 
+	
+	int	m_npSet_WorkPosYXCPB[5]; //작업 완료후 작업 셋팅 위치 정보,  [0]first tray Y, [1]first tray X, [2]:작업가능 수량 또는 공간 정보, [3]first picker num, [4]first buff num
+	
+	int	m_npTemp_Picker_YesNo[4];  //임시 작업가능피커 정의 
+	int	m_npPicker_YesNo[4];		//작업 가능 피커 정의 
+	int	m_npPicker_Vacuum_Status[4];//현재 백큠 상태 정보 
+	int	m_npPicker_Data_Status[4]; //디바이스 수량등 정보 
+	int	m_npPicker_Error_Status[4];//피커 down후 트레이에서 집을때 백큠 에러 정보 
+	
+	int	m_npFindWorkPosYXCPB[5]; //[0]first tray Y, [1]first tray X, [2]:작업가능 수량 또는 공간 정보, [3]first picker num, [4]first buff num
+
+	int m_n_FirstTray_X_Num;
+	int m_n_FirstTray_Y_Num;
+	int m_n_FirstPicker_Num;
+
+	double m_dCurrentPos[100];
+	CString m_strAlarmCode;
+	DWORD m_dwWaitTime;
 
 // Operations
 public:
-	void ThreadRun();
+	void Thread_Run();
 	void RunMove();
 	void RunInit();
 
@@ -70,8 +97,8 @@ public:
 	int Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotNo);
 	int Process_DVC_Place( int nMode, int nWorkSite, CString strLotNo);
 
-	int Move_MakeSafetyPosBeforeWork( int nMode, int nWorkSite );
-	int CRun_UldPicker::Move_ReadySafeyXY();
+	int Move_ReadySafeyXY();
+	int Move_MakeSafetyPosBeforeWork( int nMode );
 
 };
 

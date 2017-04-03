@@ -8,6 +8,8 @@
 #include "Variable.h"
 #include "FastechPublic_IO.h"
 #include "math.h"
+#include "IO_Manager.h"
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -31,7 +33,7 @@ CRun_IO_Check::~CRun_IO_Check()
 
 void CRun_IO_Check::Thread_Run()
 {
-	if(FAS_IO.mn_io_board_initial_flag == BD_NO) return;
+	if(g_ioMgr.GetIOBoardInit() == false) return;
 
 	FAS_IO.IO_ReadWrite(0, 0, 0, 1);
 	FAS_IO.IO_ReadWrite(0, 0, 1, 1);
@@ -46,6 +48,16 @@ void CRun_IO_Check::Thread_Run()
 	FAS_IO.IO_ReadWrite(0, 1, 1, 1);
 	FAS_IO.IO_ReadWrite(0, 1, 2, 1);
 	FAS_IO.IO_ReadWrite(0, 1, 3, 1);
+	FAS_IO.IO_ReadWrite(0, 1, 4, 1);
+	FAS_IO.IO_ReadWrite(0, 1, 5, 1);
+	FAS_IO.IO_ReadWrite(0, 1, 6, 1);
+	FAS_IO.IO_ReadWrite(0, 1, 7, 1);
+
+	FAS_IO.IO_ReadWrite(0, 2, 0, 1);
+	FAS_IO.IO_ReadWrite(0, 2, 1, 1);
+	FAS_IO.IO_ReadWrite(0, 2, 2, 1);
+	FAS_IO.IO_ReadWrite(0, 2, 3, 1);
+	FAS_IO.IO_ReadWrite(0, 2, 4, 1);
 }
 
 

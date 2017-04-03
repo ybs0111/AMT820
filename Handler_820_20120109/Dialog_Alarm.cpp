@@ -230,13 +230,13 @@ void CDialog_Alarm::OnDestroy()
 	m_image_alarm.Delete();
 
 	// RUN중에 알람화면을 확인했을 경우에는 STOP시키지 않는다.
-	if (st_work.n_run_status != dRUN)
+	if (st_work.mn_run_status != dRUN)
 	{
 		//Func.OnSet_IO_Port_Stop(); // 장비 상태 : 정지 상태인 경우 I/O 출력 내보내는 함수 */
 
 // 		if(st_handler.cwnd_title != NULL)  
 // 		{
-// 			st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MACHINE_STATUS, st_work.n_run_status);
+// 			st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MACHINE_STATUS, st_work.mn_run_status);
 // 		}
 	}
 
@@ -603,7 +603,7 @@ void CDialog_Alarm::OnAlarm_Data_Display(int n_alarm_state)
 	
 	((CEdit*)GetDlgItem(IDC_EDIT_ALARM_REPARE))->SetWindowText(_T(st_alarm.str_repair_msg));  // 알람 조치 사항 화면 출력
 
-	if (st_work.n_run_status == dLOTEND)			// LOT END
+	if (st_work.mn_run_status == dLOTEND)			// LOT END
 	{
 		OnAlarm_Controls_Show(TRUE);				// LOT END 메시지 표시 컨트롤 화면 출력 제어 함수
 	}
@@ -894,7 +894,7 @@ void CDialog_Alarm::OnBtnPrevAlarm10()
 
 void CDialog_Alarm::OnOK() 
 {	
- 	if (st_work.n_run_status == dWARNING || st_work.n_run_status == dJAM || st_work.n_run_status == dLOTEND)
+ 	if (st_work.mn_run_status == dWARNING || st_work.mn_run_status == dJAM || st_work.mn_run_status == dLOTEND)
  	{
 		alarm.mn_reset_status = NO;
 		st_other.str_normal_msg = _T("[JAM RESET] JAM RESET.");

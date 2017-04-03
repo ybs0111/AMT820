@@ -61,10 +61,16 @@ public:
 	int ModuleAreaSensor_Flag;
 	int HeatSinkAreaSensor_Flag;
 
+	CString m_strAlarmCode;
+	int nLightCurtainMutingOnStep;
+	int nLightCurtainMutingOffStep;
+	DWORD lLightCurtainMutingOnTime[3];
+	DWORD lLightCurtainMutingOffTime[3];
+
 	//////////////////////////////////////2K10/02/09/ViboX////////////////////////////////////
 
 	CDialog_Part_IO		*m_p_io;
-	CDialog_Motor_Part	*m_p_motor;
+	CDialog_Motor_Part	*m_p_motor_part;
 	CDialog_Manual_Move	*m_p_move;
 
 	CString str_step_temp[100];
@@ -123,10 +129,22 @@ public:
 	void OnCycleTime(int nMode, CString strLotNo, CString strPartNo, DWORD dwTime1, DWORD dwTime2, DWORD dwTime3);
 	void OnLotCycleData(CString strLotNo, CString strPartNo,int nCount, DWORD dwTray, DWORD dwLot);
 	int Check_Robot_Buffer_Clash( int nRbtTHDSite, int BuffTHDSite, int nBuffStartPos, int nPickerStartPos, int *nErrorInfoStatus);
+	int Check_BufferStatus(int nBufferMode, int nSite, int nYesNo, int *nBufferInfo, int *nBufferStatus, int *npBufferOutputStatus);
+	int Check_Carrier_MoveUp_Enable( int nMode);
 
 	int Check_RunAllSafety();
 	int Check_Carrier_Move_Enable( int nMode);
 	int Check_BeforeMoveUnPressRbt( int nMode );
+
+	void VppmSet();
+	void VppmOff();
+	void SaveHeatSinkBoxPos();
+	int Calculate_MovePos_Find(int nMode, int nMotNum, int nSite, int nWorkPart, int *npFindWorkPosYXCPB, double *dpGetTargetPos);
+	void Set_Light_Curtain_Muting_On();
+	void Set_Light_Curtain_Muting_Off();
+	void Case_Assembly_Able_Check();
+	void Case_Assembly_Place_Check();
+	void HS_Able_Signal(int OnOff);
 };
 extern CPublic_Function  Func;
 #endif // !defined(AFX_PUBLIC_FUNCTION_H__460DDD39_583E_40D6_B8DC_012DB086B058__INCLUDED_)

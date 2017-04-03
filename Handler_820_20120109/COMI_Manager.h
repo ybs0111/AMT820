@@ -27,9 +27,47 @@ public:
 
 	long _cmmIxIsDone( long MapIndex, long *IsDone );
 	long _cmmIxLineToStart(long MapIndex, double* PosList);
+
+public:
+	void OnMain_Motor_Setting();
 	
+public:
+	void SetMotBoardInit( int nVal ) { m_nMotBoardInit = nVal; }
+	int GetMotBoardInit()	{ return m_nMotBoardInit; }
+protected:
+	int m_nMotBoardInit;	
 };
 
 extern COMI_Manager g_comiMgr;
+
+enum MOTOR_NUM
+{
+	M_TRAY1_Z				= 0,
+	M_TRAY2_Z,				
+	M_PRESS_Y,				
+	M_EPOXY_TRANSFER_X,		
+	M_EPOXY_TRANSFER_Y,		
+	M_EPOXY_TRANSFER_Z,		
+	M_EPOXY_SCREW,
+	M_CARRIER_X,
+	
+	M_LOADER_TRANSFER_Y,
+	M_LOADER_TRANSFER_Z,
+	M_HEATSINK_TRANSFER_X,
+	M_HEATSINK_TRANSFER_Y,
+	M_HEATSINK_TRANSFER_Z,
+	M_UNLOADER_TRANSFER_X,
+	M_UNLOADER_TRANSFER_Y,
+	M_UNLOADER_TRANSFER_Z,
+	
+	M_DISPENSER_Y,	
+	M_TRAY_REMOVE_X,			
+	M_HEATSINK_INSPECT_Y,
+	
+	M_HEATSINK_INSPECT_Z,
+	M_HEATSINK_PICKER_PITCH,
+	
+	M_MOTOR_COUNT,
+};
 
 #endif // !defined(AFX_COMI_MANAGER_H__E5BA7DF5_D6AB_4E96_88E6_6DFCC4FD4B18__INCLUDED_)

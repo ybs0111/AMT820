@@ -563,6 +563,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 203
     END
+
+    IDD_DIALOG_EVENT_MSG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 470
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 140
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -643,39 +651,38 @@ BEGIN
     PUSHBUTTON      "Initial Retry",IDC_BTN_INIT_RETRY,550,7,80,47,BS_FLAT | 
                     NOT WS_VISIBLE | WS_DISABLED
     CONTROL         "I/O Board",IDC_RADIO_IO_BD,"Button",BS_AUTORADIOBUTTON | 
-                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_DISABLED | WS_GROUP,
-                    550,82,80,20
+                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_GROUP,550,82,80,20
     CONTROL         "Motor Board",IDC_RADIO_MOT_BD,"Button",
                     BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,111,80,
                     20
     PUSHBUTTON      "Initial Skip",IDC_BTN_INIT_SKIP,455,7,80,47,BS_FLAT
-    CONTROL         "Main XYZ",IDC_RADIO_MAIN_XYZ,"Button",
+    CONTROL         "HeatSink Rbt",IDC_RADIO_MAIN_XYZ,"Button",
                     BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,140,80,
                     20
     CONTROL         "Elevator Left",IDC_RADIO_ELEVATOR_LEFT,"Button",
-                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | NOT WS_VISIBLE | 
-                    WS_DISABLED | WS_GROUP,550,169,80,20
-    CONTROL         "Transfer Left",IDC_RADIO_TRANSFER_LEFT,"Button",
-                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | NOT WS_VISIBLE | 
-                    WS_DISABLED | WS_GROUP,550,198,80,20
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,169,80,
+                    20
+    CONTROL         "Transfer tray",IDC_RADIO_TRANSFER_LEFT,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,198,80,
+                    20
     CONTROL         "Elevator Right",IDC_RADIO_ELEVATOR_RIGHT,"Button",
-                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | NOT WS_VISIBLE | 
-                    WS_DISABLED | WS_GROUP,550,227,80,20
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,227,80,
+                    20
     CONTROL         "Transfer Right",IDC_RADIO_TRANSFER_RIGHT,"Button",
-                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | NOT WS_VISIBLE | 
-                    WS_DISABLED | WS_GROUP,550,256,80,20
-    CONTROL         "Test Site",IDC_RADIO_TEST_SITE,"Button",
-                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | NOT WS_VISIBLE | 
-                    WS_DISABLED | WS_GROUP,550,285,80,20
-    CONTROL         "Test Dump",IDC_RADIO_TEST_DUMP,"Button",
-                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | NOT WS_VISIBLE | 
-                    WS_DISABLED | WS_GROUP,550,314,80,20
-    CONTROL         "Rotator Table",IDC_RADIO_ROTATOR_TABLE,"Button",
-                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | NOT WS_VISIBLE | 
-                    WS_DISABLED | WS_GROUP,550,343,80,20
-    CONTROL         "Rotator Dump",IDC_RADIO_ROTATOR_DUMP,"Button",
-                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | NOT WS_VISIBLE | 
-                    WS_DISABLED | WS_GROUP,550,371,80,20
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,256,80,
+                    20
+    CONTROL         "Carrier Rbt",IDC_RADIO_TEST_SITE,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,285,80,
+                    20
+    CONTROL         "UnPress Rbt",IDC_RADIO_TEST_DUMP,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,314,80,
+                    20
+    CONTROL         "Dispensor",IDC_RADIO_ROTATOR_TABLE,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,343,80,
+                    20
+    CONTROL         "Vision Rbt",IDC_RADIO_ROTATOR_DUMP,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,371,80,
+                    20
     CONTROL         "Conveyor",IDC_RADIO_CONVEYOR,"Button",
                     BS_AUTORADIOBUTTON | BS_PUSHLIKE | NOT WS_VISIBLE | 
                     WS_DISABLED | WS_GROUP,550,401,80,20
@@ -1534,21 +1541,6 @@ BEGIN
                     WS_GROUP,115,41,33,10
 END
 
-IDD_SCREEN_MOTOR DIALOG DISCARDABLE  0, 0, 637, 495
-STYLE WS_CHILD | WS_BORDER
-FONT 10, "MS Sans Serif"
-BEGIN
-    CONTROL         "",IDC_MOTOR_IMG,"Static",SS_GRAYFRAME,5,0,629,490
-    GROUPBOX        "Motor Part",IDC_GROUP_MOTOR_PART,13,9,411,473
-    CONTROL         "",IDC_CUSTOM_MOTOR_PART,"fpSpread70",WS_BORDER | 
-                    WS_TABSTOP,18,26,400,449
-    CONTROL         "",IDC_BMP_VIEW,"Static",SS_BLACKFRAME,434,23,186,226
-    GROUPBOX        "Part Information",IDC_GROUP_PART_INFORMATION,428,10,200,
-                    249
-    CONTROL         "",IDC_CUSTOM_MOTOR,"fpSpread70",NOT WS_VISIBLE | 
-                    WS_DISABLED | WS_BORDER | WS_TABSTOP,433,289,28,32
-END
-
 IDD_MOTOR_PART DIALOG DISCARDABLE  0, 0, 629, 490
 STYLE DS_MODALFRAME | WS_POPUP
 FONT 10, "MS Sans Serif"
@@ -1645,44 +1637,23 @@ BEGIN
     PUSHBUTTON      "Exit",IDC_BTN_EXIT,512,348,62,44
 END
 
-IDD_MOTOR_AXIS_1 DIALOG DISCARDABLE  0, 0, 525, 460
-STYLE DS_MODALFRAME | WS_POPUP
-FONT 10, "Courier"
-BEGIN
-    CONTROL         "",1557,"fpSpread70",WS_BORDER | WS_TABSTOP,12,22,260,
-                    421
-    GROUPBOX        "Motor",1729,8,8,269,442
-    PUSHBUTTON      "",1181,293,399,36,47,BS_FLAT
-    PUSHBUTTON      "",1370,373,399,36,47,BS_FLAT
-    PUSHBUTTON      "",1165,333,399,36,47,BS_FLAT
-    GROUPBOX        "Motor Move",1734,283,383,233,70
-    PUSHBUTTON      "",1142,420,399,38,47
-    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,2,2,522,454
-    CONTROL         "",1060,"Static",SS_BLACKFRAME,298,24,48,35
-    CONTROL         "",1555,"fpSpread70",WS_BORDER | WS_TABSTOP,283,229,233,
-                    150
-    PUSHBUTTON      "Apply",1065,469,399,36,47,BS_FLAT
-    CONTROL         "",IDC_CUSTOM_IO_IN,"fpSpread70",WS_BORDER | WS_TABSTOP,
-                    280,103,240,122
-    CONTROL         "",IDC_CUSTOM_IO_OUT,"fpSpread70",WS_BORDER | WS_TABSTOP,
-                    280,6,240,93
-END
-
 IDD_SCREEN_MOTOR_SPEED DIALOG DISCARDABLE  0, 0, 957, 527
 STYLE WS_CHILD
 FONT 10, "Courier"
 BEGIN
-    GROUPBOX        "motor speed set up",1733,3,3,499,456
-    PUSHBUTTON      "Apply",1193,581,455,48,33,BS_FLAT
-    GROUPBOX        "Speed Rate (%)",1732,543,387,86,58
-    CTEXT           "Run Speed",1856,548,402,49,15,SS_CENTERIMAGE | 
-                    SS_SUNKEN
-    CTEXT           "Manual Speed",1841,548,424,49,15,SS_CENTERIMAGE | 
-                    SS_SUNKEN
-    CTEXT           "run",1617,600,402,23,15,SS_NOTIFY | SS_CENTERIMAGE | 
-                    SS_SUNKEN
-    CTEXT           "manual",1609,600,424,23,15,SS_NOTIFY | SS_CENTERIMAGE | 
-                    SS_SUNKEN
+    GROUPBOX        "motor speed set up",IDC_GROUP_MOTOR_SPEED_SET,3,3,499,
+                    456
+    PUSHBUTTON      "Apply",IDC_BTN_MS_APPLY,581,455,48,33,BS_FLAT
+    GROUPBOX        "Speed Rate (%)",IDC_GROUP_MOTOR_SPEED_RATE,543,387,86,
+                    58
+    CTEXT           "Run Speed",IDC_MSG_RUN_RATE,548,402,49,15,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Manual Speed",IDC_MSG_MANUAL_RATE,548,424,49,15,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "run",IDC_DGT_RUN_RATE,600,402,23,15,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "manual",IDC_DGT_MANUAL_RATE,600,424,23,15,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
     CONTROL         "",IDC_CUSTOM_MOTOR_SPEED,"fpSpread70",WS_BORDER | 
                     WS_TABSTOP,7,16,490,438
     CTEXT           "Saving",IDC_MSG_SAVING,96,463,312,29,SS_CENTERIMAGE | 
@@ -1738,47 +1709,57 @@ IDD_SCREEN_SET_MAINTENANCE DIALOG DISCARDABLE  0, 0, 957, 527
 STYLE WS_CHILD | WS_BORDER
 FONT 10, "Courier"
 BEGIN
-    PUSHBUTTON      "Apply",1185,821,7,88,56,BS_FLAT
-    GROUPBOX        "Run",1718,7,16,40,145
-    GROUPBOX        "Stop",1720,52,16,40,145
-    GROUPBOX        "Alarm",1712,97,16,40,145
+    PUSHBUTTON      "Apply",IDC_BTN_MAINTENANCE_APPLY,821,7,88,56,BS_FLAT
+    GROUPBOX        "Run",IDC_GROUP_LAMP_RUN,7,16,40,145
+    GROUPBOX        "Stop",IDC_GROUP_LAMP_STOP,52,16,40,145
+    GROUPBOX        "Alarm",IDC_GROUP_LAMP_ALARM,97,16,40,145
     GROUPBOX        "Warning",IDC_GROUP_LAMP_WARNING,142,16,40,145
-    GROUPBOX        "Lock",1716,187,16,40,145
-    GROUPBOX        "Lot End",1717,232,16,40,145
-    GROUPBOX        "Initial",1715,322,17,40,145
-    GROUPBOX        "Idle",1719,277,16,40,145
-    CTEXT           "run",1793,14,31,25,120,SS_CENTERIMAGE | SS_SUNKEN
-    CTEXT           "stop",1795,59,31,25,120,SS_CENTERIMAGE | SS_SUNKEN
-    CTEXT           "alarm",1789,104,31,25,120,SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "Lock",IDC_GROUP_LAMP_LOCK,187,16,40,145
+    GROUPBOX        "Lot End",IDC_GROUP_LAMP_LOTEND,232,16,40,145
+    GROUPBOX        "Initial",IDC_GROUP_LAMP_INITIAL,322,17,40,145
+    GROUPBOX        "Idle",IDC_GROUP_LAMP_SELFCHECK,277,16,40,145
+    CTEXT           "run",IDC_LAMP_RUN,14,31,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "stop",IDC_LAMP_STOP,59,31,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "alarm",IDC_LAMP_ALARM,104,31,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
     CTEXT           "Warning",IDC_LAMP_WARNING,149,31,25,120,SS_CENTERIMAGE | 
                     SS_SUNKEN
-    CTEXT           "lock",1791,194,31,25,120,SS_CENTERIMAGE | SS_SUNKEN
-    CTEXT           "lot end",1792,239,31,25,120,SS_CENTERIMAGE | SS_SUNKEN
-    CTEXT           "initial",1790,329,32,25,120,SS_CENTERIMAGE | SS_SUNKEN
-    CTEXT           "self check",1794,284,31,25,120,SS_CENTERIMAGE | 
+    CTEXT           "lock",IDC_LAMP_LOCK,194,31,25,120,SS_CENTERIMAGE | 
                     SS_SUNKEN
-    GROUPBOX        "Tower Lamp Set",1766,3,3,445,168
-    GROUPBOX        "Flicker Time (ms)",1714,365,16,79,58
-    CTEXT           "flicker time",1608,370,37,68,25,SS_NOTIFY | 
+    CTEXT           "lot end",IDC_LAMP_LOTEND,239,31,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "initial",IDC_LAMP_INITIAL,329,32,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "self check",IDC_LAMP_SELFCHECK,284,31,25,120,
                     SS_CENTERIMAGE | SS_SUNKEN
-    GROUPBOX        "Buzzer Set",1685,3,176,98,73
-    CONTROL         "Buzzer On",1471,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    16,200,70,32
-    GROUPBOX        "Eqp Set",1703,3,257,134,48
-    CTEXT           "Eqp ID",1828,7,271,41,23,SS_CENTERIMAGE
+    GROUPBOX        "Tower Lamp Set",IDC_GROUP_TOWERLAMP,3,3,445,168
+    GROUPBOX        "Flicker Time (ms)",IDC_GROUP_LAMP_FLICKER_TIME,365,16,
+                    79,58
+    CTEXT           "flicker time",IDC_DGT_FLICKER_TIME,370,37,68,25,
+                    SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "Buzzer Set",IDC_GROUP_BUZZER,3,176,98,73
+    CONTROL         "Buzzer On",IDC_CHK_BUZZER,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,16,200,70,32
+    GROUPBOX        "Eqp Set",IDC_GROUP_EQP_SET,3,257,134,48
+    CTEXT           "Eqp ID",IDC_MSG_EQUIP_ID,7,271,41,23,SS_CENTERIMAGE
     PUSHBUTTON      "",IDC_PAD_EQUIP_ID,50,271,18,23
     EDITTEXT        IDC_EDIT_EQUIP_ID,70,271,63,23,ES_RIGHT | ES_AUTOHSCROLL | 
                     ES_READONLY
-    GROUPBOX        "Password Change",1746,140,257,82,73
-    PUSHBUTTON      "Level 1",1315,144,271,35,51,BS_FLAT
-    PUSHBUTTON      "Level 2",1316,183,271,35,51,BS_FLAT
-    GROUPBOX        "Data Backup",1691,104,176,188,73
-    PUSHBUTTON      "Data Backup",1132,118,193,70,43,BS_FLAT
+    GROUPBOX        "Password Change",IDC_GROUP_PASSWORD_CHANGE,140,257,82,
+                    73
+    PUSHBUTTON      "Level 1",IDC_BTN_PASSWORD_CHANGE_LEVLE1,144,271,35,51,
+                    BS_FLAT
+    PUSHBUTTON      "Level 2",IDC_BTN_PASSWORD_CHANGE_LEVLE2,183,271,35,51,
+                    BS_FLAT
+    GROUPBOX        "Data Backup",IDC_GROUP_DATA_BACKUP,104,176,188,73
+    PUSHBUTTON      "Data Backup",IDC_BTN_DATA_BACKUP,118,193,70,43,BS_FLAT
     GROUPBOX        "Change Time (Sec)",IDC_GROUP_LAMP_CHANGE_TIME,365,103,
                     79,58
     CTEXT           "change time",IDC_DGT_CHANGE_TIME,370,124,68,25,
                     SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
-    PUSHBUTTON      "Step Save",1399,207,193,70,43,BS_FLAT
+    PUSHBUTTON      "Step Save",IDC_BTN_STEP_SAVE,207,193,70,43,BS_FLAT
 END
 
 IDD_DIALOG_LOT_START DIALOG DISCARDABLE  0, 0, 508, 314
@@ -1853,6 +1834,56 @@ BEGIN
     PUSHBUTTON      "New Lot In to Just Tester",IDC_BTN_NEW_LOT_IN,13,181,
                     107,14
     PUSHBUTTON      "New lot",IDC_BTN_NET_LOT,139,176,41,26
+END
+
+IDD_DIALOG_EVENT_MSG DIALOG DISCARDABLE  0, 0, 477, 147
+STYLE WS_POPUP
+FONT 10, "Courier"
+BEGIN
+    PUSHBUTTON      "O  K",IDOK,184,110,108,30,BS_FLAT
+    CTEXT           "msg",IDC_LABEL_EVENT_MSG,7,23,463,80,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+END
+
+IDD_MOTOR_AXIS_1 DIALOG DISCARDABLE  0, 0, 525, 460
+STYLE DS_MODALFRAME | WS_POPUP
+FONT 10, "Courier"
+BEGIN
+    CONTROL         "",IDC_CUSTOM_MOTOR_POS,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,12,22,260,421
+    GROUPBOX        "Motor",IDC_GROUP_MOTOR,8,8,269,442
+    PUSHBUTTON      "",IDC_BTN_LEFT,293,394,36,47,BS_FLAT
+    PUSHBUTTON      "",IDC_BTN_RIGHT,373,394,36,47,BS_FLAT
+    PUSHBUTTON      "",IDC_BTN_HOME,333,394,36,47,BS_FLAT
+    GROUPBOX        "Motor Move",IDC_GROUP_MOVE,283,378,233,70
+    PUSHBUTTON      "",IDC_BTN_EMG,420,394,38,47
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,2,2,522,454
+    GROUPBOX        "Position Information",IDC_GROUP_AXIS_INFO,283,8,233,203
+    CONTROL         "",IDC_BMP_VIEW,"Static",SS_BLACKFRAME,298,24,203,178
+    CONTROL         "",IDC_CUSTOM_MOTOR_INFO,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,283,219,233,150
+    PUSHBUTTON      "Apply",IDC_BTN_APPLY,469,394,36,47,BS_FLAT
+END
+
+IDD_SCREEN_MOTOR DIALOG DISCARDABLE  0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "Courier"
+BEGIN
+    CONTROL         "",IDC_CUSTOM_MOTOR_PART,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,18,26,400,449
+    CONTROL         "",IDC_MOTOR_IMG,"Static",SS_GRAYFRAME,5,0,629,490
+    GROUPBOX        "Motor Part",IDC_GROUP_MOTOR_PART,13,9,411,473
+    CONTROL         "",IDC_BMP_VIEW,"Static",SS_BLACKFRAME,434,23,186,226
+    GROUPBOX        "Part Information",IDC_GROUP_PART_INFORMATION,428,10,200,
+                    249
+    PUSHBUTTON      "Motor Speed",IDC_BTN_MOTOR_SPEED,428,438,97,44,BS_FLAT
+    CONTROL         "",IDC_CUSTOM_MOTOR,"fpSpread70",NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_BORDER | WS_TABSTOP,329,273,32,32
+    PUSHBUTTON      "Æ¼Äª°ª ¹é¾÷",IDC_BTN_TEACH_WRITE,569,428,50,14,NOT 
+                    WS_VISIBLE
+    PUSHBUTTON      "Æ¼Äª°ª º¹±¸",IDC_BTN_TEACH_READ,569,444,50,14,NOT 
+                    WS_VISIBLE
+    PUSHBUTTON      "Log Motor Pos",IDC_BTN_LOG_TRAY_MOTOR_POS,560,466,59,14
 END
 
 

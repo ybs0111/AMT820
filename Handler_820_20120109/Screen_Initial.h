@@ -105,6 +105,7 @@ public:
 	int m_nleft_init;
 	int m_nright_init;
 	/* ************************************************************************** */
+	bool bRecoveryInit;
 
 // Operations
 public:
@@ -133,6 +134,18 @@ public:
 
 // Implementation
 protected:
+	void EIS_Start();
+	void EIS_ErrMsg();
+	void EIS_InitIO();
+	void EIS_Motor();
+	void EIS_Chk_State();
+	void EIS_Recovery();
+	void EIS_Create_Thread();
+	void EIS_Set_Thread_Step();
+	void EIS_Chk_All_Finish();
+	void EIS_Finish();
+	bool ChkInitReady();
+
 	CSuperProgressCtrl m_ctrlProgress;
 	CSuperProgressCtrl m_ctrlProgress1;
 	

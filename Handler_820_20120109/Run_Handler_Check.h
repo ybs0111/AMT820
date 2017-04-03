@@ -21,22 +21,31 @@ public:
 	int LoaderStep;
 	int ResetStep;
 	int SoundStep;
+	int mn_autostep;
+	int mn_manualstep;
 	int FrontDoorStep;
+	int n_emo_chk;
+	int n_air_chk;
 	
 	long on_reject_change_time[3];
 	long off_reject_change_time[3];
 	long SwitchWaitTime[3];
 	long FrontDoorWaitTime[3];
+	DWORD m_dwSafetyWaitTime[3];
+	DWORD m_dwAutoWaitTime[3];
+	DWORD m_dwManualWaitTime[3];
 
 public:
-	void ButtonCheck_Loader();
 	void ButtonCheck_BuzzerOff();
 	void ButtonCheck_Reset();
 	void ButtonCheck_Stop();
 	void ButtonCheck_Start();
-	void OnReject_Tray_Reset();
-	void HandlerCheck_RejectTray();
+	void HandlerCheck_Safety();
 	int Run_Possible_Check();
+	void HsInterfaceChk();
+	void ButtonCheck_Auto();
+	void ButtonCheck_Manual();
+	void StackerMutingCheck();
 
 	CRun_Handler_Check();
 	virtual ~CRun_Handler_Check();

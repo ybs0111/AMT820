@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 TipsWareExt.lib AxtLib.lib MmdSerial.lib HSSI.lib DataAPI.LIB netapi32.lib ijl15l.lib Spr32d70.lib KeyboardDll.lib VkDll.lib wininet.lib libmysql.lib /nologo /stack:0x1999999 /subsystem:windows /machine:I386
+# ADD LINK32 PIODA.LIB TipsWareExt.lib AxtLib.lib MmdSerial.lib HSSI.lib DataAPI.LIB netapi32.lib ijl15l.lib Spr32d70.lib KeyboardDll.lib VkDll.lib wininet.lib libmysql.lib /nologo /stack:0x1999999 /subsystem:windows /machine:I386
 
 !ELSEIF  "$(CFG)" == "HANDLER - Win32 Debug"
 
@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 TipsWareExt.lib AxtLib.lib MmdSerial.lib HSSI.lib DataAPI.LIB netapi32.lib ijl15l.lib Spr32d70.lib KeyboardDll.lib VkDll.lib wininet.lib libmysql.lib /nologo /stack:0x1999999 /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 PIODA.LIB TipsWareExt.lib AxtLib.lib MmdSerial.lib HSSI.lib DataAPI.LIB netapi32.lib ijl15l.lib Spr32d70.lib KeyboardDll.lib VkDll.lib wininet.lib libmysql.lib /nologo /stack:0x1999999 /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -296,6 +296,10 @@ SOURCE=.\Alg_Mysql.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\AlgMemory.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\AMTLotManager.cpp
 # End Source File
 # Begin Source File
@@ -365,6 +369,10 @@ SOURCE=.\Dialog_Color.cpp
 # Begin Source File
 
 SOURCE=.\Dialog_Data_Lot.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Dialog_Event_Msg.cpp
 # End Source File
 # Begin Source File
 
@@ -573,6 +581,10 @@ SOURCE=.\Run_Epoxy_Transfer_Robot.cpp
 # Begin Source File
 
 SOURCE=.\Run_Handler_Check.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Run_HeatSinkVision_Transfer_Robot.cpp
 # End Source File
 # Begin Source File
 
@@ -929,6 +941,10 @@ SOURCE=.\Alg_Mysql.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\AlgMemory.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\AMTLotManager.h
 # End Source File
 # Begin Source File
@@ -1010,6 +1026,10 @@ SOURCE=.\Dialog_Color.h
 # Begin Source File
 
 SOURCE=.\Dialog_Data_Lot.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Dialog_Event_Msg.h
 # End Source File
 # Begin Source File
 
@@ -1226,6 +1246,10 @@ SOURCE=.\Run_Epoxy_Transfer_Robot.h
 # Begin Source File
 
 SOURCE=.\Run_Handler_Check.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Run_HeatSinkVision_Transfer_Robot.h
 # End Source File
 # Begin Source File
 
@@ -2682,6 +2706,36 @@ SOURCE=.\ReadMe.txt
 # End Source File
 # End Target
 # End Project
+# Section HANDLER : {0551BEAA-4766-4D89-BC5E-6F27E0CD3AB9}
+# 	1:30:IDD_SCREEN_MOTOR_UNLOADER_SITE:106
+# 	2:16:Resource Include:resource.h
+# 	2:28:Screen_Motor_Unloader_Site.h:Screen_Motor_Unloader_Site.h
+# 	2:30:Screen_Motor_Unloader_Site.cpp:Screen_Motor_Unloader_Site.cpp
+# 	2:30:IDD_SCREEN_MOTOR_UNLOADER_SITE:IDD_SCREEN_MOTOR_UNLOADER_SITE
+# 	2:34:CLASS: CScreen_Motor_Unloader_Site:CScreen_Motor_Unloader_Site
+# 	2:10:ENUM: enum:enum
+# 	2:19:Application Include:handler.h
+# End Section
+# Section HANDLER : {C18C84D5-F71C-4CFD-B3E4-5B494F395A85}
+# 	1:26:IDD_DIALOG_VISION_POSITION:115
+# 	2:16:Resource Include:resource.h
+# 	2:30:CLASS: CDialog_Vision_Position:CDialog_Vision_Position
+# 	2:26:IDD_DIALOG_VISION_POSITION:IDD_DIALOG_VISION_POSITION
+# 	2:24:Dialog_Vision_Position.h:Dialog_Vision_Position.h
+# 	2:10:ENUM: enum:enum
+# 	2:26:Dialog_Vision_Position.cpp:Dialog_Vision_Position.cpp
+# 	2:19:Application Include:handler.h
+# End Section
+# Section HANDLER : {8EECE9B0-EAD9-48E5-845E-3E242A167545}
+# 	1:20:IDD_DIALOG_LOT_START:113
+# 	2:16:Resource Include:resource.h
+# 	2:24:CLASS: CDialog_Lot_Start:CDialog_Lot_Start
+# 	2:20:IDD_DIALOG_LOT_START:IDD_DIALOG_LOT_START
+# 	2:20:Dialog_Lot_Start.cpp:Dialog_Lot_Start.cpp
+# 	2:10:ENUM: enum:enum
+# 	2:19:Application Include:handler.h
+# 	2:18:Dialog_Lot_Start.h:Dialog_Lot_Start.h
+# End Section
 # Section HANDLER : {4246EB57-EB45-4662-9F00-B155B1FF545A}
 # 	1:15:IDD_DIALOG_MEMO:114
 # 	2:16:Resource Include:resource.h
@@ -2702,16 +2756,6 @@ SOURCE=.\ReadMe.txt
 # 	2:19:Application Include:handler.h
 # 	2:16:IDD_SCREEN_BASIC:IDD_SCREEN_BASIC
 # End Section
-# Section HANDLER : {BFEC2C57-6718-42FE-A56F-2291C78CE32A}
-# 	1:17:IDD_DIALOG_KEYPAD:105
-# 	2:16:Resource Include:resource.h
-# 	2:15:Dialog_KeyPad.h:Dialog_KeyPad.h
-# 	2:17:Dialog_KeyPad.cpp:Dialog_KeyPad.cpp
-# 	2:10:ENUM: enum:enum
-# 	2:21:CLASS: CDialog_KeyPad:CDialog_KeyPad
-# 	2:17:IDD_DIALOG_KEYPAD:IDD_DIALOG_KEYPAD
-# 	2:19:Application Include:handler.h
-# End Section
 # Section HANDLER : {9C119FCB-CE7A-400C-917A-51AEBB96B2D3}
 # 	1:13:IDD_SCREEN_IO:102
 # 	2:16:Resource Include:resource.h
@@ -2720,6 +2764,16 @@ SOURCE=.\ReadMe.txt
 # 	2:10:ENUM: enum:enum
 # 	2:17:CLASS: CScreen_IO:CScreen_IO
 # 	2:13:Screen_IO.cpp:Screen_IO.cpp
+# 	2:19:Application Include:handler.h
+# End Section
+# Section HANDLER : {BFEC2C57-6718-42FE-A56F-2291C78CE32A}
+# 	1:17:IDD_DIALOG_KEYPAD:105
+# 	2:16:Resource Include:resource.h
+# 	2:15:Dialog_KeyPad.h:Dialog_KeyPad.h
+# 	2:17:Dialog_KeyPad.cpp:Dialog_KeyPad.cpp
+# 	2:10:ENUM: enum:enum
+# 	2:21:CLASS: CDialog_KeyPad:CDialog_KeyPad
+# 	2:17:IDD_DIALOG_KEYPAD:IDD_DIALOG_KEYPAD
 # 	2:19:Application Include:handler.h
 # End Section
 # Section HANDLER : {A45CD778-978C-4F62-85E8-C3D8B39FF674}
@@ -2791,34 +2845,4 @@ SOURCE=.\ReadMe.txt
 # 	2:28:Screen_Motor_Loader_Site.cpp:Screen_Motor_Loader_Site.cpp
 # 	2:26:Screen_Motor_Loader_Site.h:Screen_Motor_Loader_Site.h
 # 	2:19:Application Include:handler.h
-# End Section
-# Section HANDLER : {0551BEAA-4766-4D89-BC5E-6F27E0CD3AB9}
-# 	1:30:IDD_SCREEN_MOTOR_UNLOADER_SITE:106
-# 	2:16:Resource Include:resource.h
-# 	2:28:Screen_Motor_Unloader_Site.h:Screen_Motor_Unloader_Site.h
-# 	2:30:Screen_Motor_Unloader_Site.cpp:Screen_Motor_Unloader_Site.cpp
-# 	2:30:IDD_SCREEN_MOTOR_UNLOADER_SITE:IDD_SCREEN_MOTOR_UNLOADER_SITE
-# 	2:34:CLASS: CScreen_Motor_Unloader_Site:CScreen_Motor_Unloader_Site
-# 	2:10:ENUM: enum:enum
-# 	2:19:Application Include:handler.h
-# End Section
-# Section HANDLER : {C18C84D5-F71C-4CFD-B3E4-5B494F395A85}
-# 	1:26:IDD_DIALOG_VISION_POSITION:115
-# 	2:16:Resource Include:resource.h
-# 	2:30:CLASS: CDialog_Vision_Position:CDialog_Vision_Position
-# 	2:26:IDD_DIALOG_VISION_POSITION:IDD_DIALOG_VISION_POSITION
-# 	2:24:Dialog_Vision_Position.h:Dialog_Vision_Position.h
-# 	2:10:ENUM: enum:enum
-# 	2:26:Dialog_Vision_Position.cpp:Dialog_Vision_Position.cpp
-# 	2:19:Application Include:handler.h
-# End Section
-# Section HANDLER : {8EECE9B0-EAD9-48E5-845E-3E242A167545}
-# 	1:20:IDD_DIALOG_LOT_START:113
-# 	2:16:Resource Include:resource.h
-# 	2:24:CLASS: CDialog_Lot_Start:CDialog_Lot_Start
-# 	2:20:IDD_DIALOG_LOT_START:IDD_DIALOG_LOT_START
-# 	2:20:Dialog_Lot_Start.cpp:Dialog_Lot_Start.cpp
-# 	2:10:ENUM: enum:enum
-# 	2:19:Application Include:handler.h
-# 	2:18:Dialog_Lot_Start.h:Dialog_Lot_Start.h
 # End Section

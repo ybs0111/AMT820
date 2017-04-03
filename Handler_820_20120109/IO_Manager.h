@@ -421,6 +421,19 @@ struct st_io_param
 	int i_press_carrier_type3;
 	int i_press_carrier_type4;
 
+	int i_loading_rbt_glipper_sff_missalign_chk_1;
+	int i_loading_rbt_glipper_sff_missalign_chk_2;
+	int i_loading_rbt_glipper_sff_missalign_chk_3;
+	int i_loading_rbt_glipper_sff_missalign_chk_4;
+
+	int i_loading_rbt_glipper_tff_missalign_chk_1;
+	int i_loading_rbt_glipper_tff_missalign_chk_2;
+	int i_loading_rbt_glipper_tff_missalign_chk_3;
+	int i_loading_rbt_glipper_tff_missalign_chk_4;
+
+	int i_loading_buffer_sff_tilt_chk;
+	int i_loading_buffer_tff_tilt_chk;
+
 	st_io_param();
 };
 extern st_io_param st_io;

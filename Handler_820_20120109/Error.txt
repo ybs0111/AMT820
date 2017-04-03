@@ -693,4 +693,17 @@
 
 950000 1 A "PRESS_CARRIER_TYPE_CHECK_ERROR_PS2312_PS2313_PS2314."
 
-990000 1 A "AMT8590_ALARM_MESSAGE."
+960000 1 A "EPOXY_MOTOR_IS_NOT_SAFETY_MOVE_MANUALLY."
+980000 0 A "Door-1(Front Monitor) Check Error."
+980001 0 A "Door-2(Front R1) Check Error."
+980002 0 A "Door-3(Front L2) Check Error."
+980003 0 A "Door-4(Side R1-1) Check Error."
+980004 0 A "Door-5(Side R1-2) Check Error."
+980005 0 A "Door-6(Side L1-1) Check Error."
+980006 0 A "Door-7(Side L1-2) Check Error."
+980007 0 A "Door-8(Rear R1) Check Error."
+980008 0 A "Door-9(Rear L1) Check Error."
+980009 0 A "Door-10(Rear Monitor) Check Error."
+990000 0 A "LOT END."
+992000 0 A "비젼 응답 에러. 비젼 프로그램을 체크해 주세요."
+999999 1 A "SND HeatSink Error Message가 정상적으로 등록되지 않았습니다."

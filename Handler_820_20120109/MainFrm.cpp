@@ -23,6 +23,7 @@
 #include "Screen_IO_Map.h"
 #include "Screen_Basic.h"
 #include "Screen_Motor.h"
+#include "Screen_Motor_Speed.h"
 //#include "Screen_Work_Info.h"
 #include "Screen_Pgm_Info.h"
 #include "ComizoaPublic.h"
@@ -35,10 +36,11 @@
 //#include "ServerSocket.h"
 #include "IO_Manager.h"
 #include "COMI_Manager.h"
+#include "CtlBd_Library.h"
 #include "SrcPart/APartShortkey.h"
 #include "SrcPart/APartDatabase.h"
 #include "SrcPart//PartFunction.h"
-
+#include "Screen_Set_Maintenance.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -92,7 +94,11 @@ st_scrap_database			st_scrapdb;
 st_motor_param				st_motor[M_MOTOR_COUNT];
 tagTEST_SITE_INFO			st_test_site_info[THREAD_MAX_SITE];
 tagRECIPE_INFO				st_recipe;
-agALL_TRAY_INFO				st_tray_info[THREAD_MAX_SITE];
+tagALL_TRAY_INFO			st_tray_info[THREAD_MAX_SITE];
+tag_BUFFER_INFO				st_buffer_info[THREAD_MAX_SITE];
+tag_PICKER_INFO				st_picker[THREAD_MAX_SITE];
+st_carrier_buffer_info_param	st_carrier_buff_info[MAX_SHIFT_DATA_NUM];
+st_variable_param			st_var;
 
 CPublic_Function			Func;
 struct st_serial_info		rs_232;
@@ -130,8 +136,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_NCLBUTTONDOWN()
 	ON_WM_NCRBUTTONDOWN()
 	ON_COMMAND(ID_PGM_INFO, OnPgmInfo)
+	ON_COMMAND(ID_MOTOR_SPEED, OnMotorSpeed)
 	//}}AFX_MSG_MAP
 	ON_NOTIFY(TBN_DROPDOWN, AFX_IDW_TOOLBAR, OnToolbarDropDown)		// 텍스트 툴바 드롭 다운 제어를 위한 사용자 정의 메시지 선언 
+	ON_MESSAGE(WM_MAINFRAME_WORK, OnMainframe_Work)
 	ON_MESSAGE(WM_FORM_CHANGE, OnViewChangeMode)					// Post Message에 대한 화면 전환 사용자 사용자 정의 메시지 선언 
 //	ON_MESSAGE(WM_CLIENT_MSG_1, OnCommand_Client_1)							// Network관련된 작업을 담당한다.
 //	ON_MESSAGE(WM_SERVER_MSG_1, OnCommand_Server_1)							// Network관련된 작업을 담당한다.
@@ -140,6 +148,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_DATA_SEND, OnDataSend)							// RS-232C 시리얼 포트 통한 데이터 송신 메시지
 	ON_MESSAGE(WM_SERIAL_PORT, OnSerialPort)
 	ON_MESSAGE(WM_DATA_CHANGE, OnDataChange)
+	ON_MESSAGE(WM_MAIN_EVENT, OnMainMessageEvent)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -171,6 +180,8 @@ CMainFrame::CMainFrame()
 	st_handler.n_lot_flag			= CTL_LOTEND_FINISH;
 	st_handler.n_ad_board_create	= NO;
 	st_handler.n_initial_flag		= NO;
+
+	COMI.mn_simulation_mode = 0;
 
 	OnMain_Var_Default_Set();				// 메인 프레임 클래스 변수 초기화 함수
 
@@ -274,23 +285,27 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// **************************************************************************
     // 모터 보드 및 I/O 보드 초기화 후 출력 포트 클리어 작업 진행한다        
     // **************************************************************************
-//	Func.IO_Board_Initialize();				// IO 보드 라이브러리 초기화 함수
+	g_ioMgr.IO_Board_Initialize();				// IO 보드 라이브러리 초기화 함수
 	Func.OnSet_IO_Out_Port_Clear();			// I/O 보드의 출력 포트 초기화 함수
-
-/*	
-	nRet = COMI.Initialize_MotBoard("c:\\AMT8460\\Setting\\amt8460.cme2");			// MOTOR 보드 초기화 여부 검사한다
+	g_comiMgr.SetMotBoardInit( CTL_Lib.Initialize_motor_board(1, st_path.mstr_motor) );	// MOTOR 보드 초기화 여부 검사한다
+	if( st_handler.mn_virtual_mode )
+		g_comiMgr.SetMotBoardInit( BD_GOOD );
 	
-	if (nRet == CTLBD_RET_ERROR)
+	if (st_handler.cwnd_list != NULL)
 	{
-		if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
-		{
-			st_other.str_abnormal_msg = _T("[MOTOR BOARD] 초기화 에러.");
-			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
-		}
+		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, MACHINE_INFO);
 	}
 	
-	OnMain_Motor_Setting();
-*/
+	if (st_handler.cwnd_title != NULL)	
+	{
+		st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MACHINE_STATUS, dSTOP); 
+		st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, DEVICE_MODE, 0);
+	}
+	
+
+
+
+
 	OnMain_Thread_Creating();
 	// **************************************************************************
 
@@ -416,8 +431,9 @@ void CMainFrame::OnSetting()
 	}
 	// **************************************************************************
 
-//	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_Work_Info)))   return;
-//	OnSwitchToForm(IDW_SCREEN_WORK_INFO);
+	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_Set_Maintenance)))   return;
+	OnSwitchToForm(IDW_SCREEN_SET_MAINTENANCE);	
+
 }
 
 
@@ -687,7 +703,7 @@ void CMainFrame::OnReset()
 	/* ************************************************************************** */
 	/* 현재 장비 상태가 STOP 상태인지 검사                                        */
 	/* ************************************************************************** */
-	if (st_work.n_run_status != dSTOP)
+	if (st_work.mn_run_status != dSTOP)
 	{
 		st_other.str_fallacy_msg = _T("Handler is active Stop first.!");
 		n_response = msg_dlg.DoModal();
@@ -757,7 +773,7 @@ void CMainFrame::OnExit()
 	
 	CDialog_Message msg_dlg;
 
-	if (st_work.n_run_status != dSTOP)
+	if (st_work.mn_run_status != dSTOP)
 	{
 		st_other.str_fallacy_msg = _T("Now Machine is Running...");
 		mn_response = msg_dlg.DoModal();
@@ -863,9 +879,9 @@ void CMainFrame::OnSwitchToForm(int nForm)
 			case IDW_SCREEN_BASIC:				// Basic 화면
 				m_pNewActiveView = (CView*)new CScreen_Basic;
 				break;
-			//case IDW_SCREEN_WORK_INFO:
-			//	m_pNewActiveView = (CView*)new CScreen_Work_Info;
-			//	break;
+			case IDW_SCREEN_SET_MAINTENANCE:	// 메인트 화면 
+				m_pNewActiveView = (CView*)new CScreen_Set_Maintenance;
+				break;
 			case IDW_SCREEN_PGM_INFO:
 				m_pNewActiveView = (CView*)new CScreen_Pgm_Info;
 				break;
@@ -891,6 +907,7 @@ void CMainFrame::OnSwitchToForm(int nForm)
 				m_pNewActiveView = (CView*)new CScreen_Motor;
 				break;
 			case IDW_SCREEN_MOTOR_SPEED:
+				m_pNewActiveView = (CView*)new CScreen_Motor_Speed;
 				break;
 			case IDW_SCREEN_SET_INTERFACE:		// Interface 관련 설정 화면 
 				break;
@@ -970,6 +987,7 @@ LRESULT CMainFrame::OnViewChangeMode(WPARAM wParam,LPARAM lParam)
 			break;
 		case 5 : 
 			if(lParam == 1) OnMotor();
+			else if (lParam==2)	 OnMotorSpeed();			// 모터 속도 화면 전환 
 			break;
 		case 6 :
 			if (lParam==1)       OnListOperation();		// Operation 결과 리스트 화면 전환 
@@ -1009,7 +1027,7 @@ int CMainFrame::OnMenu_Change_Checking()
 	/* ************************************************************************** */
 	/* 현재 장비 상태가 STOP 상태인지 검사                                        */
 	/* ************************************************************************** */
-	if (st_work.n_run_status != dSTOP && st_work.n_run_status != dLOCK)
+	if (st_work.mn_run_status != dSTOP && st_work.mn_run_status != dLOCK)
 	{
 		st_other.str_op_msg = _T("[장비 동작 중] 먼저 STOP 시킨 후에 사용하세요");
 		if (st_handler.cwnd_list != NULL)  st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, 7); 
@@ -1059,6 +1077,9 @@ void CMainFrame::OnMain_Var_Default_Set()
 
 	st_handler.f_ad_resol	= (float)10 / (float)2048;
 	st_handler.f_ad_device	= (float)10 / (float) 4096;
+
+	st_handler.m_bAlarmMcPowerOff = false;
+
 
 /*
 	COleDateTime	oledate[2];
@@ -1135,7 +1156,7 @@ void CMainFrame::OnMain_Path_Set()
 	CString strMainPath;
 	char chr_data[100];
 
-	:: GetPrivateProfileString("Folder_Data", "Main",		"D:\\AMT820\\", chr_data, 100, ".\\PathInfo.TXT");
+	:: GetPrivateProfileString("Folder_Data", "Main",		"C:\\AMT820\\", chr_data, 100, ".\\PathInfo.TXT");
 	strMainPath = chr_data;
 	strMainPath.TrimLeft(' ');               
 	strMainPath.TrimRight(' ');
@@ -1216,8 +1237,8 @@ void CMainFrame::OnMain_Path_Set()
 	Func.CreateFolder(strMainPath + "Alarm\\Daily\\");
 	Func.CreateFolder("D:\\BackUp\\");
 
-	st_path.mstr_ppid = _T("D:\\AMT820\\Setting\\AMT820\\AMT820\\XWork\\Recipe\\");
-	st_path.mstr_ppid_del = _T("D:\\AMT820\\Setting\\AMT820\\AMT820\\XWork\\Recipe");
+	st_path.mstr_ppid = _T("C:\\AMT820\\Setting\\AMT820\\AMT820\\XWork\\Recipe\\");
+	st_path.mstr_ppid_del = _T("C:\\AMT820\\Setting\\AMT820\\AMT820\\XWork\\Recipe");
 
 	st_path.mstr_io_map				= _T(strMainPath + "Setting\\AMT820_IO_MAP.xls");
 	st_path.mstr_motor_axis_map		= _T(strMainPath + "Setting\\AMT820_MOTOR_AXIS_MAP.xls");
@@ -1225,15 +1246,15 @@ void CMainFrame::OnMain_Path_Set()
 	st_path.mstr_io_part_map		= _T(strMainPath + "Setting\\AMT820_IO_PART_MAP.xls");
 	st_path.mstr_wait_time_map		= _T(strMainPath + "Setting\\AMT820_WAITTIME_MAP.xls");
 
-	st_path.mstr_partno_match		= _T("D:\\AMT820\\Setting\\PartNo.txt");
+	st_path.mstr_partno_match		= _T("C:\\AMT820\\Setting\\PartNo.txt");
 	st_path.mstr_user_control_map	= _T(st_path.mstr_basic_folder + "AMT820_USERCONTROL_MAP.xls");
 
-	st_path.m_strPcBoxIDSave		= _T("D:\\AMT820\\Setting\\PcBoXID.dat");
+	st_path.m_strPcBoxIDSave		= _T("C:\\AMT820\\Setting\\PcBoXID.dat");
 
-	st_path.m_strMars				= _T("D:\\AMT820\\Log\\Mars\\");
+	st_path.m_strMars				= _T("C:\\AMT820\\Log\\Mars\\");
 	Func.CreateFolder(st_path.m_strMars);
 
-	st_path.mstr_xgem_cfg_path		= _T("D:\\AMT820\\Setting\\AMT820_Eq.cfg");
+	st_path.mstr_xgem_cfg_path		= _T("C:\\AMT820\\Setting\\AMT820_Eq.cfg");
 
 	st_path.mstr_heater =			_T(strMainPath + "Log\\HEATER\\");
 	Func.CreateFolder(st_path.mstr_heater);
@@ -1250,7 +1271,8 @@ void CMainFrame::OnMain_Path_Set()
 	st_path.m_strLastModuleLog =	_T(strMainPath + "Log\\Machine\\");
 	Func.CreateFolder(st_path.m_strLastModuleLog);
 
-	st_path.m_strFtpPath = _T("D:\\AMT820\\Setting\\FTP.TXT");
+	st_path.m_strFtpPath = _T("C:\\AMT820\\Setting\\FTP.TXT");
+
 }
 
 void CMainFrame::OnExitData_Saving()
@@ -1310,120 +1332,40 @@ void CMainFrame::OnMain_Thread_Creating()
 	// 타워 램프 출력 동작 제어 쓰레드 생성한다                              
  	// **********************************************************************
 	// 20100805 tae 수정 
-	m_thread[0]=AfxBeginThread(OnThread_Handler_Check, this);			// 
-	if (m_thread[0] != NULL) 	
-		hThrHandle[0] = m_thread[0]->m_hThread;
+	m_thread[THREAD_HANDLER_CHK]=AfxBeginThread(OnThread_Handler_Check, this);			// 
+	if (m_thread[THREAD_HANDLER_CHK] != NULL) 	
+		hThrHandle[THREAD_HANDLER_CHK] = m_thread[THREAD_HANDLER_CHK]->m_hThread;
 
-	m_thread[1]=AfxBeginThread(OnThread_Tower_Lamp_Check, this);	// THREAD_PRIORITY_ABOVE_NORMAL) ;
- 	if (m_thread[1] != NULL) 	
- 		hThrHandle[1] = m_thread[1]->m_hThread;
+	m_thread[THREAD_TOWER_LAMP_CHK]=AfxBeginThread(OnThread_Tower_Lamp_Check, this);	// THREAD_PRIORITY_ABOVE_NORMAL) ;
+ 	if (m_thread[THREAD_TOWER_LAMP_CHK] != NULL) 	
+ 		hThrHandle[THREAD_TOWER_LAMP_CHK] = m_thread[THREAD_TOWER_LAMP_CHK]->m_hThread;
  	// **********************************************************************
 	
 	// **********************************************************************
 	// 장비 동작 중 발생한 알람 출력하기 위한 쓰레드 생성한다                
 	// **********************************************************************
-	m_thread[2]=AfxBeginThread(OnThread_Alarm_Display, this);		// THREAD_PRIORITY_ABOVE_NORMAL) ;
-	if (m_thread[2] != NULL) 	
-		hThrHandle[2] = m_thread[2]->m_hThread;
+	m_thread[THREAD_ALARM_DISPLAY]=AfxBeginThread(OnThread_Alarm_Display, this);		// THREAD_PRIORITY_ABOVE_NORMAL) ;
+	if (m_thread[THREAD_ALARM_DISPLAY] != NULL) 	
+		hThrHandle[THREAD_ALARM_DISPLAY] = m_thread[THREAD_ALARM_DISPLAY]->m_hThread;
 	// **********************************************************************
 
-	m_thread[3]=AfxBeginThread(OnThread_IO_Check, this);
-	if (m_thread[3] != NULL) 	
-		hThrHandle[3] = m_thread[3]->m_hThread;
+	m_thread[THREAD_IO]=AfxBeginThread(OnThread_IO_Check, this);
+	if (m_thread[THREAD_IO] != NULL) 	
+		hThrHandle[THREAD_IO] = m_thread[THREAD_ALARM_DISPLAY]->m_hThread;
+
+	m_thread[THREAD_MOTORS] = AfxBeginThread( OnThread_Motors, this );
+	if( m_thread[THREAD_MOTORS] != NULL )
+		hThrHandle[THREAD_MOTORS] = m_thread[THREAD_MOTORS]->m_hThread;
 }
 
 void CMainFrame::OnMain_Thread_Destroy()
 {
-	// **************************************************************************
-	// 로더 앨레베이터 동작 제어 쓰레드 종료한다                                 
-	// **************************************************************************
-	if (hThrHandle[0])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[0], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	// 로더 트렌스퍼 동작 제어 쓰레드 종료한다                                   
-	// **************************************************************************
-	if (hThrHandle[1])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[1], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	// 언로더 엘레베이터 동작 제어 쓰레드 종료한다                               
-	// **************************************************************************
-	if (hThrHandle[2])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[2], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	// 언로더 트렌스퍼 동작 제어 쓰레드 종료한다                                 
-	// **************************************************************************
-	if (hThrHandle[3])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[3], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	// XYZ Robot 동작 제어 쓰레드 종료한다                                       
-	// **************************************************************************
-	if (hThrHandle[4])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[4], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	// 테스트 사이트 동작 제어 쓰레드 종료한다                                   
-	// **************************************************************************
-	if (hThrHandle[5])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[5], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	// 버퍼 & 오토 피처 동작 제어 쓰레드 종료한다                                
-	// **************************************************************************
-	if (hThrHandle[6])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[6], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	// 스위치 검사 동작 제어 쓰레드 종료한다                                     
-	// **************************************************************************
-	if (hThrHandle[7])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[7], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	// 타워 램프 출력 동작 제어 쓰레드 종료한다                                  
-	// **************************************************************************
-	if (hThrHandle[8])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[8], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	// 장비 동작 중 발생한 알람 출력하기 위한 쓰레드 종료한다                    
-	// **************************************************************************
-	if (hThrHandle[9])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[9], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	// Reject Tray 존재 유무 검사 쓰레드 종료한다                                
-	// **************************************************************************
-	if (hThrHandle[10])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[10], 1500);
-	// **************************************************************************
-	
-	// **************************************************************************
-	//  타워 램프 동작 제어 쓰레드 종료한다                               
-	// **************************************************************************
-	if (hThrHandle[11])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[11], 1500);
-	// **************************************************************************
+	for( int i=0; i<25; i++ )
+	{
+		if (hThrHandle[i])  // 쓰레드 존재
+			::WaitForSingleObject(hThrHandle[i], 1500);
+	}
 
-	// **************************************************************************
-	//  알람 제어 쓰레드 종료한다                               
-	// **************************************************************************
-	if (hThrHandle[12])  // 쓰레드 존재
-		::WaitForSingleObject(hThrHandle[12], 1500);
-	// **************************************************************************
 }
 
 void CMainFrame::OnAlarm_Destroy()
@@ -1493,7 +1435,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		}
 		else
 		{
-			switch(st_work.n_run_status)
+			switch(st_work.mn_run_status)
 			{			
 			case dRUN:
 				Dll_TimeDataLog(2, 1);						// Run임을 DLL에 알려준다.
@@ -1533,7 +1475,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 			if (st_handler.cwnd_main != NULL)
 			{
-				st_handler.cwnd_main->PostMessage(WM_WORK_END, MAIN_TIMEINFO, st_work.n_run_status);
+				st_handler.cwnd_main->PostMessage(WM_WORK_END, MAIN_TIMEINFO, st_work.mn_run_status);
 			}
 		}
 	}
@@ -1557,13 +1499,13 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		//050420 데이터 서머리 관리 Auto로 추가 2K5/04/22/ViboX
 		if(n_hour == 21 && n_minute >= 59 && n_second >= 58)
 		{
-			if (st_work.n_run_status == dLOTEND)
+			if (st_work.mn_run_status == dLOTEND)
 			{
 				Dll_TimeDataLog(2, dSTOP);	
 			}
 			else
 			{
-				Dll_TimeDataLog(2, st_work.n_run_status);
+				Dll_TimeDataLog(2, st_work.mn_run_status);
 			}
 		}
 	    else if(n_hour == 22 && i_summary_flag == 0)
@@ -1596,6 +1538,38 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 	CFrameWnd::OnTimer(nIDEvent);
 }
 
+LRESULT CMainFrame::OnMainframe_Work(WPARAM wParam, LPARAM lParam)
+{	
+	int mn_command_num = wParam;  // 네트워크 작업을 할 구분 변수
+	
+	switch (mn_command_num)
+	{	
+	case 1001:
+		OnMainFrame_SelectMessageDisplay();
+		break;
+	}
+	
+	return 0;
+}
+
+void CMainFrame::OnMainFrame_SelectMessageDisplay()
+{
+	int ReturnVal;
+	
+	CDialog_Select select_dlg;
+	
+	st_msg.mstr_confirm_msg = _T(st_handler.mstrSelectMessage);
+	ReturnVal = select_dlg.DoModal();
+	
+	if (ReturnVal == IDOK)
+	{
+		st_handler.mnSelectMessage = 1;
+	}
+	else
+	{
+		st_handler.mnSelectMessage = 2;
+	}
+}
 
 void CMainFrame::Init_View()
 {
@@ -1884,6 +1858,50 @@ void CMainFrame::OnMain_Port_Close()
 		}	
 	}
 	// **************************************************************************
+}
+
+LRESULT CMainFrame::OnMainMessageEvent(WPARAM wParam, LPARAM lParam)
+{
+	int i = 0;
+	CString strTemp;
+	
+	if (wParam == CTL_YES)
+	{
+		if (mp_msg_dlg != NULL && IsWindow(mp_msg_dlg->m_hWnd))
+		{
+			mp_msg_dlg->SetFocus();	// 대화상자를 활성화
+			mp_msg_dlg->OnEventMsg_Text_Set();
+		}
+		else
+		{
+			mp_msg_dlg = new CDialog_Event_Msg( st_msg.mstr_event_msg[0], st_msg.mstr_event_msg[1], st_msg.mstr_event_msg[2]);
+			//2017.0201
+			//mp_msg_dlg = new CDialog_Event_Msg;
+			mp_msg_dlg->Create();
+			mp_msg_dlg->ShowWindow(SW_SHOW);
+		}
+		g_ioMgr.set_out_bit(st_io.o_Buzzer2, IO_ON);
+		
+	}
+	else if (wParam == CTL_NO)
+	{
+		for (i = 0; i < 3; i++)
+		{
+			st_msg.mstr_event_msg[i] = "";
+		}
+		
+		if (mp_msg_dlg != NULL && IsWindow(mp_msg_dlg->m_hWnd))
+		{
+			mp_msg_dlg->ShowWindow(SW_HIDE);
+			mp_msg_dlg->DestroyWindow();
+			delete mp_msg_dlg;
+			mp_msg_dlg = NULL;
+		}
+		
+		g_ioMgr.set_out_bit(st_io.o_Buzzer2, CTL_OFF);
+	}
+	
+	return 0;
 }
 
 // ******************************************************************************
@@ -2258,4 +2276,33 @@ void CMainFrame::Init_ToolTip()
 	m_p_tooltip.AddTool(&m_wndToolBar, 
 						_T("<al_c><ct=0xFF0000><b>Program Exit</b><ct=0x00C000><br><hr=100%><br></ct>Program Exit."), 
 						IDI_TT_MAIN, CSize(0, 0), rect_hot);
+}
+
+void CMainFrame::OnMotorSpeed() 
+{
+	// **************************************************************************
+    // 화면 뷰 전환 불가능한 정보 검사한다.                                      
+    // **************************************************************************
+	int nmenu_chk = OnMenu_Change_Checking(); // 메뉴 사용 가능 여부 검사 함수
+	if (nmenu_chk != TRUE)  return;
+	
+	// **************************************************************************
+	// 메뉴 사용 불가능한 경우에 대한 조건 검사한다                              
+	// -> 메인트 모드 또는 티칭 모드가 설정되어 있는지 검사                      
+	// **************************************************************************
+	if (st_handler.n_level_teach !=  TRUE)
+	{
+		if (st_handler.n_level_maint !=  TRUE) 
+		{
+			OnLevel();
+			if (st_handler.n_level_teach !=  TRUE)
+			{
+				if (st_handler.n_level_maint !=  TRUE)  return;
+			}
+		}
+	}
+	// **************************************************************************
+	
+	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_Motor_Speed)))   return;
+	OnSwitchToForm(IDW_SCREEN_MOTOR_SPEED);		
 }

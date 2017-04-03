@@ -15,7 +15,7 @@
 class CRun_EmptyStacker_Elvator : public CObject
 {
 public:
-	DECLARE_DYNCREATE(CRun_EmptyStacker_Elvator)
+	DECLARE_SERIAL(CRun_EmptyStacker_Elvator)
 
 	CRun_EmptyStacker_Elvator();           // protected constructor used by dynamic creation
 	virtual ~CRun_EmptyStacker_Elvator();
@@ -53,12 +53,10 @@ public:
 	int m_nRetry;
 
 public:
-
-	void ThreadRun();
+	void Thread_Run();
 	void RunMove();
 	void RunInit();
-
-	int :Ready_Stacker_Move_Check( int mode );
+	int Ready_Stacker_Move_Check(int mode);
 
 };
 extern CRun_EmptyStacker_Elvator Run_EmptyStacker_Elvator;

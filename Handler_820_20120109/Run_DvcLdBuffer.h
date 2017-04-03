@@ -22,32 +22,37 @@ public:
 
 // Attributes
 public:
-	void			OnThreadRun();
-	void			OnRunInit();
-	void			OnRunMove();
+	void		Thread_Run();
+	void		OnRunInit();
+	void		OnRunMove();
 
-	int				mn_RunStep;
-	int				mn_InitStep;
+	int			mn_RunStep;
+	int			mn_InitStep;
 
-	int				m_npFindWorkPosYXCPB[5]; //[0]first tray Y, [1]first tray X, [2]:작업가능 수량 또는 공간 정보, [3]first picker num, [4]first buff num
-	int				m_nFindLotNo_Flag;
+	int			m_npFindWorkPosYXCPB[5]; //[0]first tray Y, [1]first tray X, [2]:작업가능 수량 또는 공간 정보, [3]first picker num, [4]first buff num
+	int			m_nFindLotNo_Flag;
 	CString		m_strFindLotNo;
-	int				m_nWork_Pos; //현재 작업할 위치
+	int			m_nWork_Pos; //현재 작업할 위치
 
 	CString		m_strLotNo;
 	CString		m_strPartNo;
+
+	CString		m_strAlarmCode;
 
 
 	DWORD		m_dwWaitTime[3];
 	DWORD		m_dwCycleTime[3];
 
-	int				m_npBuff_Info[4];
-	int				m_npBuff_Status[4];
-	int				 m_npBuff_OutputStatus[4];
+	int			m_npBuff_Info[4];
+	int			m_npBuff_Status[4];
+	int			m_npBuff_OutputStatus[4];
+
+	bool		m_bClampOnOffFlag;
+	DWORD		m_dwClampOnOff[3];
 
 public:
 	void Set_Loader_Buffer_Align_OnOff(int OnOff);
-	int Chk_Loader_Buffer_Align_OnOff( int nOnOff );
+	int Chk_Loader_Buffer_Align_OnOff(int OnOff);
 
 
 protected:

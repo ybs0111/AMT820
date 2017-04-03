@@ -1,4 +1,4 @@
-#ifndef _VARIABLE_h__Chk_PressClamp_Safety
+#ifndef _VARIABLE_h__
 #define _VARIABLE_h__
 
 
@@ -8,31 +8,34 @@
 #include "SrcPart/PartFunction.h"
 #include <string>
 #include <vector>
-#include <map>
+// #include <map>
 
+// 
+// #ifndef PASCAL
+// #define PASCAL						__stdcall
+// #endif	// PASCAL
+// 
+// #ifndef EXPORT
+// #define EXPORT
+// #endif	// EXPORT
 
-//	Console application 프로그램을 위해서 아래 부분을 정의함
-typedef unsigned long int				DWORD;
-typedef unsigned short int			WORD;
-typedef unsigned char					BYTE;
-typedef int									BOOL;
-typedef void								*HANDLE;
-
-#ifndef PASCAL
-#define PASCAL						__stdcall
-#endif	// PASCAL
-
-#ifndef EXPORT
-#define EXPORT
-#endif	// EXPORT
-
-//typedef int							BOOL;			// 0(FALSE), 1(TRUE)
-typedef signed char						INT8;			// -128 .. 127
-typedef unsigned char					UINT8;			// 0 .. 255
-typedef signed short int				INT16;			// -32768 .. 32767
-typedef unsigned short int			UINT16;			// 0 .. 65535
-typedef int									INT32;			// -2,147,483,648 .. 2,147,483,647
-typedef unsigned int					UINT32;			// 0 .. 4,294,967,295
+enum ENUM_INIT_SITE
+{
+	INIT_LD_ROBOT,
+	INIT_ULD_ROBOT,
+	INIT_LD_PLATE,
+	INIT_DVC_BUFFER,
+	INIT_TRAY_TRANSFER,
+	INIT_TRAY_ELIVATOR_LEFT,
+	INIT_TRAY_ELIVATOR_RIGHT,
+	INIT_HEAT_SINK_ROBOT,
+	INIT_CARRIER_ROBOT,
+	INIT_UNPRESS_ROBOT,
+	INIT_EPOXY_ROBOT,
+	INIT_DISPENSOR_ROBOT,
+	INIT_VISION_ROBOT,
+	MAXSITE,
+};
 
 enum LOG_TYPE
 { 
@@ -74,6 +77,8 @@ enum SAFETY_FLAG
 #define LANGUAGE_ENGLISH	1		// 영어 OS
 
 #define MAX_SITE_INFO		10
+#define MACHINE_MANUAL			0
+#define MACHINE_AUTO			1
 // *****************************************************************************
 // 사용자 정의 메시지 ID 선언                                                   
 // *****************************************************************************
@@ -104,6 +109,8 @@ enum SAFETY_FLAG
 
 #define	WM_LOTOPEN_APPLY		WM_USER + 26
 #define	WM_LOTSTART_APPLY		WM_USER + 27
+#define WM_MAINFRAME_WORK		WM_USER + 28
+#define	WM_MAIN_EVENT			WM_USER + 29
 
 #define WM_DATA_INIT_SAVE       WM_USER + 300 // apply버튼시 저장까지, 해당 화면의 데이터 적용(Init)
 #define WM_DATA_CHANGE          WM_USER + 301 // apply버튼시 저장까지, 해당 화면의 데이터 적용(Init)
@@ -220,6 +227,7 @@ enum ENUM_WM_MESSAGE
 	WM_DRAW_UI_MAIN			= WM_USER + 30,
 	WM_DRAW_DATA_MAIN,
 	WM_DRAW_DATA_LOT,
+	WM_MOTOR_COMPLETION,
 };
 
 // *****************************************************************************
@@ -266,7 +274,7 @@ enum ENUM_WM_MESSAGE
 #define dMAINT				8
 #define dREINSTATE			9	//복귀동작중
 #define dUNLOAD				10
-#define dMANUAL_CONVEYOR	11
+#define dRECOVERY			11
 
 #define eWARNING			0
 #define eRUNNING			1
@@ -358,14 +366,16 @@ enum ENUM_WM_MESSAGE
 //#define TESTER_PORT	2		// 현재 Tester Communication 포트 번호
 //#define COM_PORT   2	// 현재 사용 중인 시리얼 포트 번호
  
-#define BUF_SIZE  1000	// 버퍼 크기
+#define BUF_SIZE						1000	// 버퍼 크기
+#define MAX_TRAY_ROW			30
+#define MAX_TRAY_COL			30
 // *************************************************************************
 
 // *************************************************************************
 //  Motor 번호 정의                                                         
 // *************************************************************************
-#define MAXMOTOR		16
-#define MAXBOARD		2
+#define MAXMOTOR		21
+#define MAXBOARD		4
 #define MOTTIMEOUT		60000
 
 //////////////////////////////////////////////////////////
@@ -384,7 +394,7 @@ enum ENUM_WM_MESSAGE
 // *************************************************************************
 // I/O 모듈 갯수 및 포트 최대 갯수 선언한다                                      
 // *************************************************************************
-#define MAX_IO				1315
+#define MAX_IO				2415
 
 #define MAX_MASTER_IO		1
 #define MAX_PORT_IO			4
@@ -747,35 +757,12 @@ enum PICKER_PICKPLACE_INFO
 	PICKER_PLACE_MODE	   ,
 };
 //0번 보드 
-enum MOTOR_NUM
-{
-	M_TRAY1_Z				= 0,
-	M_TRAY2_Z,				
-	M_PRESS_Y,				
-	M_EPOXY_TRANSFER_X,		
-	M_EPOXY_TRANSFER_Y,		
-	M_EPOXY_TRANSFER_Z,		
-	M_EPOXY_SCREW,			
-	M_CARRIER_X,
 
-	M_LOADER_TRANSFER_Y,		
-	M_LOADER_TRANSFER_Z,		
-	M_HEATSINK_TRANSFER_X,	
-	M_HEATSINK_TRANSFER_Y,	
-	M_HEATSINK_TRANSFER_Z,	
-	M_UNLOADER_TRANSFER_X,	
-	M_UNLOADER_TRANSFER_Y,	
-	M_UNLOADER_TRANSFER_Z,	
 
-	M_DISPENSER_Y,	
-	M_TRAY_REMOVE_X,			
-	M_HEATSINK_INSPECT_Y,
-
-	M_HEATSINK_DISPENSOR_Z,
-	M_HEATSINK_PICKER_PITCH,
-
-	M_MOTOR_COUNT,
-};
+// *************************************************************************
+// I/O 동작 대기 시간 및 리미트 시간 저장 구조체 선언                            
+// *************************************************************************
+#define MAX_WAIT_TIME 40
 
 enum WAIT_TIME
 {
@@ -786,18 +773,24 @@ enum WAIT_TIME
 	WAIT_CARRIER_PRESS_UPDN,
 	WAIT_CARRIER_SLIDE_UPDN,
 	WAIT_CARRIER_HOLDER_UPDN,
-
-	MAX_WAIT_TIME,
+	WAIT_CAMERA_CLAMP_FWDBWD,
+	WAIT_CAMERA_CLAMP_UPDN,
+	WAIT_HEATSINK_PICKER_UPDN,
+	WAIT_HEATSINK_PICKER_VACUUM,
+	WAIT_DISPENSOR_REVERSE,
+	WAIT_DISPENSOR_REVERSE_FWDBWD,
+	WAIT_DISPENSOR_REVERSE_UPDN,
+	WAIT_DISPENSOR_AIRBLOW,
 };
-struct tagWAIT_INFO
+
+struct st_io_wait_param
 {
 	int	nOnWaitTime[MAX_WAIT_TIME];
 	int nOffWaitTime[MAX_WAIT_TIME];
 	int nLimitWaitTime[MAX_WAIT_TIME];
 
 };
-extern  tagWAIT_INFO  st_wait;
-
+extern  st_io_wait_param  st_wait;
 
 
 enum THREAD_SYNC_VARIBLE_SITE_INFO  //위치별 트레이 존재 유무를 위치별로 정의해 놓음  
@@ -805,21 +798,30 @@ enum THREAD_SYNC_VARIBLE_SITE_INFO  //위치별 트레이 존재 유무를 위치별로 정의해 
 	THD_LD_STACKER			 = 0,
 	THD_LD_TRAY_PLATE,
 	THD_LD_ALIGN_BUFF,
+	THD_ULD_ALIGN_BUFF,
 	THD_UNLD_ALIGN_BUFF,
 	THD_LDULD_CARRIER_BUFF,
 	THD_UNPRESS_RBT,
+	THD_EPOXY_RBT,//	THD_BILLIARD,RBT,
+	THD_HEATSINK_RBT,
+	THD_VISION_RBT,
+	THD_DISPENSOR_RBT,//경화제
+	THD_LD_HEATSINK_BUFF,
+	THD_PLACE_HEATSINK_DVC,
+	THD_PICK_REVERSE_DVC,
+	THD_PICK_HEATSINK_DVC,
+	THD_PACLE_CARRIER_DVC,
 	THD_LD_HSALIGN_BUFF,
 	THD_LD_HSPICK_BUFF,
 	THD_ULD_STACKER,
 	THD_ULD_HSALIGN_BUFF,
-	THD_LD_STACKER,
 	THD_EMPTY_STACKER,
 	THD_WORK_TRANSFER,
 	THD_LOAD_WORK_RBT,
 	THD_UNLOAD_WORK_RBT,
 	THD_CARRIER_RBT,
-	THD_BILLIARD,RBT,
-	THD_VISION_RBT,
+
+
 	THD_LOADHS_WORK_RBT,
 	THD_HARDENER_RBT,
 	THREAD_MAX_SITE
@@ -904,7 +906,7 @@ struct st_handler_param
 	CTimeSpan m_tDJ;	//Jam Time
 	CTimeSpan m_tDS;	//Stop Time
 	CTimeSpan m_tDM;	//Maint Time
-	CTimeSpan m_tLotR[MAX_PLOT];	//Lot Run Time //2013,1105
+//	CTimeSpan m_tLotR[10];	//Lot Run Time //2013,1105
 
 
 	
@@ -1016,7 +1018,6 @@ struct st_handler_param
 	int mn_InstandyBy_1[20];
 	int mn_OutstandyBy[20];
 
-	int mn_userstop;
 	bool isTestRun[20];
 
 	bool mn_xgem_connect;
@@ -1103,9 +1104,7 @@ struct st_handler_param
 
 	CString	str_user_id;
 
-	int	n_motor_init_check;
 
-	
 	CString str_programmer_level;	// 프로그래머 레벨(Level Administrator) 설정 플래그
 	
 	int n_io_board_initial;			// IO 보드 초기화 작업 완료 플래그
@@ -1183,6 +1182,7 @@ struct st_handler_param
 
 	//////////////////////////////////2K10/02/09/ViboX////////////////////////////////////
 	int n_run_status;					// 장비 동작. 2K10/02/09/ViboX
+	int n_run_EpoxyStatus;
 	int n_lot_flag;
 	int n_initial_flag;
 
@@ -1205,6 +1205,21 @@ struct st_handler_param
 	int mn_removetray;
  	int n_without_idbuffer;
 
+	int mn_init_state[MAXSITE];		// 초기화 완료 플래그
+	int n_MutingOn;
+	int n_MutingOff;
+	bool m_bAlarmMcPowerOff;
+
+	int n_InterfaceConnectOK;
+	int n_CaseAssemblyUnloadingAbleOn;
+	DWORD nInterLockTimeCheck;
+	int n_HSAbleOn;
+	int n_HSLowerPlaceAbleCheck;
+
+	////Light Curtain Check	
+	int	nStackerLightCurtainFlag;
+	int	nHeatSinkLightCurtainFlag;
+	int n_HeatSinkMutingOn;
 };
 extern  st_handler_param  st_handler;
 // *****************************************************************************
@@ -1276,6 +1291,7 @@ struct st_alarm_param
 	int mn_alarm_occured_day;	// 알람 발생 횟수 저장 변수
 	int mn_arm_lot_continue;		// LOT 계속 진행 플래그
 	int mn_reset_status;			// Alarm Reset Status
+	int mn_emo_alarm;            // EMO관련 알람은 한번만 발생하도록 하기 위함!!
 	
 	int mn_emo_set;
 	int n_alarm_assign_section;		//알람이 발생한 곳을 조금더 쉽게 찾기 위함
@@ -1464,9 +1480,22 @@ struct st_basic_param
 	int n_count_partial;		// PARTIAL 횟수 저장 변수
 	int n_count_elevator_partial;	// 엘레베이터 PARTIAL 횟수 저장 변수
 
-	int  n_mode_tray_type;//TYPE1,TYPE2
+	int n_mode_tray_type;//TYPE1,TYPE2
+	int n_mode_7387;
 
 //	CString mstr_device_name;	// 선택된 디바이스 종류 저장 변수
+
+	double dEpoxyXLineOffSet;
+	double dEpoxyYLineOffSet;
+
+	int n_rubb_count;
+	double dHSCarrierSpreadMoveOffset;
+	double dHSCarrierSpreadMoveDistance;
+	double dHeatSinkCarrierSpreadMove1Offset;
+	double dHeatSinkCarrierSpreadMove2Offset;
+	double dHeatSinkCarrierSpreadMove3Offset;
+	int n_Light_Curtain_Mode;
+	int n_mode_case_assembly;
 } ;
 extern  st_basic_param  st_basic;
 // ******************************************************************************
@@ -1730,6 +1759,8 @@ struct st_path_param
 
 	CString mstr_xgem_cfg_path;
 	CString m_strFtpPath;
+
+	CString strPathCycle;
 };
 extern  st_path_param  st_path;
 // *************************************************************************
@@ -1795,34 +1826,46 @@ struct st_work_param
 {
 	// **************************************************************************
 	int mn_run_status;  // 장비 동작 상태 정보 저장 변수 (O:STOP   1:RUN    2:ALARM    3:MAINT    4:INIT)
-	int m_iRunStatus;	// 장비 동작 상태 정보 저장 변수 (O:STOP   1:RUN    2:ALARM    3:MAINT    4:INIT)
+	int mn_run_EpoxyStatus;
 	// **************************************************************************
 	int mn_tl_status;					// 타워램프 상태 정보 저장 변수 (O:STOP 1:RUN(IN PCB) 2:ALARM 3:MAINT 4:INIT 5:RUN(NO PCB))
 
+	int mn_Box1[MAX_TRAY_ROW][MAX_TRAY_COL];
+	int mn_Box2[MAX_TRAY_ROW][MAX_TRAY_COL];
+
+	double d_Heatsink1Xpos[30];
+	double d_Heatsink1Ypos[30];
+	double d_Heatsink2Xpos[30];
+	double d_Heatsink2Ypos[30];
+
+	double d_X_Box1Pos;
+	double d_Y_Box1Pos;
+	double d_X_Box1Deg;
+	double d_Y_Box1Deg;
+
+	double d_X_Box2Pos;
+	double d_Y_Box2Pos;
+	double d_X_Box2Deg;
+	double d_Y_Box2Deg;
 
 	bool b_load_key_flag;		// 로더 키 ON/OFF 플래그 (TRUE:ON    FALSE:OFF)
 	bool b_trayload_flag;		// 트레이에서 로딩할 자재가 있느냐.
 	bool b_lot_start_flag;		// LOT 시작 플래그
 	bool b_load_off_flag;		// 강제 Lot End
 
-	// **************************************************************************
-	int n_run_status;  // 장비 동작 상태 정보 저장 변수 (O:STOP   1:RUN    2:ALARM    3:MAINT    4:INIT)
-	// **************************************************************************
-
+	int n7387BlowCheck;
 
 	// **************************************************************************
 	// 장비 동작 중 발생하는 시간 정보 저장 관련 멤버 변수                       
 	// **************************************************************************
 	long MachineTime[4];  // 장비 동작 및 정지 시간 정보 저장 변수 (0:STOP TIME    1:RUN TIME    2:ALARM TIME    3:MAINT TIME)
 	// **************************************************************************
-
-
+	
 	int		mn_prev_step[200];			// 이전 step (변경 되었는지 보기 위함)
 	CString	mstr_history_step[200];		// step_history 약 50개에 해당하는 step을 저장
 	CString	mstr_history_step_back_up[200];		// step_history 약 50개에 해당하는 step을 저장
 	CString mstr_last_change_date[200];	// 최종 step으로 변경되는 시점의 시간
-
-
+	
 	// **************************************************************************
 	//  동작 관련 멤버 변수                                                      
 	// **************************************************************************	// 추가 및 변경 됨. 2K8/09/19/ViboX	
@@ -1844,8 +1887,7 @@ struct st_work_param
 	int n_sync_xyz_to_retest_uld;	//XYZ Robot이 retest buffer에서 작업을 마무리 했다 로더 위치로 이동해라...
 	// WORK_READY -> WORK_START -> WORK_END
 	
-	int n_reinstate_main_robot;		//XYZ Robot 복귀동작 완료변수
-	
+	int n_reinstate_main_robot;		//XYZ Robot 복귀동작 완료변수	
 
 	//  안전상태관련  ===============================================================================================
 	int n_safety_main_xyz;
@@ -1878,6 +1920,10 @@ struct st_work_param
 	int n_dvc_retestbin_retestcnt;
 	// **************************************************************************
 
+	//EPOXY
+	int nEpoxyBiliardThreadRunMode;
+	int nJigEpoxyWorkCount;
+
 	CTimeSpan m_boardtime[TESTSIZE][SITEMAINBOARD];
 
 	int    n_text_r[2][2];
@@ -1887,6 +1933,10 @@ struct st_work_param
 	int    n_grid_r[2][2];
 	int    n_grid_g[2][2];
 	int    n_grid_b[2][2];
+
+	// daily cycle time
+	double	dDailyCycle;
+	int mn_machine_mode;
 };
 extern  st_work_param  st_work;
 
@@ -1944,18 +1994,6 @@ extern  st_other_param  st_other;
 // *************************************************************************
 
 // *************************************************************************
-// I/O 동작 대기 시간 및 리미트 시간 저장 구조체 선언                            
-// *************************************************************************
-#define MAX_WAIT_TIME 40
-
-struct st_io_wait_param 
-{
-	int	n_on_wait_time[MAX_WAIT_TIME];
-	int n_off_wait_time[MAX_WAIT_TIME];
-	int n_limit_wait_time[MAX_WAIT_TIME];
-};
-extern  st_io_wait_param  st_wait;
-// *************************************************************************
 
 #define	CVY_MODULE_PICK_NO			0
 #define CVY_MODULE_PICK_1			1
@@ -1993,13 +2031,17 @@ struct st_sync_param
 	//CARRIER ROBOT 동작
 	int nCarrierRbt_Dvc_Req[THREAD_MAX_SITE][5]; 
 	int nCarrierRbt_UpDnPress_Req[3];//[0]UP:LOAD Carrier [1]DOWN:UNLOAD Carrier [2]M_PRESS_Y
-
-	//[*][1]: WORK_PICK(디바이스를 집기 가능한 영역 관리), [*][1]:WORK_PLACE(/디바이스를 놓기 가능한 영역 관리)
-	//[*][2]: 로딩/언로딩 버퍼의 방향(WORK_DVC_LOAD/WORK_DVC_UNLOAD                                            	
-	//[*][3]: 작업할 테스트 사이트 Fix 번호 위치 정보 -> 중요한 정보로 임의로 다른곳에서 바꿔서는 안된다 
-	//[*][4]:test site num
-
 	int nCarrierBcr_Req;
+
+	//HEATSINK ROBOT 동작
+	int nHeatSinkRbt_Dvc_Req[THREAD_MAX_SITE][5]; //vision, Dispensor에 동작 전달
+
+	//VISION ROBOT 동작
+
+	//if Epoxy is going to safety, it may be conflict with Hearsink.
+	//so Heatsink transfer robot have to check where is it(heatsinkrobot may be able to work in turn position )
+	int nHeatsinkEpoxySateyflag;
+
 
 };
 extern st_sync_param	st_sync;
@@ -2404,104 +2446,12 @@ struct st_part_info
 };
 extern struct st_part_info st_part;
 
-struct tagALL_TRAY_INFO
-{
-	int nNewLotIn;            
-	int nLastModule;				// 마지막 자재인지 체크
-	int nModuleCnt;					// tray 안에 있는 모듈수량.
-	int nTrayExist;					//tray 존재 유/무 추가 2015.0226 james
-	// jtkim 20150811
-	int nReworkMode;				// rework mode......
-
-	//2015.0226 추가 
-	CString strLotNo;				// lot no......
-	CString strPartNo;				// part no......
-	CString strProcess;				// process id.....
-	CString strOptCode;				// opt code (lot display에서 정보 가져오기)
-	CString strFabSite;	          //2017.0105
-	// jtkim 2015127
-	CTime tStandBy;
-
-	// jtkim 20160812
-	int		nTestMode;				// ONESHOT, HOT, COLD, GATE......
-	int		nInterface;				// ftp / local......
-	int		nRetry;					// retry count.....
-	int		nBarcodeMode;			// barcode 전송선택 (1개/2개)
-	int		nQty;					// lot 수량.....
-	int		nModuleCount;			//
-	int		nPgmDown;				// pgm download 완료......
-
-	//2017.0109
-	int				nLogCount;
-	int				nStartStatus;
-	CString			strMaterial;			// matrial id.....
-	CString			strLogKey[50];
-	CString			strLogData[50];
-	CString			strMovePos[2];
-
-	tagPCB_INFO st_pcb_info[MAX_TRAY_ROW][MAX_TRAY_COL]; // pcb 구조체 변수..... 
-};
-extern tagALL_TRAY_INFO st_tray_info[THREAD_MAX_SITE];
-
-
-struct tagTEST_SITE_INFO
-{
-	CString strBuffNo;
-	CString strLotNo;				// test site lot no....
-	CString strPartNo;				// test site part no.....
-
-	int		nModuleCount;			//
-	int		nPgmDown;				// pgm download 완료......
-	int		nChamberDoor;			// chanber door open......
-	// jtkim 20160806
-	int		nTestBdStart;			// test site 통신체크 현재 진행상태........
-
-	tagPCB_INFO st_pcb_info[3]; // pcb 구조체 변수.....
-
-	int nSite_Pos; //1:TESTSITE_LEFT, 2:TESTSITE_RIGHT   //james 2016.0809 
-	int nStart_FixPos; //작업 가능한 사이트 0~7 까지 의 소켓 정보(0번, 4번 소켓이 시작 위치이며, 체크 및 동작 위치로 FIX이다) //james 2016.0813 
-
-	int nTester_Req[3];
-
-};
-extern tagTEST_SITE_INFO st_test_site_info[THREAD_MAX_SITE]; //2015.0216 [2][2];
-
-struct tag_BUFFER_INFO
-{
-	int nBuffer_Req[3];
-
-	CString strLotNo;				// test site lot no....
-	CString strPartNo;				// test site part no.....
-	CString strEqpID;				// test site epq id.....
-	CString strOptCode;				// opt code (lot display에서 정보 가져오기)
-
-	//james 2016.0813 
-	int nTestSIte_No;	  //작업이 지정된 정보, Test Site #1,#2,#3,#4, #5,#6,#7,#8
-	int nTestSite_LR_Pos; //작업이 지정된 정보, TESTSITE_LEFT(test #1,#2,#3,#4), TESTSITE_RIGHT(Test #5,#6,#7,#8)
-	int nTestSite_Start_FixPos; //물리적으로 테스트사이트 작업시작위치 정보 (0 또는 4 이다.)
-	///////
-
-	//2017.0109
-	int				nLogCount;
-	CString			strMaterial;			// matrial id.....
-	CString			strLogKey[50];
-	CString			strLogData[50];
-
-	tagPCB_INFO st_pcb_info[MAX_BUF_SIZE]; // pcb 구조체 변수.....
-};
-extern tag_BUFFER_INFO st_buffer_info[THREAD_MAX_SITE];
-//////  2016.0806 
-
 struct tagPCB_INFO
 {
 	DWORD   dw_TestWaitTime[3][3];
-	int		nYesNo;
 	int		nQty;//PCB order
 
-	COleDateTime tStart;
-	DWORD	dwBdTime;
-
-	
+	DWORD	dwBdTime;	
 
 	int nTestBdStart;						//테스트 시작과 끝을 알수 있다 
 	int nEnable;							//해당 위치 사용유/무 
@@ -2521,8 +2471,6 @@ struct tagPCB_INFO
 	int nOldBin;							// barcode....
 
 	int nSkipMode;                        //kwlee 2016.0912 TestSite SkipMode
-	DWORD dwBdTime;							// test time......
-
 ///////////////////////////////////////////////////////////////
 	CString strSerialNo;					// Lot에서 pcb의 순서번호......
 	CString strBarcode;					// pcb 2D barcode......
@@ -2600,7 +2548,10 @@ struct tagRECIPE_INFO
 	////////////////////////////////////////
 	// 사용하는 변수 
 	///////////////////////////////////////
-	int	nTrayY;						// tray Y 정보.......
+	int nTrayNum;
+	int	 nHsTrayY;						// HeatSink tray Y 정보.......
+	int nHsTrayX;						// HeatSink tray X 정보.......
+	int	 nTrayY;						// tray Y 정보.......
 	int nTrayX;						// tray X 정보.......
 	int nRetestBuffer_Num; //2016.0810
 	int nLdBuffer_Num; //1
@@ -2698,11 +2649,113 @@ struct tagRECIPE_INFO
 
 	//UnPress 일때의 디바이스 간격
 	double	dLoaderTransferTrayDeviceGap;
+	DWORD dSatbleTime;
+	double nEpoxyRunSpeed;
+	double nEpoxyXYRunSpeed[3];//[0]//vel [1]:acc [2] dec
+	int nEpoxyDotScrewCount;
+	double dEpoxyXOffSet;
+	double dEpoxyYOffSet;
+
+	double nRubHSRunSpeed;
+
+	int fDispenserVppmA;
 };
 extern tagRECIPE_INFO	st_recipe;
 
+
+
+struct tagALL_TRAY_INFO
+{
+	int nNewLotIn;            
+	int nLastModule;				// 마지막 자재인지 체크
+	int nModuleCnt;					// tray 안에 있는 모듈수량.
+	int nTrayExist;					//tray 존재 유/무 추가 2015.0226 james
+	// jtkim 20150811
+	int nReworkMode;				// rework mode......
+	
+	//2015.0226 추가 
+	CString strLotNo;				// lot no......
+	CString strPartNo;				// part no......
+	CString strProcess;				// process id.....
+	CString strOptCode;				// opt code (lot display에서 정보 가져오기)
+	CString strFabSite;	          //2017.0105
+	// jtkim 2015127
+	CTime tStandBy;
+	
+	// jtkim 20160812
+	int		nTestMode;				// ONESHOT, HOT, COLD, GATE......
+	int		nInterface;				// ftp / local......
+	int		nRetry;					// retry count.....
+	int		nBarcodeMode;			// barcode 전송선택 (1개/2개)
+	int		nQty;					// lot 수량.....
+	int		nModuleCount;			//
+	int		nPgmDown;				// pgm download 완료......
+	
+	//2017.0109
+	int				nLogCount;
+	int				nStartStatus;
+	CString			strMaterial;			// matrial id.....
+	CString			strLogKey[50];
+	CString			strLogData[50];
+	CString			strMovePos[2];
+	
+	tagPCB_INFO st_pcb_info[MAX_TRAY_ROW][MAX_TRAY_COL]; // pcb 구조체 변수..... 
+	tagPCB_INFO st_dvc_info[2][MAX_TRAY_ROW][MAX_TRAY_COL]; //HEATSINK
+};
+extern tagALL_TRAY_INFO st_tray_info[THREAD_MAX_SITE];
+
+
+struct tagTEST_SITE_INFO
+{
+	CString strBuffNo;
+	CString strLotNo;				// test site lot no....
+	CString strPartNo;				// test site part no.....
+	
+	int		nModuleCount;			//
+	int		nPgmDown;				// pgm download 완료......
+	int		nChamberDoor;			// chanber door open......
+	// jtkim 20160806
+	int		nTestBdStart;			// test site 통신체크 현재 진행상태........
+	
+	tagPCB_INFO st_pcb_info[3]; // pcb 구조체 변수.....
+	
+	int nSite_Pos; //1:TESTSITE_LEFT, 2:TESTSITE_RIGHT   //james 2016.0809 
+	int nStart_FixPos; //작업 가능한 사이트 0~7 까지 의 소켓 정보(0번, 4번 소켓이 시작 위치이며, 체크 및 동작 위치로 FIX이다) //james 2016.0813 
+	
+	int nTester_Req[3];
+	
+};
+extern tagTEST_SITE_INFO st_test_site_info[THREAD_MAX_SITE]; //2015.0216 [2][2];
+
+struct tag_BUFFER_INFO
+{
+	int nBuffer_Req[3];
+	
+	CString strLotNo;				// test site lot no....
+	CString strPartNo;				// test site part no.....
+	CString strEqpID;				// test site epq id.....
+	CString strOptCode;				// opt code (lot display에서 정보 가져오기)
+	
+	//james 2016.0813 
+	int nTestSIte_No;	  //작업이 지정된 정보, Test Site #1,#2,#3,#4, #5,#6,#7,#8
+	int nTestSite_LR_Pos; //작업이 지정된 정보, TESTSITE_LEFT(test #1,#2,#3,#4), TESTSITE_RIGHT(Test #5,#6,#7,#8)
+	int nTestSite_Start_FixPos; //물리적으로 테스트사이트 작업시작위치 정보 (0 또는 4 이다.)
+	///////
+	
+	//2017.0109
+	int				nLogCount;
+	CString			strMaterial;			// matrial id.....
+	CString			strLogKey[50];
+	CString			strLogData[50];
+	
+	tagPCB_INFO st_pcb_info[MAX_BUF_SIZE]; // pcb 구조체 변수.....
+};
+extern tag_BUFFER_INFO st_buffer_info[THREAD_MAX_SITE];
+//////  2016.0806 
+
+
 //TEACHING
-enum M_TRAY_Z
+enum TRAY_Z
 {
 	P_ELV_TRAY_Z_INITPOS	= 0, //안전 위치 (down limit 위치일것임)
 	P_ELV_TRAY_Z_UPPOS,        //high  까지 빈 트레이 공급 또는 트레이를 받을떄  제일 윗쪽까지 올리면 체크
@@ -2712,46 +2765,44 @@ enum M_TRAY_Z
 	P_ELV_RECEIVE_OFFSET,//EMPTY에서 빈 트레이를 하나 받을 때의 높이
 };
 
-enum M_PRESS_Y
+enum PRESS_Y
 {
 	P_PRESS_Y_INIT_POS	 = 0,
 	P_PRESS_Y_PRESS1_POS, //PICK 1위치  각 위치 + st_recipe.dLoaderTransferTrayDeviceGap
 	P_PRESS_Y_PRESS2_POS, //PLACE 1위치  각 위치 + st_recipe.dLoaderTransferTrayDeviceGap
 };
 
-enum M_WORK_TRANSFER
+enum WORK_TRANSFER
 {
 	P_TRAY_REMOVE_X_INIT_POS = 0,
 	P_TRAY_REMOVE_X_PICK_POS,
 	P_TRAY_REMOVE_X_PLACE_POS,
 };
 
-enum M_LOADER_TRANSFER_Y
+enum LOADER_TRANSFER_Y
 {
 	P_LOADER_TRANSFER_Y_INIT_POS = 0,
-	P_LOADER_TRANSFER_Y_READY_POS = 0,
+	P_LOADER_TRANSFER_Y_READY_POS,
 	P_LOADER_TRANSFER_Y_PICK_POS,
-	p_LOADER_TRANSFER_Y_ALIGN_POS,
-	P_LOADER_TRANSFER_Y_BRUSH_POS,
-	P_LOADER_TRANSFER_Y_BRUSH_READY_POS,
+	p_LOADER_TRANSFER_Y_ALIGN_PLACE_POS,
+	P_LOADER_TRANSFER_Y_ALIGN_PICK_POS,
 	P_LOADER_TRANSFER_Y_PLACE_TOP_POS,
 	P_LOADER_TRANSFER_Y_PLACE_MID_POS,
 	P_LOADER_TRANSFER_Y_PLACE_BOT_POS,
-	P_LOADER_TRANSFER_Y_ALIGN_PICK_POS,
 };
 
-enum M_LOADER_TRANSFER_Z
+enum LOADER_TRANSFER_Z
 {
 	P_LOADER_TRANSFER_Z_INIT_POS = 0,
 	P_LOADER_TRANSFER_Z_UP_POS,
 	P_LOADER_TRANSFER_Z_ALIGN_PLACE_POS,//P_LOADER_TRANSFER_Z_ALIGN_POS,
+	P_LOADER_TRANSFER_Z_ALIGN_PICKPOS,//P_LOADER_TRANSFER_Z_BRUSH_POS,
 	P_LOADER_TRANSFER_Z_TRAY_POS,
 	P_LOADER_TRANSFER_Z_CARRIER_PLACE_POS,
-	P_LOADER_TRANSFER_Z_ALIGN_PICKPOS,//P_LOADER_TRANSFER_Z_BRUSH_POS,
 	P_LOADER_TRANSFER_Z_LASER_CHKPOS,
 };
 
-enum M_UNLOADER_TRANSFER_X
+enum UNLOADER_TRANSFER_X
 {
 	P_UNLOADER_TRANSFER_X_INIT_POS	= 0,
 	P_UNLOADER_TRANSFER_X_INREADY_POS,
@@ -2763,19 +2814,19 @@ enum M_UNLOADER_TRANSFER_X
 	P_UNLOADER_TRANSFER_X_ZIGPLACE_POS,
 };
 
-enum M_UNLOADER_TRANSFER_Y
+enum UNLOADER_TRANSFER_Y
 {
 	P_UNLOADER_TRANSFER_Y_INIT_POS	= 0,
-	//P_UNLOADER_TRANSFER_Y_INREADY_POS, //아래위치
+	P_UNLOADER_TRANSFER_Y_INREADY_POS, //아래위치
 	P_UNLOADER_TRANSFER_Y_READY_POS,//중간위치
-	//P_UNLOADER_TRANSFER_Y_OUTREADY_POS, //위에 위치	//Y만 움직이면 기구물 충돌 위치이므로 일단 X축만 이동하여 안전 위치로 움직인다.
+	P_UNLOADER_TRANSFER_Y_OUTREADY_POS, //위에 위치	//Y만 움직이면 기구물 충돌 위치이므로 일단 X축만 이동하여 안전 위치로 움직인다.
 	P_UNLOADER_TRANSFER_Y_PICK_TOP_POS,	
 	P_UNLOADER_TRANSFER_Y_PICK_MID_POS,	
 	P_UNLOADER_TRANSFER_Y_PICK_BOT_POS,
 	P_UNLOADER_TRANSFER_Y_ZIGPLACE_POS,		
 };
 
-enum M_UNLOADER_TRANSFER_Z
+enum UNLOADER_TRANSFER_Z
 {
 	P_UNLOADER_TRANSFER_Z_INIT_POS	= 0,
 	P_UNLOADER_TRANSFER_Z_PICKTOP_POS,
@@ -2784,13 +2835,167 @@ enum M_UNLOADER_TRANSFER_Z
 	P_UNLOADER_TRANSFER_Z_ZIGPLACE_POS,	
 };
 
-enum M_CARRIER_X
+enum CARRIER_X
 {
 	P_CARRIER_X_INIT_POS = 0,
 	P_CARRIER_X_PUSH_POS,//한번 민 거리
 	P_CARRIER_X_PRESS_POS,//잠깐 뒤로 뺸 거리
 	P_CARRIER_X_UNPRESS_POS,//밀거나, UNPRESS 하는 위치가 같다.밀기위해 Loaer위치로 이동한 거리
 };
+
+
+enum EPOXY_TRANSFER_X
+{
+	P_EPOXY_TRANSFER_X_INIT_POS = 0,	///// Epoxy Transfer Init Pos 
+	P_EPOXY_TRANSFER_X_SAFETY,
+	P_EPOXY_TRANSFER_X_FIRST_START_POS,
+	P_EPOXY_TRANSFER_X_FIRST_END_POS,
+	P_EPOXY_TRANSFER_X_SECOND_START_POS,
+	P_EPOXY_TRANSFER_X_SECOND_END_POS,
+	P_EPOXY_TRANSFER_X_DOT_POS1,
+	P_EPOXY_TRANSFER_X_DOT_POS2,
+	P_EPOXY_TRANSFER_X_DOT_POS3,
+	P_EPOXY_TRANSFER_X_DOT_POS4,
+	P_EPOXY_TRANSFER_X_DISCHARGE_POS,
+	//P_EPOXY_TRANSFER_X_SUCKTION_POS,
+};
+//	P_EPOXY_TRANSFER_X_MEASURE_POS,
+//	,
+
+enum EPOXY_TRANSFER_Y
+{
+	P_EPOXY_TRANSFER_Y_INIT_POS	 = 0,	///// Epoxy Transfer Init Pos 
+	P_EPOXY_TRANSFER_Y_SAFETY,
+	P_EPOXY_TRANSFER_Y_FIRST_START_POS	,
+	P_EPOXY_TRANSFER_Y_FIRST_END_POS,
+	P_EPOXY_TRANSFER_Y_SECOND_START_POS,
+	P_EPOXY_TRANSFER_Y_SECOND_END_POS,
+	P_EPOXY_TRANSFER_Y_DOT_POS1,
+	P_EPOXY_TRANSFER_Y_DOT_POS2,
+	P_EPOXY_TRANSFER_Y_DOT_POS3,
+	P_EPOXY_TRANSFER_Y_DOT_POS4,
+	P_EPOXY_TRANSFER_Y_DISCHARGE_POS,
+	//P_EPOXY_TRANSFER_Y_SUCKTION_POS,
+};
+//	P_EPOXY_TRANSFER_Y_MEASSURE_POS,
+//	,
+
+
+enum EPOXY_TRANSFER_Z
+{
+	P_EPOXY_TRANSFER_Z_INIT_POS = 0,
+	P_EPOXY_TRANSFER_Z_TOP_DOWN_POS,
+	P_EPOXY_TRANSFER_Z_MID_DOWN_POS,
+	P_EPOXY_TRANSFER_Z_BOT_DOWN_POS,
+	P_EPOXY_TRANSFER_Z_CLEANNING_DOWN_POS,	
+};
+//	P_EPOXY_TRANSFER_Z_MEASURE_DOWN_POS,
+
+enum EPOXY_SCREW
+{
+	P_EPOXY_SCREW_INIT_POS = 0,
+};
+
+enum HEATSINK_TRANSFER_X
+{
+	P_HEATSINK_TRANSFER_X_INIT_POS = 0,
+/*	P_HEATSINK_TRANSFER_X_PICK_POS,*/
+	P_HEATSINK_TRANSFER_X_CARRIER_SAFETY_POS,
+	P_HEATSINK_TRANSFER_X_DISPENSOR_SAFETY_POS,
+	P_HEATSINK_TRASNFER_X_TURN_PLACE_POS,
+	P_HEATSINK_TRASNFER_X_TURN_PICK_POS,
+	P_HEATSINK_TRASNFER_X_TURN_READY_POS,
+//	P_HEATSINK_TRASNFER_X_DISPENSER_POS,
+	P_HEATSINK_TRANSFER_X_PLACE_TOPPOS,
+	P_HEATSINK_TRANSFER_X_PLACE_MIDPOS,
+	P_HEATSINK_TRANSFER_X_PLACE_BOTPOS,
+/*	P_HEATSINK_TRASNFER_X_MEASURE_POS,*/
+	P_HEATSINK_TRANSFER_X_INSPECT_POS,
+	P_HEATSINK_TRANSFER_X_INSPECT_GABAGE_POS	,
+	P_HEATSINK_TRANSFER_X_HEATSINK_BOX_1_1,
+	P_HEATSINK_TRANSFER_X_HEATSINK_BOX_1_2,
+	P_HEATSINK_TRANSFER_X_HEATSINK_BOX_1_3,
+	P_HEATSINK_TRANSFER_X_HEATSINK_BOX_1_4,
+	P_HEATSINK_TRANSFER_X_HEATSINK_BOX_2_1,
+	P_HEATSINK_TRANSFER_X_HEATSINK_BOX_2_2,
+	P_HEATSINK_TRANSFER_X_HEATSINK_BOX_2_3,
+	P_HEATSINK_TRANSFER_X_HEATSINK_BOX_2_4,
+};
+
+enum HEATSINK_TRANSFER_Y
+{
+	P_HEATSINK_TRANSFER_Y_INIT_POS = 0,
+	P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS,
+	P_HEATSINK_TRANSFER_Y_DISPENSOR_SAFETY_POS,
+	P_HEATSINK_TRASNFER_Y_TURN_PLACE_POS,
+	P_HEATSINK_TRASNFER_Y_TURN_PICK_POS,
+	P_HEATSINK_TRASNFER_Y_TURN_READY_POS,
+//	P_HEATSINK_TRASNFER_Y_DISPENSER_POS,
+	P_HEATSINK_TRANSFER_Y_PLACE_TOPPOS,
+	P_HEATSINK_TRANSFER_Y_PLACE_MIDPOS,
+	P_HEATSINK_TRANSFER_Y_PLACE_BOTPOS,
+	P_HEATSINK_TRANSFER_Y_INSPECT_POS,
+	P_HEATSINK_TRANSFER_Y_INSPECT_GABAGE_POS	,
+	P_HEATSINK_TRANSFER_Y_HEATSINK_BOX_1_1,
+	P_HEATSINK_TRANSFER_Y_HEATSINK_BOX_1_2,
+	P_HEATSINK_TRANSFER_Y_HEATSINK_BOX_1_3,
+	P_HEATSINK_TRANSFER_Y_HEATSINK_BOX_1_4,
+	P_HEATSINK_TRANSFER_Y_HEATSINK_BOX_2_1,
+	P_HEATSINK_TRANSFER_Y_HEATSINK_BOX_2_2,
+	P_HEATSINK_TRANSFER_Y_HEATSINK_BOX_2_3,
+	P_HEATSINK_TRANSFER_Y_HEATSINK_BOX_2_4,
+};
+
+enum HEATSINK_TRANSFER_Z
+{
+	P_HEATSINK_TRANSFER_Z_INIT_POS = 0,
+	P_HEATSINK_TRANSFER_Z_UP_POS,
+	P_HEATSINK_TRANSFER_Z_BOX_DOWN_POS,
+	P_HEATSINK_TRANSFER_Z_TURN_PLACE_POS,
+	P_HEATSINK_TRANSFER_Z_TURN_PICK_POS,
+	P_HEATSINK_TRANSFER_Z_CARRIER_TOP_DOWN_POS,
+	P_HEATSINK_TRANSFER_Z_CARRIER_MID_DOWN_POS,
+	P_HEATSINK_TRANSFER_Z_CARRIER_BOT_DOWN_POS,
+	P_HEATSINK_TRANSFER_Z_INSPECT_POS,
+	P_HEATSINK_TRANSFER_Z_INSPECT_GABAGE_POS,
+};
+
+enum DISPENSER_Y
+{
+	P_DISPENSOR_Y_INIT_POS = 0,
+	P_DISPENSOR_Y_HEATSINK_POS,
+	P_DISPENSOR_Y_DISPENSING_END_POS,
+	P_DISPENSOR_Y_LIQUID_CHECK_POS,
+	P_DISPENSOR_Y_GABAGE_POS,
+};
+
+enum HEATSINK_PICKER_PITCH
+{
+	P_HEATSINK_PICKER_PITCH_INIT_POS = 0,
+	P_HEATSINK_PICKER_PITCH_CLAMP_POS,
+	P_HEATSINK_PICKER_PITCH_UNCLAMP_POS,
+};
+
+enum HEATSINK_INSPECT_Y
+{
+	P_HEATSINK_INSPECT_Y_INIT_POS = 0,
+	P_HEATSINK_INSPECT_Y_PRESS_START_POS,
+	P_HEATSINK_INSPECT_Y_PRESS_END_POS,
+	P_HEATSINK_INSPECT_Y_VISION_TOP_POS,
+	P_HEATSINK_INSPECT_Y_VISION_MID_POS,
+	P_HEATSINK_INSPECT_Y_VISION_BOT_POS,
+	P_HEATSINK_INSPECT_Y_VISION_TOP2_POS,
+	P_HEATSINK_INSPECT_Y_VISION_MID2_POS,
+	P_HEATSINK_INSPECT_Y_VISION_BOT2_POS,
+};
+
+enum HEATSINK_INSPECT_Z
+{
+	P_HEATSINK_INSPECT_Z_INIT_POS = 0,
+	P_HEATSINK_INSPECT_Z_VISION_POS,
+	P_HEATSINK_INSPECT_Z_VISION_2_POS,
+};
+
 
 //Buffer_Info 3개의 사이트
 #define MAX_SHIFT_DATA_NUM		12 //최대 데이타 
@@ -2802,11 +3007,11 @@ enum M_CARRIER_X
 #define BTM			2
 
 //BIN_VALUE -> 0:Load_bin 1:Epoxy bin 2: Heat_sink bin 3:Vision_bin 4: 자재 없음
-#define  TYPE_CDIMM	0
-#define  TYPE_EPOXY	1
-#define  TYPE_HEATSINK	2
-#define  TYPE_VISION	3
-#define  TYPE_NONE	4
+#define  BIN_CDIMM	1
+#define  BIN_EPOXY		2
+#define  BIN_HEATSINK	3
+#define  BIN_VISION	4
+
 
 enum carrier_top_buffer_move_info_shift //carrier buffer가 이동하면서 각각의 정보를 유지 및 생성하면서 쉬프트한다 
 {
@@ -2851,7 +3056,7 @@ struct st_carrier_buffer_info_param
 	//int n_bin[3]; //현재 기준 빈정보를 가진다, 필요하면 더 늘리자	
 	int n_bypass[3];//1 : btpass//2014,1102 ybs
 
-/*	int nYesNo;										// ssd 유무.....*/
+	//int nYesNo;										// ssd 유무.....*/
 	int nBin[3];										// ssd 테스트 결과.....
 	int nRetestCnt[3];								// retest 테스트 횟수......
 	int nRetest[3];
@@ -2864,7 +3069,7 @@ struct st_carrier_buffer_info_param
 	DWORD dwBdTime[3][3];							// test time......
 
 	int n_totalcnt; //lot 시작시 받은 전체 수량 	
-	int n_count[3][4]; //작업한 수량 //정보는 [0][*]: top [1][*]: middle [2][*]: bottm    [*][0]: load [*][1]: epoxy [*][2]: heat sink [*][3]: vision
+	int n_count[3]; //작업한 수량 //정보는 [0][*]: top [1][*]: middle [2][*]: bottm    [*][0]: load [*][1]: epoxy [*][2]: heat sink [*][3]: vision
 	int n_out_count[3][3]; //작업한 수량 //정보는 [0][*]: top [1][*]: middle [2][*]: bottm [*][0]: load [*][1]: heat [*][2]: vison
 	int n_buffer_skip_cnt[3];
 
@@ -2887,18 +3092,18 @@ struct st_variable_param
 {
 	int nBcrNum;//read barcode value
 
-	int n_top_carrier_buffer_exist_status_check_info[60][3]; //총 30개의 정보 플레그 존재
-	int n_temp_top_carrier_buffer_exist_status_check_info[50]; //총 30개의 정보 플레그 임시 저장 변수 
-	int n_top_carrier_buffer_io_status_read_chk_data[60]; //총 30개의 i/o 상태정보 저장
+	int n_top_carrier_buffer_exist_status_check_info[40][3]; //총 30개의 정보 플레그 존재
+	int n_temp_top_carrier_buffer_exist_status_check_info[40]; //총 30개의 정보 플레그 임시 저장 변수 
+	int n_top_carrier_buffer_io_status_read_chk_data[40]; //총 30개의 i/o 상태정보 저장
 
-	int n_btm_carrier_buffer_exist_status_check_info[60][3]; //총 30개의 정보 플레그 존재
-	int n_temp_btm_carrier_buffer_exist_status_check_info[50]; //총 30개의 정보 플레그 임시 저장 변수 
-	int n_btm_carrier_buffer_io_status_read_chk_data[60]; //총 30개의 i/o 상태정보 저장
+	int n_btm_carrier_buffer_exist_status_check_info[30][3]; //총 30개의 정보 플레그 존재
+	int n_temp_btm_carrier_buffer_exist_status_check_info[30]; //총 30개의 정보 플레그 임시 저장 변수 
+	int n_btm_carrier_buffer_io_status_read_chk_data[30]; //총 30개의 i/o 상태정보 저장
 
 
 	//bottom id buffer 정보 
-	int n_btm_carrier_buffer_exist_check_info[8]; //left gripper [0],[1], right gripper [2],[3], main fix clamp  [4],[5], init fix clamp [6],[7]
-	int n_btm_carrier_buffer_io_status_read_chk_data[8]; //총8개의 i/o 상태정보 저장
+	//int n_btm_carrier_buffer_exist_check_info[8]; //left gripper [0],[1], right gripper [2],[3], main fix clamp  [4],[5], init fix clamp [6],[7]
+	//int n_btm_carrier_buffer_io_status_read_chk_data[8]; //총8개의 i/o 상태정보 저장
 
 };
 extern  st_variable_param  st_var;

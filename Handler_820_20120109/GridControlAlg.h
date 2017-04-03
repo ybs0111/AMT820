@@ -13,17 +13,12 @@
 class GridControlAlg  
 {
 public:
-	int GridCellRow_Search(TSpread *grid, int row, int col_s, int col_e, CString str_find);
-	int GridCellCol_Search(TSpread *grid, int col, int row_s, int row_e, CString str_find);
-	int GridCellCol(TSpread *grid);
-	int GridCellRow(TSpread *grid);
-	void GridCellWidth_P(TSpread *grid, int col, int width);
-	void GridCellHeight_P(TSpread *grid, int row, int height);
-	void GridCellScroll(TSpread *grid, int pos);
-	void GridReset(TSpread *grid);
-	void GridAutoSize(TSpread *grid, BOOL used);
 	void GridCellWidth_L(TSpread *grid, int col, double width);
 	void GridCellHeight_L(TSpread *grid, int row, double height);
+	void GridReset(TSpread *grid);
+	void GridAutoSize(TSpread *grid, BOOL used);
+	void GridCellWidth(TSpread *grid, int col, double width);
+	void GridCellHeight(TSpread *grid, int row, double height);
 	void GridFileOpen(TSpread *grid, CString filename, CString sheetname);
 	void GridFileSave(TSpread *grid, CString filename, CString sheetname);
 	void GridCellMerge(TSpread *grid, int start_row, int start_col, int count_row, int count_col);

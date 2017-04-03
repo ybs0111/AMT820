@@ -44,6 +44,7 @@ public:
 	int				m_n_axis_home[10];
 	int				m_n_axis_direction[10];
 	int				m_n_axis_account[10];
+	int				mn_tab_number;
 
 	CString			m_str_part_name;
 	CString			m_str_part_axis_name[10];
@@ -51,6 +52,8 @@ public:
 	CString			m_str_axis_pos_info[10][M_MAX_POS];
 // Construction
 public:
+	void OnMotorPart_Select_Axis(int nAxis);
+	void OnMotor_Part_Change(int nPart);
 	void OnAxis_Position(int n_pos);
 	void Init_Button();
 	void Init_Group();

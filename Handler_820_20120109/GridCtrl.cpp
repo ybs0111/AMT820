@@ -113,6 +113,7 @@
 #include "stdafx.h"
 #include "MemDC.h"
 #include "GridCtrl.h"
+#include "Public_Function.h"
 
 // OLE stuff for clipboard operations
 #include <afxadv.h>            // For CSharedFile
@@ -189,7 +190,7 @@ CGridCtrl::CGridCtrl(int nRows, int nCols, int nFixedRows, int nFixedCols)
 #if !defined(GRIDCONTROL_NO_DRAGDROP) || !defined(GRIDCONTROL_NO_CLIPBOARD)
     _AFX_THREAD_STATE* pState = AfxGetThreadState();
     if (!pState->m_bNeedTerm && !AfxOleInit())
-        AfxMessageBox(_T("OLE initialization failed. Make sure that the OLE libraries are the correct version"));
+        Func.MsgLog(_T("OLE initialization failed. Make sure that the OLE libraries are the correct version"));
 #endif
 
     // Store the system colours in case they change. The gridctrl uses
@@ -6967,7 +6968,7 @@ BOOL CGridCtrl::Save(LPCTSTR filename, TCHAR chSeparator/*=_T(',')*/)
 
     CATCH (CFileException, e)
     {
-        AfxMessageBox(_T("Unable to save grid list"));
+        Func.MsgLog(_T("Unable to save grid list"));
         return FALSE;
     }
     END_CATCH
@@ -7067,7 +7068,7 @@ BOOL CGridCtrl::Load(LPCTSTR filename, TCHAR chSeparator/*=_T(',')*/)
 
     CATCH (CFileException, e)
     {
-        AfxMessageBox(_T("Unable to load grid data"));
+        Func.MsgLog(_T("Unable to load grid data"));
         return FALSE;
     }
     END_CATCH

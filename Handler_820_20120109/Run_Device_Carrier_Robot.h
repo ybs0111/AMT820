@@ -32,9 +32,12 @@ public:
 	int mn_RunBcrStep;
 	int mn_reinstate_step;
 	int mn_InitStep;
+	int nBcrNum;
 
+	CString m_strFindLotNo;
 	int m_nInspectAxis;
 	int m_nEpoxy[4];
+	int m_nRobot_Y;
 	
 	int mn_retry_cnt;
 	long ml_retry_wait[3];
@@ -94,13 +97,15 @@ public:
 	char mc_jamcode[10];
 
 	
-	DWORD m_dwBcrWaitTime;
+	DWORD m_dwBcrWaitTime[3];
 	int mn_BufferPos;
 
 	int nRetryCyl;
 
+	int m_Thread_Flag[3];
+
 public:
-	void ThreadRun();
+	void Thread_Run();
 	void RunInit();
 	void RunMove();
 
@@ -128,19 +133,19 @@ public:
 
 	//TOP fwd bwd를 위한 up down 실린더(모터가  실린더를 다운시키고 난뒤에 민다.
 	void Set_Device_Carrier_Slide_Top_X_UpDown(int OnOff);
-	int Chk_Device_Carrier_Slide_Top_X_UpDown( int nOnOff );
+	int Chk_Device_Carrier_Slide_Top_X_UpDown( int OnOff );
 
 	//BTM fwd bwd
 	void Set_Device_Carrier_Slide_Bottom_X_ForBackward(int OnOff);
-	int Chk_Device_Carrier_Slide_Bottom_X_ForBackward( int nOnOff );
+	int Chk_Device_Carrier_Slide_Bottom_X_ForBackward(int OnOff);
 
 	//Carrier L R Up Down를 위한 clamp벌림
-	void Set_Device_Carrier_Clamp_FwdBwd(int OnOff);
-	int Chk_Device_Carrier_Clamp_FwdBwd( int nOnOff );
+	void Set_Device_Carrier_Clamp_FwdBwd(int nMode, int OnOff);
+	int Chk_Device_Carrier_Clamp_FwdBwd(int nMode, int OnOff );
 
 	//LEFT_RIGHT CARRIER UP DOWN
-	void Set_Device_Carrier_Slide_Z_Cylinder_UpDown(int OnOff);
-	int Chk_Device_Carrier_Slide_Z_Cylinder_UpDown( int nOnOff );
+	void Set_Device_Carrier_Slide_Z_Cylinder_UpDown(int nMode,int OnOff);
+	int Chk_Device_Carrier_Slide_Z_Cylinder_UpDown(int nMode, int nOnOff );
 
 	//Carrier pin 고정1번째 sol만 있음
 	//Carrier pin 고정2,3,6,번째
@@ -151,7 +156,8 @@ public:
 
 	int RunMoveUp();
 	int RunMoveDown();
-
+	int Check_Carrier_Move_Enable( int nMode);
+	int CheckCarrierStatus( int nCycle);
 
 };
 

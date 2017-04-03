@@ -81,7 +81,7 @@ void CScreen_Lock::OnInitialUpdate()
 	mp_lock_font->CreateFont(35,0,0,0,900,0,0,0,0,0,0,ANTIALIASED_QUALITY,0,"MS Sans Serif");
 	/* ************************************************************************** */
 
-	st_work.n_run_status = dLOCK;
+	st_work.mn_run_status = dLOCK;
 	st_handler.n_system_lock = TRUE;	// 시스템 잠금 상태 설정 
 
 	OnLocking_Lable_Set();				// 칼라 텍스트 박스 생성 함수
@@ -143,6 +143,6 @@ BOOL CScreen_Lock::DestroyWindow()
 	mp_lock_font = NULL;
 	/* ************************************************************************** */
 
-	st_work.n_run_status = dSTOP;
+	st_work.mn_run_status = dSTOP;
 	return CFormView::DestroyWindow();
 }

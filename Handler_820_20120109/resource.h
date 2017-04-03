@@ -260,6 +260,7 @@
 #define IDC_BTN_PARTIAL_YES             324
 #define IDI_ICON9                       324
 #define IDI_LEFT_D                      326
+#define IDC_BTN_MOTOR_SPEED             326
 #define IDI_LEFT_E                      327
 #define IDD_DIALOG_TRAY                 328
 #define IDD_DIALOG_TRAY_USED            329
@@ -402,6 +403,7 @@
 #define IDC_DGT_ALLOW_PULSE             533
 #define IDC_BTN_MU_APPLY                534
 #define IDC_BTN_CREATE                  534
+#define IDC_BTN_TEACH_WRITE             534
 #define IDC_BTN_MU_CANCEL               535
 #define IDI_MOTOR_APPLY                 535
 #define IDC_BTN_MU_EL_DOWN              536
@@ -419,7 +421,9 @@
 #define IDB_BITMAP10                    542
 #define IDC_BTN_MU_GUIDE_OFF_LEFT       543
 #define IDB_BITMAP_HEAD                 543
+#define IDC_BTN_TEACH_READ              543
 #define IDC_BTN_MU_GUIDE_OFF_RIGHT      544
+#define IDC_BTN_LOG_TRAY_MOTOR_POS      544
 #define IDC_BTN_MU_GUIDE_ON_LEFT        545
 #define IDB_BITMAP_CUT                  545
 #define IDC_BTN_MU_GUIDE_ON_RIGHT       546
@@ -863,6 +867,7 @@
 #define IDC_BTN_PASS_CHK_LBRACE_B       1055
 #define IDC_BTN_MAIN_Y_GO3              1055
 #define IDC_RADIO_LEFT_PITCH            1055
+#define IDC_LABEL_EVENT_MSG             1055
 #define IDC_BTN_PASS_CHK_X              1056
 #define IDC_DESCRIPT_IN_DATA_10         1056
 #define IDC_BTN_MAIN_Y_READ3            1056
@@ -1328,6 +1333,7 @@
 #define IDC_DGT_WAIT_TIME_7             1280
 #define IDC_DGT_ACC_13                  1280
 #define IDC_MSG_PARTIAL                 1280
+#define IDD_DIALOG_EVENT_MSG            1280
 #define IDC_DGT_WAIT_TIME_8             1281
 #define IDC_DGT_DEC_13                  1281
 #define IDC_DGT_WAIT_TIME_9             1282
@@ -5148,7 +5154,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        546
 #define _APS_NEXT_COMMAND_VALUE         32818
-#define _APS_NEXT_CONTROL_VALUE         3783
+#define _APS_NEXT_CONTROL_VALUE         3784
 #define _APS_NEXT_SYMED_VALUE           117
 #endif
 #endif

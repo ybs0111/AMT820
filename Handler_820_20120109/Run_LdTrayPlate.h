@@ -22,7 +22,7 @@ public:
 
 // Attributes
 public:
-	void ThreadRun();
+	void Thread_Run();
 	void RunMove();
 	void RunInit();
 
@@ -36,12 +36,13 @@ public:
 	CString m_strLotNo;
 	CString m_strPartNo;
 
-	int m_bClampOnOffFlag;
+	bool m_bClampOnOffFlag;
 	DWORD m_dwClampOnOff[3];
+
+	int	m_npFindWorkPosYXCPB[5];
 
 // Operations
 public:
-
 	void Set_Tray_Guide_Clamp_ForBackward(int OnOff);
 	int Chk_Tray_Guide_Clamp_ForBackward(int OnOff);
 };

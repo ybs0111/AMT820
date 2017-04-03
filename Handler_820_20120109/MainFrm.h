@@ -25,6 +25,7 @@
 /* ****************************************************************************** */
 #include "SerialComm.h"     // 시리얼 통신 클래스
 #include "PPTooltip.h"
+#include "Dialog_Event_Msg.h"
 
 #define TMR_FILE_CREATE		1011
 #define TMR_MAIN_REFRESH	1012
@@ -69,6 +70,8 @@ public:
 	CMyBasicData    mcls_m_basic;		// 기본 셋팅 정보 로딩 및 저장 클래스
 	CMyJamData      mcls_frm_alarm;		// 알람 출력 클래스
 	CDialog_Alarm*  mp_alarm_dlg;		// 알람 화면에 대한 포인터 변수 선언 
+	CDialog_Event_Msg*  mp_msg_dlg;
+
 // Operations
 public:
 	void OnMain_Thread_Destroy();
@@ -78,6 +81,8 @@ public:
 	void OnMain_Path_Set();
 	int OnMenu_Change_Checking();
 	void OnSwitchToForm(int nForm);
+	void OnMainFrame_SelectMessageDisplay();
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CMainFrame)
@@ -136,9 +141,11 @@ protected:
 	afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
 	afx_msg void OnNcRButtonDown(UINT nHitTest, CPoint point);
 	afx_msg void OnPgmInfo();
+	afx_msg void OnMotorSpeed();
 	//}}AFX_MSG
 	afx_msg LRESULT OnViewChangeMode(WPARAM wParam,LPARAM lParam) ;		// Post Message에 대한 화면 전환 사용자 사용자 정의 메시지 선언 
 	afx_msg void OnToolbarDropDown(NMTOOLBAR* pnmtb, LRESULT* plRes);	// 텍스트 툴바 드롭다운 메시지 선언 
+	afx_msg LRESULT OnMainframe_Work(WPARAM wParam, LPARAM lParam);
 //	afx_msg LRESULT OnCommand_Client_1(WPARAM wParam, LPARAM lParam);
 //	afx_msg LRESULT OnCommand_Server_1(WPARAM wParam, LPARAM lParam);
 	afx_msg LONG OnCommunication(UINT, LONG);							// RS-232C 시리얼 포트 제어 메시지
@@ -146,6 +153,7 @@ protected:
 	afx_msg LRESULT OnDataSend(WPARAM wParam, LPARAM lParam);			// RS-232C 시리얼 포트 통한 데이터 송신 메시지
 	afx_msg LRESULT OnSerialPort(WPARAM wParam,LPARAM lParam) ;			// 시리얼 포트 생성/삭제 메시지 선언 
 	afx_msg void OnDataChange(WPARAM wParam,LPARAM lParam) ;	
+	afx_msg LRESULT OnMainMessageEvent(WPARAM wParam,LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 };
 

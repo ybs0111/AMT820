@@ -30,6 +30,8 @@
 #include "Dialog_LotStart.h"
 #include "AMTLotManager.h"
 #include "Dialog_Data_Lot.h"
+#include "IO_Manager.h"
+#include "Dialog_Pass_Check.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -73,6 +75,7 @@ BEGIN_MESSAGE_MAP(CScreen_Main, CFormView)
 	//{{AFX_MSG_MAP(CScreen_Main)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_LOT_OPEN, OnLotOpen)
+	ON_BN_CLICKED(IDC_BTN_DOOR_OPEN, OnBtnDoorOpen)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_WORK_END, OnMain_Work_Info_Display)  // 테스트 결과 정보 화면에 출력하기 위한 사용자 정의 메시지 추가 
 END_MESSAGE_MAP()
@@ -315,14 +318,14 @@ void CScreen_Main::OnMain_Loader_Set()
 
 			//만약 offline으로 작업자가 양산하는 경우를 대비하기 위함..
 
-			if(FAS_IO.Get_Out_Bit(st_io.o_unload_safety) == IO_ON)
+			if(g_ioMgr.Get_Out_Bit(st_io.o_unload_safety) == IO_ON)
 			{
-				FAS_IO.Set_Out_Bit(st_io.o_unload_safety, IO_OFF);
+				g_ioMgr.Set_Out_Bit(st_io.o_unload_safety, IO_OFF);
 			}
 			
-			if(FAS_IO.Get_Out_Bit(st_io.o_unload_ready) == IO_ON)
+			if(g_ioMgr.Get_Out_Bit(st_io.o_unload_ready) == IO_ON)
 			{
-				FAS_IO.Set_Out_Bit(st_io.o_unload_ready, IO_OFF);
+				g_ioMgr.Set_Out_Bit(st_io.o_unload_ready, IO_OFF);
 			}
 			
 			if(st_handler.cwnd_list != NULL)	// 리스트 바 화면 존재
@@ -336,14 +339,14 @@ void CScreen_Main::OnMain_Loader_Set()
 		{
 			st_handler.n_load_state = FALSE;
 
-			if(FAS_IO.Get_Out_Bit(st_io.o_unload_safety) == IO_ON)
+			if(g_ioMgr.Get_Out_Bit(st_io.o_unload_safety) == IO_ON)
 			{
-				FAS_IO.Set_Out_Bit(st_io.o_unload_safety, IO_OFF);
+				g_ioMgr.Set_Out_Bit(st_io.o_unload_safety, IO_OFF);
 			}
 			
-			if(FAS_IO.Get_Out_Bit(st_io.o_unload_ready) == IO_ON)
+			if(g_ioMgr.Get_Out_Bit(st_io.o_unload_ready) == IO_ON)
 			{
-				FAS_IO.Set_Out_Bit(st_io.o_unload_ready, IO_OFF);
+				g_ioMgr.Set_Out_Bit(st_io.o_unload_ready, IO_OFF);
 			}
 		}
 */
@@ -382,7 +385,7 @@ void CScreen_Main::OnMain_Time_Display(int iFlag)
 	}
 	else
 	{
-		i_state = st_work.n_run_status;
+		i_state = st_work.mn_run_status;
 	}
 
 	switch(i_state)	{
@@ -821,4 +824,35 @@ void CScreen_Main::GridMerge(UINT nID, int srow, int scol, int nrow, int ncol)
 
 	Grid = NULL;
 	delete Grid;
+}
+
+void CScreen_Main::OnBtnDoorOpen() 
+{
+	CDialog_Select select_dlg;
+	CDialog_Pass_Check	pass_dlg;
+	int					n_response;
+	
+	if(st_work.mn_run_status == dRUN || st_work.mn_run_status == dINIT || st_work.mn_machine_mode == MACHINE_AUTO)
+	{
+		st_msg.mstr_event_msg[0] = _T("Door Open은 장비가 정지 상태 이고, Key 스위치가 Manual 상태에서만 가능합니다.");
+		::PostMessage(st_handler.hWnd, WM_MAIN_EVENT, CTL_YES, 0);
+		return;
+	}
+	
+	st_other.str_confirm_msg = "Door를 Open하시겠습니까?...";
+	
+	if(select_dlg.DoModal() == IDOK) 
+	{
+		if (st_handler.n_menu_lock != FALSE)  return;
+		if (st_handler.n_system_lock != FALSE)  return;  // 현재 시스템 Lock 상태인 경우 리턴
+		
+		st_other.str_pass_level = "LevelChange";
+		
+		n_response = pass_dlg.DoModal();
+		
+		if (n_response == IDOK)
+		{
+			Func.OnSet_Door_Open();
+		}	
+	}	
 }

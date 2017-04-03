@@ -71,6 +71,8 @@ public:
 	double  m_dSD_Receive_Pos_Backup[100]; //MAX 100 축 번호 배열 
 	////////////////////////////////////////////////////////////////////////////
 
+	CString str_Motor_Msg;
+
 
 public:
 	int Linear_Move(int n_LinearMapIndex, long l_AxisCnt, long *lp_AxisNum, double *dp_PosList, double *dp_SpdRatio);
@@ -84,9 +86,11 @@ public:
 	
 	int Initialize_motor_board(int n_bd_type, CString s_filename);	//motor 보드 초기화시 사용 
 	int Initialize_io_Board(int n_bd_type);	//i/o 보드 초기화시 사용 
+	int Motor_LinearSafety(int n_MapIndex, double *dp_PosList);
 
 	int Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos, double d_jogcurrentpos = -1000);	//모터 안전 정보 셋팅시 사용 
 	int Alarm_Error_Occurrence(int n_jampos, int n_run_status, char c_alarmcode[10]); //장비 알람 발생시킬때 사용하는 변수 
+	int Alarm_Error_Occurrence( int n_jampos, int n_run_status, CString strJamCode );
 
 	//	int alarm_func(int n_mode, char * cp_jamcode, char * cp_msg);
 	//int char_msg_func(int n_mode, char * cp_source_msg); //2011.0910 

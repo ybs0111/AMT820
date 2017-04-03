@@ -206,6 +206,31 @@ void CMyBasicData::OnMotorSpeed_Set_Data_Load()
 		}
 		else
 			COMI.md_allow_value[i] = d_chk;
+		
+		:: GetPrivateProfileString("MotorSpeed", "M_LIMIT" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+		d_chk = atof(chr_data);
+		
+		if ( d_chk <= 0 )
+		{
+			COMI.md_limit_position[i][0] = 0.1;
+			str_temp.Format( "%3.2f", COMI.md_limit_position[i][0] );
+			:: WritePrivateProfileString("MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+		}
+		else
+			COMI.md_limit_position[i][0] = d_chk;
+		
+		:: GetPrivateProfileString("MotorSpeed", "P_LIMIT" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+		d_chk = atof(chr_data);
+		
+		if ( d_chk <= 0 )
+		{
+			COMI.md_limit_position[i][1] = 0.1;
+			str_temp.Format( "%3.2f", COMI.md_limit_position[i][1] );
+			:: WritePrivateProfileString("MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+		}
+		else
+			COMI.md_limit_position[i][1] = d_chk;
+		
 	}
 
 	//Speed Rate
@@ -251,6 +276,12 @@ void CMyBasicData::OnMotorSpeed_Set_Data_Save()
 
 		str_temp.Format("%3.2f", COMI.md_allow_value[i] );
 		:: WritePrivateProfileString( "MotorSpeed", "Allow" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+		str_temp.Format("%3.2f", COMI.md_limit_position[i][0] );
+		:: WritePrivateProfileString( "MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+		
+		str_temp.Format("%3.2f", COMI.md_limit_position[i][1] );
+		:: WritePrivateProfileString( "MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
 	}
 	
 	str_SaveFile = OnGet_Teach_File_Name("Speed_Back" );  // 데이터 저장 파일명 로딩 함수 
@@ -276,6 +307,13 @@ void CMyBasicData::OnMotorSpeed_Set_Data_Save()
 		
 		str_temp.Format("%3.2f", COMI.md_allow_value[i] );
 		:: WritePrivateProfileString( "MotorSpeed", "Allow" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+		str_temp.Format("%3.2f", COMI.md_limit_position[i][0] );
+		:: WritePrivateProfileString( "MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+		
+		str_temp.Format("%3.2f", COMI.md_limit_position[i][1] );
+		:: WritePrivateProfileString( "MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
 	}
 	
 	// Speed Rate
@@ -961,7 +999,7 @@ void CMyBasicData::On_Teach_Data_Save()
 	{
 		strMotor.Format("%02d_Motor", i);
 		
-		for ( j = 0; j < MAX_POS; j++ )
+		for ( j = 0; j < M_MAX_POS; j++ )
 		{
 			strPos.Format("%02d_Pos", j);
 			
@@ -976,7 +1014,7 @@ void CMyBasicData::On_Teach_Data_Save()
 	{
 		strMotor.Format("%02d_Motor", i);
 		
-		for ( j = 0; j < MAX_POS; j++ )
+		for ( j = 0; j < M_MAX_POS; j++ )
 		{
 			strPos.Format("%02d_Pos", j);
 			
@@ -1006,7 +1044,7 @@ void CMyBasicData::On_Teach_Data_Load()
 	{
 		strMotor.Format("%02d_Motor", i);
 		
-		for ( j = 0; j < MAX_POS; j++ )
+		for ( j = 0; j < M_MAX_POS; j++ )
 		{
 			strPos.Format("%02d_Pos", j);
 			
@@ -1032,7 +1070,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	CString str_load_file;
 	CString str_chk_ext;		// 파일 확장자 저장 변수
 	CString mstr_temp, str_part, str_station, str_board;			// 저장할 정보 임시 저장 변수 
-	char chr_data[50], chr_buf[20];	
+//	char chr_data[50], chr_buf[20];	
 	int mn_chk = 0, mn_pos = 0, n_pos = 0, i = 0, j = 0;
 	double md_chk = 0;
 	float mf_chk = 0;
@@ -1199,9 +1237,10 @@ void CMyBasicData::OnBasic_Data_Save()
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
 	CString str_save_file;
 	CString str_part, str_chk_ext;
-	char chr_buf[20];
+//	char chr_buf[20];
 	COleDateTime time_cur;
-	int mn_cur_year, mn_cur_month, mn_cur_day, mn_cur_hour, n_pos; // 현재 시간정보 저장 변수
+//	int mn_cur_year, mn_cur_month, mn_cur_day, mn_cur_hour; // 현재 시간정보 저장 변수
+	int n_pos;
 	int i = 0, j = 0; // 반복문 용
 
 	/* ************************************************************************** */
@@ -1442,7 +1481,7 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
     /* ************************************************************************** */
 	:: WritePrivateProfileString("FILE_NAME", "Device_Type", LPCTSTR(str_device), st_path.mstr_file_basic);
 
-	str_save_file = st_path.mstr_basic + str_device;  // 티칭 데이터 저장 파일 설정
+	str_save_file = /*st_path.mstr_basic*/_T("C:\\AMT820\\motor\\") + str_device;  // 티칭 데이터 저장 파일 설정
 
 	mstr_temp.Format("%d", st_work.n_grid_r[0][0]);
 	:: WritePrivateProfileString("IO_COLOR", "GRID_IN_ON_R", LPCTSTR(mstr_temp), st_path.mstr_file_basic);
@@ -1540,7 +1579,7 @@ void CMyBasicData::OnInterface_Data_Save_As(CString str_device)
 void CMyBasicData::OnMaintenance_Data_Save_As(CString str_device)
 {
 	CString str_temp, str_part;  // 로딩 정보 임시 저장 변수
-	char chr_buf[20] ;
+//	char chr_buf[20] ;
 	CString str_save_file;;
 
 	// **************************************************************************

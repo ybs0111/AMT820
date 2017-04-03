@@ -58,7 +58,7 @@ enum IO_METHOD_INFO  //robot site 정보
 #define MOT_LmMAPINDEX			0	//모터 리스트 모션 정의 
 #define MOT_IxMAPINDEX			1	//모터 직선 보간 정의 
 
-#define MAX_POS				25
+#define MAX_POS				30
 
 #define MAX_PLOT			10	// P_LOT 20130902 kjh 5개에서 무제한으로 변경 요청 20130925 kjh
 ///////////////////////////////////
@@ -141,6 +141,7 @@ enum IO_METHOD_INFO  //robot site 정보
 #define CTL_PROCEED			0			// 함수가 진행중이다 
 #define CTL_GOOD			1			// 조건이 만족되었다 참 
 #define CTL_RETRY			2			// 다시 처음부터 조건을 재 시도한다 
+#define CTL_DOOROPEN		4
 
 #define CTL_LOTWAIT				0
 #define CTL_LOTSTART			1
@@ -383,7 +384,7 @@ struct st_motor_param
 
 	
 	//모터 티칭값을 define하여 위치값을 정의한다 
-    double md_pos[MAX_POS];
+    double md_pos[M_MAX_POS];
 	
 	bool mb_HomeFlag;
 	int mn_retry_cnt;

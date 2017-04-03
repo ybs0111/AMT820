@@ -90,6 +90,10 @@ BOOL CDialog_Motor_Part::OnInitDialog()
 	Init_Button();
 
 	m_tab_motor_part.Init_Tab(this, m_n_part);
+
+	mn_tab_number = 0;
+	OnMotor_Part_Change(mn_tab_number);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -97,9 +101,20 @@ BOOL CDialog_Motor_Part::OnInitDialog()
 void CDialog_Motor_Part::OnBtnExit() 
 {
 	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock) return;
-
-	DestroyWindow();
+	if (st_handler.mn_menu_lock != TRUE)
+	{
+		DestroyWindow();
+	}
+	else
+	{
+		if (st_handler.cwnd_list != NULL)
+		{
+			sprintf(st_msg.c_abnormal_msg, "모터가 동작중입니다.");
+			if ( g_local.GetLocalType() == LOCAL_ENG ) sprintf(st_msg.c_normal_msg, " Motor is working. ");
+			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
+		}
+		
+	}
 }
 
 BOOL CDialog_Motor_Part::Create()
@@ -128,7 +143,7 @@ void CDialog_Motor_Part::PostNcDestroy()
 	}
 
 	delete this;
-	Func.m_p_motor = NULL;
+	Func.m_p_motor_part = NULL;
 	
 	CDialog::PostNcDestroy();
 }
@@ -286,685 +301,152 @@ void CDialog_Motor_Part::Init_Button()
 
 void CDialog_Motor_Part::OnChkAxis1() 
 {
-	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock == TRUE)
+	if (mn_tab_number == 0 || st_handler.mn_menu_lock == TRUE)
 	{
-		OnAxis_Position(m_n_axis_sel);
-
-		m_chk_axis_1.SetCheck(FALSE);
+		OnMotor_Part_Change(mn_tab_number);
 		return;
 	}
-	else
-	{
-		if(m_chk_axis_1.GetCheck() == FALSE)
-		{
-			m_chk_axis_1.SetCheck(TRUE);
-			return;
-		}
-
-		
-	}
-
-	if(m_chk_axis_2.GetCheck())
-	{
-		m_chk_axis_2.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_3.GetCheck())
-	{
-		m_chk_axis_3.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_4.GetCheck())
-	{
-		m_chk_axis_4.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_5.GetCheck())
-	{
-		m_chk_axis_5.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_6.GetCheck())
-	{
-		m_chk_axis_6.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_7.GetCheck())
-	{
-		m_chk_axis_7.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_8.GetCheck())
-	{
-		m_chk_axis_8.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_9.GetCheck())
-	{
-		m_chk_axis_9.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_10.GetCheck())
-	{
-		m_chk_axis_10.SetCheck(FALSE);
-	}
-
-	m_n_axis_sel = 0;
-	m_tab_motor_part.OnMotor_Axis_Change(0);
+	
+	mn_tab_number = 0;
+	OnMotor_Part_Change(mn_tab_number);
+	m_tab_motor_part.OnMotor_Axis_Change(mn_tab_number);
 }
 
 void CDialog_Motor_Part::OnChkAxis10() 
 {
-	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock == TRUE)
+	if (mn_tab_number == 9 || st_handler.mn_menu_lock == TRUE)
 	{
-		OnAxis_Position(m_n_axis_sel);
-
-		m_chk_axis_10.SetCheck(FALSE);
+		OnMotor_Part_Change(mn_tab_number);
 		return;
 	}
-	else
-	{
-		if(m_chk_axis_10.GetCheck() == FALSE)
-		{
-			m_chk_axis_10.SetCheck(TRUE);
-			return;
-		}	
-	}
-
-	if(m_chk_axis_1.GetCheck())
-	{
-		m_chk_axis_1.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_2.GetCheck())
-	{
-		m_chk_axis_2.SetCheck(FALSE);
-	}
 	
-	if(m_chk_axis_3.GetCheck())
-	{
-		m_chk_axis_3.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_4.GetCheck())
-	{
-		m_chk_axis_4.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_5.GetCheck())
-	{
-		m_chk_axis_5.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_6.GetCheck())
-	{
-		m_chk_axis_6.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_7.GetCheck())
-	{
-		m_chk_axis_7.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_8.GetCheck())
-	{
-		m_chk_axis_8.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_9.GetCheck())
-	{
-		m_chk_axis_9.SetCheck(FALSE);
-	}
-	
-	m_n_axis_sel = 9;
-	m_tab_motor_part.OnMotor_Axis_Change(9);
+	mn_tab_number = 9;
+	OnMotor_Part_Change(mn_tab_number);
+	m_tab_motor_part.OnMotor_Axis_Change(mn_tab_number);
 }
 
 void CDialog_Motor_Part::OnChkAxis2() 
 {
-	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock == TRUE)
+	if (mn_tab_number == 1 || st_handler.mn_menu_lock == TRUE)
 	{
-		OnAxis_Position(m_n_axis_sel);
-
-		m_chk_axis_2.SetCheck(FALSE);
+		OnMotor_Part_Change(mn_tab_number);
 		return;
 	}
-	else
-	{
-		if(m_chk_axis_2.GetCheck() == FALSE)
-		{
-			m_chk_axis_2.SetCheck(TRUE);
-			return;
-		}
-	}
-
-	
-	if(m_chk_axis_1.GetCheck())
-	{
-		m_chk_axis_1.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_3.GetCheck())
-	{
-		m_chk_axis_3.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_4.GetCheck())
-	{
-		m_chk_axis_4.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_5.GetCheck())
-	{
-		m_chk_axis_5.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_6.GetCheck())
-	{
-		m_chk_axis_6.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_7.GetCheck())
-	{
-		m_chk_axis_7.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_8.GetCheck())
-	{
-		m_chk_axis_8.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_9.GetCheck())
-	{
-		m_chk_axis_9.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_10.GetCheck())
-	{
-		m_chk_axis_10.SetCheck(FALSE);
-	}
-	
-	m_n_axis_sel = 1;
-	m_tab_motor_part.OnMotor_Axis_Change(1);
+	mn_tab_number = 1;
+	OnMotor_Part_Change(mn_tab_number);
+	m_tab_motor_part.OnMotor_Axis_Change(mn_tab_number);
 }
 
 void CDialog_Motor_Part::OnChkAxis3() 
 {
-	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock == TRUE)
+	if (mn_tab_number == 2 || st_handler.mn_menu_lock == TRUE)
 	{
-		OnAxis_Position(m_n_axis_sel);
-
-		m_chk_axis_3.SetCheck(FALSE);
+		OnMotor_Part_Change(mn_tab_number);
 		return;
 	}
-	else
-	{
-		if(m_chk_axis_3.GetCheck() == FALSE)
-		{
-			m_chk_axis_3.SetCheck(TRUE);
-			return;
-		}
-	}
-	
-	if(m_chk_axis_1.GetCheck())
-	{
-		m_chk_axis_1.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_2.GetCheck())
-	{
-		m_chk_axis_2.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_4.GetCheck())
-	{
-		m_chk_axis_4.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_5.GetCheck())
-	{
-		m_chk_axis_5.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_6.GetCheck())
-	{
-		m_chk_axis_6.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_7.GetCheck())
-	{
-		m_chk_axis_7.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_8.GetCheck())
-	{
-		m_chk_axis_8.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_9.GetCheck())
-	{
-		m_chk_axis_9.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_10.GetCheck())
-	{
-		m_chk_axis_10.SetCheck(FALSE);
-	}
-
-	m_n_axis_sel = 2;
-	m_tab_motor_part.OnMotor_Axis_Change(2);
+	mn_tab_number = 2;
+	OnMotor_Part_Change(mn_tab_number);
+	m_tab_motor_part.OnMotor_Axis_Change(mn_tab_number);
 }
 
 void CDialog_Motor_Part::OnChkAxis4() 
 {
-	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock == TRUE)
+	if (mn_tab_number == 3 || st_handler.mn_menu_lock == TRUE)
 	{
-		OnAxis_Position(m_n_axis_sel);
-
-		m_chk_axis_4.SetCheck(FALSE);
+		OnMotor_Part_Change(mn_tab_number);
 		return;
 	}
-	else
-	{
-		if(m_chk_axis_4.GetCheck() == FALSE)
-		{
-			m_chk_axis_4.SetCheck(TRUE);
-			return;
-		}
-	}
-	
-	if(m_chk_axis_1.GetCheck())
-	{
-		m_chk_axis_1.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_2.GetCheck())
-	{
-		m_chk_axis_2.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_3.GetCheck())
-	{
-		m_chk_axis_3.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_5.GetCheck())
-	{
-		m_chk_axis_5.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_6.GetCheck())
-	{
-		m_chk_axis_6.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_7.GetCheck())
-	{
-		m_chk_axis_7.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_8.GetCheck())
-	{
-		m_chk_axis_8.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_9.GetCheck())
-	{
-		m_chk_axis_9.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_10.GetCheck())
-	{
-		m_chk_axis_10.SetCheck(FALSE);
-	}
-
-	m_n_axis_sel = 3;
-	m_tab_motor_part.OnMotor_Axis_Change(3);
+	mn_tab_number = 3;
+	OnMotor_Part_Change(mn_tab_number);
+	m_tab_motor_part.OnMotor_Axis_Change(mn_tab_number);
 }
 
 void CDialog_Motor_Part::OnChkAxis5() 
 {
-	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock == TRUE)
+	if (mn_tab_number == 4 || st_handler.mn_menu_lock == TRUE)
 	{
-		OnAxis_Position(m_n_axis_sel);
-
-		m_chk_axis_5.SetCheck(FALSE);
+		OnMotor_Part_Change(mn_tab_number);
 		return;
 	}
-	else
-	{
-		if(m_chk_axis_5.GetCheck() == FALSE)
-		{
-			m_chk_axis_5.SetCheck(TRUE);
-			return;
-		}
-	}
-	
-	if(m_chk_axis_1.GetCheck())
-	{
-		m_chk_axis_1.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_2.GetCheck())
-	{
-		m_chk_axis_2.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_3.GetCheck())
-	{
-		m_chk_axis_3.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_4.GetCheck())
-	{
-		m_chk_axis_4.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_6.GetCheck())
-	{
-		m_chk_axis_6.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_7.GetCheck())
-	{
-		m_chk_axis_7.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_8.GetCheck())
-	{
-		m_chk_axis_8.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_9.GetCheck())
-	{
-		m_chk_axis_9.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_10.GetCheck())
-	{
-		m_chk_axis_10.SetCheck(FALSE);
-	}
-
-	m_n_axis_sel = 4;
-	m_tab_motor_part.OnMotor_Axis_Change(4);
+	mn_tab_number = 4;
+	OnMotor_Part_Change(mn_tab_number);
+	m_tab_motor_part.OnMotor_Axis_Change(mn_tab_number);
 }
 
 void CDialog_Motor_Part::OnChkAxis6() 
 {
-	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock == TRUE)
+	if (mn_tab_number == 5 || st_handler.mn_menu_lock == TRUE)
 	{
-		OnAxis_Position(m_n_axis_sel);
-
-		m_chk_axis_6.SetCheck(FALSE);
+		OnMotor_Part_Change(mn_tab_number);
 		return;
 	}
-	else
-	{
-		if(m_chk_axis_6.GetCheck() == FALSE)
-		{
-			m_chk_axis_6.SetCheck(TRUE);
-			return;
-		}
-	}
-	
-	if(m_chk_axis_1.GetCheck())
-	{
-		m_chk_axis_1.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_2.GetCheck())
-	{
-		m_chk_axis_2.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_3.GetCheck())
-	{
-		m_chk_axis_3.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_4.GetCheck())
-	{
-		m_chk_axis_4.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_5.GetCheck())
-	{
-		m_chk_axis_5.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_7.GetCheck())
-	{
-		m_chk_axis_7.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_8.GetCheck())
-	{
-		m_chk_axis_8.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_9.GetCheck())
-	{
-		m_chk_axis_9.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_10.GetCheck())
-	{
-		m_chk_axis_10.SetCheck(FALSE);
-	}
-
-	m_n_axis_sel = 5;
-	m_tab_motor_part.OnMotor_Axis_Change(5);
+	mn_tab_number = 5;
+	OnMotor_Part_Change(mn_tab_number);
+	m_tab_motor_part.OnMotor_Axis_Change(mn_tab_number);
 }
 
 void CDialog_Motor_Part::OnChkAxis7() 
 {
-	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock == TRUE)
+	if (mn_tab_number == 6 || st_handler.mn_menu_lock == TRUE)
 	{
-		OnAxis_Position(m_n_axis_sel);
-
-		m_chk_axis_7.SetCheck(FALSE);
+		OnMotor_Part_Change(mn_tab_number);
 		return;
 	}
-	else
-	{
-		if(m_chk_axis_7.GetCheck() == FALSE)
-		{
-			m_chk_axis_7.SetCheck(TRUE);
-			return;
-		}
-	}
-	
-	if(m_chk_axis_1.GetCheck())
-	{
-		m_chk_axis_1.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_2.GetCheck())
-	{
-		m_chk_axis_2.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_3.GetCheck())
-	{
-		m_chk_axis_3.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_4.GetCheck())
-	{
-		m_chk_axis_4.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_5.GetCheck())
-	{
-		m_chk_axis_5.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_6.GetCheck())
-	{
-		m_chk_axis_6.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_8.GetCheck())
-	{
-		m_chk_axis_8.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_9.GetCheck())
-	{
-		m_chk_axis_9.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_10.GetCheck())
-	{
-		m_chk_axis_10.SetCheck(FALSE);
-	}
-	
-	m_n_axis_sel = 6;
-	m_tab_motor_part.OnMotor_Axis_Change(6);
+	mn_tab_number = 6;
+	OnMotor_Part_Change(mn_tab_number);
+	m_tab_motor_part.OnMotor_Axis_Change(mn_tab_number);
 }
 
 void CDialog_Motor_Part::OnChkAxis8() 
 {
-	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock == TRUE)
+	if (mn_tab_number == 7 || st_handler.mn_menu_lock == TRUE)
 	{
-		OnAxis_Position(m_n_axis_sel);
-
-		m_chk_axis_8.SetCheck(FALSE);
+		OnMotor_Part_Change(mn_tab_number);
 		return;
 	}
-	else
-	{
-		if(m_chk_axis_8.GetCheck() == FALSE)
-		{
-			m_chk_axis_8.SetCheck(TRUE);
-			return;
-		}
-	}
-	
-	if(m_chk_axis_1.GetCheck())
-	{
-		m_chk_axis_1.SetCheck(FALSE);
-	}
-
-	if(m_chk_axis_2.GetCheck())
-	{
-		m_chk_axis_2.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_3.GetCheck())
-	{
-		m_chk_axis_3.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_4.GetCheck())
-	{
-		m_chk_axis_4.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_5.GetCheck())
-	{
-		m_chk_axis_5.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_6.GetCheck())
-	{
-		m_chk_axis_6.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_7.GetCheck())
-	{
-		m_chk_axis_7.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_9.GetCheck())
-	{
-		m_chk_axis_9.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_10.GetCheck())
-	{
-		m_chk_axis_10.SetCheck(FALSE);
-	}
-
-	m_n_axis_sel = 7;
-	m_tab_motor_part.OnMotor_Axis_Change(7);
+	mn_tab_number = 7;
+	OnMotor_Part_Change(mn_tab_number);
+	m_tab_motor_part.OnMotor_Axis_Change(mn_tab_number);
 }
 
 void CDialog_Motor_Part::OnChkAxis9() 
 {
-	// TODO: Add your control notification handler code here
-	if(st_handler.n_menu_lock == TRUE)
+	if (mn_tab_number == 8 || st_handler.mn_menu_lock == TRUE)
 	{
-		OnAxis_Position(m_n_axis_sel);
-
-		m_chk_axis_9.SetCheck(FALSE);
+		OnMotor_Part_Change(mn_tab_number);
 		return;
 	}
-	else
-	{
-		if(m_chk_axis_9.GetCheck() == FALSE)
-		{
-			m_chk_axis_9.SetCheck(TRUE);
-			return;
-		}
-	}
-	
-	if(m_chk_axis_1.GetCheck())
-	{
-		m_chk_axis_1.SetCheck(FALSE);
-	}
+	mn_tab_number = 8;
+	OnMotor_Part_Change(mn_tab_number);
+	m_tab_motor_part.OnMotor_Axis_Change(mn_tab_number);
+}
 
-	if(m_chk_axis_2.GetCheck())
-	{
-		m_chk_axis_2.SetCheck(FALSE);
-	}
+void CDialog_Motor_Part::OnMotor_Part_Change(int nPart)
+{
+	m_chk_axis_1.SetCheck(FALSE);
+	m_chk_axis_2.SetCheck(FALSE);
+	m_chk_axis_3.SetCheck(FALSE);
+	m_chk_axis_4.SetCheck(FALSE);
+	m_chk_axis_5.SetCheck(FALSE);
+	m_chk_axis_6.SetCheck(FALSE);
+	m_chk_axis_7.SetCheck(FALSE);
+	m_chk_axis_8.SetCheck(FALSE);
+	m_chk_axis_9.SetCheck(FALSE);
+	m_chk_axis_10.SetCheck(FALSE);
 	
-	if(m_chk_axis_3.GetCheck())
+	switch (nPart)
 	{
-		m_chk_axis_3.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_4.GetCheck())
-	{
-		m_chk_axis_4.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_5.GetCheck())
-	{
-		m_chk_axis_5.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_6.GetCheck())
-	{
-		m_chk_axis_6.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_7.GetCheck())
-	{
-		m_chk_axis_7.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_8.GetCheck())
-	{
-		m_chk_axis_8.SetCheck(FALSE);
-	}
-	
-	if(m_chk_axis_10.GetCheck())
-	{
-		m_chk_axis_10.SetCheck(FALSE);
-	}
-
-	m_n_axis_sel = 8;
-	m_tab_motor_part.OnMotor_Axis_Change(8);
+	case 0:			m_chk_axis_1.SetCheck(TRUE);		break;
+	case 1:			m_chk_axis_2.SetCheck(TRUE);		break;
+	case 2:			m_chk_axis_3.SetCheck(TRUE);		break;
+	case 3:			m_chk_axis_4.SetCheck(TRUE);		break;
+	case 4:			m_chk_axis_5.SetCheck(TRUE);		break;
+	case 5:			m_chk_axis_6.SetCheck(TRUE);		break;
+	case 6:			m_chk_axis_7.SetCheck(TRUE);		break;
+	case 7:			m_chk_axis_8.SetCheck(TRUE);		break;
+	case 8:			m_chk_axis_9.SetCheck(TRUE);		break;
+	case 9:			m_chk_axis_10.SetCheck(TRUE);		break;
+	}	
 }
 
 void CDialog_Motor_Part::OnBtnIo() 
@@ -1069,5 +551,22 @@ void CDialog_Motor_Part::OnBtnManualMove()
 	{
 		Func.m_p_move->SetFocus();
 		Func.m_p_move->ShowWindow(SW_SHOW);
+	}
+}
+
+void CDialog_Motor_Part::OnMotorPart_Select_Axis(int nAxis)
+{
+	switch (nAxis)
+	{
+	case 0:	OnChkAxis1();	break;
+	case 1:	OnChkAxis2();	break;
+	case 2:	OnChkAxis3();	break;
+	case 3:	OnChkAxis4();	break;
+	case 4:	OnChkAxis5();	break;
+	case 5:	OnChkAxis6();	break;
+	case 6:	OnChkAxis7();	break;
+	case 7:	OnChkAxis8();	break;
+	case 8:	OnChkAxis9();	break;
+	case 9:	OnChkAxis10();	break;
 	}
 }

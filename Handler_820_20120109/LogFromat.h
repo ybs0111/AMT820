@@ -78,7 +78,6 @@ public:
 
 public:
 	int				OnFileSizeCheck(CString strFileName, long lSize, int nCheck);
-	void			OnLogTestSite(int nMode, int nSite, int nLfToRi, tagTEST_SITE_INFO &test_site);
 	CString			OnCharToString(char chData[], int nLength);
 	void			OnStringToChar(CString strData, char chData[]);
 public:

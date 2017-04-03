@@ -19,6 +19,7 @@
 #include "Public_Function.h"
 #include "Variable.h"
 #include "MyJamData.h"
+#include "IO_Manager.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -128,8 +129,8 @@ int CCtlBd_Function::Robot_Clash_Safety_Check(int n_Mode, int n_SourceAxis, int 
 // 		/////////////////////////////////////////////////////////////
 // 		if(d_TargetPos != 0) //d_TargetPos == 0 홈체크시는 보지 말자 
 // 		{
-// 			dSafepos_gap[0] = st_motor[n_SourceAxis].d_pos[P_DCLDRBT_DCTEST] - st_motor[n_SourceAxis].md_pos[P_DCLDRBT_DCSAFETY_POS];
-// 			dSafepos_gap[1] = st_motor[n_ReferenceAxis].d_pos[P_DCULDRBT_DCTEST] - st_motor[n_ReferenceAxis].md_pos[P_DCULDRBT_DCSAFETY_POS];
+// 			dSafepos_gap[0] = st_motor[n_SourceAxis].md_pos[P_DCLDRBT_DCTEST] - st_motor[n_SourceAxis].md_pos[P_DCLDRBT_DCSAFETY_POS];
+// 			dSafepos_gap[1] = st_motor[n_ReferenceAxis].md_pos[P_DCULDRBT_DCTEST] - st_motor[n_ReferenceAxis].md_pos[P_DCULDRBT_DCSAFETY_POS];
 // 			if(dSafepos_gap[0] > dSafepos_gap[1]) //source 쪽 안전 위치 갭이 큰 상태 
 // 			{
 // 				dSafepos_gap[2] = dSafepos_gap[0];
@@ -1025,29 +1026,12 @@ int CCtlBd_Function::OnMotor_SafetyCheck(int n_Mode, int n_Axis, double d_Target
 	// **************************************************************************
 	// 모터의 안전 위치를 체크한다                                                 
 	//***************************************************************************
-// 	switch(n_Axis)
-// 	{
-// 	case M_LD_TRAY_ELEVATOR:
-// 		break;
-// 
-// 	case M_TRAY_TRANSFER:
-// 		break;
-// 
-// 	case M_ROBOT_X:
-// 		break;
-// 
-// 	case M_ROBOT_Y:
-// 		break;
-// 
-// 	case M_ROBOT_Z:
-// 		break;
-// 
-// 	case M_ROBOT_PITCH:
-// 		break;
-// 
-// 	case M_ULD_TRAY_ELEVATOR:
-// 		break;
-// 	}
+	switch(n_Axis)
+	{
+	case M_EPOXY_TRANSFER_X:
+		break;
+
+	}
 
 	//2011.0201 st_motor[n_Axis].mn_retry_cnt = 0;
 	st_motor[n_Axis].mn_retry_time_flag = CTL_NO;//2011.0201 추가 
@@ -1057,56 +1041,56 @@ int CCtlBd_Function::OnMotor_SafetyCheck(int n_Mode, int n_Axis, double d_Target
 
 int CCtlBd_Function::Initialize_FASIO_Board(void) 
 {
-	int m=0, p=0, s=0, i;
-	int nRet=0;
-	WORD wMaskMap = 0;
-
-	INT nHSSI_speed=0;
-	INT nMasterNo=0, nPortNo =0, nSlaveNo=0; 
-
-	nRet = FAS_IO.Set_IO_BoardOpen(&nMasterNo, START_NOTHING);  // I/O 보드 오픈 함수 
-	if (nRet == CTLBD_RET_ERROR)
-	{
-		return CTLBD_RET_ERROR; //IO_BOARD_OPEN_FAILED;
-	}
-
-	nRet = FAS_IO.Search_IO_Master(&nMasterNo);              // PC에 연결된 마스터 보드 갯수 검사 함수 
-	if (nRet == CTLBD_RET_ERROR)
-	{
-		return CTLBD_RET_ERROR;
-	}
-	
-	for(m=0; m<nMasterNo; m++)
-	{
-		nRet = FAS_IO.Search_IO_Port(m, &nPortNo);						// 마스터 보드에 연결된 PORT 갯수 검사 함수 
-		if (nRet == CTLBD_RET_ERROR) return CTLBD_RET_ERROR;	//PORT_SEARCH_FAILED;
-		
-		for(p=0; p<nPortNo; p++)
-		{
-			nRet = FAS_IO.Set_IO_HSSISpeed(m, p, PORT_SPEED_10);		// PORT와 SLAVE I/O 모듈과의 통신 속도 설정 함수 
-			if (nRet == CTLBD_RET_ERROR) return CTLBD_RET_ERROR; //IO_SPEED_SET_FAILED;
-			 
-			nRet = FAS_IO.Search_IO_Slave(m, p, &nSlaveNo);			// PORT에 연결된 SLAVE 검사 함수 
-			if (nRet == CTLBD_RET_ERROR) return CTLBD_RET_ERROR; //IO_SLAVE_SEARCH_FAILED;
-
-			for(s=0; s<nSlaveNo; s++)
-			{
-				nRet = FAS_IO.Set_IO_SlaveEnable(m, p, s, CTLBD_YES);		// SLAVE I/O 모듈 동작 ENABLE/DISABLE 설정 함수 
-				if (nRet == CTLBD_RET_ERROR)	return CTLBD_RET_ERROR; //IO_SLAVE_ENABLE_FAILED;
-
-				wMaskMap = 0; //clear
-				for(i=0; i<16; i++) //0~15 까지의 Port 16bit 셋팅, 각각의 I/O 상태를 정의한다 
-				{			
-					wMaskMap = wMaskMap | (WORD)pow(2, mw_IOMaskMap[m][p][s][i]);					 
-				}
-				FAS_IO.Set_IO_DefineWord(m, p, s, wMaskMap); // x Master, x포트, x번 슬레이브 , 16bit 셋팅
-				//FAS_IO.Set_IO_DefineWord(0, 0, 0, 0x0003); // 0번 Master, 0번 포트, 0번 슬레이브 , 16bit 셋팅
-				//FAS_IO.Set_IO_DefineWord(0, 0, 1, 0x0003); // 0번 Master, 0번 포트, 1번 슬레이브 , 16bit 셋팅
-				//FAS_IO.Set_IO_DefineWord(0, 1, 0, 0x00ff); // 0번 Master, 1번 포트, 0번 슬레이브 , 16bit 셋팅
-			}
-		}
-	}
-	
+// 	int m=0, p=0, s=0, i;
+// 	int nRet=0;
+// 	WORD wMaskMap = 0;
+// 
+// 	INT nHSSI_speed=0;
+// 	INT nMasterNo=0, nPortNo =0, nSlaveNo=0; 
+// 
+// 	nRet = g_ioMgr.Set_IO_BoardOpen(&nMasterNo, START_NOTHING);  // I/O 보드 오픈 함수 
+// 	if (nRet == CTLBD_RET_ERROR)
+// 	{
+// 		return CTLBD_RET_ERROR; //IO_BOARD_OPEN_FAILED;
+// 	}
+// 
+// 	nRet = g_ioMgr.Search_IO_Master(&nMasterNo);              // PC에 연결된 마스터 보드 갯수 검사 함수 
+// 	if (nRet == CTLBD_RET_ERROR)
+// 	{
+// 		return CTLBD_RET_ERROR;
+// 	}
+// 	
+// 	for(m=0; m<nMasterNo; m++)
+// 	{
+// 		nRet = g_ioMgr.Search_IO_Port(m, &nPortNo);						// 마스터 보드에 연결된 PORT 갯수 검사 함수 
+// 		if (nRet == CTLBD_RET_ERROR) return CTLBD_RET_ERROR;	//PORT_SEARCH_FAILED;
+// 		
+// 		for(p=0; p<nPortNo; p++)
+// 		{
+// 			nRet = g_ioMgr.Set_IO_HSSISpeed(m, p, PORT_SPEED_10);		// PORT와 SLAVE I/O 모듈과의 통신 속도 설정 함수 
+// 			if (nRet == CTLBD_RET_ERROR) return CTLBD_RET_ERROR; //IO_SPEED_SET_FAILED;
+// 			 
+// 			nRet = g_ioMgr.Search_IO_Slave(m, p, &nSlaveNo);			// PORT에 연결된 SLAVE 검사 함수 
+// 			if (nRet == CTLBD_RET_ERROR) return CTLBD_RET_ERROR; //IO_SLAVE_SEARCH_FAILED;
+// 
+// 			for(s=0; s<nSlaveNo; s++)
+// 			{
+// 				nRet = g_ioMgr.Set_IO_SlaveEnable(m, p, s, CTLBD_YES);		// SLAVE I/O 모듈 동작 ENABLE/DISABLE 설정 함수 
+// 				if (nRet == CTLBD_RET_ERROR)	return CTLBD_RET_ERROR; //IO_SLAVE_ENABLE_FAILED;
+// 
+// 				wMaskMap = 0; //clear
+// 				for(i=0; i<16; i++) //0~15 까지의 Port 16bit 셋팅, 각각의 I/O 상태를 정의한다 
+// 				{			
+// 					wMaskMap = wMaskMap | (WORD)pow(2, mw_IOMaskMap[m][p][s][i]);					 
+// 				}
+// 				g_ioMgr.Set_IO_DefineWord(m, p, s, wMaskMap); // x Master, x포트, x번 슬레이브 , 16bit 셋팅
+// 				//g_ioMgr.Set_IO_DefineWord(0, 0, 0, 0x0003); // 0번 Master, 0번 포트, 0번 슬레이브 , 16bit 셋팅
+// 				//g_ioMgr.Set_IO_DefineWord(0, 0, 1, 0x0003); // 0번 Master, 0번 포트, 1번 슬레이브 , 16bit 셋팅
+// 				//g_ioMgr.Set_IO_DefineWord(0, 1, 0, 0x00ff); // 0번 Master, 1번 포트, 0번 슬레이브 , 16bit 셋팅
+// 			}
+// 		}
+// 	}
+// 	
 	return CTLBD_RET_GOOD;
 }
 

@@ -44,7 +44,10 @@
 #include "Public_Function.h"
 #include "CtlBd_Library.h"
 
+#include "PIODA.H"
+
 #include "ServerSocket.h"
+#include "Variable.h"
 
 
 //extern void DoEvents();

@@ -23,9 +23,18 @@ public:
 // Attributes
 public:
 	int mn_RunStep;
+	int mn_MoveStep;
+	int mn_SafetyStep;
 	int mn_reinstate_step;
 	int mn_InitStep;
-	int m_nAxisNum;
+	int mn_BufferPos;
+
+	int m_nRobot_X;
+	int m_nRobot_Y;
+	int m_nRobot_Z;
+	int m_nRobot_S;
+
+
 	
 	int mn_retry_cnt;
 	long ml_retry_wait[3];
@@ -50,15 +59,47 @@ public:
 	CString m_strPartNo;
 	CString m_strAlarmCode;
 
-	double m_dpTargetPos;
+	double m_dpTargetPos[3];
+
+	int	    m_nLinearMove_Index; 
+	long	m_lAxisCnt;
+	long	m_lpAxisNum[4];
+	double	m_dpTargetPosList[4];
+	double	m_dpSpdRatio[3];	
+
+
+
+
+	double md_TargetAxisXValue[2][2];//double ldEpoxyTransferXDispenserFirstStartPos;[0][0] first start [0][1] first end [1][0] second first [1][1] second end
+	double md_TargetAxisYValue[2][2];//double ldEpoxyTransferYDispenserFirstStartPos;
+	//double ldEpoxyTransferXDispenserFirstEndPos;
+	//double ldEpoxyTransferYDispenserFirstEndPos;
+	//double ldEpoxyTransferXDispenserSecondStartPos;
+	//double ldEpoxyTransferYDispenserSecondStartPos;
+	//double ldEpoxyTransferXDispenserSecondEndPos;
+	//double ldEpoxyTransferYDispenserSecondEndPos;
+	double md_TargetDotXValue[4];//double ldEpoxyTransferXDispenserDotPos[4];
+	double md_TargetDotYValue[4];//double ldEpoxyTransferYDispenserDotPos[4];
+	double md_DvcGap;
+
+	long ml_motflag[3];
+	int m_nBillardWorking;//Billard is working or not
+	int mn_FirstSecond;//first Billiard or second Billard
+	int mn_StartEnd;//fist, start end or second, start end
+
+	DWORD m_dwSatbleWaitTime[3];
+	double dp_PosList[3];
+	double dp_SpdRatio[3];
+	int mn_dotPos;
 
 public:
-
-	void ThreadRun();
+	void Thread_Run();
 	void RunMove();
 	void RunInit();
 
-
+	int Move_Billiard_Epoxy( int nMode, int nSite);
+	int Robot_Move_Safety_Zone( int nMode, int n_site, int n_flag);
+	void Get_Billard_Pos( int nPos );
 };
 
 /////////////////////////////////////////////////////////////////////////////

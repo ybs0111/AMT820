@@ -108,7 +108,7 @@ void CScreen_List_Work::OnInitialUpdate()
 	mstr_selected_Date.Empty();		// 선택된 날짜 정보 저장 변수 초기화 
 	mstr_work_file_name.Empty();	// 선택된 파일 이름을 저장하기 위한 변수 선언
 
-	mstr_default_path = "c:\\AMT820\\Log\\";
+	mstr_default_path = "C:\\AMT820\\Log\\";
 //	mstr_default_path = "c:\\hwt\\Error_Log\\";
 
 	OnWork_List_Full_Path_Set(mn_type_select);			// 파일 정보 로딩할 전체 폴더 정보 설정 함수 */

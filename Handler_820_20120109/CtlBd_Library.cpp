@@ -1,4 +1,4 @@
-Ôªø// CtlBd_Library.cpp: implementation of the CCtlBd_Library class.
+// CtlBd_Library.cpp: implementation of the CCtlBd_Library class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -15,6 +15,10 @@
 #include "SrcPart/APartHandler.h"
 
 #include "Srcbase\ALocalization.h"
+#include "CmmsdkDef.h"
+#include "MyJamData.h"
+#include "Cmmsdk.h"
+#include "math.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -57,29 +61,34 @@ int CCtlBd_Library::Alarm_Error_Occurrence(int n_jampos, int n_run_status, char 
    //
 	int n_cur_num = -1;
 
-	CTL_Lib.mn_jampos = n_jampos; //jamÏù¥ Î∞úÏÉùÌïú ÏúÑÏπòÎ•º Ï†ÄÏû•ÌïúÎã§ 
-	CTL_Lib.mn_run_status = n_run_status; //Ïû•ÎπÑÏùò Í∞ÄÎèôÏÉÅÌÉúÎ•º Î≥ÄÍ≤ΩÌïúÎã§ 
+	CTL_Lib.mn_jampos = n_jampos;
+	CTL_Lib.mn_run_status = n_run_status;
 	COMI.mn_run_status = n_run_status;
-	st_work.m_iRunStatus = n_run_status;
+	st_work.mn_run_status = n_run_status;
 	alarm.mstr_code = c_alarmcode;
 	alarm.stl_cur_alarm_time = GetCurrentTime();
 
 	strcpy(mc_alarmcode, c_alarmcode);
 
-	for(int n_cnt=0; n_cnt<2000; n_cnt++)
-	{  
-		if ((st_alarm.mstr_e_code[n_cnt]).Compare(alarm.mstr_code) == 0)
-		{
-			n_cur_num = n_cnt; 
-			break;
-		}
-	}
+// 	for(int n_cnt=0; n_cnt<2000; n_cnt++)
+// 	{  
+// 		if ((st_alarm.mstr_e_code[n_cnt]).Compare(alarm.mstr_code) == 0)
+// 		{
+// 			n_cur_num = n_cnt; 
+// 			break;
+// 		}
+// 	}
 
-	if (n_cur_num >= 0)
+
+	MyJamData.On_Alarm_Info_Set_to_Variable(alarm.mstr_code);
+
+	
+	if (st_handler.cwnd_list != NULL)  // ∏ÆΩ∫∆Æ πŸ »≠∏È ¡∏¿Á
 	{
-		sprintf(st_msg.c_abnormal_msg, st_alarm.mstr_e_msg[n_cur_num]);
-		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // ÎèôÏûë Ïã§Ìå® Ï∂úÎ†• ÏöîÏ≤≠
+		sprintf(st_msg.c_abnormal_msg, "[%d] [%s] [%s]", CTL_Lib.mn_jampos, alarm.mstr_code, st_alarm.mstr_cur_msg);
+		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
 	}
+	
 
 // 	st_handler.mn_dumping_alarm_count++;
 // 
@@ -93,6 +102,38 @@ int CCtlBd_Library::Alarm_Error_Occurrence(int n_jampos, int n_run_status, char 
 	return BD_GOOD;
 }
 
+int CCtlBd_Library::Alarm_Error_Occurrence( int n_jampos, int n_run_status, CString strJamCode )
+{
+// 	//2013,0123
+// 	if(COMI.mn_run_status == dINIT) alarm.stl_a .stl_alarm_start_time = GetCurrentTime();
+	int n_cur_num = -1;
+	CTL_Lib.mn_jampos = n_jampos; //jam¿Ã πﬂª˝«— ¿ßƒ°∏¶ ¿˙¿Â«—¥Ÿ 
+	CTL_Lib.mn_run_status = n_run_status; //¿Â∫Ò¿« ∞°µøªÛ≈¬∏¶ ∫Ø∞Ê«—¥Ÿ 
+	COMI.mn_run_status = n_run_status;
+	alarm.mstr_code = strJamCode;
+	st_work.mn_run_status = n_run_status;
+	alarm.stl_cur_alarm_time = GetCurrentTime();
+	
+	strcpy(mc_alarmcode, (LPCSTR)strJamCode);
+	
+	//	g_handler.AddAlarmCnt();
+
+	
+	//2012,1220
+	// 	CtlBdFunc.Alarm_Error_Occurrence(CTL_Lib.mn_jampos, COMI.mn_run_status, COMI.mn_run_status, alarm.mc_code);
+	MyJamData.On_Alarm_Info_Set_to_Variable(alarm.mstr_code);
+
+	
+	if (st_handler.cwnd_list != NULL)  // ∏ÆΩ∫∆Æ πŸ »≠∏È ¡∏¿Á
+	{
+		sprintf(st_msg.c_abnormal_msg, "[%d] [%s] [%s]", CTL_Lib.mn_jampos, alarm.mstr_code, st_alarm.mstr_cur_msg);
+		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
+	}
+	
+	
+	
+	return BD_GOOD;
+}
 
 int CCtlBd_Library::Initialize_motor_board(int n_bd_type, CString s_filename)	//motor Î≥¥Îìú Ï¥àÍ∏∞ÌôîÏãú ÏÇ¨Ïö©
 {
@@ -101,39 +142,38 @@ int CCtlBd_Library::Initialize_motor_board(int n_bd_type, CString s_filename)	//
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	//Motor Board Initialize 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
-	if( n_bd_type == 0 ) //0:ÌååÏä§ÌÖç Î≥¥ÎìúÎ•º ÏÇ¨Ïö©ÌïòÎäî Ïû•ÎπÑÏù¥Î©¥, 1:Ïª§ÎØ∏Ï°∞ÏïÑ Î™®ÌÑ∞Î•º ÏÇ¨Ïö©ÌïòÎäî Ïû•ÎπÑ 
-	{		//Î™®ÌÑ∞ Î≥¥ÎìúÎ≥Ñ Ï∂ïÏàòÎ•º Ï†ïÏùòÌïúÎã§ 
-
-		COMI.mn_totalmotboard_number = 3;  //Î™®ÌÑ∞Î≥¥ÎìúÍ∞Ä 3Í∞ú ÏûàÎã§ 
-		COMI.mn_totalmotoraxis_number= 18; //Î™®ÌÑ∞Ïùò Ï¥ù ÏàòÎüâÏùÄ 18Í∞úÏù¥Îã§  
-		COMI.mn_bd_axis_number[0] = 8;   //0Î≤à Î™®ÌÑ∞Î≥¥ÎìúÎäî 8Ï∂ïÏö© Î≥¥ÎìúÏù¥Îã§  
-		COMI.mn_bd_axis_number[1] = 6;   //1Î≤à Î™®ÌÑ∞Î≥¥ÎìúÎäî 6Ï∂ïÏö© Î≥¥ÎìúÏù¥Îã§ 
-		COMI.mn_bd_axis_number[2] = 4;   //2Î≤à Î™®ÌÑ∞Î≥¥ÎìúÎäî 4Ï∂ïÏö© Î≥¥ÎìúÏù¥Îã§ 
- 	}
-	else if( n_bd_type == 1 ) //1:Ïª§ÎØ∏Ï°∞ÏïÑ Î≥¥ÎìúÎ•º ÏÇ¨Ïö©ÌïòÎäî Ïû•ÎπÑÏù¥Î©¥, 1:Ïª§ÎØ∏Ï°∞ÏïÑ Î™®ÌÑ∞Î•º ÏÇ¨Ïö©ÌïòÎäî Ïû•ÎπÑ 
+	if( n_bd_type == 0 ) //0:fastec
 	{
-		//1. Î≥¥Îìú Ï†ïÎ≥¥ ÏùΩÏñ¥Îì§Ïù∏Îã§ 
-		//2. Í∞ÅÏ¢Ö ÏÖãÌåÖ Ï†ïÎ≥¥Î•º Ï†ÅÏö©ÌïúÎã§ 
-		nRet = COMI.Initialize_MotBoard(s_filename);			// MOTOR Î≥¥Îìú Ï¥àÍ∏∞Ìôî Ïó¨Î∂Ä Í≤ÄÏÇ¨ÌïúÎã§
+		COMI.mn_totalmotboard_number = 4;//∏≈Õ∫∏µÂ∞° 3∞≥ ¿÷¥Ÿ 
+		COMI.mn_totalmotoraxis_number= 21; //∏≈Õ¿« √— ºˆ∑Æ¿∫ 21∞≥¿Ã¥Ÿ  
+		COMI.mn_bd_axis_number[0] = 8;//0π¯ ∏≈Õ∫∏µÂ¥¬ 8√‡øÎ ∫∏µÂ¿Ã¥Ÿ  
+		COMI.mn_bd_axis_number[1] = 8;
+		COMI.mn_bd_axis_number[2] = 4;
+		COMI.mn_bd_axis_number[3] = 4;
+ 	}
+	else if( n_bd_type == 1 )//1: comizoa
+	{
+		nRet = COMI.Initialize_MotBoard(s_filename);
 		if (nRet == BD_ERROR)
 		{
-			sprintf(mc_normal_msg,"[MOTOR BOARD] Ï¥àÍ∏∞Ìôî ÏóêÎü¨.");
+			sprintf(mc_normal_msg,"[MOTOR BOARD]Initialize");
 			LogFile_Write("D:\\AMT_LOG\\Motor\\", mc_normal_msg);
 			return BD_ERROR;
 		}		
 
-		COMI.mn_totalmotboard_number = 3;  //Î™®ÌÑ∞Î≥¥ÎìúÍ∞Ä 3Í∞ú ÏûàÎã§ 
-		COMI.mn_totalmotoraxis_number= 18; //Î™®ÌÑ∞Ïùò Ï¥ù ÏàòÎüâÏùÄ 18Í∞úÏù¥Îã§  
-		COMI.mn_bd_axis_number[0] = 8;   //0Î≤à Î™®ÌÑ∞Î≥¥ÎìúÎäî 8Ï∂ïÏö© Î≥¥ÎìúÏù¥Îã§  
-		COMI.mn_bd_axis_number[1] = 6;   //1Î≤à Î™®ÌÑ∞Î≥¥ÎìúÎäî 6Ï∂ïÏö© Î≥¥ÎìúÏù¥Îã§ 
-		COMI.mn_bd_axis_number[2] = 4;   //2Î≤à Î™®ÌÑ∞Î≥¥ÎìúÎäî 4Ï∂ïÏö© Î≥¥ÎìúÏù¥Îã§ 
+		COMI.mn_totalmotboard_number = 4; //motion board -> 4ea
+		COMI.mn_totalmotoraxis_number= 21;//motor 21ea
+		COMI.mn_bd_axis_number[0] = 8;
+		COMI.mn_bd_axis_number[1] = 8;
+		COMI.mn_bd_axis_number[2] = 4;
+		COMI.mn_bd_axis_number[3] = 4;
 
 		if(COMI.mn_motorbd_init_end == BD_YES)
 		{			
 			for(i=0; i<COMI.mn_totalmotoraxis_number; i++)
-			{//n_simul_mode => 0:ÏãúÎÆ¨Î†àÏù¥ÏÖò Î™®Îìú ÎπÑÌôúÏÑ±, 1:ÏãúÎÆ¨Î†àÏù¥ÏÖò Î™®Îìú ÌôúÏÑ±
+			{//n_simul_mode => 0:
 
-				if(COMI.mn_simulation_mode == 1) //Î™®ÌÑ∞Î•º Í∞ÄÏÉÅÏúºÎ°ú Ï†úÏñ¥ÌïòÏó¨ Ïã§Ï†ú Î™®ÌÑ∞ Ï∂úÎ†•Ïù¥ ÎÇòÍ∞ÄÍ≥† Í∏∞Íµ¨Î¨ºÏù¥ Ïù¥ÎèôÌïúÍ≤ÉÏ≤òÎüº ÎèôÏûëÌïúÎã§ 
+				if(COMI.mn_simulation_mode == 1)
 				{//ÌôúÏÑ±
 					COMI.Set_Simulation_Mode(i, 1); 
 				}
@@ -143,6 +183,171 @@ int CCtlBd_Library::Initialize_motor_board(int n_bd_type, CString s_filename)	//
 				}
 			}		
 		}
+	}
+
+	//0π¯ ∫∏µÂ	Motor No., ±‚æÓ∫Ò (1»∏¿¸Ω√ ∆ﬁΩ∫ :10000 / 1»∏¿¸Ω√ ¿Ãµø∞≈∏Æ)
+	// 1mm ¿Ãµø«œ¥¬µ• « ø‰«— pulse
+	COMI.Set_MotUnitDist(M_TRAY1_Z, 1000);
+	// 10mm ¿Ãµø«œ¥¬µ• « ø‰«— pulse (º”µµ¥¬ 1Cm/√ ∑Œ ºº∆√«œ∞‘ µ»¥Ÿ.)
+	COMI.Set_MotUnitSpeed(M_TRAY1_Z, 1000);
+	// motor Home
+	COMI.mn_homecheck_method[M_TRAY1_Z] = 6;
+
+	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_MODE, cmTRUE);
+	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_EN, cmFALSE);    //cmSD_EN=14 //cmFALSE = 0 SD ∫Ò»∞º∫, cmTRUE = 1 SD »∞º∫ 	
+	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_LOGIC, cmLOGIC_A); //cmSD_LOGIC=15, 0 (cmLOGIC_A) : A¡¢¡° πÊΩƒ,1 (cmLOGIC_B) : B¡¢¡° πÊΩƒ
+	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_LATCH, cmFALSE);//16
+	COMI.Set_MotorType_Init(M_TRAY1_Z, MOT_SERVO);
+
+
+	
+	COMI.Set_MotUnitDist(M_TRAY2_Z,	1000);
+	COMI.Set_MotUnitSpeed(M_TRAY2_Z, 1000);
+	COMI.mn_homecheck_method[M_TRAY2_Z] = 6;
+
+	COMI.Set_Motor_IO_Property(M_TRAY2_Z, cmSD_MODE, cmTRUE);
+	COMI.Set_Motor_IO_Property(M_TRAY2_Z, cmSD_EN, cmFALSE);    //cmSD_EN=14 //cmFALSE = 0 SD ∫Ò»∞º∫, cmTRUE = 1 SD »∞º∫ 	
+	COMI.Set_Motor_IO_Property(M_TRAY2_Z, cmSD_LOGIC, cmLOGIC_A); //cmSD_LOGIC=15, 0 (cmLOGIC_A) : A¡¢¡° πÊΩƒ,1 (cmLOGIC_B) : B¡¢¡° πÊΩƒ
+	COMI.Set_Motor_IO_Property(M_TRAY2_Z, cmSD_LATCH, cmFALSE);//16
+	COMI.Set_MotorType_Init(M_TRAY2_Z, MOT_SERVO);
+
+
+	COMI.Set_MotUnitDist(M_PRESS_Y,	90.7325748);//110.2
+	COMI.Set_MotUnitSpeed(M_PRESS_Y, 90.7325748);//110.2
+	COMI.mn_homecheck_method[M_PRESS_Y] = 6;
+	COMI.Set_MotorType_Init(M_PRESS_Y, MOT_SERVO);
+
+
+
+	COMI.Set_MotUnitDist(M_EPOXY_TRANSFER_X,	90.7325748);
+	COMI.Set_MotUnitSpeed(M_EPOXY_TRANSFER_X,	90.7325748);
+	COMI.mn_homecheck_method[M_EPOXY_TRANSFER_X] = 6;
+	COMI.Set_MotorType_Init(M_EPOXY_TRANSFER_X, MOT_SERVO);
+
+
+	COMI.Set_MotUnitDist(M_EPOXY_TRANSFER_Y,	90.7325748);//90.7358679//// 110.214
+	COMI.Set_MotUnitSpeed(M_EPOXY_TRANSFER_Y,	90.7325748);
+	COMI.mn_homecheck_method[M_EPOXY_TRANSFER_Y] = 6;
+	COMI.Set_MotorType_Init(M_EPOXY_TRANSFER_Y, MOT_SERVO);
+
+
+	COMI.Set_MotUnitDist(M_EPOXY_TRANSFER_Z,	1000);
+	COMI.Set_MotUnitSpeed(M_EPOXY_TRANSFER_Z,	1000);
+	COMI.mn_homecheck_method[M_EPOXY_TRANSFER_Z] = 6;
+	COMI.Set_MotorType_Init(M_EPOXY_TRANSFER_Z, MOT_SERVO);
+
+
+	COMI.Set_MotUnitDist(M_EPOXY_SCREW,			10000);
+	COMI.Set_MotUnitSpeed(M_EPOXY_SCREW,		10000);
+	COMI.mn_homecheck_method[M_EPOXY_SCREW] = 6;
+	COMI.Set_MotorType_Init(M_EPOXY_SCREW, MOT_SERVO);
+
+
+	COMI.Set_MotUnitDist(M_CARRIER_X,			90.7325748);
+	COMI.Set_MotUnitSpeed(M_CARRIER_X,			90.7325748);
+	COMI.mn_homecheck_method[M_CARRIER_X] = 6;
+	COMI.Set_MotorType_Init(M_CARRIER_X, MOT_SERVO);
+
+
+	///1π¯ ∫∏µÂ 
+	COMI.Set_MotUnitDist(M_LOADER_TRANSFER_Y,	90.7325748); //110.214
+	COMI.Set_MotUnitSpeed(M_LOADER_TRANSFER_Y,	90.7325748); //110.214
+	COMI.mn_homecheck_method[M_LOADER_TRANSFER_Y] = 6;
+	COMI.Set_MotorType_Init(M_LOADER_TRANSFER_Y, MOT_SERVO);
+
+	COMI.Set_MotUnitDist(M_LOADER_TRANSFER_Z,	1000);			//109.9314
+	COMI.Set_MotUnitSpeed(M_LOADER_TRANSFER_Z,	1000);			//109.9314
+	COMI.mn_homecheck_method[M_LOADER_TRANSFER_Z] = 6;
+	COMI.Set_MotorType_Init(M_LOADER_TRANSFER_Z, MOT_SERVO);
+
+	COMI.Set_MotUnitDist(M_HEATSINK_TRANSFER_X,	90.96582);
+	COMI.Set_MotUnitSpeed(M_HEATSINK_TRANSFER_X,	90.96582);
+	COMI.mn_homecheck_method[M_HEATSINK_TRANSFER_X] = 6;
+	COMI.Set_MotorType_Init(M_HEATSINK_TRANSFER_X, MOT_SERVO);
+
+	COMI.Set_MotUnitDist(M_HEATSINK_TRANSFER_Y,	90.96582);
+	COMI.Set_MotUnitSpeed(M_HEATSINK_TRANSFER_Y,	90.96582);
+	COMI.mn_homecheck_method[M_HEATSINK_TRANSFER_Y] = 6;
+	COMI.Set_MotorType_Init(M_HEATSINK_TRANSFER_Y, MOT_SERVO);
+
+
+	COMI.Set_MotUnitDist(M_HEATSINK_TRANSFER_Z,	1000);
+	COMI.Set_MotUnitSpeed(M_HEATSINK_TRANSFER_Z,	1000);
+	COMI.mn_homecheck_method[M_HEATSINK_TRANSFER_Z] = 6;
+	COMI.Set_MotorType_Init(M_HEATSINK_TRANSFER_Z, MOT_SERVO);
+
+	COMI.Set_MotUnitDist(M_UNLOADER_TRANSFER_X,	90.7325748);
+	COMI.Set_MotUnitSpeed(M_UNLOADER_TRANSFER_X,	90.7325748);
+	COMI.mn_homecheck_method[M_UNLOADER_TRANSFER_X] = 6;
+	COMI.Set_MotorType_Init(M_UNLOADER_TRANSFER_X, MOT_SERVO);
+
+	COMI.Set_MotUnitDist(M_UNLOADER_TRANSFER_Y,	90.7325748);
+	COMI.Set_MotUnitSpeed(M_UNLOADER_TRANSFER_Y,	90.7325748);
+	COMI.mn_homecheck_method[M_UNLOADER_TRANSFER_Y] = 6;
+	COMI.Set_MotorType_Init(M_UNLOADER_TRANSFER_Y, MOT_SERVO);
+
+	COMI.Set_MotUnitDist(M_UNLOADER_TRANSFER_Z,	1000);
+	COMI.Set_MotUnitSpeed(M_UNLOADER_TRANSFER_Z,	1000);
+	COMI.mn_homecheck_method[M_UNLOADER_TRANSFER_Z] = 6;
+	COMI.Set_MotorType_Init(M_UNLOADER_TRANSFER_Z, MOT_SERVO);
+
+	COMI.Set_MotUnitDist(M_DISPENSER_Y,		1094.4032);	//91.374
+	COMI.Set_MotUnitSpeed(M_DISPENSER_Y,		1094.4032);	//91.374
+	COMI.mn_homecheck_method[M_DISPENSER_Y] = 6;
+	COMI.Set_MotorType_Init(M_DISPENSER_Y, MOT_SERVO);
+
+	COMI.Set_MotUnitDist(M_TRAY_REMOVE_X,	90.7325748);
+	COMI.Set_MotUnitSpeed(M_TRAY_REMOVE_X,	90.7325748);
+	COMI.mn_homecheck_method[M_TRAY_REMOVE_X] = 6;
+	COMI.Set_MotorType_Init(M_TRAY_REMOVE_X, MOT_SERVO);
+
+
+	COMI.Set_MotUnitDist(M_HEATSINK_INSPECT_Y,	90.7325748);
+	COMI.Set_MotUnitSpeed(M_HEATSINK_INSPECT_Y,	90.7325748);
+	COMI.mn_homecheck_method[M_HEATSINK_INSPECT_Y] = 6;
+	COMI.Set_MotorType_Init(M_HEATSINK_INSPECT_Y, MOT_SERVO);
+
+
+	COMI.Set_MotUnitDist(M_HEATSINK_INSPECT_Z, 1000);//20130716
+	COMI.Set_MotUnitSpeed(M_HEATSINK_INSPECT_Z, 1000);//20130716
+	COMI.mn_homecheck_method[M_HEATSINK_INSPECT_Z] = 6;
+	COMI.Set_MotorType_Init(M_HEATSINK_INSPECT_Z, MOT_SERVO);
+
+	COMI.Set_MotUnitDist(M_HEATSINK_PICKER_PITCH, 500.3411417);
+	COMI.Set_MotUnitSpeed(M_HEATSINK_PICKER_PITCH, 500.3411417);
+	COMI.mn_homecheck_method[M_HEATSINK_PICKER_PITCH] = 6;
+	COMI.Set_MotorType_Init(M_HEATSINK_PICKER_PITCH, MOT_SERVO);
+
+
+	for (i = 0; i < M_MOTOR_COUNT; i++)
+	{
+		st_motor[i].d_limit_position[0] = COMI.md_limit_position[i][0];
+		st_motor[i].d_limit_position[1] = COMI.md_limit_position[i][1]; 
+		
+		st_motor[i].md_spd_vel			= COMI.md_spd_vel[i][0]; 
+		//2016.1209
+		st_motor[i].md_spd_acc			= COMI.md_spd_vel[i][1];
+		st_motor[i].md_spd_dec			= COMI.md_spd_vel[i][2];
+		
+		st_motor[i].md_spd_home			= COMI.md_spd_home[i];
+		st_motor[i].md_spd_jog			= COMI.md_spd_jog[i];
+		
+		st_motor[i].mn_allow			= COMI.md_allow_value[i];
+		
+		//		COMI.mn_homecheck_method[i]		= 6;	//el on-> stop-> back-> el off - > stop 
+		nRet = COMI.Set_HomeSetConfig(i, COMI.mn_homecheck_method[i], 0, 2, 1);
+		if (nRet != BD_GOOD)
+		{
+			if (st_handler.cwnd_list != NULL)
+			{
+				sprintf(st_msg.c_abnormal_msg,_T("Set_HomeSet_Config Error [MotNum[%d]]"), i);
+				st_handler.cwnd_list->SendMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // µø¿€ øœ∑· √‚∑¬ ø‰√ª
+			}
+		}
+		
+		COMI.Set_MotPower(i, TRUE);		
+
+		COMI.Set_CMD_CTL_Mode(i, cmCTRL_SEMI_C);//20150429 james cmCTRL_SEMI_C , ø£ƒ⁄¥ı,(««µÂπÈ±‚¡ÿ) ±‚¡ÿ¿∏∑Œ ∏Ò«•¡¬«•∏¶ º≥¡§«œø© ¿Ãº€«’¥œ¥Ÿ(ƒø∏‡µÂ ¡§∫∏¥¬ π´Ω√µ«∞Ì √÷¡æ feedback(ø£ƒ⁄¥ı) ¿ßƒ°∑Œ ¡¶æÓ∞° ¿Ã∑ÁæÓ¡¯¥Ÿ.
 	}
 
 	return  BD_GOOD;
@@ -175,16 +380,691 @@ int CCtlBd_Library::Initialize_io_Board(int n_bd_type)
 }
 
 
+int CCtlBd_Library::Motor_LinearSafety(int n_MapIndex, double *dp_PosList)
+{
+// 	double dCurrX = g_comiMgr.Get_MotCurrentPos( MOTOR_ROBOT_X );
+// 	double dCurrY = g_comiMgr.Get_MotCurrentPos( MOTOR_ROBOT_Y );
+// 	double dCurrT = g_comiMgr.Get_MotCurrentPos( MOTOR_TRAY_TR_Y );
+// 
+// 	if( n_MapIndex == M_ROBOT_XY_INDEX )
+// 	{
+// 		//2016.0410
+// 		if(st_handler.mn_mirror_type == CTL_YES )
+// 		{
+// 			if( dCurrX < st_handler.md_safty_rbtx + COMI.md_allow_value[MOTOR_ROBOT_X] )
+// 			{
+// 				if( dp_PosList[0] < st_handler.md_safty_rbtx - COMI.md_allow_value[MOTOR_ROBOT_X] )
+// 				{
+// 					if( dCurrY > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 					{
+// 						if( dp_PosList[1] >= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety0] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety0] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 							
+// 						}
+// 						else if( dp_PosList[1] > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] < ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety2] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 
+// 					}
+// 					else if( dCurrY <= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) && dCurrY > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] )
+// 					{
+// 						if( dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety3_1_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety3_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if(  dp_PosList[1] > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] < ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety4] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety4] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT < ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) && 
+// 								dCurrT > ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety5] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety5] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{//2016.0410
+// 							if( dCurrT < ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety6] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety6] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else if( dCurrY <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dCurrY > st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] )
+// 					{
+// 						if(  dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y]) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - 100*COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety10] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety10] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}//2016.0414
+// // 						else if( dp_PosList[1] > st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + 100  )
+// // 						{
+// // 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// // 							{
+// // 								alarm.mstr_code = _T("450002");
+// // 								CtlBdFunc.ms_ErrMsg.Format("[LSafety7] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// // 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety7] Linear XY axis robot move error!" );
+// // 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// // 								return BD_ERROR;
+// // 							}
+// // 						}
+// 						else if( dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) &&
+// 							dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety7] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety7] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] )
+// 						{
+// 							if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety8] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety8] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else// if( dCurrY <= st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT])
+// 					{					
+// 						if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 						{
+// 							alarm.mstr_code = _T("450002");
+// 							CtlBdFunc.ms_ErrMsg.Format("[LSafety9] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 							if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety9] Linear XY axis robot move error!" );
+// 							CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 							return BD_ERROR;
+// 						}					
+// 					}
+// 				}
+// 			}
+// 			else// if( dCurrX > st_handler.md_safty_rbtx + COMI.md_allow_value[MOTOR_ROBOT_X] )
+// 			{
+// 				if( dp_PosList[0] < st_handler.md_safty_rbtx - COMI.md_allow_value[MOTOR_ROBOT_X] )
+// 				{
+// 					if( dCurrY > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 					{
+// 						if( dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety0_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety0_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if( dp_PosList[1] > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] < ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety1_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety1_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety2_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety2_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety3_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety3_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else if( dCurrY <= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) && dCurrY > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] )
+// 					{
+// 						if( dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety4_1_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety4_1_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if(  dp_PosList[1] > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] < ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety4_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety4_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT < ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) && 
+// 								dCurrT > ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety5_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety5_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{//2016.0410
+// 							if( dCurrT < ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety6_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety6_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else if( dCurrY <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dCurrY > st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] )
+// 					{
+// 						if(  dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y]) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - 100*COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety10_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety10_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}//2016.0414
+// // 						else if(  dp_PosList[1] > st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + 100 )
+// // 						{
+// // 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// // 							{
+// // 								alarm.mstr_code = _T("450002");
+// // 								CtlBdFunc.ms_ErrMsg.Format("[LSafety7_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// // 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety7_1] Linear XY axis robot move error!" );
+// // 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// // 								return BD_ERROR;
+// // 							}
+// // 						}
+// 						else if( dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) &&
+// 							dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety7_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety7_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] )
+// 						{
+// 							if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety8_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety8_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else// if( dCurrY <= st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT])
+// 					{					
+// 						if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 						{
+// 							alarm.mstr_code = _T("450002");
+// 							CtlBdFunc.ms_ErrMsg.Format("[LSafety9_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 							if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety9_1] Linear XY axis robot move error!" );
+// 							CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 							return BD_ERROR;
+// 						}					
+// 					}
+// 				}
+// 
+// 			}
+// 
+// 		}
+// 		else// if(st_handler.mn_mirror_type == CTL_NO)
+// 		{
+// 			if( dCurrX > st_handler.md_safty_rbtx + COMI.md_allow_value[MOTOR_ROBOT_X] )
+// 			{
+// 				if( dp_PosList[0] > st_handler.md_safty_rbtx + COMI.md_allow_value[MOTOR_ROBOT_X] )
+// 				{
+// 					if( dCurrY > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 					{
+// 						if( dp_PosList[1] >= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety0] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety0] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}								
+// 							
+// 						}
+// 						else if( dp_PosList[1] > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] < ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety1_2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety1_2] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety2_2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety2_2] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety3_2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety3_2] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else if( dCurrY <= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) && dCurrY > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] )
+// 					{
+// 						if( dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety4_2_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety4_2_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if(  dp_PosList[1] > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] < ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety4_2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety4_2] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT < ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) && 
+// 								dCurrT > ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety5_2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety5_2] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{//2016.0410
+// 							if( dCurrT < ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety6_2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety6_2] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else if( dCurrY <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dCurrY > st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] )
+// 					{
+// 						if(  dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y]) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - 100*COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety10_2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety10_2] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}//20160414
+// // 						else if(  dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + 100 ) )
+// // 						{
+// // 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] && 
+// // 								dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y])
+// // 							{
+// // 								alarm.mstr_code = _T("450002");
+// // 								CtlBdFunc.ms_ErrMsg.Format("[LSafety7_2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// // 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety7_2] Linear XY axis robot move error!" );
+// // 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// // 								return BD_ERROR;
+// // 							}
+// // 						}
+// 						else if( dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) &&
+// 							dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety7] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety7] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] )
+// 						{
+// 							if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety8_2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety8_2] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else// if( dCurrY <= st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT])
+// 					{					
+// 						if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 						{
+// 							alarm.mstr_code = _T("450002");
+// 							CtlBdFunc.ms_ErrMsg.Format("[LSafety9_2] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 							if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety9_2] Linear XY axis robot move error!" );
+// 							CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 							return BD_ERROR;
+// 						}					
+// 					}
+// 				}
+// 			}
+// 			else// if( dCurrX < st_handler.md_safty_rbtx + COMI.md_allow_value[MOTOR_ROBOT_X] )
+// 			{
+// 				if( dp_PosList[0] > st_handler.md_safty_rbtx + COMI.md_allow_value[MOTOR_ROBOT_X] )
+// 				{
+// 					if( dCurrY > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 					{
+// 						if( dp_PosList[1] >= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety0_1] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety0_1] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 							
+// 						}
+// 						else if( dp_PosList[1] > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] < ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety1_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety1_3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety2_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety2_3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety3_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety3_3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else if( dCurrY <= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) && dCurrY > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] )
+// 					{
+// 						if( dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety0_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety0_3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if( dp_PosList[1] > st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] < ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + 300.0f ) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety4_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety4_3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT < ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) && 
+// 								dCurrT > ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety5_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety5_3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{//2016.0410
+// 							if( dCurrT < ( st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] ) )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety6_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety6_3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else if( dCurrY <= st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] && dCurrY > st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] )
+// 					{
+// 						if(  dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y]) )
+// 						{
+// 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - 100*COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety10_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety10_3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}//2016.0414
+// // 						else if(  dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + 100 ) )
+// // 						{
+// // 							if( dCurrT > st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_BIN] + COMI.md_allow_value[MOTOR_TRAY_TR_Y] && 
+// // 								dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y])
+// // 							{
+// // 								alarm.mstr_code = _T("450002");
+// // 								CtlBdFunc.ms_ErrMsg.Format("[LSafety7_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// // 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety7_3] Linear XY axis robot move error!" );
+// // 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// // 								return BD_ERROR;
+// // 							}
+// // 						}
+// 						else if( dp_PosList[1] > ( st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) &&
+// 							dp_PosList[1] <= ( st_handler.md_safty_rbty[P_XY_SAFETY_REJ_LIMIT] + COMI.md_allow_value[MOTOR_ROBOT_Y] ) )
+// 						{
+// 							if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_SAFETY] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety7_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety7_3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 						else// if( dp_PosList[1] <= st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT] )
+// 						{
+// 							if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 							{
+// 								alarm.mstr_code = _T("450002");
+// 								CtlBdFunc.ms_ErrMsg.Format("[LSafety8_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 								if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety8_3] Linear XY axis robot move error!" );
+// 								CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 								return BD_ERROR;
+// 							}
+// 						}
+// 					}
+// 					else// if( dCurrY <= st_handler.md_safty_rbty[P_XY_SAFETY_TRAY_LIMIT])
+// 					{					
+// 						if( dCurrT < st_motor[MOTOR_TRAY_TR_Y].d_pos[P_TRANSFER_Y_REJ] - COMI.md_allow_value[MOTOR_TRAY_TR_Y] )
+// 						{
+// 							alarm.mstr_code = _T("450002");
+// 							CtlBdFunc.ms_ErrMsg.Format("[LSafety9_3] Linear ∑Œ∫ø X√‡ ¿Ãµø ø°∑Ø - ∆Æ∑£Ω∫∆€ ∞¯±ﬁ ¿ßƒ° æ∆¥‘ !!!" );	
+// 							if ( g_local.GetLocalType() == LOCAL_ENG ) CtlBdFunc.ms_ErrMsg.Format("[LSafety9_3] Linear XY axis robot move error!" );
+// 							CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, MOTOR_ROBOT_Y, "450002", CtlBdFunc.ms_ErrMsg);
+// 							return BD_ERROR;
+// 						}					
+// 					}
+// 				}
+// 			}
+// 		}
+// 	}
+// 	return BD_GOOD;
+}
+
+
 int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos, double d_jogcurrentpos) 	//Î™®ÌÑ∞ ÏïàÏ†Ñ Ï†ïÎ≥¥ ÏÖãÌåÖÏãú ÏÇ¨Ïö© 
 {
 	// Ïòà) 
 	// n_Mode = 0:Home Check, 1:Start, 2:Check, 3:Jog, 4:Length Change
 	char cJamcode[10] = {NULL};
-	int nRet = 0, nRet1 = 0, nRet2 = 0, nRet3 = 0, nRet4 = 0, nRet5 = 0, nRet6 = 0;
+	int nRet = 0, nRet_1 = 0, nRet_2 = 0, nRet_3 = 0, nRet_4 = 0, nRet_5 = 0, nRet_6 = 0;
 	double d_CurPos[M_MOTOR_COUNT] = {0,};
 	double d_Pos[4] = {0,};
 	double d_GapCheck = 0;
 	int i = 0;
+
+
+	if(Func.DoorOpenCheckSpot() != CTLBD_RET_GOOD)
+	{
+		return CTL_DOOROPEN;
+	}
+
 
 	if (d_jogcurrentpos != -1000)
 	{
@@ -350,92 +1230,92 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 	{
 		case M_CARRIER_X:
 
-			if(m_dTargetPos == st_motor[n_axis].md_pos[P_CARRIER_X_PUSH_POS])
+			if(d_targetpos == st_motor[n_axis].md_pos[P_CARRIER_X_PUSH_POS])
 			{
-				nRet_1 = FAS_IO.get_in_bit(st_io.i_Press_Carrier_Holder_Up_Check, IO_ON);
-				nRet_2 = FAS_IO.get_in_bit(st_io.i_Press_Carrier_Holder_Down_Check, IO_OFF);
-				nRet_3 = FAS_IO.get_in_bit(st_io.i_Camera_Y_Jig_Press_Forward_Check, IO_OFF);
-				nRet_4 = FAS_IO.get_in_bit(st_io.i_Camera_Y_Jig_Press_Backward_Check, IO_ON);
-// 				nRet_5 = FAS_IO.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, nOnOff);
-// 			    nRet_6 = FAS_IO.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, !nOnOff);
-				nRet_5 = FAS_IO.get_in_bit(st_io.i_Press_Up_Check, IO_ON);
-				nRet_6 = FAS_IO.get_in_bit(st_io.i_Press_Down_Check, IO_OFF);
+				nRet_1 = g_ioMgr.get_in_bit(st_io.i_Press_Carrier_Holder_Up_Check, IO_ON);
+				nRet_2 = g_ioMgr.get_in_bit(st_io.i_Press_Carrier_Holder_Down_Check, IO_OFF);
+				nRet_3 = g_ioMgr.get_in_bit(st_io.i_Camera_Y_Jig_Press_Forward_Check, IO_OFF);
+				nRet_4 = g_ioMgr.get_in_bit(st_io.i_Camera_Y_Jig_Press_Backward_Check, IO_ON);
+// 				nRet_5 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, nOnOff);
+// 			    nRet_6 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, !nOnOff);
+				nRet_5 = g_ioMgr.get_in_bit(st_io.i_Press_Up_Check, IO_ON);
+				nRet_6 = g_ioMgr.get_in_bit(st_io.i_Press_Down_Check, IO_OFF);
 				if( nRet_1 != IO_ON || nRet_2 != IO_OFF || nRet_3 != IO_OFF || nRet_4 != IO_ON || nRet_5 != IO_ON || nRet_6 != IO_OFF )
 				{
-					if		( nRet_1 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d", IO_ON, st_io.i_Press_Carrier_Holder_Up_Check));
-					else if( nRet_2 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d", IO_OFF, st_io.i_Press_Carrier_Holder_Down_Check));
-					else if( nRet_3 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d", IO_OFF, st_io.i_Camera_Y_Jig_Press_Forward_Check));
-					else if( nRet_4 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d", IO_ON, st_io.i_Camera_Y_Jig_Press_Backward_Check));
-					else if( nRet_5 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d", IO_ON, st_io.i_Press_Up_Check));
-					else if( nRet_6 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d", IO_OFF, st_io.i_Press_Down_Check));
-					else								alarm.mstr_code.Format(_T("8%d%04d", IO_ON, st_io.i_Press_Carrier_Holder_Up_Check));//ÌòπÏãúÎÇò
+					if		( nRet_1 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Press_Carrier_Holder_Up_Check);
+					else if( nRet_2 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Press_Carrier_Holder_Down_Check);
+					else if( nRet_3 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Camera_Y_Jig_Press_Forward_Check);
+					else if( nRet_4 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Camera_Y_Jig_Press_Backward_Check);
+					else if( nRet_5 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Press_Up_Check);
+					else if( nRet_6 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Press_Down_Check);
+					else								alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Press_Carrier_Holder_Up_Check);//ÌòπÏãúÎÇò
 					CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
 					return CTL_ERROR;
 				}
 			}
-			if(m_dTargetPos == st_motor[n_axis].md_pos[P_CARRIER_X_PRESS_POS])
+			if(d_targetpos == st_motor[n_axis].md_pos[P_CARRIER_X_PRESS_POS])
 			{
-				nRet_1 = FAS_IO.get_in_bit(st_io.i_Press_Up_Check, IO_ON);
-				nRet_2 = FAS_IO.get_in_bit(st_io.i_Press_Down_Check, IO_OFF);
+				nRet_1 = g_ioMgr.get_in_bit(st_io.i_Press_Up_Check, IO_ON);
+				nRet_2 = g_ioMgr.get_in_bit(st_io.i_Press_Down_Check, IO_OFF);
 				if( nRet_1 != IO_ON || nRet_2 != IO_OFF )
 				{
-					if( nRet_1 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d", IO_ON, st_io.i_Press_Up_Check));
-					else/* if( nRet_2 != IO_OFF )*/ alarm.mstr_code.Format(_T("8%d%04d", IO_OFF, st_io.i_Press_Down_Check));
+					if( nRet_1 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Press_Up_Check);
+					else/* if( nRet_2 != IO_OFF )*/ alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Press_Down_Check);
 					CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
 					return CTL_ERROR;
 				}
 			}
 			else
 			{
-				nRet_1 = FAS_IO.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_ON);
-				nRet_2 = FAS_IO.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_OFF);
-				nRet_3 = FAS_IO.get_in_bit(st_io.i_Press_Up_Check, IO_ON);
-				nRet_4 = FAS_IO.get_in_bit(st_io.i_Press_Down_Check, IO_OFF);
-				if      ( nRet_1 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d", IO_ON, st_io.i_Slide_Guide_X2_Up_Check));
-				else if( nRet_2 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d", IO_OFF, st_io.i_Slide_Guide_X2_Down_Check));
-				else if( nRet_3 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d", IO_ON, st_io.i_Press_Up_Check));
-				else if( nRet_4 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d", IO_OFF, st_io.i_Press_Down_Check));
-				else								 alarm.mstr_code.Format(_T("8%d%04d", IO_ON, st_io.i_Slide_Guide_X2_Up_Check));//ÌòπÏãúÎÇò
+				nRet_1 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_ON);
+				nRet_2 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_OFF);
+				nRet_3 = g_ioMgr.get_in_bit(st_io.i_Press_Up_Check, IO_ON);
+				nRet_4 = g_ioMgr.get_in_bit(st_io.i_Press_Down_Check, IO_OFF);
+				if      ( nRet_1 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Slide_Guide_X2_Up_Check);
+				else if( nRet_2 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Slide_Guide_X2_Down_Check);
+				else if( nRet_3 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Press_Up_Check);
+				else if( nRet_4 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Press_Down_Check);
+				else								 alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Slide_Guide_X2_Up_Check);//ÌòπÏãúÎÇò
 				CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
 				return CTL_ERROR;
 			}
 			break;
 
 		case M_PRESS_Y:
-			if( Chk_PressClamp_Safety(3) == RET_ERROR )
-			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_CARRIER_X ) < ( st_motor[M_CARRIER_X].md_pos[P_CARRIER_X_UNPRESS_POS] - st_motor[m_nPressAxisX].mn_allow ) &&
-				COMI.Get_MotCurrentPos( M_CARRIER_X ) > ( st_motor[M_CARRIER_X].md_pos[P_CARRIER_X_INIT_POS] + st_motor[m_nPressAxisX].mn_allow ))
-			{
-				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
-				return CTL_ERROR;
-			}
-			if( COMI.Get_MotCurrentPos( M_LOADER_TRANSFER_Y ) > (st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] + st_motor[M_LOADER_TRANSFER_Y].mn_allow)  )
-			{//080008 1 0 "M_LOADER_TRANSFER_Y_MOTOR_IS_NON_SAFETY_POS."
-				alarm.mstr_code = _T("080008");
-				CtlBdFunc.ms_ErrMsg.Format("[Safety] Loader_Y_Motor is not safety." );				
-				CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, n_axis, "080008", CtlBdFunc.ms_ErrMsg);
-				return CTL_ERROR;
-			}
-			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X ) > (st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_READY_POS] + st_motor[M_LOADER_TRANSFER_Y].mn_allow)  )
-			{//130008 1 0 "M_UNLOADER_TRANSFER_X_MOTOR_IS_NON_SAFETY_POS."
-				alarm.mstr_code = _T("130008");
-				CtlBdFunc.ms_ErrMsg.Format("[Safety] Unloader_X_Motor is not safety." );				
-				CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, n_axis, "130008", CtlBdFunc.ms_ErrMsg);
-				return CTL_ERROR;
-			}
-			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X ) > (st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_READY_POS] + st_motor[M_LOADER_TRANSFER_Y].mn_allow)  )
-			{//130008 1 0 "M_UNLOADER_TRANSFER_X_MOTOR_IS_NON_SAFETY_POS."
-				alarm.mstr_code = _T("130008");
-				CtlBdFunc.ms_ErrMsg.Format("[Safety] Unloader_X_Motor is not safety." );				
-				CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, n_axis, "130008", CtlBdFunc.ms_ErrMsg);
-				return CTL_ERROR;
-			}
+// 			if( Chk_PressClamp_Safety(3) == RET_ERROR )
+// 			{
+// 				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+// 				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
+// 				break;
+// 			}
+// 			if( COMI.Get_MotCurrentPos( M_CARRIER_X ) < ( st_motor[M_CARRIER_X].md_pos[P_CARRIER_X_UNPRESS_POS] - st_motor[m_nPressAxisX].mn_allow ) &&
+// 				COMI.Get_MotCurrentPos( M_CARRIER_X ) > ( st_motor[M_CARRIER_X].md_pos[P_CARRIER_X_INIT_POS] + st_motor[m_nPressAxisX].mn_allow ))
+// 			{
+// 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
+// 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
+// 				return CTL_ERROR;
+// 			}
+// 			if( COMI.Get_MotCurrentPos( M_LOADER_TRANSFER_Y ) > (st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] + st_motor[M_LOADER_TRANSFER_Y].mn_allow)  )
+// 			{//080008 1 0 "M_LOADER_TRANSFER_Y_MOTOR_IS_NON_SAFETY_POS."
+// 				alarm.mstr_code = _T("080008");
+// 				CtlBdFunc.ms_ErrMsg.Format("[Safety] Loader_Y_Motor is not safety." );				
+// 				CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, n_axis, "080008", CtlBdFunc.ms_ErrMsg);
+// 				return CTL_ERROR;
+// 			}
+// 			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X ) > (st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_READY_POS] + st_motor[M_LOADER_TRANSFER_Y].mn_allow)  )
+// 			{//130008 1 0 "M_UNLOADER_TRANSFER_X_MOTOR_IS_NON_SAFETY_POS."
+// 				alarm.mstr_code = _T("130008");
+// 				CtlBdFunc.ms_ErrMsg.Format("[Safety] Unloader_X_Motor is not safety." );				
+// 				CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, n_axis, "130008", CtlBdFunc.ms_ErrMsg);
+// 				return CTL_ERROR;
+// 			}
+// 			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X ) > (st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_READY_POS] + st_motor[M_LOADER_TRANSFER_Y].mn_allow)  )
+// 			{//130008 1 0 "M_UNLOADER_TRANSFER_X_MOTOR_IS_NON_SAFETY_POS."
+// 				alarm.mstr_code = _T("130008");
+// 				CtlBdFunc.ms_ErrMsg.Format("[Safety] Unloader_X_Motor is not safety." );				
+// 				CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, n_axis, "130008", CtlBdFunc.ms_ErrMsg);
+// 				return CTL_ERROR;
+// 			}
 // 			if( COMI.Get_MotCurrentPos( M_HEATSINK_INSPECT_Y ) > (st_motor[M_HEATSINK_INSPECT_Y].md_pos[P_UNLOADER_TRANSFER_X_READY_POS] + st_motor[M_LOADER_TRANSFER_Y].mn_allow)  )
 // 			{//130008 1 0 "M_UNLOADER_TRANSFER_X_MOTOR_IS_NON_SAFETY_POS."
 // 				alarm.mstr_code = _T("130008");
@@ -443,6 +1323,118 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 // 				CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, n_axis, "130008", CtlBdFunc.ms_ErrMsg);
 // 				return CTL_ERROR;
 // 			}
+			break;
+
+		case M_EPOXY_TRANSFER_X:
+			if(COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_Y) <= st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS] - st_motor[M_EPOXY_TRANSFER_Y].mn_allow)
+			{
+				d_CurPos[0]	= COMI.Get_MotCurrentPos(n_axis);
+				if( d_targetpos > ( st_motor[n_axis].md_pos[P_EPOXY_TRANSFER_X_SAFETY] + st_motor[n_axis].mn_allow ) )
+				{	
+					alarm.mstr_code.Format(_T("%02d0008"),n_axis );
+					CtlBdFunc.ms_ErrMsg.Format("[Safety] Unloader_X_Motor is not safety." );				
+					CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, n_axis, alarm.mstr_code, CtlBdFunc.ms_ErrMsg);
+					return CTLBD_RET_ERROR;
+				}
+			}
+			else if(COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_Y) > (st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS] - st_motor[M_EPOXY_TRANSFER_Y].mn_allow))
+			{
+				d_CurPos[0]	= COMI.Get_MotCurrentPos(M_CARRIER_X);
+				if(d_CurPos[0] > (st_motor[M_CARRIER_X].md_pos[P_CARRIER_X_INIT_POS]+(double)10))
+				{
+					if(d_targetpos < st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_INIT_POS])
+					{
+						return CTLBD_RET_ERROR;
+					}
+				}
+			}
+
+			if(COMI.Get_MotCurrentPos(M_HEATSINK_TRANSFER_X) >= st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRASNFER_X_TURN_PLACE_POS] - 5)
+			{
+				if(d_targetpos >= st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_DISCHARGE_POS])
+				{
+					return CTLBD_RET_ERROR;
+				}
+			}
+
+			break;
+
+		case M_EPOXY_TRANSFER_Y:
+			if(COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_Y) < st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS] - st_motor[M_EPOXY_TRANSFER_Y].mn_allow)
+			{
+				d_CurPos[0]	= COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_X);
+				if(d_CurPos[0] < st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_INIT_POS])
+				{
+					return CTLBD_RET_ERROR;
+				}
+			}
+			else
+			{//P_EPOXY_TRANSFER_X_SUCKTION_POSÏùÄ ÏÉùÍ∞ÅÌïòÏßÄ ÎßêÏûê
+// 				if (d_TargetPos < st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS] - st_motor[M_EPOXY_TRANSFER_Y].n_allow)
+// 				{
+// 					if(COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_X) < (st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_SUCKTION_POS] - st_motor[M_EPOXY_TRANSFER_X].mn_allow))
+// 					{
+// 						return CTLBD_RET_ERROR;
+// 					}
+// 				}
+			}
+
+			if(d_targetpos > (st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_X_INIT_POS] + (double)10) )
+			{
+				d_CurPos[1]	= COMI.Get_MotCurrentPos(M_CARRIER_X);
+				if(d_CurPos[1] > (st_motor[M_CARRIER_X].md_pos[P_CARRIER_X_INIT_POS]+(double)10))
+				{
+					return CTLBD_RET_ERROR;
+				}
+
+			}
+			break;
+
+		case M_DISPENSER_Y:
+			if( ( COMI.Get_MotCurrentPos(M_HEATSINK_TRANSFER_X) > (st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRASNFER_X_TURN_READY_POS] + st_motor[M_HEATSINK_TRANSFER_X].mn_allow) ) &&
+				( COMI.Get_MotCurrentPos(M_HEATSINK_TRANSFER_Y) < (st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRASNFER_Y_TURN_READY_POS] - st_motor[M_HEATSINK_TRANSFER_Y].mn_allow) ) )
+			{
+				sprintf(cJamcode, "%02d0008", n_axis);
+				Alarm_Error_Occurrence(0, CTL_dWARNING, cJamcode);
+				return CTLBD_RET_ERROR;
+			}
+			break;
+
+		case M_EPOXY_TRANSFER_Z:
+			// ÎãπÍµ¨Ïû• Î¨¥ÎπôÏãú ÏïåÎûå Í¥ÄÎ†® ..
+			if(st_work.nEpoxyBiliardThreadRunMode == 1)
+			{
+				d_CurPos[0]		= COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_Y);
+
+				//Let's check manual teaching pos
+// 				if(st_work.nJigEpoxyWorkCount == 0)
+// 				{
+// 					if(d_CurPos[0] > (st_epoxy_pos.dEpoxy_Y_FirstStartPos + st_basic.dEpoxyYLineOffSet + 2.) && 
+// 						d_CurPos[0] < (st_epoxy_pos.dEpoxy_Y_FirstEndPos + st_basic.dEpoxyYLineOffSet - 2.))
+// 					{
+// 						return CTLBD_RET_ERROR;
+// 					}	
+// 				}
+// 
+// 				if(st_work.nJigEpoxyWorkCount == 1)
+// 				{
+// 					if(d_CurPos[0] > (st_epoxy_pos.dEpoxy_Y_FirstStartPos + st_basic.dEpoxyYLineOffSet - st_recipe.dLoaderTransferTrayDeviceGap + 2.) && 
+// 						d_CurPos[0] < (st_epoxy_pos.dEpoxy_Y_FirstEndPos + st_basic.dEpoxyYLineOffSet - st_recipe.dLoaderTransferTrayDeviceGap - 2.))
+// 					{
+// 						return CTLBD_RET_ERROR;
+// 					}	
+// 				}
+// 
+// 				if(st_work.nJigEpoxyWorkCount == 2)
+// 				{
+// 					if(d_CurPos[0] > (st_epoxy_pos.dEpoxy_Y_FirstStartPos + st_basic.dEpoxyYLineOffSet - st_recipe.dLoaderTransferTrayDeviceGap*2 + 2.) && 
+// 						d_CurPos[0] < (st_epoxy_pos.dEpoxy_Y_FirstEndPos + st_basic.dEpoxyYLineOffSet - st_recipe.dLoaderTransferTrayDeviceGap*2 - 2.))
+// 					{
+// 						return CTLBD_RET_ERROR;
+// 					}	
+// 				}
+
+			}
 			break;
 
 	}
@@ -634,8 +1626,6 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 	int nFuncRet = BD_PROCEED;
 	long dwMotionDone=0;
 	int nRet_1;
-	int nAxis[2];
-	double dTarget[2];
 	
 	
 	switch(mn_single_motmove_step[n_MotNum])
@@ -647,8 +1637,8 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 			break;
 		}
 
-		nRet = COMI.Check_MotPosRange(n_MotNum, d_MotPos, COMI.md_allow_value[n_MotNum]);
-		if (nRet == BD_GOOD) //Ïù¥ÎØ∏ Ìï¥Îãπ ÏúÑÏπòÏóê ÏôÄ ÏûàÏúºÎ©¥ ÎèôÏûëÌïòÏßÄ ÏïäÍ≥† Î™®ÌÑ∞ Ïù¥ÎèôÏùÑ ÎÅùÎÇ∏Îã§ 
+		nRet_1 = COMI.Check_MotPosRange(n_MotNum, d_MovePos, COMI.md_allow_value[n_MotNum]);
+		if (nRet_1 == BD_GOOD) //Ïù¥ÎØ∏ Ìï¥Îãπ ÏúÑÏπòÏóê ÏôÄ ÏûàÏúºÎ©¥ ÎèôÏûëÌïòÏßÄ ÏïäÍ≥† Î™®ÌÑ∞ Ïù¥ÎèôÏùÑ ÎÅùÎÇ∏Îã§ 
 		{
 			nFuncRet = BD_GOOD;
 			break;
@@ -676,10 +1666,10 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 		{ 
 			if(m_dwUntil_Wait[n_MotNum][2] > 15000) //max 10sec wait
 			{
-				if (st_handler_info.cWndList != NULL)  
+				if (st_handler.cwnd_list != NULL)  
 				{
-					clsMem.OnNormalMessageWrite(_T("CCtlBd_Library::Single_Move = 10 1"));
-					//st_handler_info.cWndList->SendMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
+					sprintf(st_msg.c_normal_msg, "CCtlBd_Library::Single_Move = 10 1");
+					st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // µø¿€ Ω«∆– √‚∑¬ ø‰√ª
 				}
 				cmmSxStopEmg(n_MotNum);	
 			
@@ -690,10 +1680,10 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 		{  
 			if(m_dwUntil_Wait[n_MotNum][2] > 200)
 			{
-				if (st_handler_info.cWndList != NULL)  
+				if (st_handler.cwnd_list != NULL)  
 				{
-					clsMem.OnNormalMessageWrite(_T("CCtlBd_Library::Single_Move = 10 2"));
-					//st_handler_info.cWndList->SendMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
+					sprintf(st_msg.c_normal_msg, "CCtlBd_Library::Single_Move = 10 2");
+					st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // µø¿€ Ω«∆– √‚∑¬ ø‰√ª
 				}
 	
 				cmmSxStopEmg(n_MotNum);	
@@ -704,9 +1694,9 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 		break;
 		
 	case 100:
-		nRet = COMI.Start_SingleMove(n_MotNum, d_MotPos, n_SpeedRate);  // Ìï¥Îãπ ÏúÑÏπòÎ°ú Ïù¥Îèô
+		nRet_1 = COMI.Start_SingleMove(n_MotNum, d_MovePos, n_SpeedRate);  // Ìï¥Îãπ ÏúÑÏπòÎ°ú Ïù¥Îèô
 		
-		if (nRet == BD_GOOD)
+		if (nRet_1 == BD_GOOD)
 		{
 			if(n_RunMethod == ONLY_MOVE_START)
 			{
@@ -719,7 +1709,7 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 				mn_single_motmove_step[n_MotNum] = 200;
 			}
 		}
-		else if (nRet == BD_ERROR || nRet == BD_SAFETY)
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{
 			mn_mot_retry_cnt[n_MotNum]++;
 			
@@ -728,14 +1718,14 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 				mn_single_motmove_step[n_MotNum] = 0;
 				alarm.mstr_code.Format(_T("%02d0006"), n_MotNum);
 				alarm.n_alarm_assign_section = 29898;
-				nFuncRet = nRet;
+				nFuncRet = nRet_1;
 			}
 			else 
 			{				
 				mn_single_motmove_step[n_MotNum] = 100;
 			}
 		}
-		else if (nRet == BD_RETRY)  // ÎèôÏûë Ïû¨ÏãúÎèÑ
+		else if (nRet_1 == BD_RETRY)  // ÎèôÏûë Ïû¨ÏãúÎèÑ
 		{
 			if(mn_mot_retry_cnt[n_MotNum] > mn_mot_max_retry_cnt) 
 			{
@@ -758,14 +1748,14 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 			break;
 		}
 
-		nRet = COMI.Check_SingleMove(n_MotNum, d_MotPos);  // Ïù¥Îèô ÏôÑÎ£å ÌôïÏù∏
-		if (nRet == BD_GOOD)  // Ï†ïÏÉÅ ÏôÑÎ£å
+		nRet_1 = COMI.Check_SingleMove(n_MotNum, d_MovePos);  // Ïù¥Îèô ÏôÑÎ£å ÌôïÏù∏
+		if (nRet_1 == BD_GOOD)  // Ï†ïÏÉÅ ÏôÑÎ£å
 		{
 			mn_mot_retry_cnt[n_MotNum] = 0;
 			mn_single_motmove_step[n_MotNum] = 0;
-			nFuncRet = nRet;
+			nFuncRet = nRet_1;
 		}
-		else if (nRet == BD_ERROR || nRet == BD_SAFETY)
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{
 			mn_mot_retry_cnt[n_MotNum]++;
 			
@@ -774,14 +1764,14 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 				alarm.mstr_code.Format(_T("%02d0006"), n_MotNum);
 				alarm.n_alarm_assign_section = 29901;
 				mn_single_motmove_step[n_MotNum] = 0;
-				nFuncRet = nRet;
+				nFuncRet = nRet_1;
 			}
 			else 
 			{				
 				mn_single_motmove_step[n_MotNum] = 100;
 			}
 		}
-		else if (nRet == BD_RETRY)  // ÎèôÏûë Ïû¨ÏãúÎèÑ
+		else if (nRet_1 == BD_RETRY)  // ÎèôÏûë Ïû¨ÏãúÎèÑ
 		{
 			mn_mot_retry_cnt[n_MotNum]++;
 			
@@ -1009,7 +1999,7 @@ int CCtlBd_Library::SD_Sensor_Enable(int n_Mode, int n_AxisNum, int n_Enable)
 int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_TargetPos_Site)
 {
 	int nFuncRet = RET_PROCEED;
-	int nRet_1, nRet_2;
+	int nRet_1;
 	double dCurrentPos;
 	CString strlog;
 	//	double dPos_1, dPos_2, dPos_3;
@@ -1030,7 +2020,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	//SD ÏÑºÏÑúÍ∞Ä Í∏∞Ï§ÄÏ†êÏùÑ Ïû°Îäî ÏÑºÏÑú Ïù¥Îã§ 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-	if(st_work.n_run_status != dRUN)
+	if(st_work.mn_run_status != dRUN)
 	{   //time out ÏãúÍ∞Ñ Ï≤¥ÌÅ¨ Î¨∏Ï†ú Î≥¥ÏôÑÏùÑ ÏúÑÌï¥  
 		if(m_bSD_MoveFlag[n_AxisNum] == true) m_bSD_MoveFlag[n_AxisNum] = false; 
 	}
@@ -1104,13 +2094,13 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-		{//Î™®ÌÑ∞ ÏïåÎûåÏùÄ Ïù¥ÎØ∏ Ï≤òÎ¶¨ÌñàÏúºÎãà Ïù¥Í≥≥ÏóêÏÑúÎäî Îü∞ ÏÉÅÌÉúÎßå Î∞îÍæ∏Î©¥ ÎêúÎã§  
+		{
 			CTL_Lib.Alarm_Error_Occurrence(272, dWARNING, alarm.mstr_code);
 
 			if (st_handler.cwnd_list != NULL)  
 			{
-				//clsMem.OnNormalMessageWrite(_T("UnLoader Alarm : 2000"));
-				//st_handler.cwnd_list->SendMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
+				sprintf(st_msg.c_normal_msg, "UnLoader Alarm : 2000");
+				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // µø¿€ Ω«∆– √‚∑¬ ø‰√ª
 			}
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
@@ -1122,7 +2112,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 		{//Ï†ïÏÉÅÏ†ÅÏúºÎ°ú Ï≤¥ÌÅ¨ÌñàÎã§. 
 			COMI.Set_MotStop(1, n_AxisNum) ; //Í∏¥Í∏âÏ†ïÏßÄ 
 
-			st_motor_info[n_AxisNum].n_sd_mv_chk = 0; //clear
+			st_motor[n_AxisNum].n_sd_mv_chk = 0; //clear
 			CTL_Lib.SD_Sensor_Enable(0, n_AxisNum, CTL_NO); //sd sensor clear
 
 			m_nSD_Elv_MoveStep[n_AxisNum] = 2200;
@@ -1136,7 +2126,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 			{
 				if(n_AxisNum == M_TRAY1_Z)
 				{
-					nRet_1 = FAS_IO.get_in_bit(st_io.i_Loading_Stacker_Tray_Exist_Check,	IO_ON); //load stacker tray check    
+					nRet_1 = g_ioMgr.get_in_bit(st_io.i_Loading_Stacker_Tray_Exist_Check,	IO_ON); //load stacker tray check    
 					if(nRet_1 == IO_OFF)
 					{
 						m_nSD_Elv_MoveStep[n_AxisNum] = 0;
@@ -1157,7 +2147,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//Î™®ÌÑ∞ ÏïåÎûåÏùÄ Ïù¥ÎØ∏ Ï≤òÎ¶¨ÌñàÏúºÎãà Ïù¥Í≥≥ÏóêÏÑúÎäî Îü∞ ÏÉÅÌÉúÎßå Î∞îÍæ∏Î©¥ ÎêúÎã§  
-			CTL_Lib.Alarm_Error_Occurrence(273, dWARNING, st_alarm_info.strCode);
+			CTL_Lib.Alarm_Error_Occurrence(273, dWARNING, alarm.mstr_code);
 
 			////////if (st_handler.cwnd_list != NULL)  
 			{
@@ -1207,8 +2197,8 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 
 				if (st_handler.cwnd_list != NULL)  
 				{
-					//clsMem.OnNormalMessageWrite(_T("UnLoader Alarm : 2100"));
-					//st_handler.cwnd_list->SendMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
+					sprintf(st_msg.c_normal_msg, "UnLoader Alarm : 2100");
+					st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // µø¿€ Ω«∆– √‚∑¬ ø‰√ª
 				}
 			//}
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
@@ -1232,8 +2222,8 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 // 			st_sync_info.nSmema_Tray_Output_Req++;
 // 			if( st_sync_info.nSmema_Tray_Output_Req > 3)
 // 			{
-				st_sync_info.nSmema_Tray_Output_Req = 0;
-				CTL_Lib.Alarm_Error_Occurrence(275, dWARNING, st_alarm_info.strCode);
+				/*st_sync_info.nSmema_Tray_Output_Req = 0;*/
+				CTL_Lib.Alarm_Error_Occurrence(275, dWARNING, alarm.mstr_code);
 
 				if (st_handler.cwnd_list != NULL)  
 				{
@@ -1269,7 +2259,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 		dCurrentPos = COMI.Get_MotCurrentPos(n_AxisNum); 
 		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//Ìä∏Î†àÏù¥Î•º ÏûëÏóÖ Í∞ÄÎä•Ìïú ÏòÅÏó≠Ïóê UPÌïòÏó¨ Í≥µÍ∏âÌïòÎäî ÏúÑÏπò, SD pos ÏÑºÏÑú On Í∞êÏßÄ ÌõÑ ÏÑºÏÑú Í∏∞Ï§Ä - Î∞©Ìï≠ÏúºÎ°ú Î≤óÏñ¥ÎÇú ÌõÑ + Î∞©Ìñ•ÏúºÎ°ú P_ELV_SUPPLY_OFFSET Ìã∞Ïπ≠ÎßåÌÅº up ÌïúÌõÑ Î™®ÌÑ∞ ÎèôÏûëÏùÄ ÏôÑÎ£åÌïòÍ≥†, Ìä∏Î†àÏù¥Î•¥, Î∞õÎì†Îã§ 
 		{
-			m_dSD_Supply_Pos_Backup[n_AxisNum] = fabs(dCurrentPos + st_motor_info[n_AxisNum].d_pos[P_ELV_SUPPLY_OFFSET]); //ÌòÑÏû¨ ÏúÑÏπòÏóê + P_ELV_SUPPLY_OFFSET 
+			m_dSD_Supply_Pos_Backup[n_AxisNum] = fabs(dCurrentPos + st_motor[n_AxisNum].md_pos[P_ELV_SUPPLY_OFFSET]); //ÌòÑÏû¨ ÏúÑÏπòÏóê + P_ELV_SUPPLY_OFFSET 
 		}
 
 		//m_dReference_Pos_Backup
@@ -1319,15 +2309,6 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//Î™®ÌÑ∞ ÏïåÎûåÏùÄ Ïù¥ÎØ∏ Ï≤òÎ¶¨ÌñàÏúºÎãà Ïù¥Í≥≥ÏóêÏÑúÎäî Îü∞ ÏÉÅÌÉúÎßå Î∞îÍæ∏Î©¥ ÎêúÎã§  
 			CTL_Lib.Alarm_Error_Occurrence(375, dWARNING, alarm.mstr_code);
-
-			if (st_handler.cwnd_list != NULL)  
-			{
-				//clsMem.OnNormalMessageWrite(_T("UnLoader Alarm : 2000"));
-				//st_handler.cwnd_list->SendMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
-// 				sprintf( st_msg.c_abnormal_msg,"Motor:%d Target: %.3f Feedback: %.3f", n_AxisNum, m_dTargetPos[n_AxisNum], COMI.Get_MotCurrentPos(n_AxisNum));
-// 				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0 , ABNORMAL_MSG);
-
-			}
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
 		break;
@@ -1354,12 +2335,6 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//Î™®ÌÑ∞ ÏïåÎûåÏùÄ Ïù¥ÎØ∏ Ï≤òÎ¶¨ÌñàÏúºÎãà Ïù¥Í≥≥ÏóêÏÑúÎäî Îü∞ ÏÉÅÌÉúÎßå Î∞îÍæ∏Î©¥ ÎêúÎã§  
 			CTL_Lib.Alarm_Error_Occurrence(276, dWARNING, alarm.mstr_code);
-
-			////////if (st_handler.cwnd_list != NULL)  
-			{
-				//clsMem.OnNormalMessageWrite(_T("UnLoader Alarm : 2010"));
-				//st_handler.cwnd_list->SendMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
-			}
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
 		break;
@@ -1376,25 +2351,23 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 			st_other.nBuzYesNo = YES;
 			if( n_AxisNum == M_TRAY1_Z )
 			{
-				st_other.strBoxMsg = _T("[ TRAY ELV#1 FULL] Tray Elv#1 is Full. \r\n Please Remove it.");
+				st_msg.mstr_event_msg[0] = _T("[ TRAY ELV#1 FULL] Tray Elv#1 is Full. \r\n Please Remove it.");
 			}
 			else if( n_AxisNum == M_TRAY2_Z )
 			{
-				st_other.strBoxMsg = _T("[ TRAY ELV#2 FULL] Tray Elv#2 is Full. \r\n Please Remove it.");
+				st_msg.mstr_event_msg[0] = _T("[ TRAY ELV#2 FULL] Tray Elv#2 is Full. \r\n Please Remove it.");
 			}			
 			else
 			{
-				st_other.strBoxMsg = _T("[TRAY FULL] Warnning : Tray is Full. \r\n Please Remove it.");
+				st_msg.mstr_event_msg[0] = _T("[TRAY FULL] Warnning : Tray is Full. \r\n Please Remove it.");
 			}
-			if( st_handler.cwnd_main != NULL )
-			{
-				st_handler.cwnd_main->SendMessage(WM_WORK_COMMAND, MAIN_MESSAGE_BOX_CREATE_REQ, 0);
-			}
+			
 			if( st_handler.cwnd_list != NULL )
 			{
-				sprintf(st_msg.c_abnormal_msg, st_other.strBoxMsg);
+				sprintf(st_msg.c_abnormal_msg, "%s", st_msg.mstr_event_msg[0]);
 				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
 			}
+			::PostMessage(st_handler.hWnd, WM_MAIN_EVENT, CTL_YES, 0);
 			Func.OnSet_IO_Port_Stop();
 		}
 
@@ -1801,21 +2774,21 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 	case cmERR_MOT_SEQ_SKIPPED://-5170
 		 strMsg_2.Format(_T("Invalid List-Motion Map[%04ld]"), abs(l_ErrorIDNum));
 		 break;
-	case cmERR_CMPIX_INVALID_MAP://-5180
-		 strMsg_2.Format(_T("Interpolated position compare output map is not valid[%04ld]"), abs(l_ErrorIDNum));
-		 break;
-	case cmERR_INVALID_ARC_POS://-5190
-		 strMsg_2.Format(_T("Position data for circular interpolation is invalid[%04ld]"), abs(l_ErrorIDNum));
-		 break;
-	case cmERR_LMX_ADD_ITEM_FAIL://-5200
-		 strMsg_2.Format(_T("failed to add an job item to extend list motion[%04ld]"), abs(l_ErrorIDNum));
-		 break;
-	case cmERR_LMX_IS_NOT_ACTIVE://-5300
-		 strMsg_2.Format(_T("Extended ListMotion' is not active extend list motion[%04ld]"), abs(l_ErrorIDNum));
-		 break;
+// 	case cmERR_CMPIX_INVALID_MAP://-5180
+// 		 strMsg_2.Format(_T("Interpolated position compare output map is not valid[%04ld]"), abs(l_ErrorIDNum));
+// 		 break;
+// 	case cmERR_INVALID_ARC_POS://-5190
+// 		 strMsg_2.Format(_T("Position data for circular interpolation is invalid[%04ld]"), abs(l_ErrorIDNum));
+// 		 break;
+// 	case cmERR_LMX_ADD_ITEM_FAIL://-5200
+// 		 strMsg_2.Format(_T("failed to add an job item to extend list motion[%04ld]"), abs(l_ErrorIDNum));
+// 		 break;
+// 	case cmERR_LMX_IS_NOT_ACTIVE://-5300
+// 		 strMsg_2.Format(_T("Extended ListMotion' is not active extend list motion[%04ld]"), abs(l_ErrorIDNum));
+// 		 break;
 	default:
 		strMsg_2.Format(_T("MOTOR_UNKNOWN_DEFAULT_ERROR[%04ld]"), abs(l_ErrorIDNum));
-		l_ErrorIDNum = 1; //Ï¥àÍ∏∞Ìôî Ï≤òÎ¶¨ 
+		l_ErrorIDNum = 1;
 		break;
 	 }
 
@@ -1844,6 +2817,8 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 		sprintf( mc_normal_msg, strMsg);
 		COMI.Debug_File_Create(0, mc_normal_msg);    //fileÎ°ú log	  
 	 }
+
+	 str_Motor_Msg = strMsg; //∏∂¡ˆ∏∑ ªÁøÎ«— ∏ﬁºº¡ˆ ¡§∫∏∏¶ ¿˙¿Â
 
 	 if (st_handler.cwnd_list != NULL)
 	 {

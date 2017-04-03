@@ -57,6 +57,7 @@ public:
 
 
 	void AddInputCnt( int nPrimeCum );
+	void AddHeatSinkInputCnt( int nPrimeCum );
 	void AddPassCnt( int nPrimeCum );
 	void AddFailCnt( int nPrimeCum );
 	void AddBinCnt( int nBin );
@@ -66,6 +67,8 @@ public:
 	void SetTimeOutCnt(int nTime) { m_nCntTimeout = nTime; }
 
 	void SetEachTestTimeOut(int nCnt, int nTime) { m_nEachTimeout[nCnt] = nTime; } 
+
+	int GetInputHeatsinkCnt( int nPrimeCum ) { return m_nCntHsInput[nPrimeCum]; }
 
 	int GetInputCnt( int nPrimeCum ) { return m_nCntInput[nPrimeCum]; }
 	int GetPassCnt( int nPrimeCum ) { return m_nCntPass[nPrimeCum]; }
@@ -83,7 +86,7 @@ public:
 	void SetCokType( int iCok ) { m_nCokType = iCok; }
 	void CalcCokType();
 
-	int GetLotCount() { return m_nDvcLotCount; }
+	int GetTotLotCount() { return m_nDvcLotCount; }
 
 
 protected:
@@ -110,6 +113,7 @@ protected:
 
 	// Yield Info
 	int m_nCntInput[CNT_TYPE_MAX];
+	int m_nCntHsInput[CNT_TYPE_MAX];
 	int m_nCntPass[CNT_TYPE_MAX];
 	int m_nCntFail[CNT_TYPE_MAX];
 
@@ -137,11 +141,13 @@ public:
 	void DeleteLot( int iIdx );
 
 	void AddInputCnt( int nPrimeCum );
+	void AddHeatSinkInputCnt( int nPrimeCum );
 	void AddPassCnt( int nPrimeCum );
 	void AddFailCnt( int nPrimeCum );
 	void AddBinCnt( int nBin );
 
 	int GetInputCnt( int nPrimeCum ) { return m_nCntInput[nPrimeCum]; }
+	int GetInputHeatsinkCnt( int nPrimeCum ) { return m_nCntHsInput[nPrimeCum]; }
 	int GetPassCnt( int nPrimeCum ) { return m_nCntPass[nPrimeCum]; }
 	int GetFailCnt( int nPrimeCum ) { return m_nCntFail[nPrimeCum]; }
 
@@ -165,6 +171,7 @@ protected:
 
 	// Yield Info
 	int m_nCntInput[CNT_TYPE_MAX];
+	int m_nCntHsInput[CNT_TYPE_MAX];
 	int m_nCntPass[CNT_TYPE_MAX];
 	int m_nCntFail[CNT_TYPE_MAX];
 

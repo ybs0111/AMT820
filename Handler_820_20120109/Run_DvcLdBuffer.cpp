@@ -7,7 +7,8 @@
 #include "LogFromat.h"
 #include "AMTLotManager.h"
 #include "Run_LdPicker.h"
-
+#include "FastechPublic_IO.h"
+#include "IO_Manager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -18,7 +19,7 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CRun_DvcLdBuffer
 CRun_DvcLdBuffer Run_DvcLdBuffer;
-IMPLEMENT_SERIAL(CRun_DvcLdBuffer, CObiect, 1);
+IMPLEMENT_SERIAL(CRun_DvcLdBuffer, CObject, 1);
 
 CRun_DvcLdBuffer::CRun_DvcLdBuffer()
 {
@@ -31,7 +32,7 @@ CRun_DvcLdBuffer::~CRun_DvcLdBuffer()
 
 /////////////////////////////////////////////////////////////////////////////
 // CRun_DvcLdBuffer message handlers
-void CRun_DvcLdBuffer::OnThreadRun()
+void CRun_DvcLdBuffer::Thread_Run()
 {
 	switch( st_work.mn_run_status)
 	{
@@ -63,7 +64,7 @@ void CRun_DvcLdBuffer::OnRunInit()
 
 void CRun_DvcLdBuffer::OnRunMove()
 {
-	int i = 0, nRet_1,nRet_2,nRet_3,nCount = 0;
+	int i = 0, nRet_1, nCount = 0;
 
 	Func.ThreadFunctionStepTrace(5, mn_RunStep);
 	switch(mn_RunStep)
@@ -120,7 +121,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 	case 500:
 		if( g_lotMgr.GetLotCount() > 0 )
 		{
-			if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetLotCount )
+			if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
 			{
 				//load plate에 자재 요청
 				st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ;
@@ -129,7 +130,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 			}
 			else if( g_lotMgr.GetLotCount() >= 2 )
 			{
-				if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetLotCount )
+				if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
 				{
 					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ;
 					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = WORK_PICK;
@@ -180,12 +181,12 @@ void CRun_DvcLdBuffer::OnRunMove()
 		{//자재가 남아있다면, 소켓 오프등으로 남아있는 자재이니 이떄는 테슽 로봇이 요청한 대로 바로 집을 수 있게 처리한다  
 
 			mn_RunStep = 3000; 
-			//CTL_Lib.Alarm_Error_Occurrence(m_nRunStep, dWARNING, clsFunc.m_strAlarmCode);
+			//CTL_Lib.Alarm_Error_Occurrence(m_nRunStep, dWARNING, Func.m_strAlarmCode);
 		}
 		break;
 
 	case 1200://이떄 버퍼는 완전히 비워져 있어야 한다 
-		nRet_1 = clsFunc.Check_BufferStatus(100, THD_LD_ALIGN_BUFF, CTL_NO, m_npBuff_Info, m_npBuff_Status, m_npBuff_OutputStatus); //버퍼는 완전히 비워져 있어야 한다 
+		nRet_1 = Func.Check_BufferStatus(100, THD_LD_ALIGN_BUFF, CTL_NO, m_npBuff_Info, m_npBuff_Status, m_npBuff_OutputStatus); //버퍼는 완전히 비워져 있어야 한다 
 		if(nRet_1 == RET_GOOD)
 		{
 			//정상 상태, 
@@ -193,7 +194,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{//자재가 남아있다면 에러 
-			CTL_Lib.Alarm_Error_Occurrence(3100, dWARNING, clsFunc.m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(3100, dWARNING, Func.m_strAlarmCode);
 		}			 
 		break;
 
@@ -226,7 +227,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 			for(i = 0; i < st_recipe.nLdBuffer_Num; i++)
 			{ //버퍼의 자재 정보를 셋팅한다
 				m_npBuff_Info[i] = st_buffer_info[THD_LD_ALIGN_BUFF].st_pcb_info[i].nYesNo; //버퍼의 자재 정보를 셋팅한다
-				if( m_npBuff_Info == CTL_YES && m_strLotNo == "")
+				if( m_npBuff_Info[i] == CTL_YES && m_strLotNo == "")
 				{
 					m_strLotNo = st_buffer_info[THD_LD_ALIGN_BUFF].st_pcb_info[i].strLotNo;
 					m_strPartNo = st_buffer_info[THD_LD_ALIGN_BUFF].st_pcb_info[i].strPartNo;
@@ -332,7 +333,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		} 
 		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 		{
-			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io_info.i_Loading_Tr_Jig_Detect_Check);
+			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
 			CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
 			break;
 		} 
@@ -367,7 +368,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		} 
 		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 		{
-			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io_info.i_Loading_Tr_Jig_Detect_Check);
+			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
 			CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
 			break;
 		} 
@@ -393,7 +394,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1== RET_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(3120, dWARNING, clsFunc.m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(3120, dWARNING, Func.m_strAlarmCode);
 		} 
 		break;
 
@@ -420,7 +421,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		} 
 		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 		{
-			m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io_info.i_Loading_Tr_Jig_Detect_Check);
+			m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
 			CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
 			break;
 		} 
@@ -489,20 +490,20 @@ void CRun_DvcLdBuffer::Set_Loader_Buffer_Align_OnOff(int OnOff)
 	m_bClampOnOffFlag	= false;
 	m_dwClampOnOff[0]	= GetCurrentTime();
 
-	FAS_IO.set_out_bit( st_io.o_Loader_Align_Forward_Sol, nOnOff);
-	FAS_IO.set_out_bit( st_io.o_Loader_Align_Backward_Sol, !nOnOff);
+	g_ioMgr.set_out_bit( st_io.o_Loader_Align_Forward_Sol, OnOff);
+	g_ioMgr.set_out_bit( st_io.o_Loader_Align_Backward_Sol, !OnOff);
 
-	if (nOnOff == IO_ON)
+	if (OnOff == IO_ON)
 	{
 		clsLog.LogFunction(_T("LD_DVCBUFFER_ROBOT"),_T("FORWARD"),0,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 	else
 	{
-		clsLog.LogFunction(_T("LD_DVCBUFFER_ROBOT),_T("BACKWARD"),0,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
+		clsLog.LogFunction(_T("LD_DVCBUFFER_ROBOT"),_T("BACKWARD"),0,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 }
 
-int CRun_DvcLdBuffer::Chk_Loader_Buffer_Align_OnOff( int nOnOff )
+int CRun_DvcLdBuffer::Chk_Loader_Buffer_Align_OnOff( int OnOff )
 {
 	CString strLogKey[10];
 	CString	strLogData[10];
@@ -512,14 +513,14 @@ int CRun_DvcLdBuffer::Chk_Loader_Buffer_Align_OnOff( int nOnOff )
 
 	int nWaitTime = WAIT_BUFFER_ALIGN_CLAMP;
 
-	if (nOnOff == IO_OFF)
+	if (OnOff == IO_OFF)
 	{
-		if (m_bClampOnOffFlag == false )//&&	FAS_IO.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_OFF)	== IO_OFF )
+		if (m_bClampOnOffFlag == false )//&&	g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_OFF)	== IO_OFF )
 		{
 			m_bClampOnOffFlag		= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true)// &&	 FAS_IO.get_in_bit(st_io.i_LdUldPickDvcChk, IO_OFF) == IO_OFF )
+		else if (m_bClampOnOffFlag == true)// &&	 g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk, IO_OFF) == IO_OFF )
 		{
 			m_dwClampOnOff[1] = GetCurrentTime();
 			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
@@ -549,7 +550,7 @@ int CRun_DvcLdBuffer::Chk_Loader_Buffer_Align_OnOff( int nOnOff )
 
 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.i_Loader_Align_Forward_Check); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Loader_Align_Forward_Check); 
 				clsLog.LogFunction(_T("LD_DVCBUFFER_ROBOT"),_T("BACKWARD"),1,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}
@@ -557,12 +558,12 @@ int CRun_DvcLdBuffer::Chk_Loader_Buffer_Align_OnOff( int nOnOff )
 	}
 	else
 	{
-		if (m_bClampOnOffFlag == false)// &&	FAS_IO.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_ON)	== IO_ON )
+		if (m_bClampOnOffFlag == false)// &&	g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_ON)	== IO_ON )
 		{
 			m_bClampOnOffFlag			= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true) //&&		 FAS_IO.get_in_bit(st_io.i_LdUldPickDvcChk, IO_ON)	== IO_ON )
+		else if (m_bClampOnOffFlag == true) //&&		 g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk, IO_ON)	== IO_ON )
 		{
 			m_dwClampOnOff[1]	= GetCurrentTime();
 			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];
@@ -592,7 +593,7 @@ int CRun_DvcLdBuffer::Chk_Loader_Buffer_Align_OnOff( int nOnOff )
 
 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.i_Loader_Align_Forward_Check); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Loader_Align_Forward_Check); 
 				clsLog.LogFunction(_T("LD_PICKER_ROBOT"),_T("FORWARD"),1,_T("PICKER"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}

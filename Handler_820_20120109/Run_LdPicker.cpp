@@ -6,6 +6,9 @@
 #include "Run_LdPicker.h"
 #include "LogFromat.h"
 #include "AMTLotManager.h"
+#include "FastechPublic_IO.h"
+#include "IO_Manager.h"
+#include "CmmsdkDef.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,7 +19,7 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CRun_LdPicker
 CRun_LdPicker Run_LdPicker;
-IMPLEMENT_SERIAL(CRun_LdPicker, CObiect, 1);
+IMPLEMENT_SERIAL(CRun_LdPicker, CObject, 1);
 
 CRun_LdPicker::CRun_LdPicker()
 {
@@ -40,8 +43,9 @@ CRun_LdPicker::~CRun_LdPicker()
 /////////////////////////////////////////////////////////////////////////////
 // CRun_LdPicker message handlers
 
-void CRun_LdPicker::ThreadRun()
+void CRun_LdPicker::Thread_Run()
 {
+	int nRet_1;
 	switch( st_work.mn_run_status)
 	{
 	case dINIT:
@@ -57,10 +61,10 @@ void CRun_LdPicker::ThreadRun()
 			nRet_1 = COMI.Check_Motion_State(M_LOADER_TRANSFER_Z, cmMST_STOP);//20150427 nRet_1 = cmmSxIsDone(n_MotorNum, &dwMotionDone);
 			if (nRet_1 != BD_GOOD) 
 			{//모터 상태가 mMST_STOP 이다 
-				if(CTL_Lib.m_nStep_Single[M_TEST_RBT_Z] > 0)
+				if(CTL_Lib.mn_single_motmove_step[M_LOADER_TRANSFER_Z] > 0)
 				{
-					COMI.Set_MotStop(1, M_TEST_RBT_Z) ; //긴급정지 
-					CTL_Lib.m_nStep_Single[M_TEST_RBT_Z] = 0;
+					COMI.Set_MotStop(1, M_LOADER_TRANSFER_Z) ; //긴급정지 
+					CTL_Lib.mn_single_motmove_step[M_LOADER_TRANSFER_Z] = 0;
 					m_nRobot_Z_Stop_Flag = 100; 
 				}
 				else
@@ -91,7 +95,7 @@ void CRun_LdPicker::RunInit()
 
 void CRun_LdPicker::RunMove()
 {
-	int nRet_1,nRet_2,nRet_3;
+	int i = 0,nRet_1=0,nRet_2=0,nRet_3=0,nCount=0;
 	long lMotionDone=0;
 
 	Func.ThreadFunctionStepTrace(1, mn_RunStep);
@@ -109,9 +113,9 @@ void CRun_LdPicker::RunMove()
 			break;
 
 		case 100:
-			nRet_1 = FAS_IO.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_OFF);
-			nRet_2 = FAS_IO.get_out_bit(st_io.o_Loader_Transfer_Clamp_On_Sol,	 IO_OFF);
-			nRet_3 = FAS_IO.get_out_bit(st_io.o_Loader_Transfer_Clamp_Off_Sol, IO_ON);
+			nRet_1 = g_ioMgr.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_OFF);
+			nRet_2 = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_On_Sol,	 IO_OFF);
+			nRet_3 = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_Off_Sol, IO_ON);
 			if(nRet_1 == IO_ON && nRet_2 == IO_OFF && nRet_3 == IO_ON) 
 			{
 				//810113 0 A "LOADER_PICKER_CLAMP_ON_ERROR."
@@ -175,12 +179,12 @@ void CRun_LdPicker::RunMove()
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
 				mn_RunStep = 400;
 			}
-			break
+			break;
 
 		case 500:
 			if( g_lotMgr.GetLotCount() > 0 )
 			{
-				if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetLotCount )
+				if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
 				{
 					//load plate에 자재 요청
 					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ;
@@ -192,7 +196,7 @@ void CRun_LdPicker::RunMove()
 				}
 				else if( g_lotMgr.GetLotCount() >= 2 )
 				{
-					if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetLotCount )
+					if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
 					{
 						st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ;
 						st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = WORK_PICK;
@@ -209,7 +213,7 @@ void CRun_LdPicker::RunMove()
 // 						{
 // 							mn_override_flag = CTL_NO;	lp_OvrrideFlag = 0; 
 // 							nRet_3 = cmmOverrideMoveTo(m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], &lp_OvrrideFlag);
-// 							st_motor[m_nRobot_Y].d_cmdpos_backup = st_motor[m_nRobot_Y].d_pos[P_LOADER_TRANSFER_Y_PICK_POS];//복구동작을 위해 이 부분에 내용 추가 
+// 							st_motor[m_nRobot_Y].d_cmdpos_backup = st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_PICK_POS];//복구동작을 위해 이 부분에 내용 추가 
 // 							if(nRet_3 == cmERR_NONE && lp_OvrrideFlag == 0) //정상적으로 override
 // 							{
 // 									mn_override_flag = CTL_YES
@@ -250,14 +254,14 @@ void CRun_LdPicker::RunMove()
 			m_strFindLotNo = "";
 			if( g_lotMgr.GetLotCount() > 0 )
 			{
-				if( g_lotMgr.GetLotAt(0).GetInputCnt(PRIME) < g_lotMgr.GetLotAt(0).GetLotCount )
+				if( g_lotMgr.GetLotAt(0).GetInputCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
 				{
 					m_nFindLotNo_Flag = 0;
 					m_strFindLotNo = g_lotMgr.GetLotAt(0).GetLotID();
 				}
 				else if( g_lotMgr.GetLotCount() >= 2 )
 				{
-					if( g_lotMgr.GetLotAt(1).GetInputCnt(PRIME) < g_lotMgr.GetLotAt(1).GetLotCount )
+					if( g_lotMgr.GetLotAt(1).GetInputCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
 					{
 						m_nFindLotNo_Flag = 1;
 						m_strFindLotNo = g_lotMgr.GetLotAt(0).GetLotID();
@@ -305,7 +309,7 @@ void CRun_LdPicker::RunMove()
 					{
 						if( st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] == CTL_READY )
 						{
-							m_nLoadBuff_Job_Continue_Flag = CTL_NO; //clear
+							//m_nLoadBuff_Job_Continue_Flag = CTL_NO; //clear
 
 							mn_RunStep = 3000;
 							break;
@@ -385,16 +389,16 @@ void CRun_LdPicker::RunMove()
 			break;
 
 		case 1400:
-			st_sync_info.nUldWorkRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] = CTL_READY;
+			st_sync.nUldWorkRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] = CTL_READY;
 			mn_RunStep = 1500;
 			break;
 
 		case 1500:
-			if(st_sync_info.nUldWorkRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_FREE)
+			if(st_sync.nUldWorkRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_FREE)
 			{
 				mn_RunStep = 1000;
 			}
-			else if(st_sync_info.nUldWorkRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_REQ)
+			else if(st_sync.nUldWorkRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_REQ)
 			{
 				mn_RunStep = 1000;
 			}
@@ -515,7 +519,7 @@ void CRun_LdPicker::RunMove()
 						{
 							if( m_strLotNo[0] != _T("") && m_strPartNo[0] != _T("") )
 							{
-								clsFunc.OnCycleTime(0, 
+								Func.OnCycleTime(0, 
 									m_strLotNo[0],
 									m_strPartNo[0],
 									m_dwCycleTime[0][2], 
@@ -543,7 +547,7 @@ void CRun_LdPicker::RunMove()
 // 				//2016.1228
 // 				if( st_handler_info.mn_NoInput_test == CTL_YES)//투입할 자재는 있지만 작업자가 아직 투입을 않하고 있다.일단, 투입한 걸로 동작하자.
 // 				{
-// 					st_sync_info.nWorkRbt_Dvc_Req[THD_LD_BUFF][0] = CTL_READY; //더이상 버퍼에 놓을 자재가 없으니 갖고가라 
+// 					st_sync.nWorkRbt_Dvc_Req[THD_LD_BUFF][0] = CTL_READY; //더이상 버퍼에 놓을 자재가 없으니 갖고가라 
 // 					m_nLoadBuff_Job_Continue_Flag = CTL_NO; //clear
 // 					m_nRunStep = 2700; 
 // 				}
@@ -625,7 +629,7 @@ void CRun_LdPicker::RunMove()
 				break;
 			}
 
-			m_nRunStep = 4300;
+			mn_RunStep = 4300;
 			break;
 
 		case 4300:
@@ -638,7 +642,7 @@ void CRun_LdPicker::RunMove()
 			} 
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io_info.i_Loading_Tr_Jig_Detect_Check);
+				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
 				break;
 			}
@@ -717,7 +721,7 @@ void CRun_LdPicker::RunMove()
 			//nRet_1 = Func.Find_TrayWork_Pos(WORK_PLACE, THD_LDULD_CARRIER_BUFF, CTL_YES, m_npFindWorkPosYXCPB, THD_LOAD_WORK_RBT, m_strFindLotNo );	
 			//if(nRet_1 == RET_SKIP) //더이상 작업할 공간이 없다 
 				
-			if( st_buffer_info[THD_LDULD_CARRIER_BUFF].st_pcb_info[m_n_FirstTray_Y_Num].nYesNo == CTL_YES && (st_buffer_info[THD_LDULD_CARRIER_BUFF].st_pcb_info[m_n_FirstTray_Y_Num].strLotNo == str_LotNo) )
+			if( st_buffer_info[THD_LDULD_CARRIER_BUFF].st_pcb_info[m_n_FirstTray_Y_Num].nYesNo == CTL_YES && (st_buffer_info[THD_LDULD_CARRIER_BUFF].st_pcb_info[m_n_FirstTray_Y_Num].strLotNo == m_strFindLotNo) )
 			{			
 				st_sync.nCarrierRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] = CTL_READY;
 
@@ -747,7 +751,7 @@ void CRun_LdPicker::RunMove()
 						{
 							if( m_strLotNo[0] != _T("") && m_strPartNo[0] != _T("") )
 							{
-								clsFunc.OnCycleTime(0, 
+								Func.OnCycleTime(0, 
 									m_strLotNo[0],
 									m_strPartNo[0],
 									m_dwCycleTime[0][2], 
@@ -816,7 +820,7 @@ void CRun_LdPicker::RunMove()
 			break;
 
 		case 5700:
-			nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_START _FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
 				mn_RunStep = 500;
@@ -830,7 +834,7 @@ void CRun_LdPicker::RunMove()
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
 				mn_RunStep = 5700;
 			}
-			break
+			break;
 
 
 		default:
@@ -848,7 +852,7 @@ void CRun_LdPicker::RunMove()
 int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*/, CString strLotNo)//WORK_TOP WORK_MID WORK_BTM
 {
 	int nFuncRet = RET_PROCEED;
-	int nRet_1, nRet_2, i, nFlag, nTemp;
+	int nRet_1, i, nFlag;
 
 	Func.ThreadFunctionStepTrace(7, mn_Place_Step);
 
@@ -873,7 +877,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			break;
 
 		case 200:
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor_info[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
 				m_bDvcWaitChk_Falg =  false;
@@ -909,17 +913,17 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 					m_dwWaitUntil[1] = GetCurrentTime();
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
-					CTL_Lib.Alarm_Error_Occurrence(1231, dWARNING, clsFunc.m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(1231, dWARNING, Func.m_strAlarmCode);
 					break;
 				}
 			}
 			m_dCurrentPos[2] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[2] > st_motor_info[m_nRobot_Z].d_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벅어나 있으면 저위치 시킨다
+			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벅어나 있으면 저위치 시킨다
 			{
 				mn_Place_Step = 200;
 				break;
 			}
-			m_n_FirstTray_Y_Num = -1; m_n_FirstTray_Y_Num = -1; m_n_FirstPicker_Num = -1; //flag clear
+			m_n_FirstTray_Y_Num = -1; m_n_FirstTray_X_Num = -1; m_n_FirstPicker_Num = -1; //flag clear
 			for(i = 0; i < m_nPickerPara; i++)
 			{
 				if(st_picker[m_nRobotSite].st_pcb_info[i].nYesNo == CTL_YES)//피커에 자재가 들고 있다는 정보가 없다
@@ -960,9 +964,9 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 					{
 						if(st_picker[m_nRobotSite].st_pcb_info[i].nYesNo == CTL_YES)// && st_picker[m_nRobotSite].st_pcb_info[i].nEnable == CTL_YES)
 						{
-							if(i >= 0 && m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num) < st_recipe_info.nTrayY)
+							if(i >= 0 && m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num) < st_recipe.nTrayY)
 							{
-								if(st_buffer_info[nWork_Site].st_pcb_info[ m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num)][m_n_FirstTray_X_Num].nYesNo == CTL_NO)
+								if(st_buffer_info[nWork_Site].st_pcb_info[ m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num)].nYesNo == CTL_NO)
 								{
 									m_npPicker_YesNo[i] = CTL_YES;
 									nFlag++;
@@ -1004,7 +1008,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			m_dCurrentPos[2] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
 			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벗어나 있으면 정위치 시킨다
 			{
-				m_nPlace_Step = 200;
+				mn_Place_Step = 200;
 				break;
 			}
 
@@ -1027,7 +1031,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				}
 			}
 			nRet_1 = Func.Calculate_MovePos_Find(0, m_nRobot_Y, nWork_Site, 0, m_npFindWorkPosYXCPB, &m_dTemp_CalTargetPos_Y);             //Calculate_MovePos_Find(int nMotNum, int nSite, int nWorkPart, int *npFirstYXP_Pos, double *dpGetTargetPos)
-				if(nRet_1 == RET_GOOD && nRet_2 == RET_GOOD)
+			if(nRet_1 == RET_GOOD)
 			{//ok
 				m_dpTargetPosList[1] = m_dTemp_CalTargetPos_Y;
 			}
@@ -1051,7 +1055,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 
 
 
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_dpTargetPosList[1], COMI.mn_runspeed_rate); 
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, m_dpTargetPosList[1], COMI.mn_runspeed_rate); 
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
 				m_bDvcWaitChk_Falg =  false;
@@ -1121,12 +1125,12 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 					m_dwWaitUntil[1] = GetCurrentTime();
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
-					CTL_Lib.Alarm_Error_Occurrence(1237, dWARNING, clsFunc.m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(1237, dWARNING, Func.m_strAlarmCode);
 					break;
 				}
 			}
 
-			nRet_1 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor_info[m_nRobot_Y].mn_allow);
+			nRet_1 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor[m_nRobot_Y].mn_allow);
 			if(nRet_1 != BD_GOOD)
 			{
 				mn_Place_Step = 2000;
@@ -1142,7 +1146,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				} 
 				else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 				{
-					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io_info.i_Loading_Tr_Jig_Detect_Check);
+					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
 					CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
 					break;
 				} 
@@ -1157,11 +1161,11 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				} 
 				else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC) //with device 가 아니면  
 				{
-					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io_info.i_Loader_Transfer_Clamp_Off_Check); 
+					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
 					CTL_Lib.Alarm_Error_Occurrence(1242, dWARNING, m_strAlarmCode);
 					break;
 				} 
-				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_CARRIER_POS];
+				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_CARRIER_PLACE_POS];
 			}
 			else
 			{//910000 1 A "THERE_IS_NO_SITE_TO_GO_AT_PLACE_DVC_IN_RUN_LDPICKER."
@@ -1379,26 +1383,26 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 		case 4100:
 			if(nWork_Site == THD_LD_ALIGN_BUFF)
 			{
-				mn_BcrFirst = CTL_YES;//2016.1111
-				mn_BcrFirstChk = CTL_NO;
-				mn_BcrFirstFinal = CTL_NO;
-				m_nPlace_Step = 4100; //정해진 위치에서 1D 바코드를 일고, 디바이스를 버퍼에 놓고 2D 바코드를 읽는다 
+// 				mn_BcrFirst = CTL_YES;//2016.1111
+// 				mn_BcrFirstChk = CTL_NO;
+// 				mn_BcrFirstFinal = CTL_NO;
+				mn_Place_Step = 4200;
 			}
 			else
 			{
-				m_nPlace_Step = 4100; 
+				mn_Place_Step = 4200; 
 			}
 			break;
 			
-		case 4100:
+		case 4200:
 			m_dCurrentPos[2] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
 			if(m_dCurrentPos[2] < st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벅어나 있으면 저위치 시킨다
 			{
-				m_nPlace_Step = 5000;
+				mn_Place_Step = 5000;
 			}
 			else
 			{
-				m_nPlace_Step = 4020;
+				mn_Place_Step = 4020;
 			}
 			break;
 
@@ -1493,20 +1497,20 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				// jtkim 20150303 conveyor/loader tray 화면 표시
 				if (st_handler.cwnd_main != NULL)
 				{
-					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_PICKER_DISPLAY, 0);
-					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_BUF_PICK_DISPLAY, 0);
-					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_COUNT_DISPLAY, 0);
+// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_PICKER_DISPLAY, 0);
+// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_BUF_PICK_DISPLAY, 0);
+// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_COUNT_DISPLAY, 0);
 				}
 				mn_Place_Step = 6000;
 			}
 			else if (nRet_1 == RET_ERROR) //셋팅한 피커중 한개라도 제대로 집지 못했으면 이곳으로 이동
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1255, dWARNING, clsFunc.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1255, dWARNING, Func.m_strAlarmCode);
 			}
 			break;
 
 		case 6000:
-			nRet_1 = clsFunc.Check_PickerStatus(0, THD_LOAD_WORK_RBT, CTL_YES, m_npPicker_YesNo, m_npPicker_Data_Status, m_npPicker_OutputStatus);
+			nRet_1 = Func.Check_PickerStatus(0, THD_LOAD_WORK_RBT, CTL_YES, m_npPicker_YesNo, m_npPicker_Data_Status, m_npPicker_OutputStatus);
 
 			if(nRet_1 == RET_GOOD)
 			{
@@ -1532,7 +1536,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			break; 
 
 
-		default::
+		default:
 			if (st_handler.cwnd_list != NULL)	// 리스트 바 화면 존재
 			{
 				sprintf(st_msg.c_abnormal_msg, "There is no lace_Ste at Process_DVC_Place in RunLdUldRobot  = %d", mn_Place_Step);
@@ -1545,8 +1549,8 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 
 int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotNo)
 {
-	int nFuncRet = RET_PEOCEED;
-	int nRet_1, nRet_2,nFlag = 0;
+	int nFuncRet = RET_PROCEED;
+	int i, nRet_1, nRet_2, nRet_3, nFlag = 0;
 
 	CString strMsg;
 	CString strLogKey[10];
@@ -1602,7 +1606,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 				mn_Pick_Step = 900;
 				break;
 			}
-			if(nWork_Site == THD_LD_TRAY_PLATE) // loadig tray 자재 집기 
+			if(nWorkSite == THD_LD_TRAY_PLATE) // loadig tray 자재 집기 
 			{
 				nRet_1 = COMI.Get_MotIOSensor(M_TRAY1_Z, MOT_SENS_SD); 	
 				if(nRet_1 != BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
@@ -1648,7 +1652,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 
 			nFlag = 0;
-			m_n_FirstTray_Y_Num = -1; m_n_FirstTray_Y_Num = -1; m_n_FirstPicker_Num = -1; //flag clear
+			m_n_FirstTray_X_Num = -1; m_n_FirstTray_Y_Num = -1; m_n_FirstPicker_Num = -1; //flag clear
 			for(i = 0; i < m_nPickerPara; i++)
 			{
 				if(st_picker[m_nRobotSite].st_pcb_info[i].nYesNo == CTL_NO)
@@ -1658,7 +1662,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 				}
 			}
 
-			if( m_n_FirstPicker_Num === -1)
+			if( m_n_FirstPicker_Num == -1)
 			{
 				mn_Pick_Step = 0;
 				nFuncRet = RET_PICKER_NOT_FIND;
@@ -1765,7 +1769,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 
 		case 2000:
 			m_dCurrentPos[2] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[2] > st_motor_info[m_nRobot_Z].d_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벅어나 있으면 저위치 시킨다
+			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벅어나 있으면 저위치 시킨다
 			{
 				mn_Pick_Step = 900;
 				break;
@@ -1827,9 +1831,9 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			break;
 
 		case  3000:
-			nRet_1 = FAS_IO.get_out_bit(st_io_info.o_Loader_Transfer_Clamp_On_Sol,	IO_OFF); 
-			nRet_2 = FAS_IO.get_out_bit(st_io_info.o_Loader_Transfer_Clamp_Off_Sol,	IO_ON);
-			nRet_3 = FAS_IO.get_in_bit( st_io.i_Loader_Transfer_Clamp_Off_Check, IO_ON )
+			nRet_1 = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_On_Sol,	IO_OFF); 
+			nRet_2 = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_Off_Sol,	IO_ON);
+			nRet_3 = g_ioMgr.get_in_bit( st_io.i_Loader_Transfer_Clamp_Off_Check, IO_ON );
 			if(nRet_1 == IO_OFF && nRet_2 == IO_ON && nRet_3 == IO_ON) 
 			{  //그리퍼가 벌리고 있지 않으면 자재에 데미지를 주기때문에 미리 벌리고 내려야 한다 
 				mn_Pick_Step = 2200;
@@ -1847,9 +1851,9 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			{
 				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_TRAY_POS];
 			}
-			else if(nWork_Site == THD_LD_ALIGN_BUFF)
+			else if(nWorkSite == THD_LD_ALIGN_BUFF)
 			{
-				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].d_pos[P_LOADER_TRANSFER_Z_ALIGN_PICKPOS];
+				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_ALIGN_PICKPOS];
 			}
 			else
 			{
@@ -1897,7 +1901,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			{
 				mn_Pick_Step = 3200;
 			}
-			else if(nRet_1 == RET_ERROR || nRet_2 == RET_ERROR)
+			else if(nRet_1 == RET_ERROR)
 			{
 				CTL_Lib.Alarm_Error_Occurrence(1212, dWARNING, m_strAlarmCode);
 				mn_Pick_Step = 3000;
@@ -1962,7 +1966,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 					break;
 				}
 				//800113 0 A "LOADER_TRANSFER_CLAMP_OFF_센서_OFF_CHECK_ERROR.
-				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io_info.i_Loader_Transfer_Clamp_Off_Check); 
+				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loader_Transfer_Clamp_Off_Check); 
 				CTL_Lib.Alarm_Error_Occurrence(1214, dWARNING, m_strAlarmCode);
 			} 
 			break;
@@ -2026,7 +2030,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				if(sst_basic.n_mode_device == WITHOUT_DVC) //2016.0922 
+				if(st_basic.n_mode_device == WITHOUT_DVC) //2016.0922 
 				{
 					mn_Pick_Step = 4000;
 					break;
@@ -2038,7 +2042,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			break;
 
 		case  4000:
-			m_dpTargetPosList[2] = st_motor[m_nRobot_Z].d_pos[P_LOADER_TRANSFER_Z_INIT_POS];
+			m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS];
 			nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_START, m_nRobot_Z, m_dpTargetPosList[2], COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{ 
@@ -2075,7 +2079,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			break;
 
 		case 5000:
-			if( st_handler_info.bLoaderOnFlag == CTL_YES )
+			if( st_handler.bLoaderOnFlag == CTL_YES )
 			{
 				nRet_1 = Func.Check_PickerStatus(0, THD_LOAD_WORK_RBT, CTL_NO, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
 			}
@@ -2119,7 +2123,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 								m_npSet_WorkPosYXCPB[1]  = m_npFindWorkPosYXCPB[1]; //tray X Pos 위치
 								m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
 
-								Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, m_nRobotSite, nWork_Site, m_npSet_WorkPosYXCPB); //피커 및 트레이 정보 셋팅 함수						
+								Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, m_nRobotSite, nWorkSite, m_npSet_WorkPosYXCPB); //피커 및 트레이 정보 셋팅 함수						
 							}
 						}
 					}
@@ -2136,7 +2140,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 								m_npSet_WorkPosYXCPB[1]  = m_npFindWorkPosYXCPB[1]; //tray X Pos 위치
 								m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
 
-								Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, m_nRobotSite, nWork_Site, m_npSet_WorkPosYXCPB);
+								Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, m_nRobotSite, nWorkSite, m_npSet_WorkPosYXCPB);
 
 
 								g_lotMgr.GetLotByLotID(strLotNo).AddInputCnt( PRIME );	
@@ -2164,7 +2168,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 						m_npSet_WorkPosYXCPB[1]  = m_npFindWorkPosYXCPB[1]; //tray X Pos 위치
 						m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
 
-						clsFunc.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, m_nRobotSite, nWorkSite, m_npSet_WorkPosYXCPB); //피커 및 트레이 정보 셋팅 함수		
+						Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, m_nRobotSite, nWorkSite, m_npSet_WorkPosYXCPB); //피커 및 트레이 정보 셋팅 함수		
 
 						if (m_strLotNo[1] == _T(""))
 						{
@@ -2185,9 +2189,9 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 				// jtkim 20150216 conveyor/loader tray 화면 표시
 				if (st_handler.cwnd_main != NULL)
 				{
-					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_PICKER_DISPLAY, 0);
-					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_TRAY_DISPLAY, 0);
-					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_RETEST_BUF_DISPLAY, 0);
+// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_PICKER_DISPLAY, 0);
+// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_TRAY_DISPLAY, 0);
+// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_RETEST_BUF_DISPLAY, 0);
 				}
 
 				mn_Pick_Step = 6000;
@@ -2249,20 +2253,20 @@ void CRun_LdPicker::Set_Loader_Buffer_Align_OnOff(int OnOff)
 	m_bClampOnOffFlag	= false;
 	m_dwClampOnOff[0]	= GetCurrentTime();
 
-	FAS_IO.set_out_bit( st_io.o_Loader_Align_Forward_Sol, nOnOff);
-	FAS_IO.set_out_bit( st_io.o_Loader_Align_Backward_Sol, !nOnOff);
+	g_ioMgr.set_out_bit( st_io.o_Loader_Align_Forward_Sol, OnOff);
+	g_ioMgr.set_out_bit( st_io.o_Loader_Align_Backward_Sol, !OnOff);
 
-	if (nOnOff == IO_ON)
+	if (OnOff == IO_ON)
 	{
 		clsLog.LogFunction(_T("LD_PICKER_ROBOT"),_T("FORWARD"),0,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 	else
 	{
-		clsLog.LogFunction(_T("LD_PICKER_ROBOT),_T("BACKWARD"),0,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
+		clsLog.LogFunction(_T("LD_PICKER_ROBOT"),_T("BACKWARD"),0,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 }
 
-int CRun_LdPicker::Chk_Loader_Buffer_Align_OnOff( int nOnOff )
+int CRun_LdPicker::Chk_Loader_Buffer_Align_OnOff( int OnOff )
 {
 	CString strLogKey[10];
 	CString	strLogData[10];
@@ -2272,14 +2276,14 @@ int CRun_LdPicker::Chk_Loader_Buffer_Align_OnOff( int nOnOff )
 
 	int nWaitTime = WAIT_BUFFER_ALIGN_CLAMP;
 
-	if (nOnOff == IO_OFF)
+	if (OnOff == IO_OFF)
 	{
-		if (m_bClampOnOffFlag == false )//&&	FAS_IO.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_OFF)	== IO_OFF )
+		if (m_bClampOnOffFlag == false )//&&	g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_OFF)	== IO_OFF )
 		{
 			m_bClampOnOffFlag		= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true)// &&	 FAS_IO.get_in_bit(st_io.i_LdUldPickDvcChk, IO_OFF) == IO_OFF )
+		else if (m_bClampOnOffFlag == true)// &&	 g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk, IO_OFF) == IO_OFF )
 		{
 			m_dwClampOnOff[1] = GetCurrentTime();
 			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
@@ -2309,7 +2313,7 @@ int CRun_LdPicker::Chk_Loader_Buffer_Align_OnOff( int nOnOff )
 
 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.i_Loader_Align_Forward_Check); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Loader_Align_Forward_Check); 
 				clsLog.LogFunction(_T("LD_PICKER_ROBOT"),_T("BACKWARD"),1,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}
@@ -2317,12 +2321,12 @@ int CRun_LdPicker::Chk_Loader_Buffer_Align_OnOff( int nOnOff )
 	}
 	else
 	{
-		if (m_bClampOnOffFlag == false)// &&	FAS_IO.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_ON)	== IO_ON )
+		if (m_bClampOnOffFlag == false)// &&	g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_ON)	== IO_ON )
 		{
 			m_bClampOnOffFlag			= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true) //&&		 FAS_IO.get_in_bit(st_io.i_LdUldPickDvcChk, IO_ON)	== IO_ON )
+		else if (m_bClampOnOffFlag == true) //&&		 g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk, IO_ON)	== IO_ON )
 		{
 			m_dwClampOnOff[1]	= GetCurrentTime();
 			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];
@@ -2352,7 +2356,7 @@ int CRun_LdPicker::Chk_Loader_Buffer_Align_OnOff( int nOnOff )
 
 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.i_Loader_Align_Forward_Check); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Loader_Align_Forward_Check); 
 				clsLog.LogFunction(_T("LD_PICKER_ROBOT"),_T("FORWARD"),1,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}
@@ -2374,21 +2378,21 @@ void CRun_LdPicker::Set_Loader_Transfer_Clamp_OnOff(int OnOff)
 	m_bClampOnOffFlag	= false;
 	m_dwClampOnOff[0]	= GetCurrentTime();
 
-	FAS_IO.set_out_bit( st_io.o_Loader_Transfer_Clamp_On_Sol, nOnOff);
-	FAS_IO.set_out_bit( st_io.o_Loader_Transfer_Clamp_Off_Sol, !nOnOff);
+	g_ioMgr.set_out_bit( st_io.o_Loader_Transfer_Clamp_On_Sol, OnOff);
+	g_ioMgr.set_out_bit( st_io.o_Loader_Transfer_Clamp_Off_Sol, !OnOff);
 
-	if (nOnOff == IO_ON)
+	if (OnOff == IO_ON)
 	{
 		clsLog.LogFunction(_T("LD_PICKER_ROBOT"),_T("FORWARD"),0,_T("PICKER"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 	else
 	{
-		clsLog.LogFunction(_T("LD_PICKER_ROBOT),_T("BACKWARD"),0,_T("PICKER"),_T("CYLINDER"),1,strLogKey,strLogData);
+		clsLog.LogFunction(_T("LD_PICKER_ROBOT"),_T("BACKWARD"),0,_T("PICKER"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 
 }
 
-int CRun_LdPicker::Chk_Loader_Transfer_Clamp_OnOff( int nOnOff )
+int CRun_LdPicker::Chk_Loader_Transfer_Clamp_OnOff( int OnOff )
 {
 	CString strLogKey[10];
 	CString	strLogData[10];
@@ -2398,14 +2402,14 @@ int CRun_LdPicker::Chk_Loader_Transfer_Clamp_OnOff( int nOnOff )
 
 	int nWaitTime = WAIT_PICKER_CLAMP_ON_OFF;
 
-	if (nOnOff == IO_OFF)
+	if (OnOff == IO_OFF)
 	{
-		if (m_bClampOnOffFlag == false &&	FAS_IO.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_ON)	== IO_ON )
+		if (m_bClampOnOffFlag == false &&	g_ioMgr.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_ON)	== IO_ON )
 		{
 			m_bClampOnOffFlag		= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true && FAS_IO.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_ON)	== IO_ON )
+		else if (m_bClampOnOffFlag == true && g_ioMgr.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_ON)	== IO_ON )
 		{
 			m_dwClampOnOff[1] = GetCurrentTime();
 			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
@@ -2435,7 +2439,7 @@ int CRun_LdPicker::Chk_Loader_Transfer_Clamp_OnOff( int nOnOff )
 
 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.i_Loader_Transfer_Clamp_Off_Check); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Loader_Transfer_Clamp_Off_Check); 
 				clsLog.LogFunction(_T("LD_PICKER_ROBOT"),_T("BACKWARD"),1,_T("PICKER"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}
@@ -2443,12 +2447,12 @@ int CRun_LdPicker::Chk_Loader_Transfer_Clamp_OnOff( int nOnOff )
 	}
 	else
 	{
-		if (m_bClampOnOffFlag == false && FAS_IO.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_OFF)	== IO_OFF )
+		if (m_bClampOnOffFlag == false && g_ioMgr.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_OFF)	== IO_OFF )
 		{
 			m_bClampOnOffFlag			= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true && FAS_IO.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_OFF)	== IO_OFF )
+		else if (m_bClampOnOffFlag == true && g_ioMgr.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_OFF)	== IO_OFF )
 		{
 			m_dwClampOnOff[1]	= GetCurrentTime();
 			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];
@@ -2478,7 +2482,7 @@ int CRun_LdPicker::Chk_Loader_Transfer_Clamp_OnOff( int nOnOff )
 
 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.i_Loader_Transfer_Clamp_Off_Check); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Loader_Transfer_Clamp_Off_Check); 
 				clsLog.LogFunction(_T("LD_PICKER_ROBOT"),_T("FORWARD"),1,_T("PICKER"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}

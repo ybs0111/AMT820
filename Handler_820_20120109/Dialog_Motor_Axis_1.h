@@ -38,74 +38,29 @@ public:
 	TSpread			*m_grid_motor_info;
 	
 	double			m_d_data;
-	double			m_d_position[25][2];
+	double			m_d_position[32][2];
 	
-	int				m_n_curr_pos;
 	int				m_n_move_mode;
 	int				m_n_axis;
 	int				m_n_part;
-	int				m_n_position_move;
-	int				m_n_cmd_id;
 	int				m_n_cmd_row;
 	int				m_n_cmd_col;
 	int				m_n_position_num;
-	int				m_n_actioncnt;
-	int				m_n_conti_wait;
 	int				m_n_plus_el;
 	int				m_n_minus_el;
 	int				m_n_home;
 	int				m_n_sd;
-	int				m_n_direction;
-	int				m_n_account;
-	int				m_n_cmd_no;			// 실행 명령 번호 저장 변수 초기화
-	int				m_n_cmd_motor_no;	// 모터 번호 저장 변수 초기화
-	int				m_n_home_step;		// 모터 HOMING 처리 스텝 저장 변수 초기화
-	int				m_n_move_step;
-	int				m_n_retry_cnt;
-	int				m_n_retry_wait;
-	int				m_n_allow[2];
-	int				m_n_per_jog[2];
-	int				m_n_per_home[2];
-	int				m_n_per_run[2];
-	int				m_n_per_manual[2];
-	int				m_n_acc[2];
-	int				m_n_dec[2];
-	int				m_n_max_speed[2];
 	
-	CString			m_str_cmd_motor;
-	CString			m_str_position_name[25];
-	CString			m_str_position_bmp[25];
+	CString			m_str_position_name[32];
+	CString			m_str_position_bmp[32];
 	CString			m_str_axis_name;
-	CFont			* m_p_font;
-
-	TSpread			*m_grid_input;
-	TSpread			*m_grid_output;
-
-	int				m_n_in[32];
-	int				m_n_in_port[32];
-	int				m_n_in_num[32];
-	int				m_n_out[32];
-	int				m_n_out_port[32];
-	int				m_n_out_num[32];
-	int				m_n_in_cnt;
-	int				m_n_out_cnt;
-
-	CString			m_str_in[32];
-	CString			m_str_out[32];
-
+	CString			m_strTempMSG;
+ 	CFont			* m_p_font;
 // Construction
 public:
-	void OnOutputCheck();
-	void OnInputCheck();
-	void Init_Output();
-	void Init_Input();
-	void Init_Grid_IO();
-	void	SetDataForSelected(int nSelected);
 	void	Init_Grid_Info();
 	void	OnButtonControl(BOOL b_flag);
-	int		MotorHomingExcution();
 	void	MotorCompletion(int nrow, int ncol);
-	void	MotorMoveStepClear();
 	void	MotorPositionCheck();
 	void	MotorStatusCheck();
 	void	Data_HistoryLog();
@@ -113,13 +68,15 @@ public:
 	int		Data_Comparison();
 	void	Data_Apply();
 	void	Data_Backup();
-	void	Data_Init(int nSelected);
+	void	Data_Init( int iSelected );
 	void	Init_Grid_Pos();
 	void	Init_Radio();
 	void	Init_Digit();
 	void	Init_Group();
 	void	Init_Label();
 	void	Init_Button();
+
+	void	SetDataForSelected( int iSelected );
 	CDialog_Motor_Axis_1(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
@@ -129,6 +86,7 @@ public:
 	CButtonST	m_btn_right;
 	CButtonST	m_btn_left;
 	CButtonST	m_btn_home;
+	CXPGroupBox	m_group_axis_info;
 	CXPGroupBox	m_group_motor;
 	CXPGroupBox	m_group_move;
 	CButtonST	m_btn_emg;

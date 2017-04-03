@@ -50,18 +50,23 @@ public:
 
 	long m_dwWaitTime[3];
 
-	int m_nFindLotNo_Flag;
+	int m_nFindLotNo_Flag;	
 	CString m_strLotNo;
 	CString m_strPartNo;
 	CString m_strAlarmCode;
+
+	bool m_bClampOnOffFlag;
+	DWORD m_dwClampOnOff[3];
 	
 public:
 
-	void ThreadRun();
+	void Thread_Run();
 	void RunMove();
 	void RunInit();
 
-	int Ready_Stacker_Move_Check();
+	int Ready_Stacker_Move_Check( int mode );
+	void Set_Tray_Guide_Clamp_ForBackward(int OnOff);
+	int Chk_Tray_Guide_Clamp_ForBackward(int OnOff);
 
 
 

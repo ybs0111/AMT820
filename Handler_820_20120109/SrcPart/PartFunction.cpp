@@ -315,8 +315,8 @@ COLORREF GetCokCol( int iIdx )
 
 double GetPosCYAtCokStacker( int iIdx )
 {
-// 	double dFirst = st_motor[MOTOR_COK_ROBOT_Y].d_pos[P_CY_COK_0];
-// 	double dLast = st_motor[MOTOR_COK_ROBOT_Y].d_pos[P_CY_COK_5];
+// 	double dFirst = st_motor[MOTOR_COK_ROBOT_Y].md_pos[P_CY_COK_0];
+// 	double dLast = st_motor[MOTOR_COK_ROBOT_Y].md_pos[P_CY_COK_5];
 //	double dFirst = st_handler.md_common_teaching[CT_COK_Y_START];
 //	double dLast = st_handler.md_common_teaching[CT_COK_Y_END];
 
@@ -330,8 +330,8 @@ double GetPosCZByCnt( int iCnt )
 	if( iCnt < 1 )
 		iCnt = 1;
 
-// 	double dFirst = st_motor[MOTOR_COK_ROBOT_Z].d_pos[P_CZ_COK_19];
-// 	double dLast = st_motor[MOTOR_COK_ROBOT_Z].d_pos[P_CZ_COK_0];
+// 	double dFirst = st_motor[MOTOR_COK_ROBOT_Z].md_pos[P_CZ_COK_19];
+// 	double dLast = st_motor[MOTOR_COK_ROBOT_Z].md_pos[P_CZ_COK_0];
 
 //	double dFirst = st_handler.md_common_teaching[CT_COK_Z_19];
 //	double dLast = st_handler.md_common_teaching[CT_COK_Z_0];

@@ -11,6 +11,7 @@
 #include "math.h"
 #include "FastechPublic_IO.h"
 #include "Ctlbd_Variable.h"
+#include "IO_Manager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -151,6 +152,7 @@ void CScreen_IO_Map::OnSearch_Data()
 	int pos;
 	CString strfind;
 	CString strTmp;
+	char chvalue[100];
 
 	m_nList_Count = 0;
 	for(i=0; i<10; i++)
@@ -159,52 +161,91 @@ void CScreen_IO_Map::OnSearch_Data()
 		{
 			strfind.Format("Module No : %1d%1d", i, j);
 
-			row_m = m_p_grid.GridCellRow(Grid);
-			col_m = m_p_grid.GridCellCol(Grid);
-
-			row_s = m_p_grid.GridCellCol_Search(Grid, 1, 0, row_m, strfind);
-			col_s = m_p_grid.GridCellRow_Search(Grid, row_s, 0, col_m, strfind);
+			row_m = Grid->GetMaxRows();
+			col_m = Grid->GetMaxCols();
+			
+			row_s = Grid->SearchCol(1, 0, row_m, strfind, SS_SEARCHFLAGS_NONE);
+			col_s = Grid->SearchRow(row_s, 0, col_m, strfind, SS_SEARCHFLAGS_NONE);
 			
 			if(row_s > 0 && col_s > 0)
 			{
-				strTmp = m_p_grid.GridCellText(Grid, row_s, col_s);
-				m_nIo_Module[i][j] = atoi(strTmp.Mid(strTmp.GetLength()-2, 2));
-
-				strTmp = m_p_grid.GridCellText(Grid, row_s-1, col_s+4);
+// 				strTmp = m_p_grid.GridCellText(Grid, row_s, col_s);
+// 				m_nIo_Module[i][j] = atoi(strTmp.Mid(strTmp.GetLength()-2, 2));
+// 				
+// 				strTmp = m_p_grid.GridCellText(Grid, row_s-1, col_s+4);
+// 				pos = strTmp.Find(":");
+// 				m_strIo_Module[i][j] = strTmp.Mid(pos+1);
+// 				
+// 				for(k=0; k<16; k++)
+// 				{
+// 					strTmp = m_p_grid.GridCellText(Grid, row_s+2+k, col_s);
+// 					m_nIo_Num[i][j][k] = atoi(strTmp);
+// 					
+// 					strTmp = m_p_grid.GridCellText(Grid, row_s+2+k, col_s+1);
+// 					m_strIo_Label[i][j][k] = strTmp;
+// 
+// 					strTmp = m_strIo_Label[i][j][k].Mid(0, 2);
+// 
+// 					if(strTmp == "PS")
+// 					{
+// 						m_nIo_Type[i][j][k] = IO_IN;
+// 					}
+// 					else
+// 					{
+// 						strTmp = m_strIo_Label[i][j][k].Mid(0, 1);
+// 						if(strTmp == "S")
+// 						{
+// 							m_nIo_Type[i][j][k] = IO_OUT;
+// 						}
+// 						else
+// 						{
+// 							m_nIo_Type[i][j][k] = IO_NONE;
+// 						}
+// 					}
+// 
+// 					strTmp = m_p_grid.GridCellText(Grid, row_s+2+k, col_s+3);
+// 					m_strIo_Description[i][j][k] = strTmp;
+// 				}
+				Grid->GetValue(col_s, row_s, chvalue);
+				strTmp.Format("%s", &chvalue[12]);
+				
+				m_nIo_Module[i][j] = atoi(strTmp);
+				
+				Grid->GetValue(col_s+4, row_s-1, chvalue);
+				strTmp.Format("%s", chvalue);
 				pos = strTmp.Find(":");
 				m_strIo_Module[i][j] = strTmp.Mid(pos+1);
-
-				for(k=0; k<16; k++)
+				
+				for (k = 0; k < 16; k++)
 				{
-					strTmp = m_p_grid.GridCellText(Grid, row_s+2+k, col_s);
+					Grid->GetValue(col_s, row_s+2+k, chvalue);
+					strTmp.Format("%s", chvalue);
 					m_nIo_Num[i][j][k] = atoi(strTmp);
-
-					strTmp = m_p_grid.GridCellText(Grid, row_s+2+k, col_s+1);
+					
+					Grid->GetValue(col_s+1, row_s+2+k, chvalue);
+					strTmp.Format("%s", chvalue);
 					m_strIo_Label[i][j][k] = strTmp;
-
-					strTmp = m_strIo_Label[i][j][k].Mid(0, 2);
-
-					if(strTmp == "PS")
+					
+					Grid->GetValue(col_s+1, row_s+2+k, chvalue);
+					strTmp.Format("%c", chvalue[0]);
+					
+					if(strTmp == "S")
+					{
+						m_nIo_Type[i][j][k] = IO_OUT;
+					}
+					else if(strTmp == "P")
 					{
 						m_nIo_Type[i][j][k] = IO_IN;
 					}
 					else
 					{
-						strTmp = m_strIo_Label[i][j][k].Mid(0, 1);
-						if(strTmp == "S")
-						{
-							m_nIo_Type[i][j][k] = IO_OUT;
-						}
-						else
-						{
-							m_nIo_Type[i][j][k] = IO_NONE;
-						}
+						m_nIo_Type[i][j][k] = IO_NONE;
 					}
-
-					strTmp = m_p_grid.GridCellText(Grid, row_s+2+k, col_s+3);
+					
+					Grid->GetValue(col_s+3, row_s+2+k, chvalue);
+					strTmp.Format("%s", chvalue);
 					m_strIo_Description[i][j][k] = strTmp;
 				}
-
 				m_nList_Count++;
 			}	
 		}
@@ -757,7 +798,7 @@ void CScreen_IO_Map::OnBtnSlaveEnable()
 	// TODO: Add your control notification handler code here
 	if(st_handler.n_menu_lock != FALSE)	return;
 
-	FAS_IO.Set_IO_SlaveEnable(0, m_nport, m_nslave, !n_check_slave);
+	g_ioMgr.Set_IO_SlaveEnable(0, m_nport, m_nslave, !n_check_slave);
 	OnIO_Slave_Change();
 }
 

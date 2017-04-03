@@ -15,19 +15,20 @@
 class CRun_UnPress_Robot : public CObject
 {
 public:
-	DECLARE_DYNCREATE(CRun_UnPress_Robot)
+	DECLARE_SERIAL(CRun_UnPress_Robot)
 	CRun_UnPress_Robot();           // protected constructor used by dynamic creation
 	virtual ~CRun_UnPress_Robot();
 
 
 // Attributes
 public:
+	int mn_InitStep;
 	int mn_RunStep;
 	int mn_Pick_Step;
 	int mn_Place_Step;
 
 	int m_nPressAxisX;
-	int m_mPressAxisY;
+	int m_nPressAxisY;
 	DWORD m_dwWaitUntil[3];
 	int m_nTrayDeviceGap;
 	double m_dTargetPosX;
@@ -36,14 +37,14 @@ public:
 	bool m_bPressUpDnFlag[2];
 	DWORD m_dwPressUpDn[2][3];
 
-	bool m_bCarrierHolder[2];
-	DWORD m_dwCarrierHolder[2][3];
+	bool m_bCarrierHolder;
+	DWORD m_dwCarrierHolder[3];
 
 	CString m_strAlarmCode;
 
 // Operations
 public:
-	void ThreadRun();
+	void Thread_Run();
 	void RunMove();
 	void RunInit();
 
@@ -52,8 +53,9 @@ public:
 	//nMode = 2 Press down상태로 밀때
 	int Chk_PressClamp_Safety( int nMode);
 	int Chk_PressMotor_Safety();
+
 	void Set_UnPress_PushClamp_OnOff( int nMode, int OnOff);
-	int Chk_UnPress_PushClamp_OnOff( int nMode, int nOnOff );
+	int Chk_UnPress_PushClamp_OnOff( int nMode, int OnOff );
 
 	void Set_Device_Carrier_Holder( int OnOff );
 	int Chk_Device_Carrier_Holder( int nOnOff );

@@ -5,6 +5,7 @@
 #include "handler.h"
 #include "Dialog_Part_IO.h"
 #include "Public_Function.h"
+#include "IO_Manager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -289,7 +290,7 @@ void CDialog_Part_IO::OnInputCheck()
 	{
 		bit = (m_n_in_port[i] * 100) + m_n_in_num[i];
 		
-		if(FAS_IO.Get_In_Bit(bit) == IO_ON)
+		if(g_ioMgr.Get_In_Bit(bit) == IO_ON)
 		{
 			m_p_grid.GridCellText(m_grid_input, i+1, 1, "ON");
 			m_p_grid.GridCellColor(m_grid_input, i+1, 1, RGB(st_work.n_grid_r[0][0], st_work.n_grid_g[0][0], st_work.n_grid_b[0][0]), 
@@ -315,7 +316,7 @@ void CDialog_Part_IO::OnOutputCheck()
 	{
 		bit = (m_n_out_port[i] * 100) + m_n_out_num[i];
 
-		if(FAS_IO.Get_Out_Bit(bit) == IO_ON)
+		if(g_ioMgr.Get_Out_Bit(bit) == IO_ON)
 		{
 			m_p_grid.GridCellText(m_grid_output, i+1, 1, "ON");
 			m_p_grid.GridCellColor(m_grid_output, i+1, 1, RGB(st_work.n_grid_r[1][0], st_work.n_grid_g[1][0], st_work.n_grid_b[1][0]), 
@@ -344,9 +345,9 @@ void CDialog_Part_IO::OnCellClick(WPARAM wParam, LPARAM lParam)
 		m_grid_output = (TSpread*)GetDlgItem(IDC_CUSTOM_OUTPUT);
 
 		bit = (m_n_out_port[lpcc->Row-1] * 100) + m_n_out_num[lpcc->Row-1];
-		output = FAS_IO.Get_Out_Bit(bit);
+		output = g_ioMgr.Get_Out_Bit(bit);
 		
-		FAS_IO.Set_Out_Bit(bit, !output);
+		g_ioMgr.Set_Out_Bit(bit, !output);
 
 		if (!output == IO_ON)
 		{

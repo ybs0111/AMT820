@@ -112,7 +112,7 @@ void CScreen_Basic::OnInitialUpdate()
 	Init_Grid_Operate();
 
 	Data_Display();
-	OnBasic_Init_List(st_path.mstr_basic);  // 파일 폴더 초기화 함수
+	OnBasic_Init_List(_T("C:\\AMT820\\motor\\"));  // 파일 폴더 초기화 함수
 	/* ************************************************************************** */
 
 	UpdateData(FALSE);
@@ -530,8 +530,8 @@ void CScreen_Basic::Init_Digital()
 
 void CScreen_Basic::Data_Init()
 {
-	/*
-	mstr_device_name[1]				= st_basic.str_device_name;
+	
+	mstr_device_name[1]				= st_basic.mstr_device_name;
 	
 	m_n_mode_interface[1]			= st_basic.n_mode_interface;
 	m_n_mode_device[1]				= st_basic.n_mode_device;
@@ -539,7 +539,7 @@ void CScreen_Basic::Data_Init()
 
 	m_n_count_retry[1]				= st_basic.n_count_retry;
 	Data_Backup();
-	*/
+	
 }
 
 
@@ -856,7 +856,7 @@ int CScreen_Basic::OnBasic_New_Device_Check(CString str_device)
 	}
 	/* ************************************************************************** */
 
-	str_chk_file = st_path.mstr_basic + str_device;  // 생성할 [폴더]+[파일명] 설정
+	str_chk_file = _T("C:\\AMT820\\Motor\\") + str_device;  // 생성할 [폴더]+[파일명] 설정
 	n_pos = str_chk_file.Find(".");  // 확장자 검사
 	if (n_pos == -1) 
 		str_chk_file += _T(".TXT");
@@ -875,7 +875,9 @@ int CScreen_Basic::OnBasic_New_Device_Check(CString str_device)
 		}
 	}
 
-	mstr_load_file = str_chk_file;  // 생성할 [폴더]+[파일명]+[확장자] 설정
+	mstr_load_file.Empty();
+
+	mstr_load_file.Format("%s", str_chk_file);  // 생성할 [폴더]+[파일명]+[확장자] 설정
 
 	return TRUE;
 }
@@ -1224,7 +1226,7 @@ void CScreen_Basic::OnBtnBasicCreate()
 		mcls_m_basic.OnInterface_Data_Save_As(str_filename);
 
 		Init_Grid_File();
-		OnBasic_Init_List(st_path.mstr_basic);// 파일 폴더 초기화 함수
+		OnBasic_Init_List(_T("C:\\AMT820\\motor\\"));// 파일 폴더 초기화 함수
 	}
 }
 
@@ -1284,11 +1286,11 @@ void CScreen_Basic::Init_Grid_Operate()
 	
 	for(i=0; i<max_row+1; i++)
 	{
-		m_p_grid.GridCellHeight_P(m_grid_operate, i, y_p);
+		m_p_grid.GridCellHeight(m_grid_operate, i, y_p);
 		
 		for(j=0; j<max_col+1; j++)
 		{	
-			m_p_grid.GridCellWidth_P(m_grid_operate, j, x_p);
+			m_p_grid.GridCellWidth(m_grid_operate, j, x_p);
 			m_p_grid.GridCellControlStatic(m_grid_operate, i, j);
 		}
 	}

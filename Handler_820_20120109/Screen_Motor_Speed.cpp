@@ -114,13 +114,13 @@ void CScreen_Motor_Speed::OnInitialUpdate()
 		
 	OnMotorSpeed_RATE_Digital_Counter_Set();
 
-// 	OnMotorSpeed_Data_Set();							//전역 변수의 Data를 받아온다.
-// 	OnMotorSpeed_Data_BackUp();	
+	OnMotorSpeed_Data_Set();							//전역 변수의 Data를 받아온다.
+	OnMotorSpeed_Data_BackUp();	
 
 	OnMotorSpeed_Init_Layout();
 	OnMotorSpeed_Digital_Counter_Set();
 
-	if (st_work.m_iRunStatus != CTL_dSTOP)			// Stop 상태가 아니면 Apply Button이 비활성화가 된다.
+	if (st_work.mn_run_status != CTL_dSTOP)			// Stop 상태가 아니면 Apply Button이 비활성화가 된다.
 	{
 		OnMotorSpeed_Controls_Enable(false);		// 모든 컨트롤 화면 출력 제어 함수
 	}

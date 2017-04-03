@@ -324,7 +324,7 @@ void CMyJamData::On_Alarm_Display()
 	// -> 알람 발생한 경우 로그 파일 및 임시 파일에 저장하고 화면에 출력한다     
 	// **************************************************************************
 //	alarm.mstr_code = "111111";
-	if (st_work.n_run_status == dJAM || st_work.n_run_status == dWARNING || st_work.n_run_status == dLOTEND)  // 알람 발생
+	if (st_work.mn_run_status == dJAM || st_work.mn_run_status == dWARNING || st_work.mn_run_status == dLOTEND)  // 알람 발생
 	{
 		if (st_handler.n_alarm_screen == TRUE)	return;
 
@@ -365,7 +365,7 @@ void CMyJamData::On_Alarm_Display()
 		// **********************************************************************
 		if (st_handler.n_alarm_screen != TRUE)  // 알람 화면 미출력
 		{
-			if (st_work.n_run_status == dLOTEND)		
+			if (st_work.mn_run_status == dLOTEND)		
 			{
 				alarm.mn_reset_status = NO;
 			}
@@ -444,7 +444,7 @@ void CMyJamData::On_Alarm_Display()
 			::PostMessage(st_handler.hWnd, WM_FORM_CHANGE, 7, 1);  // 메인 프레임에 알람 화면 출력 요청 
 
 			if (st_handler.cwnd_title != NULL)  // 타이틀 바 출력 검사
-				st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MACHINE_STATUS, st_work.n_run_status);  // 타이틀 [알람] 출력 요청
+				st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MACHINE_STATUS, st_work.mn_run_status);  // 타이틀 [알람] 출력 요청
 		}
 		// **********************************************************************
 	}
@@ -598,7 +598,7 @@ void CMyJamData::On_Alarm_Info_Load()
 	char chr_s[300];
 	FILE  *fp ;  // 파일 핸들 저장 변수
 
-	str_load_file = _T("c:\\AMT820\\Bmp\\Error.txt"); 
+	str_load_file = _T("C:\\AMT820\\Bmp\\Error.txt"); 
 
 	// **************************************************************************
     // 알람 정보 저장할 전역 구조체 멤버 변수 초기화                             

@@ -1,0 +1,9 @@
+@ECHO OFF
+CLS
+
+SET FILENAME=C:\AMT820\Setting\BootUpFlag.txt	
+DEL %FILENAME%
+ 			
+ECHO BootUpFlag = 1 >> %FILENAME%
+
+ECHO. >> %FILENAME%

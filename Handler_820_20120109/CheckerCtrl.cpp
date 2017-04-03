@@ -415,7 +415,7 @@ void CCheckerCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 		{
 			if (st_handler.cwnd_main != NULL)			// Main 화면 존재
 			{
-				if (st_work.n_run_status != dSTOP) return;
+				if (st_work.mn_run_status != dSTOP) return;
 
 //				st_handler.cwnd_main->SendMessage(WM_WORK_END, MAIN_TRAYINFO, 0);
 				return;

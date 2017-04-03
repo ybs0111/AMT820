@@ -30,14 +30,14 @@ AMotor::AMotor()
 
 	m_nMotorId = -1;
 
-	mn_linearmove_index = 0;					//현재 map index 
+	mn_linearmove_index = 2;					//현재 map index 
 	ml_AxisCnt = 2;								//현재의 IndexNum에서 사용 가능한 모터 수량 최대 4개  
-	mlp_AxisNum[0] = M_TRANSFER1_X;			//현재의 IndexNum에서 사용하는 모터 실제 번호를 가진다 
-	mlp_AxisNum[1] = M_TRANSFER1_Y;  
+	mlp_AxisNum[0] = M_HEATSINK_TRANSFER_X;			//현재의 IndexNum에서 사용하는 모터 실제 번호를 가진다 
+	mlp_AxisNum[1] = M_HEATSINK_TRANSFER_Y;  
 
 	COMI.ml_axiscnt[mn_linearmove_index] = 2;
-	COMI.mp_axisnum[mn_linearmove_index][0] = M_TRANSFER1_X;
-	COMI.mp_axisnum[mn_linearmove_index][1] = M_TRANSFER1_Y;
+	COMI.mp_axisnum[mn_linearmove_index][0] = M_HEATSINK_TRANSFER_X;
+	COMI.mp_axisnum[mn_linearmove_index][1] = M_HEATSINK_TRANSFER_Y;
 
 /*
 	mn_linearmove_index = 1;					//현재 map index 

@@ -653,6 +653,20 @@ st_io_param::st_io_param()
 	st_io.i_press_carrier_type2						=	2313;
 	st_io.i_press_carrier_type3						=	2314;
 	st_io.i_press_carrier_type4						=	2315;
+
+	
+	st_io.i_loading_rbt_glipper_sff_missalign_chk_1 =	2400;
+	st_io.i_loading_rbt_glipper_sff_missalign_chk_2 =	2401;
+	st_io.i_loading_rbt_glipper_sff_missalign_chk_3 =	2402;
+	st_io.i_loading_rbt_glipper_sff_missalign_chk_4 =	2403;
+	
+	st_io.i_loading_rbt_glipper_tff_missalign_chk_1 =	2404;
+	st_io.i_loading_rbt_glipper_tff_missalign_chk_2 =	2405;
+	st_io.i_loading_rbt_glipper_tff_missalign_chk_3 =	2406;
+	st_io.i_loading_rbt_glipper_tff_missalign_chk_4 =	2407;
+	
+	st_io.i_loading_buffer_sff_tilt_chk				=   2409;
+	st_io.i_loading_buffer_tff_tilt_chk				=   2410;
 }
 
 int IO_Manager::IO_Board_Initialize()
@@ -668,55 +682,46 @@ int IO_Manager::IO_Board_Initialize()
 	if( IO_Port_AutoEnable( 0, 0 ) == FALSE )		return FALSE;
 	if( IO_Port_AutoEnable( 0, 1 ) == FALSE )		return FALSE;
 	if( IO_Port_AutoEnable( 0, 2 ) == FALSE )		return FALSE;
-
+	if( IO_Port_AutoEnable( 0, 3 ) == FALSE )		return FALSE;
 
 	if( IO_SlaveEnable( 0, 0, 8, TRUE ) == FALSE )	return FALSE;
 	if( IO_SlaveEnable( 0, 1, 8, TRUE ) == FALSE )	return FALSE;
-// 	//2013,0205
-// 	st_handler.mn_pogo_type = CTL_NO;
-// 	st_basic.n_mode_pogo = CTL_NO;
-	if( IO_SlaveEnable( 0, 2, 7, TRUE ) == FALSE)
-	{
-		if( IO_SlaveEnable( 0, 2, 2, TRUE ) == FALSE )	return FALSE;
-		else
-		{
-		//	st_handler.mn_pogo_type = CTL_NO;
-		}
-	}
-	else
-	{
-//		st_handler.mn_pogo_type = CTL_YES;
-	}
+	if( IO_SlaveEnable( 0, 2, 8, TRUE ) == FALSE )	return FALSE;
+	if( IO_SlaveEnable( 0, 3, 8, TRUE ) == FALSE )	return FALSE;
 
-	for (int i = 0; i < 3; i++)
+
+	for (int i = 0; i < 4; i++)
 	{
 		Ret = FAS_IO.Set_IO_HSSISpeed(0, i, PORT_SPEED_10);
 		Ret = FAS_IO.Get_IO_HSSISpeed(0, i, &HSSI_speed);
 	}
 
-//	FAS_IO.Set_IO_DefineWord(0, 0, 0, 0x00ff); // 0번 Master, 0번 포트, 0번 슬레이브 , 16bit 셋팅
-	//2017.0102
-	FAS_IO.Set_IO_DefineWord(0, 0, 0, 0x0fff); // 0번 Master, 0번 포트, 0번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 0, 1, 0x0000); // 0번 Master, 0번 포트, 1번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 0, 2, 0x0007); // 0번 Master, 0번 포트, 2번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 0, 3, 0x0007); // 0번 Master, 0번 포트, 3번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 0, 4, 0x000f); // 0번 Master, 0번 포트, 4번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 0, 5, 0x3fff); // 0번 Master, 0번 포트, 5번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 0, 6, 0x0000); // 0번 Master, 0번 포트, 6번 슬레이브 , 16bit 셋팅
-//	FAS_IO.Set_IO_DefineWord(0, 0, 7, 0x07ff); // 0번 Master, 0번 포트, 7번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 0, 7, 0x1fff); // 0번 Master, 0번 포트, 7번 슬레이브 , 16bit 셋팅
-	
-	FAS_IO.Set_IO_DefineWord(0, 1, 0, 0x0000); // 0번 Master, 1번 포트, 0번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 1, 1, 0x0000); // 0번 Master, 1번 포트, 1번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 1, 2, 0x01ff); // 0번 Master, 1번 포트, 2번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 1, 3, 0x0000); // 0번 Master, 1번 포트, 3번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 1, 4, 0x0000); // 0번 Master, 1번 포트, 4번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 1, 5, 0x0001); // 0번 Master, 1번 포트, 5번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 1, 6, 0x000f); // 0번 Master, 1번 포트, 6번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 1, 7, 0x007f); // 0번 Master, 1번 포트, 7번 슬레이브 , 16bit 셋팅
 
-	FAS_IO.Set_IO_DefineWord(0, 2, 0, 0x0007); // 0번 Master, 2번 포트, 0번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 2, 1, 0x0003); // 0번 Master, 2번 포트, 1번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 0, 0, 0x0000); // 0번 Master, 0번 포트, 0번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 0, 1, 0x0000); // 0번 Master, 0번 포트, 1번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 0, 2, 0x0000); // 0번 Master, 0번 포트, 2번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 0, 3, 0x0000); // 0번 Master, 0번 포트, 3번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 0, 4, 0x0000); // 0번 Master, 0번 포트, 4번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 0, 5, 0x0000); // 0번 Master, 0번 포트, 5번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 0, 6, 0x0000); // 0번 Master, 0번 포트, 6번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 0, 7, 0x07ff); // 0번 Master, 0번 포트, 7번 슬레이브 , 16bit 셋팅
+	
+	FAS_IO.Set_IO_DefineWord(0, 1, 0, 0xffff); // 0번 Master, 1번 포트, 0번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 1, 1, 0xffff); // 0번 Master, 1번 포트, 1번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 1, 2, 0xffff); // 0번 Master, 1번 포트, 2번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 1, 3, 0xffff); // 0번 Master, 1번 포트, 3번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 1, 4, 0xff00); // 0번 Master, 1번 포트, 4번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 1, 5, 0x0000); // 0번 Master, 1번 포트, 5번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 1, 6, 0xf800); // 0번 Master, 1번 포트, 6번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 1, 7, 0xf800); // 0번 Master, 1번 포트, 7번 슬레이브 , 16bit 셋팅
+
+	FAS_IO.Set_IO_DefineWord(0, 2, 0, 0xff00); // 0번 Master, 2번 포트, 0번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 2, 1, 0xff00); // 0번 Master, 2번 포트, 1번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 2, 2, 0x00ff); // 0번 Master, 2번 포트, 1번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 2, 3, 0x000f); // 0번 Master, 2번 포트, 1번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 2, 4, 0x0000); // 0번 Master, 2번 포트, 1번 슬레이브 , 16bit 셋팅
+
+
 
 	SetIOBoardInit( true );
 	
@@ -727,23 +732,21 @@ void IO_Manager::OnSet_IO_Out_Port_Clear()
 {
 	g_ioMgr.set_out_bit(st_io.o_Buzzer1, IO_OFF);
 	g_ioMgr.set_out_bit(st_io.o_Buzzer2, IO_OFF);
+	g_ioMgr.set_out_bit(st_io.o_Buzzer3, IO_OFF);
+	g_ioMgr.set_out_bit(st_io.o_Buzzer4, IO_OFF);
 	g_ioMgr.set_out_bit(st_io.o_Start_SwitchLamp, IO_OFF);
 	g_ioMgr.set_out_bit(st_io.o_Stop_SwitchLamp, IO_OFF);
 	g_ioMgr.set_out_bit(st_io.o_AlarmClear_SwitchLamp, IO_OFF);
 	g_ioMgr.set_out_bit(st_io.o_Buzzer_SwitchLamp, IO_OFF);
 	
-	//g_ioMgr.set_out_bit(st_io.o_main_air, IO_ON);
-	
 	if (g_ioMgr.Get_In_Bit(st_io.i_Main_Air1_Check) != IO_ON ||
 		g_ioMgr.Get_In_Bit(st_io.i_Main_Air2_Check) != IO_ON)
 	{
-		//g_ioMgr.set_out_bit(st_io.o_main_air, IO_OFF);
-		
-		//Sleep(300);
-		
-		//g_ioMgr.set_out_bit(st_io.o_main_air, IO_ON);
-	}
-	
+
+// 			810514 0 A "MAIN_AIR_1_OFF_CHECK_ERROR."
+// 			810515 0 A "MAIN_AIR_1_OFF_CHECK_ERROR."
+			
+	}	
 }
 
 

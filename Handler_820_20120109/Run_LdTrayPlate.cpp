@@ -4,6 +4,9 @@
 #include "stdafx.h"
 #include "handler.h"
 #include "Run_LdTrayPlate.h"
+#include "AMTLotManager.h"
+#include "LogFromat.h"
+#include "IO_Manager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -13,8 +16,8 @@ static char THIS_FILE[] = __FILE__;
 
 /////////////////////////////////////////////////////////////////////////////
 // CRun_LdTrayPlate
-LdTrayPlate Run_LdTrayPlate;
-IMPLEMENT_SERIAL(CRun_LdTrayPlate, CObiect, 1);
+CRun_LdTrayPlate Run_LdTrayPlate;
+IMPLEMENT_SERIAL(CRun_LdTrayPlate, CObject, 1);
 
 CRun_LdTrayPlate::CRun_LdTrayPlate()
 {
@@ -28,7 +31,7 @@ CRun_LdTrayPlate::~CRun_LdTrayPlate()
 
 /////////////////////////////////////////////////////////////////////////////
 // CRun_LdTrayPlate message handlers
-void CRun_LdTrayPlate::ThreadRun()
+void CRun_LdTrayPlate::Thread_Run()
 {
 	switch( st_work.mn_run_status)
 	{
@@ -40,7 +43,6 @@ void CRun_LdTrayPlate::ThreadRun()
 		break;
 
 	case dSTOP:
-		m_dwWaitTime[0] = GetCurrentTime();
 		break;
 
 	case dWARNING:
@@ -57,7 +59,7 @@ void CRun_LdTrayPlate::RunInit()
 
 void CRun_LdTrayPlate::RunMove()
 {
-	int nRet_1,nRet_2,nRet_3,x,y;
+	int nRet_1,x,y;
 	long lMotionDone=0;
 
 	Func.ThreadFunctionStepTrace(10, mn_RunStep);
@@ -80,7 +82,7 @@ void CRun_LdTrayPlate::RunMove()
 			m_nFindLotNo_Flag = -1;
 			if( g_lotMgr.GetLotCount() > 0 )
 			{
-				if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetLotCount )
+				if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
 				{
 					//load plate에 자재 요청
 					m_nFindLotNo_Flag = 0;
@@ -89,7 +91,7 @@ void CRun_LdTrayPlate::RunMove()
 				}
 				else if( g_lotMgr.GetLotCount() >= 2 )
 				{
-					if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetLotCount )
+					if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
 					{
 						m_nFindLotNo_Flag = 1;
 						m_strLotNo = g_lotMgr.GetLotAt(1).GetLotID();
@@ -197,7 +199,7 @@ void CRun_LdTrayPlate::RunMove()
 			nRet_1 = COMI.Get_MotIOSensor(M_TRAY1_Z, MOT_SENS_SD); 	
 			if(nRet_1 == BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
 			{
-				st_sync..nLdPlate_Tray_Supply_Req[THD_LD_TRAY_PLATE] = CTL_CLEAR;
+				st_sync.nLdPlate_Tray_Supply_Req[THD_LD_TRAY_PLATE] = CTL_CLEAR;
 				mn_RunStep = 5000;
 			}
 			else 
@@ -379,16 +381,16 @@ void CRun_LdTrayPlate::Set_Tray_Guide_Clamp_ForBackward(int OnOff)
 	m_bClampOnOffFlag	= false;
 	m_dwClampOnOff[0]	= GetCurrentTime();
 
-	FAS_IO.set_out_bit( st_io.o_Tray_Guide_Clamp_Forward_Sol, nOnOff);
-	FAS_IO.set_out_bit( st_io.o_Tray_Guide_Clamp_Backward_Sol, !nOnOff);
+	g_ioMgr.set_out_bit( st_io.o_Tray_Guide_Clamp_Forward_Sol, OnOff);
+	g_ioMgr.set_out_bit( st_io.o_Tray_Guide_Clamp_Backward_Sol, !OnOff);
 
-	if (nOnOff == IO_ON)
+	if (OnOff == IO_ON)
 	{
-		clsLog.LogFunction(_T("LD_TRAY_PLATE""),_T("FORWARD"),0,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
+		clsLog.LogFunction(_T("LD_TRAY_PLATE"),_T("FORWARD"),0,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 	else
 	{
-		clsLog.LogFunction(_T("LD_TRAY_PLATE),_T("BACKWARD"),0,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
+		clsLog.LogFunction(_T("LD_TRAY_PLATE"),_T("BACKWARD"),0,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 }
 
@@ -403,7 +405,7 @@ int CRun_LdTrayPlate::Chk_Tray_Guide_Clamp_ForBackward(int OnOff)
 
 	int nWaitTime = WAIT_TRAY_ALIGN_CLAMP;
 
-	if (nOnOff == IO_OFF)
+	if (OnOff == IO_OFF)
 	{
 		if (m_bClampOnOffFlag == false )
 		{
@@ -440,7 +442,7 @@ int CRun_LdTrayPlate::Chk_Tray_Guide_Clamp_ForBackward(int OnOff)
 
 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.o_Tray_Guide_Clamp_Forward_Sol); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.o_Tray_Guide_Clamp_Forward_Sol); 
 				clsLog.LogFunction(_T("LD_TRAY_PLATE"),_T("BACKWARD"),1,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}
@@ -448,12 +450,12 @@ int CRun_LdTrayPlate::Chk_Tray_Guide_Clamp_ForBackward(int OnOff)
 	}
 	else
 	{
-		if (m_bClampOnOffFlag == false)// &&	FAS_IO.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_ON)	== IO_ON )
+		if (m_bClampOnOffFlag == false)// &&	g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_ON)	== IO_ON )
 		{
 			m_bClampOnOffFlag			= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true) //&&		 FAS_IO.get_in_bit(st_io.i_LdUldPickDvcChk, IO_ON)	== IO_ON )
+		else if (m_bClampOnOffFlag == true) //&&		 g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk, IO_ON)	== IO_ON )
 		{
 			m_dwClampOnOff[1]	= GetCurrentTime();
 			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];
@@ -483,7 +485,7 @@ int CRun_LdTrayPlate::Chk_Tray_Guide_Clamp_ForBackward(int OnOff)
 
 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.o_Tray_Guide_Clamp_Forward_Sol); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.o_Tray_Guide_Clamp_Forward_Sol); 
 				clsLog.LogFunction(_T("LD_TRAY_PLATE"),_T("FORWARD"),1,_T("ALIGN"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}

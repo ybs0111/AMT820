@@ -66,6 +66,8 @@
 #define CTL_dMAINT			8
 
 
+#define MOT_SERVO				0 //james 2016.0819 
+#define MOT_STEP				1
 
 
 class CComizoaPublic  
@@ -89,6 +91,9 @@ public:
 	int mn_max_home_limit_time; //홈 체크 리미트 시간 설정 
 
 	int mn_run_status;			//장비 가동상태 정보를 받아온다 	
+
+	int mn_type[BD_MAX_MOTOR];		//james 2016.0818 추가  Servo 또는 step motor 관련 셋팅 확인 건. (Inposition, home check 방법, comm처리 문제로 추가
+	                                 //  0 :servo motor, 1: step motor 
 
 	int mn_homechk_flag[BD_MAX_MOTOR]; //홈 체크 완료여부 플레그 BD_YES:완료, BD_NO:홈체크 안함 
 
@@ -256,6 +261,7 @@ public:
 	int HomeCheck_Mot(int n_Axis, int n_HomeMode, int n_TimeOut);
 
 	int Check_Motion_State(int n_Axis, long l_State);
+	void Set_MotorType_Init(int n_Axis, int nServoStep_Type);
 
 private:
 	//long lMotorPowerWait[3];

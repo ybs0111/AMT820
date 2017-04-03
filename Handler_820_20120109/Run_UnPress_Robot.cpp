@@ -4,8 +4,10 @@
 #include "stdafx.h"
 #include "handler.h"
 #include "Run_UnPress_Robot.h"
-
 #include "Run_Device_Carrier_Robot.h"
+#include "AMTLotManager.h"
+#include "LogFromat.h"
+#include "IO_Manager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,7 +18,7 @@ static char THIS_FILE[] = __FILE__;
 /////////////////////////////////////////////////////////////////////////////
 // CRun_UnPress_Robot
 CRun_UnPress_Robot Run_UnPress_Robot;
-IMPLEMENT_SERIAL(CRun_UldPicker, CObiect, 1);
+IMPLEMENT_SERIAL(CRun_UnPress_Robot, CObject, 1);
 
 CRun_UnPress_Robot::CRun_UnPress_Robot()
 {
@@ -31,25 +33,25 @@ CRun_UnPress_Robot::~CRun_UnPress_Robot()
 
 /////////////////////////////////////////////////////////////////////////////
 // CRun_UnPress_Robot message handlers
-void CRun_UnPress_Robot::ThreadRun()
+void CRun_UnPress_Robot::Thread_Run()
 {
-	switch( st_work.n_run_status)
+	switch( st_work.mn_run_status)
 	{
-	case dINIT:
-		break;
+		case dINIT:
+			break;
 
-	case dRUN:
-		RunMove();
-		break;
+		case dRUN:
+			RunMove();
+			break;
 
-	case dSTOP:
-		break;
+		case dSTOP:
+			break;
 
-	case dWARNING:
-		break;
+		case dWARNING:
+			break;
 
-	default:
-		break;
+		default:
+			break;
 	}
 }
 
@@ -59,7 +61,7 @@ void CRun_UnPress_Robot::RunInit()
 
 void CRun_UnPress_Robot::RunMove()
 {
-	int i,nRet_1,nRet_2,nRet_3;
+	int nRet_1;
 	int nRet[9] = {0,};
 	long lMotionDone=0;
 	CString strTemp;
@@ -67,11 +69,11 @@ void CRun_UnPress_Robot::RunMove()
 	double mCurrPosY = COMI.Get_MotCurrentPos( M_PRESS_Y );
 	double mCurrPosX = COMI.Get_MotCurrentPos( M_CARRIER_X );
 
-	Func.ThreadFunctionStepTrace(11, mn_RunMove);
-	switch(mn_RunMove)
+	Func.ThreadFunctionStepTrace(11, mn_RunStep);
+	switch(mn_RunStep)
 	{
 		case -1:
-			mn_RunMove = 0;
+			mn_RunStep = 0;
 			break;
 
 		case 0:
@@ -122,8 +124,8 @@ void CRun_UnPress_Robot::RunMove()
 			if( Func.Check_RunAllSafety() != RET_GOOD || Chk_PressClamp_Safety(0) != RET_GOOD )
 			{
 				mn_RunStep = 100;
-				COMI.Set_MotStop(MOTSTOP_SLOWDOWN , m_nPressAxisY);
-				COMI.Set_MotStop(MOTSTOP_SLOWDOWN , m_nPressAxisX);
+				COMI.Set_MotStop(0 , m_nPressAxisY);
+				COMI.Set_MotStop(0 , m_nPressAxisX);
 				break;
 			}
 			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nPressAxisY, st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS], COMI.mn_runspeed_rate);
@@ -146,8 +148,8 @@ void CRun_UnPress_Robot::RunMove()
 			if( Func.Check_RunAllSafety() != RET_GOOD || Chk_PressClamp_Safety(0) != RET_GOOD )
 			{
 				mn_RunStep = 100;
-				COMI.Set_MotStop(MOTSTOP_SLOWDOWN , m_nPressAxisY);
-				COMI.Set_MotStop(MOTSTOP_SLOWDOWN , m_nPressAxisX);
+				COMI.Set_MotStop(0 , m_nPressAxisY);
+				COMI.Set_MotStop(0 , m_nPressAxisX);
 				break;
 			}
 
@@ -219,16 +221,16 @@ void CRun_UnPress_Robot::RunMove()
 			//nMode = 0 전부 업하여 모터가 움직일때
 			if( m_nTrayDeviceGap == 0 && Chk_PressClamp_Safety(0) == RET_ERROR )
 			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
 				break;
 			}
 			else
 			{//nMode = 3 Holder down상태로 움직일때
 				if( Chk_PressClamp_Safety(3) == RET_ERROR )
 				{
-					COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-					COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+					COMI.Set_MotStop( 0 , m_nPressAxisX);
+					COMI.Set_MotStop( 0 , m_nPressAxisY);
 					break;
 				}
 			}
@@ -239,16 +241,16 @@ void CRun_UnPress_Robot::RunMove()
 			{
 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 			if( m_nTrayDeviceGap == 0 && ( mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS".
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
@@ -301,8 +303,8 @@ void CRun_UnPress_Robot::RunMove()
 		case 2100:
 			if( Chk_PressClamp_Safety(0) == RET_ERROR )
 			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
@@ -310,21 +312,22 @@ void CRun_UnPress_Robot::RunMove()
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS".
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
 			Set_Device_Carrier_Holder(ON);
-			Set_UnPress_PushClamp_OnOff(OFF);
+			Set_UnPress_PushClamp_OnOff(0, OFF);
+			Set_UnPress_PushClamp_OnOff(1, OFF);
 			mn_RunStep = 2200;
 			break;
 
 		case 2200:
-			nRet[0] = FAS_IO.get_in_bit( st_io.i_Press_Up_Check, IO_ON );
-			nRet[1] = FAS_IO.get_in_bit( st_io.i_Press_Down_Check, IO_OFF );
-			nRet[2] = FAS_IO.get_out_bit( st_io.o_Press_Up_Sol, IO_ON );
-			nRet[3] = FAS_IO.get_out_bit( st_io.o_Press_Down_Sol, IO_OFF );
+			nRet[0] = g_ioMgr.get_in_bit( st_io.i_Press_Up_Check, IO_ON );
+			nRet[1] = g_ioMgr.get_in_bit( st_io.i_Press_Down_Check, IO_OFF );
+			nRet[2] = g_ioMgr.get_out_bit( st_io.o_Press_Up_Sol, IO_ON );
+			nRet[3] = g_ioMgr.get_out_bit( st_io.o_Press_Down_Sol, IO_OFF );
 			if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_ON && nRet[3] == IO_OFF)
 			{
 				nRet_1 = Chk_Device_Carrier_Holder(ON);
@@ -357,7 +360,7 @@ void CRun_UnPress_Robot::RunMove()
 			//UNPRESS 실린더가 다운상태에서 움직여야 한다.
 			if( Chk_PressClamp_Safety(3) == RET_ERROR )
 			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
@@ -366,8 +369,8 @@ void CRun_UnPress_Robot::RunMove()
 			{
 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
@@ -392,8 +395,8 @@ void CRun_UnPress_Robot::RunMove()
 			//UNPRESS 실린더가 다운상태에서 움직여야 한다.
 			if( Chk_PressClamp_Safety(3) == RET_ERROR )
 			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
@@ -402,15 +405,15 @@ void CRun_UnPress_Robot::RunMove()
 			{
 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 			m_dTargetPosY = st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_PRESS1_POS] + (m_nTrayDeviceGap*st_recipe.dLoaderTransferTrayDeviceGap);
 			nRet_1 = CTL_Lib.Single_Move( ONLY_MOVE_CHECK, m_nPressAxisY, m_dTargetPosY, COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
-				mn_RunStep = 2310;
+				mn_RunStep = 2320;
 			}
 			else if (nRet_1 == BD_RETRY)
 			{
@@ -424,14 +427,15 @@ void CRun_UnPress_Robot::RunMove()
 			break;
 
 			//Site 하나씩 UNPRESS 한다.
-		case 2310:
+		case 2320:
 			Set_Device_Carrier_Holder(OFF);
-			Set_UnPress_PushClamp_OnOff(OFF);
-			mn_RunStep = 2320;
+			Set_UnPress_PushClamp_OnOff(0, OFF);
+			Set_UnPress_PushClamp_OnOff(1, OFF);
+			mn_RunStep = 2330;
 			break;
 
-		case 2320:
-			if( Chk_Device_Carrier_Holder(OFF) == RET_GOOD && Chk_UnPress_PushClamp_OnOff( OFF ) == RET_GOOD )
+		case 2330:
+			if( Chk_Device_Carrier_Holder(OFF) == RET_GOOD)
 			{
 				mn_RunStep = 2400;
 			}	
@@ -441,8 +445,8 @@ void CRun_UnPress_Robot::RunMove()
 		case 2400:
 			if( Chk_PressClamp_Safety(1) == RET_ERROR )
 			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
 				break;
 			}
 			if( ( mCurrPosX > ( st_motor[m_nPressAxisX].md_pos[P_CARRIER_X_UNPRESS_POS] + st_motor[m_nPressAxisX].mn_allow ) ) ||
@@ -450,8 +454,8 @@ void CRun_UnPress_Robot::RunMove()
 			{
 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 			m_dTargetPosY = st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_PRESS2_POS] + (m_nTrayDeviceGap*st_recipe.dLoaderTransferTrayDeviceGap);
@@ -474,15 +478,16 @@ void CRun_UnPress_Robot::RunMove()
 			//Press 이동 후 Holder 실린더를 내린다.
 		case 2410:
 			Set_Device_Carrier_Holder(ON);
-			Set_UnPress_PushClamp_OnOff(OFF);
+			Set_UnPress_PushClamp_OnOff(0, OFF);
+			Set_UnPress_PushClamp_OnOff(1, OFF);
 			mn_RunStep = 2420;
 			break;
 
 		case 2420:
-			nRet[0] = FAS_IO.get_in_bit( st_io.i_Press_Up_Check, IO_ON );
-			nRet[1] = FAS_IO.get_in_bit( st_io.i_Press_Down_Check, IO_OFF );
-			nRet[2] = FAS_IO.get_out_bit( st_io.o_Press_Up_Sol, IO_ON );
-			nRet[3] = FAS_IO.get_out_bit( st_io.o_Press_Down_Sol, IO_OFF );
+			nRet[0] = g_ioMgr.get_in_bit( st_io.i_Press_Up_Check, IO_ON );
+			nRet[1] = g_ioMgr.get_in_bit( st_io.i_Press_Down_Check, IO_OFF );
+			nRet[2] = g_ioMgr.get_out_bit( st_io.o_Press_Up_Sol, IO_ON );
+			nRet[3] = g_ioMgr.get_out_bit( st_io.o_Press_Down_Sol, IO_OFF );
 			if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_ON && nRet[3] == IO_OFF)
 			{
 				nRet_1 = Chk_Device_Carrier_Holder(ON);
@@ -527,7 +532,7 @@ void CRun_UnPress_Robot::RunMove()
 		case 2600:
 			if( Chk_PressClamp_Safety(3) == RET_ERROR )
 			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
@@ -536,8 +541,8 @@ void CRun_UnPress_Robot::RunMove()
 			{
 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 			m_dTargetPosY = st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS];
@@ -559,12 +564,13 @@ void CRun_UnPress_Robot::RunMove()
 		
 		case 2610:
 			Set_Device_Carrier_Holder(OFF);
-			Set_UnPress_PushClamp_OnOff(OFF);
+			Set_UnPress_PushClamp_OnOff(0, OFF);
+			Set_UnPress_PushClamp_OnOff(1, OFF);
 			mn_RunStep = 2620;
 			break;
 
 		case 2620:
-			if( Chk_Device_Carrier_Holder(OFF) == RET_GOOD && Chk_UnPress_PushClamp_OnOff( OFF ) == RET_GOOD )
+			if( Chk_Device_Carrier_Holder(OFF) == RET_GOOD && Chk_UnPress_PushClamp_OnOff(0, OFF ) == RET_GOOD )
 			{
 				mn_RunStep = 2700;
 			}	
@@ -575,8 +581,8 @@ void CRun_UnPress_Robot::RunMove()
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS."
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 			m_dTargetPosX = st_motor[m_nPressAxisX].md_pos[P_CARRIER_X_INIT_POS];
@@ -614,17 +620,17 @@ void CRun_UnPress_Robot::RunMove()
 			//nMode = 0 전부 업하여 모터가 움직일때
 			if( Chk_PressClamp_Safety(0) == RET_ERROR )
 			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
-			if(  mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow )) )
+			if(  mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS".
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}	
 
@@ -648,8 +654,8 @@ void CRun_UnPress_Robot::RunMove()
 		case 3110:
 			if( Chk_PressClamp_Safety(0) == RET_ERROR )
 			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
@@ -657,22 +663,21 @@ void CRun_UnPress_Robot::RunMove()
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS".
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
 			Run_Device_Carrier_Robot.Set_Device_Carrier_HolderPin_Fix(0, OFF);
-			Set_Device_Carrier_Holder(0, OFF);//UNPRESS
-			Set_Device_Carrier_Holder(1, OFF);//VISION
-			Set_UnPress_PushClamp_OnOff( 0, ON);
-			Set_UnPress_PushClamp_OnOff(1 , OFF);
+			Set_Device_Carrier_Holder( OFF);//UNPRESS
+			Set_UnPress_PushClamp_OnOff(0, ON);
+			Set_UnPress_PushClamp_OnOff(1, OFF);
 			mn_RunStep = 3120;
 			break;
 
 
 		case 3120:
-			if( Chk_Device_Carrier_Holder( 0 , OFF) == RET_GOOD && Chk_Device_Carrier_Holder( 1 , OFF) == RET_GOOD && 
+			if( Chk_Device_Carrier_Holder(OFF) == RET_GOOD &&  
 				Chk_UnPress_PushClamp_OnOff( 0, ON ) == RET_GOOD && Chk_UnPress_PushClamp_OnOff( 1, OFF ) == RET_GOOD )
 			{
 				mn_RunStep = 3200;
@@ -683,17 +688,17 @@ void CRun_UnPress_Robot::RunMove()
 			//PRESS 실린더가 다운상태에서 움직여야 한다.
 			if( Chk_PressClamp_Safety(2) == RET_ERROR )
 			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
-			if(  mCurrPosY > ( st_motor[mCurrPosY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisX].mn_allow ) )
+			if(  mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS."
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
@@ -726,13 +731,12 @@ void CRun_UnPress_Robot::RunMove()
 			break;
 
 		case 3310://실린더 고정
-			Set_Device_Carrier_Holder( 0, ON);
-			Set_Device_Carrier_Holder( 1, ON);
+			Set_Device_Carrier_Holder(ON);
 			mn_RunStep = 3320;
-			break
+			break;
 
 		case 3320:
-			if( Chk_Device_Carrier_Holder( 0 , ON) == RET_GOOD && Chk_Device_Carrier_Holder( 1 , ON) == RET_GOOD )
+			if( Chk_Device_Carrier_Holder(ON) == RET_GOOD)
 			{
 				mn_RunStep = 3400;
 			}	
@@ -742,17 +746,17 @@ void CRun_UnPress_Robot::RunMove()
 			//PRESS 실린더가 다운상태에서 움직여야 한다.
 			if( Chk_PressClamp_Safety(2) == RET_ERROR )
 			{
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
-			if(  mCurrPosY > ( st_motor[mCurrPosY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisX].mn_allow ) )
+			if(  mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS."
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
@@ -775,15 +779,14 @@ void CRun_UnPress_Robot::RunMove()
 			break;
 
 		case 3410:
-			Set_Device_Carrier_Holder( 0, ON);
-			Set_Device_Carrier_Holder( 1, ON);
+			Set_Device_Carrier_Holder(ON);
 			Set_UnPress_PushClamp_OnOff( 0 ,OFF);
 			Set_UnPress_PushClamp_OnOff( 1 ,OFF);
 			mn_RunStep = 3420;
 			break;
 
 		case 3420:
-			if( Chk_Device_Carrier_Holder( 0 , ON) == RET_GOOD && Chk_Device_Carrier_Holder( 1 , ON) == RET_GOOD && 
+			if( Chk_Device_Carrier_Holder(ON) == RET_GOOD &&  
 				Chk_UnPress_PushClamp_OnOff( 0, OFF ) == RET_GOOD && Chk_UnPress_PushClamp_OnOff( 1, OFF ) == RET_GOOD )
 			{
 				mn_RunStep = 3500;
@@ -792,12 +795,12 @@ void CRun_UnPress_Robot::RunMove()
 
 		case 3500:
 			//PRESS 실린더가 다운상태에서 움직여야 한다.
-			if(  mCurrPosY > ( st_motor[mCurrPosY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisX].mn_allow ) )
+			if(  mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS."
 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisX);
-				COMI.Set_MotStop( MOTSTOP_SLOWDOWN , m_nPressAxisY);
+				COMI.Set_MotStop( 0 , m_nPressAxisX);
+				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
 
@@ -828,7 +831,7 @@ void CRun_UnPress_Robot::RunMove()
 		default:
 			if (st_handler.cwnd_list != NULL)	// 리스트 바 화면 존재
 			{
-				sprintf(st_msg.c_abnormal_msg, "There is no Run_Up at Run_Device_Carrier_Robot  = %d", mn_RunUpStep);
+				sprintf(st_msg.c_abnormal_msg, "There is no Run_Up at Run_Device_Carrier_Robot  = %d", mn_RunStep);
 				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
 			}
 			break;
@@ -846,15 +849,15 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 	CString strTemp;
 	int nFuncRet = RET_PROCEED;
 
-	nRet[0] = FAS_IO.get_in_bit( st_io.i_Press_Up_Check, IO_ON );
-	nRet[1] = FAS_IO.get_in_bit( st_io.i_Press_Down_Check, IO_ON );
-	nRet[2] = FAS_IO.get_out_bit( st_io.o_Press_Up_Sol, IO_ON );
-	nRet[3] = FAS_IO.get_out_bit( st_io.o_Press_Down_Sol, IO_ON );
-	nRet[4] = FAS_IO.get_in_bit( st_io.i_Press_Carrier_Holder_Up_Check, IO_ON );
-	nRet[5] = FAS_IO.get_in_bit( st_io.i_Press_Carrier_Holder_Down_Check, IO_ON );
-	nRet[6] = FAS_IO.get_out_bit( st_io.o_Press_Carrier_Holder_Up_Sol, IO_ON );
-	nRet[7] = FAS_IO.get_out_bit( st_io.o_Press_Carrier_Holder_Down_Sol, IO_ON );
-	nRet[8] = FAS_IO.get_in_bit(st_io.i_Press_UpDown_CellIn_Check, IO_OFF);
+	nRet[0] = g_ioMgr.get_in_bit( st_io.i_Press_Up_Check, IO_ON );
+	nRet[1] = g_ioMgr.get_in_bit( st_io.i_Press_Down_Check, IO_ON );
+	nRet[2] = g_ioMgr.get_out_bit( st_io.o_Press_Up_Sol, IO_ON );
+	nRet[3] = g_ioMgr.get_out_bit( st_io.o_Press_Down_Sol, IO_ON );
+	nRet[4] = g_ioMgr.get_in_bit( st_io.i_Press_Carrier_Holder_Up_Check, IO_ON );
+	nRet[5] = g_ioMgr.get_in_bit( st_io.i_Press_Carrier_Holder_Down_Check, IO_ON );
+	nRet[6] = g_ioMgr.get_out_bit( st_io.o_Press_Carrier_Holder_Up_Sol, IO_ON );
+	nRet[7] = g_ioMgr.get_out_bit( st_io.o_Press_Carrier_Holder_Down_Sol, IO_ON );
+	nRet[8] = g_ioMgr.get_in_bit(st_io.i_Press_UpDown_CellIn_Check, IO_OFF);
 
 	if( nMode == 0 )
 	{
@@ -875,12 +878,12 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Down_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);
 			}
-			else if( Ret[4] != IO_ON || Ret[6] != IO_ON)
+			else if( nRet[4] != IO_ON || nRet[6] != IO_ON)
 			{
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Carrier_Holder_Up_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);					
 			}
-			else if( Ret[8] != IO_OFF )
+			else if( nRet[8] != IO_OFF )
 			{
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_UpDown_CellIn_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);					
@@ -912,12 +915,12 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Down_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);
 			}
-			else if( Ret[4] != IO_ON || Ret[6] != IO_ON)
+			else if( nRet[4] != IO_ON || nRet[6] != IO_ON)
 			{
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Carrier_Holder_Up_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);					
 			}
-			else if( Ret[8] != IO_ON )
+			else if( nRet[8] != IO_ON )
 			{
 				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_UpDown_CellIn_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);					
@@ -949,12 +952,12 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_Down_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);
 			}
-			else if( Ret[4] != IO_ON || Ret[6] != IO_ON)
+			else if( nRet[4] != IO_ON || nRet[6] != IO_ON)
 			{
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Carrier_Holder_Up_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);					
 			}
-			else if( Ret[8] != IO_OFF )
+			else if( nRet[8] != IO_OFF )
 			{
 				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_UpDown_CellIn_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);					
@@ -986,12 +989,12 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_Down_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);
 			}
-			else if( Ret[4] != IO_OFF || Ret[6] != IO_OFF)
+			else if( nRet[4] != IO_OFF || nRet[6] != IO_OFF)
 			{
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Carrier_Holder_Up_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);					
 			}
-			else if( Ret[8] != IO_OFF )
+			else if( nRet[8] != IO_OFF )
 			{
 				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_UpDown_CellIn_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, strTemp);					
@@ -1020,7 +1023,7 @@ int CRun_UnPress_Robot::Chk_PressMotor_Safety()
 	int nFuncRet = RET_GOOD;
 	double dInterval = 10.0;
 
-	int nRet_1 = FAS_IO.get_in_bit(st_io.i_Press_UpDown_CellIn_Check, IO_OFF);
+	int nRet_1 = g_ioMgr.get_in_bit(st_io.i_Press_UpDown_CellIn_Check, IO_OFF);
 	if( nRet_1 == IO_ON && ( COMI.Get_MotCurrentPos(M_PRESS_Y) >= st_motor[M_PRESS_Y].md_pos[P_PRESS_Y_PRESS1_POS] - ( dInterval * st_motor[M_PRESS_Y].mn_allow ) &&
 		COMI.Get_MotCurrentPos(M_PRESS_Y) <= st_motor[M_PRESS_Y].md_pos[P_PRESS_Y_PRESS1_POS] + ( dInterval * st_motor[M_PRESS_Y].mn_allow ) ) &&
 		( COMI.Get_MotCurrentPos(M_PRESS_Y) >= (st_motor[M_PRESS_Y].md_pos[P_PRESS_Y_PRESS1_POS]+st_recipe.dLoaderTransferTrayDeviceGap) - ( dInterval * st_motor[M_PRESS_Y].mn_allow ) &&
@@ -1045,11 +1048,12 @@ int CRun_UnPress_Robot::Chk_PressMotor_Safety()
 
 int CRun_UnPress_Robot::Process_Unpress_Pickup( int nMode, int nWorkSite, CString strLotNo)
 {
+	return RET_PROCEED;
 }
 
 // nMode == 0 Press holder
 // nMode == 1 Vision Holder
-void CRun_UnPress_Robot::Set_Device_Carrier_Holder( int nMode, int OnOff)
+void CRun_UnPress_Robot::Set_Device_Carrier_Holder( int OnOff)
 {
 	CString strLogKey[10];
 	CString	strLogData[10];
@@ -1058,24 +1062,17 @@ void CRun_UnPress_Robot::Set_Device_Carrier_Holder( int nMode, int OnOff)
 	strLogData[0].Format(_T("%d"),0);
 
 
-	m_bCarrierHolder[nMode] = false;
-	m_dwCarrierHolder[nMode][0] = GetCurrentTime();
+	m_bCarrierHolder = false;
+	m_dwCarrierHolder[0] = GetCurrentTime();
 
 
 	//ON->DOWN OFF->UP
-	if( nMode == 0 )
-	{
-		FAS_IO.Set_Out_Bit(st_io.o_Press_Carrier_Holder_Down_Sol, OnOff);
-		FAS_IO.Set_Out_Bit(st_io.o_Press_Carrier_Holder_Up_Sol, !OnOff);
-	}
-	else
-	{
-		FAS_IO.Set_Out_Bit(st_io.o_Camera_Y_Jig_Press_Forward_Sol, OnOff);
-		FAS_IO.Set_Out_Bit(st_io.o_Camera_Y_Jig_Press_Backward_Sol, !OnOff);
-	}
+	g_ioMgr.Set_Out_Bit(st_io.o_Press_Carrier_Holder_Down_Sol, OnOff);
+	g_ioMgr.Set_Out_Bit(st_io.o_Press_Carrier_Holder_Up_Sol, !OnOff);
 
 
-	if (nOnOff == IO_ON)//DOWN FWD
+
+	if (OnOff == IO_ON)//DOWN FWD
 	{
 		clsLog.LogFunction(_T("DVC_UNPRESS_ROBOT"),_T("DOWN"),0,_T("CLAMP_HOLDER"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
@@ -1085,7 +1082,7 @@ void CRun_UnPress_Robot::Set_Device_Carrier_Holder( int nMode, int OnOff)
 	}
 }
 
-int CRun_UnPress_Robot::Chk_Device_Carrier_Holder( int nMode, int nOnOff )
+int CRun_UnPress_Robot::Chk_Device_Carrier_Holder( int nOnOff )
 {
 	CString strLogKey[10];
 	CString	strLogData[10];
@@ -1098,36 +1095,30 @@ int CRun_UnPress_Robot::Chk_Device_Carrier_Holder( int nMode, int nOnOff )
 	int nRet_1 = 0, nRet_2 = 0;
 
 	//ON->down OFF->up
-	if( nMode == 0 )
-	{
-		nRet_1 = FAS_IO.get_in_bit(st_io.i_Press_Carrier_Holder_Up_Check, !nOnOff);
-		nRet_2 = FAS_IO.get_in_bit(st_io.i_Press_Carrier_Holder_Down_Check, nOnOff);
-	}
-	else
-	{
-		nRet_1 = FAS_IO.get_in_bit(st_io.i_Camera_Y_Jig_Press_Forward_Check, nOnOff);
-		nRet_2 = FAS_IO.get_in_bit(st_io.i_Camera_Y_Jig_Press_Backward_Check, !nOnOff);
-	}
+	nRet_1 = g_ioMgr.get_in_bit(st_io.i_Press_Carrier_Holder_Up_Check, !nOnOff);
+	nRet_2 = g_ioMgr.get_in_bit(st_io.i_Press_Carrier_Holder_Down_Check, nOnOff);
+
+
 
 	if (nOnOff == IO_OFF)//DOWN BWD
 	{
-		if (m_bCarrierHolder[nMode] == false && nRet_1 == IO_ON && nRet_2 == IO_OFF )
+		if (m_bCarrierHolder == false && nRet_1 == IO_ON && nRet_2 == IO_OFF )
 		{
-			m_bCarrierHolder[nMode] = true;
-			m_dwCarrierHolder[nMode][0]	= GetCurrentTime();
+			m_bCarrierHolder = true;
+			m_dwCarrierHolder[0]	= GetCurrentTime();
 		}
-		else if (m_bCarrierHolder[nMode] == true && nRet_1 == IO_ON && nRet_2 == IO_OFF )
+		else if (m_bCarrierHolder == true && nRet_1 == IO_ON && nRet_2 == IO_OFF )
 		{
-			m_dwCarrierHolder[nMode][1] = GetCurrentTime();
-			m_dwCarrierHolder[nMode][2] = m_dwCarrierHolder[nMode][1] - m_dwCarrierHolder[nMode][0];
+			m_dwCarrierHolder[1] = GetCurrentTime();
+			m_dwCarrierHolder[2] = m_dwCarrierHolder[1] - m_dwCarrierHolder[0];
 
-			if (m_dwCarrierHolder[nMode][2] <= 0)
+			if (m_dwCarrierHolder[2] <= 0)
 			{
-				m_dwCarrierHolder[nMode][0] = GetCurrentTime();
+				m_dwCarrierHolder[0] = GetCurrentTime();
 				return RET_PROCEED;
 			}
 
-			if (m_dwCarrierHolder[nMode][2] > (DWORD)st_wait.nOffWaitTime[nWaitTime])
+			if (m_dwCarrierHolder[2] > (DWORD)st_wait.nOffWaitTime[nWaitTime])
 			{
 				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("DOWN"),1,_T("CLAMP_HOLDER"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_GOOD;
@@ -1135,16 +1126,16 @@ int CRun_UnPress_Robot::Chk_Device_Carrier_Holder( int nMode, int nOnOff )
 		}
 		else
 		{
-			m_dwCarrierHolder[nMode][1] = GetCurrentTime();
-			m_dwCarrierHolder[nMode][2] = m_dwCarrierHolder[nMode][1] - m_dwCarrierHolder[nMode][0];
+			m_dwCarrierHolder[1] = GetCurrentTime();
+			m_dwCarrierHolder[2] = m_dwCarrierHolder[1] - m_dwCarrierHolder[0];
 
-			if (m_dwCarrierHolder[nMode][2] <= 0)
+			if (m_dwCarrierHolder[2] <= 0)
 			{
-				m_dwCarrierHolder[nMode][0] = GetCurrentTime();
+				m_dwCarrierHolder[0] = GetCurrentTime();
 				return RET_PROCEED;
 			}
 
-			if (m_dwCarrierHolder[nMode][2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
+			if (m_dwCarrierHolder[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.i_Press_Carrier_Holder_Up_Check); 
 				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("DOWN"),1,_T("CLAMP_HOLDER"),_T("CYLINDER"),1,strLogKey,strLogData);
@@ -1154,23 +1145,23 @@ int CRun_UnPress_Robot::Chk_Device_Carrier_Holder( int nMode, int nOnOff )
 	}
 	else
 	{
-		if (m_bCarrierHolder[nMode] == false && nRet_2 == IO_ON && nRet_1 == IO_OFF )
+		if (m_bCarrierHolder == false && nRet_2 == IO_ON && nRet_1 == IO_OFF )
 		{
-			m_bCarrierHolder[nMode] = true;
-			m_dwCarrierHolder[nMode][0]	= GetCurrentTime();
+			m_bCarrierHolder = true;
+			m_dwCarrierHolder[0]	= GetCurrentTime();
 		}
-		else if (m_bCarrierHolder[nMode] == true && nRet_2 == IO_ON && nRet_1 == IO_OFF )
+		else if (m_bCarrierHolder == true && nRet_2 == IO_ON && nRet_1 == IO_OFF )
 		{
-			m_dwCarrierHolder[nMode][1]	= GetCurrentTime();
-			m_dwCarrierHolder[nMode][2]	= m_dwCarrierHolder[nMode][1] - m_dwCarrierHolder[nMode][0];
+			m_dwCarrierHolder[1]	= GetCurrentTime();
+			m_dwCarrierHolder[2]	= m_dwCarrierHolder[1] - m_dwCarrierHolder[0];
 
-			if (m_dwCarrierHolder[nMode][2] <= 0)
+			if (m_dwCarrierHolder[2] <= 0)
 			{
-				m_dwCarrierHolder[nMode][0]	= GetCurrentTime();
+				m_dwCarrierHolder[0]	= GetCurrentTime();
 				return RET_PROCEED;
 			}
 
-			if(m_dwCarrierHolder[nMode][2]> (DWORD)st_wait.nOnWaitTime[nWaitTime])
+			if(m_dwCarrierHolder[2]> (DWORD)st_wait.nOnWaitTime[nWaitTime])
 			{
 				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("UP"),1,_T("CLAMP_HOLDER"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_GOOD;
@@ -1178,16 +1169,16 @@ int CRun_UnPress_Robot::Chk_Device_Carrier_Holder( int nMode, int nOnOff )
 		}
 		else
 		{
-			m_dwCarrierHolder[nMode][1]	= GetCurrentTime();
-			m_dwCarrierHolder[nMode][2]	= m_dwCarrierHolder[nMode][1] - m_dwCarrierHolder[nMode][0];
+			m_dwCarrierHolder[1]	= GetCurrentTime();
+			m_dwCarrierHolder[2]	= m_dwCarrierHolder[1] - m_dwCarrierHolder[0];
 
-			if (m_dwCarrierHolder[nMode][2] <= 0)
+			if (m_dwCarrierHolder[2] <= 0)
 			{
-				m_dwCarrierHolder[nMode][0]	= GetCurrentTime();
+				m_dwCarrierHolder[0]	= GetCurrentTime();
 				return RET_PROCEED;
 			}
 
-			if (m_dwCarrierHolder[nMode][2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
+			if (m_dwCarrierHolder[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.i_Press_Carrier_Holder_Down_Check); 
 				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("UP"),1,_T("CLAMP_HOLDER"),_T("CYLINDER"),1,strLogKey,strLogData);
@@ -1214,27 +1205,27 @@ void CRun_UnPress_Robot::Set_UnPress_PushClamp_OnOff( int nMode, int OnOff)
 
 	if( nMode == 0 )//미는 실린더
 	{
-		FAS_IO.set_out_bit( st_io.o_Slide_Guide_X2_Forward_Sol, nOnOff);
-		FAS_IO.set_out_bit( st_io.o_Slide_Guide_X2_Backward_Sol, !nOnOff);
+		g_ioMgr.set_out_bit( st_io.o_Slide_Guide_X2_Forward_Sol, OnOff);
+		g_ioMgr.set_out_bit( st_io.o_Slide_Guide_X2_Backward_Sol, !OnOff);
 	}
 	else//unpress 실린더
 	{
-		FAS_IO.set_out_bit( st_io.o_Press_Down_Sol, nOnOff);
-		FAS_IO.set_out_bit( st_io.o_Press_Up_Sol, !nOnOff);
+		g_ioMgr.set_out_bit( st_io.o_Press_Down_Sol, OnOff);
+		g_ioMgr.set_out_bit( st_io.o_Press_Up_Sol, !OnOff);
 	}
 
 
-	if (nOnOff == IO_ON)
+	if (OnOff == IO_ON)
 	{
 		clsLog.LogFunction(_T("DVC_CARRIER_PRESS_ROBOT"),_T("DOWN"),0,_T("PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 	else
 	{
-		clsLog.LogFunction(_T("DVC_CARRIER_PRESS_ROBOT),_T("UP"),0,_T("PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
+		clsLog.LogFunction(_T("DVC_CARRIER_PRESS_ROBOT"),_T("UP"),0,_T("PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 }
 
-int CRun_UnPress_Robot::Chk_UnPress_PushClamp_OnOff( int nMode, int nOnOff )
+int CRun_UnPress_Robot::Chk_UnPress_PushClamp_OnOff( int nMode, int OnOff )
 {
 	CString strLogKey[10];
 	CString	strLogData[10];
@@ -1248,16 +1239,16 @@ int CRun_UnPress_Robot::Chk_UnPress_PushClamp_OnOff( int nMode, int nOnOff )
 
 	if( nMode == 0 )
 	{
-		nRet1 = FAS_IO.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, nOnOff);
-		nRet2 = FAS_IO.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, !nOnOff);
+		nRet1 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, OnOff);
+		nRet2 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, !OnOff);
 	}
 	else
 	{
-		nRet1 = FAS_IO.get_in_bit(st_io.i_Press_Up_Check, nOnOff);
-		nRet2 = FAS_IO.get_in_bit(st_io.i_Press_Down_Check, !nOnOff);
+		nRet1 = g_ioMgr.get_in_bit(st_io.i_Press_Up_Check, OnOff);
+		nRet2 = g_ioMgr.get_in_bit(st_io.i_Press_Down_Check, !OnOff);
 	}
 
-	if (nOnOff == IO_OFF)
+	if (OnOff == IO_OFF)
 	{
 		if (m_bPressUpDnFlag == false && nRet1 ==  IO_ON && nRet2 == IO_OFF )
 		{
@@ -1294,7 +1285,7 @@ int CRun_UnPress_Robot::Chk_UnPress_PushClamp_OnOff( int nMode, int nOnOff )
 
 			if (m_dwPressUpDn[nMode][2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.i_Press_Up_Check); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Press_Up_Check);
 				clsLog.LogFunction(_T("DVC_CARRIER_PRESS_ROBOT"),_T("UP"),1,_T("PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}
@@ -1337,7 +1328,7 @@ int CRun_UnPress_Robot::Chk_UnPress_PushClamp_OnOff( int nMode, int nOnOff )
 
 			if (m_dwPressUpDn[nMode][2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), nOnOff, st_io.i_Press_Down_Check); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Press_Down_Check); 
 				clsLog.LogFunction(_T("DVC_CARRIER_PRESS_ROBOT"),_T("DOWN"),1,_T("PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}

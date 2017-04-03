@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "handler.h"
 #include "Run_EmptyStacker_Elvator.h"
+#include "IO_Manager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -32,10 +33,10 @@ CRun_EmptyStacker_Elvator::~CRun_EmptyStacker_Elvator()
 // CRun_EmptyStacker_Elvator message handlers
 
 
-void CRun_EmptyStacker_Elvator::ThreadRun()
+void CRun_EmptyStacker_Elvator::Thread_Run()
 {
 
-	switch( st_work.n_run_status)
+	switch( st_work.mn_run_status)
 	{
 	case dINIT:
 		break;
@@ -78,7 +79,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 	int nRet_1, nRet_2=0, nRet_3=0,nRet_4=0;
 	int nCount = 0;
 
-	sFunc.ThreadFunctionStepTrace(3, mn_RunStep);		
+	Func.ThreadFunctionStepTrace(3, mn_RunStep);		
 
 	switch (mn_RunStep)
 	{ 
@@ -91,7 +92,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		m_nFindLotNo_Flag = -1;
 		if( g_lotMgr.GetLotCount() > 0 )
 		{
-			if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetLotCount )
+			if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
 			{
 				//load plate에 자재 요청
 				m_nFindLotNo_Flag = 0;
@@ -100,7 +101,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 			}
 			else if( g_lotMgr.GetLotCount() >= 2 )
 			{
-				if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetLotCount )
+				if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
 				{
 					m_nFindLotNo_Flag = 1;
 					m_strLotNo = g_lotMgr.GetLotAt(1).GetLotID();
@@ -141,7 +142,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		break;
 
 	case 300:
-		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nAxisNum, st_motor[m_nAxisNum].d_pos[P_ELV_TRAY_Z_INITPOS], COMI.mn_runspeed_rate);  //트레이를 받을 위치로 미리 이동한다 
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nAxisNum, st_motor[m_nAxisNum].md_pos[P_ELV_TRAY_Z_INITPOS], COMI.mn_runspeed_rate);  //트레이를 받을 위치로 미리 이동한다 
 		if (nRet_1 == BD_GOOD) //좌측으로 이동  
 		{			
 			mn_RunStep = 400;
@@ -152,7 +153,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-			CTL_Lib.Alarm_Error_Occurrence(6050, dWARNING, st_alarm_info.strCode);
+			CTL_Lib.Alarm_Error_Occurrence(6050, dWARNING, alarm.mstr_code);
 			mn_RunStep = 300;
 		}
 		break; 
@@ -173,8 +174,8 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		break;
 
 	case 500:
-		nRet_1 = FAS_IO.get_in_bit(st_io.i_Unloading_Stacker_Tray_Exist_Check, IO_OFF); //stacker tary 는 처음에는 없어야 한다  
-		nRet_2 = FAS_IO.get_in_bit(st_io.i_Unloading_Stacker_Tray_Ready_Check, IO_OFF); //stacker tary 는 처음에는 없어야 한다  
+		nRet_1 = g_ioMgr.get_in_bit(st_io.i_Unloading_Stacker_Tray_Exist_Check, IO_OFF); //stacker tary 는 처음에는 없어야 한다  
+		nRet_2 = g_ioMgr.get_in_bit(st_io.i_Unloading_Stacker_Tray_Ready_Check, IO_OFF); //stacker tary 는 처음에는 없어야 한다  
 		if(nRet_1 == IO_OFF && nRet_2 == IO_OFF)
 		{
 			mn_RunStep = 1000;
@@ -284,7 +285,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 				if(nRet_1 == BD_GOOD)//플레이트에 트레이가 감지 된 상태 
 				{
 					st_sync.nWorkTransfer_Req[THD_EMPTY_STACKER][0] = CTL_CLEAR;
-					st_sync_info.nWorkTransfer_Req[THD_EMPTY_STACKER][1] = CTL_CLEAR;
+					st_sync.nWorkTransfer_Req[THD_EMPTY_STACKER][1] = CTL_CLEAR;
 					mn_RunStep = 5000;
 				}
 				if(nRet_1 == BD_ERROR) //로더 플레이트에 트레이가 감지 안된 상태 
@@ -325,7 +326,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-				CTL_Lib.Alarm_Error_Occurrence(4200, dWARNING, st_alarm_info.strCode);
+				CTL_Lib.Alarm_Error_Occurrence(4200, dWARNING, alarm.mstr_code);
 				mn_RunStep = 9100;
 			}
 			break; 

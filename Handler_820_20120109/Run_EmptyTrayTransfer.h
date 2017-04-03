@@ -56,7 +56,7 @@ public:
 
 public:
 
-	void ThreadRun();
+	void Thread_Run();
 	void RunMove();
 	void RunInit();
 

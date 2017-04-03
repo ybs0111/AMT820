@@ -200,13 +200,13 @@ void GridControlAlg::GridFileOpen(TSpread *grid, CString filename, CString sheet
 	grid->ImportExcelBook(filename, "default.log");
 }
 
-void GridControlAlg::GridCellHeight_L(TSpread *grid, int row, double height)
+void GridControlAlg::GridCellHeight(TSpread *grid, int row, double height)
 {
 	grid->SetRowHeight(row, height);
 //	grid->SetRowHeightInPixels(row, height);
 }
 
-void GridControlAlg::GridCellWidth_L(TSpread *grid, int col, double width)
+void GridControlAlg::GridCellWidth(TSpread *grid, int col, double width)
 {
 	grid->SetColWidth(col, width);
 //	grid->SetColWidthInPixels(col, width);
@@ -222,44 +222,12 @@ void GridControlAlg::GridReset(TSpread *grid)
 	grid->Reset();
 }
 
-void GridControlAlg::GridCellScroll(TSpread *grid, int pos)
+void GridControlAlg::GridCellHeight_L(TSpread *grid, int row, double height)
 {
-	SS_CELLCOORD UL, LR;
-
-	UL.Col = 1;
-	UL.Row = pos;
-	LR.Col = 1;
-	LR.Row = pos;
-
-	grid->SetSelectBlock(&UL, &LR);
+	grid->SetRowHeight(row, height);
 }
 
-void GridControlAlg::GridCellHeight_P(TSpread *grid, int row, int height)
+void GridControlAlg::GridCellWidth_L(TSpread *grid, int col, double width)
 {
-	grid->SetRowHeightInPixels(row, height);
-}
-
-void GridControlAlg::GridCellWidth_P(TSpread *grid, int col, int width)
-{
-	grid->SetColWidthInPixels(col, width);
-}
-
-int GridControlAlg::GridCellRow(TSpread *grid)
-{
-	return grid->GetMaxRows();
-}
-
-int GridControlAlg::GridCellCol(TSpread *grid)
-{
-	return grid->GetMaxCols();
-}
-
-int GridControlAlg::GridCellCol_Search(TSpread *grid, int col, int row_s, int row_e, CString str_find)
-{
-	return grid->SearchCol(col, row_s, row_e, str_find, SS_SEARCHFLAGS_NONE);
-}
-
-int GridControlAlg::GridCellRow_Search(TSpread *grid, int row, int col_s, int col_e, CString str_find)
-{
-	return grid->SearchRow(row, col_s, col_e, str_find, SS_SEARCHFLAGS_NONE);
+	grid->SetColWidth(col, width);
 }
