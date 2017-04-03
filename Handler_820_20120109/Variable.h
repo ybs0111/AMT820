@@ -1684,7 +1684,8 @@ struct st_path_param
 	CString mstr_basic;			// 기본 셋팅 정보 저장 폴더+파일명 설정 변수
 	CString mstr_basic_folder;	// 기본 셋팅 정보 저장 폴더+파일명 설정 변수
 	CString mstr_datalogger;	// Data Logger의 폴더+파일명 설정 변수
-		
+	
+	CString mstr_path_Model;	//kwlee 2017.0403
 	CString mstr_path_dvc;		// 디바이스별 티칭 정보 저장 파일 생성 폴더 설정 변수
 	CString mstr_socket_lot;	// 소켓별...
 	CString mstr_socket_day;	// 소켓별...

@@ -74,7 +74,7 @@ public:
 	CString mstr_device_name[2];		// 선택된 디바이스 종류 저장 변수
 	CString mstr_temp_device;			// 선택된 디바이스 종류 임시 저장 변수
 	CString mstr_load_file;				// 로딩할 파일에 대한 [폴더]+[파일명] 저장 변수
-	int mn_device_name;					// 선택된 디바이스의 리스트 위치 저장 변수
+//	int mn_device_name;					// 선택된 디바이스의 리스트 위치 저장 변수
 
 	CString mstr_new_device;			// 새로 생성할 디바이스의 이름.
 
@@ -104,7 +104,7 @@ public:
 	void OnBasic_Data_Apply();
 	void OnBasic_Data_Backup();
 	void OnBasic_Data_Label();
-
+    void OnBasic_Device_Focus_Set(); //kwlee 2017.0403
 	void OnBasic_Data_Set();
 	void OnBasic_Digital();
 	void OnBasic_Data_Group();

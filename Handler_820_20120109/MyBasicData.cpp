@@ -1074,12 +1074,21 @@ void CMyBasicData::OnBasic_Data_Load()
 	int mn_chk = 0, mn_pos = 0, n_pos = 0, i = 0, j = 0;
 	double md_chk = 0;
 	float mf_chk = 0;
-
+	char chr_data[20]; 
+	
 	/* ************************************************************************** */
     /*  데이터 로딩할 파일 설정한다 [파일 확장자 검사]                            */
     /* ************************************************************************** */
-	str_load_file = st_path.mstr_path_dvc + st_basic.mstr_device_name;  // 티칭 데이터 로딩 파일 설정
-	
+	//kwlee 2017.0403
+	:: GetPrivateProfileString("BasicData", "Model_Name", "", chr_data, 20, st_path.mstr_basic);	// 20130822 kjh
+	st_basic.mstr_device_name = chr_data;
+	(st_basic.mstr_device_name).TrimLeft(' ');               
+	(st_basic.mstr_device_name).TrimRight(' ');
+	//
+
+	//str_load_file = st_path.mstr_path_dvc + st_basic.mstr_device_name;  // 티칭 데이터 로딩 파일 설정
+	//kwlee 2017.0403
+	str_load_file = st_path.mstr_path_Model + st_basic.mstr_device_name;  // 티칭 데이터 로딩 파일 설정
 	n_pos = str_load_file.Find(".");  // 확장자 위치 검사
 
 	if (n_pos == -1)
@@ -1100,7 +1109,7 @@ void CMyBasicData::OnBasic_Data_Load()
 		}
 	}
 	/* ************************************************************************** */
-
+	
 	/*
 	:: GetPrivateProfileString("BasicData", "Device_Mode", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
@@ -1267,6 +1276,7 @@ void CMyBasicData::OnBasic_Data_Save()
 			}
 		}
 	}
+	:: WritePrivateProfileString("BasicData", "Model_Name", LPCTSTR(st_basic.mstr_device_name), st_path.mstr_basic);	//2017.0403
 	/* ************************************************************************** */
 
 	/*
@@ -1481,7 +1491,9 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
     /* ************************************************************************** */
 	:: WritePrivateProfileString("FILE_NAME", "Device_Type", LPCTSTR(str_device), st_path.mstr_file_basic);
 
-	str_save_file = /*st_path.mstr_basic*/_T("C:\\AMT820\\motor\\") + str_device;  // 티칭 데이터 저장 파일 설정
+	//str_save_file = /*st_path.mstr_basic*/_T("C:\\AMT820\\motor\\") + str_device;  // 티칭 데이터 저장 파일 설정
+	//kwlee 2017.0403
+	str_save_file = st_path.mstr_path_Model + str_device;  // 티칭 데이터 저장 파일 설정
 
 	mstr_temp.Format("%d", st_work.n_grid_r[0][0]);
 	:: WritePrivateProfileString("IO_COLOR", "GRID_IN_ON_R", LPCTSTR(mstr_temp), st_path.mstr_file_basic);
@@ -1554,6 +1566,9 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
 
 	mstr_temp.Format("%d", st_work.n_text_b[1][1]);
 	:: WritePrivateProfileString("IO_COLOR", "TEXT_OUT_OFF_B", LPCTSTR(mstr_temp), st_path.mstr_file_basic);
+
+	//kwlee 2017.0403
+	:: WritePrivateProfileString("BASIC", "MODEL_NAME", LPCTSTR(str_device), str_save_file);
 
 	mstr_temp.Format("%d", st_basic.n_mode_work);
 	:: WritePrivateProfileString("BASIC", "WORK_MODE", LPCTSTR(mstr_temp), str_save_file);
@@ -1923,4 +1938,5 @@ CString CMyBasicData::OnGet_Teach_File_Name( CString strName, int iOpt )
   
 	return str_save_file;  // 파일명 리턴 
 }
+
 

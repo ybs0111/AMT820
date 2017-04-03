@@ -1169,6 +1169,9 @@ void CMainFrame::OnMain_Path_Set()
 
 	st_path.mstr_path_dvc =		_T(strMainPath + "Device\\");							// 디바이스별 티칭 정보 저장 파일 생성 폴더 설정
 	Func.CreateFolder(st_path.mstr_path_dvc);
+	
+	st_path.mstr_path_Model =		_T(strMainPath + "Model\\");							// 디바이스별 티칭 정보 저장 파일 생성 폴더 설정
+	Func.CreateFolder(st_path.mstr_path_Model);
 
 	st_path.mstr_motor =			_T(strMainPath + "Setting\\AMT820.cme2");
 
