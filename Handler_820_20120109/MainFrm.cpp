@@ -181,7 +181,8 @@ CMainFrame::CMainFrame()
 	st_handler.n_ad_board_create	= NO;
 	st_handler.n_initial_flag		= NO;
 
-	COMI.mn_simulation_mode = 0;
+	st_handler.mn_virtual_mode = 1;
+	COMI.mn_simulation_mode = 1;
 
 	OnMain_Var_Default_Set();				// 메인 프레임 클래스 변수 초기화 함수
 

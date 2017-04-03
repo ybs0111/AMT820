@@ -157,7 +157,7 @@ int CCtlBd_Library::Initialize_motor_board(int n_bd_type, CString s_filename)	//
 		if (nRet == BD_ERROR)
 		{
 			sprintf(mc_normal_msg,"[MOTOR BOARD]Initialize");
-			LogFile_Write("D:\\AMT_LOG\\Motor\\", mc_normal_msg);
+			LogFile_Write("C:\\AMT_LOG\\Motor\\", mc_normal_msg);
 			return BD_ERROR;
 		}		
 
@@ -1044,7 +1044,7 @@ int CCtlBd_Library::Motor_LinearSafety(int n_MapIndex, double *dp_PosList)
 // 			}
 // 		}
 // 	}
-// 	return BD_GOOD;
+ 	return BD_GOOD;
 }
 
 

@@ -48,7 +48,7 @@ BOOL cmmLoadDll(void)
 				{"cmmGnSetEmergency",    (FARPROC*)&cmmGnSetEmergency},
 				{"cmmGnGetEmergency",    (FARPROC*)&cmmGnGetEmergency},
 				{"cmmGnBitShift", 	 (FARPROC*)&cmmGnBitShift},
-				{"cmmCfgSetMioProperty", (FARPROC*)&cmmCfgSetMioProperty},
+				{"cmmCfgSetMioProperty", (FARPROC*)&cmmCfgSetMioProperty}, 
 				{"cmmCfgGetMioProperty", (FARPROC*)&cmmCfgGetMioProperty},
 				{"cmmCfgSetFilter",	 (FARPROC*)&cmmCfgSetFilter},
 				{"cmmCfgGetFilter",	 (FARPROC*)&cmmCfgGetFilter},
@@ -65,9 +65,9 @@ BOOL cmmLoadDll(void)
 				{"cmmCfgSetUnitDist",	 (FARPROC*)&cmmCfgSetUnitDist},
 				{"cmmCfgGetUnitDist",	 (FARPROC*)&cmmCfgGetUnitDist},
 				{"cmmCfgSetUnitSpeed",	 (FARPROC*)&cmmCfgSetUnitSpeed},
-				{"cmmCfgGetUnitSpeed",	 (FARPROC*)&cmmCfgGetUnitSpeed},
-				{"cmmCfgSetSpeedRange",	 (FARPROC*)&cmmCfgSetSpeedRange},
-				{"cmmCfgGetSpeedRange",	 (FARPROC*)&cmmCfgGetSpeedRange},
+				{"cmmCfgGetUnitSpeed",	 (FARPROC*)&cmmCfgGetUnitSpeed}, 
+				{"cmmCfgSetSpeedRange",	 (FARPROC*)&cmmCfgSetSpeedRange}, 
+				{"cmmCfgGetSpeedRange",	 (FARPROC*)&cmmCfgGetSpeedRange}, 
 				{"cmmCfgSetSpeedPattern",(FARPROC*)&cmmCfgSetSpeedPattern},
 				{"cmmCfgGetSpeedPattern",(FARPROC*)&cmmCfgGetSpeedPattern},
 				{"cmmCfgSetSpeedPattern_T",(FARPROC*)&cmmCfgSetSpeedPattern_T},
@@ -85,10 +85,9 @@ BOOL cmmLoadDll(void)
 				{"cmmCfgSetRingCntr",	  (FARPROC*)&cmmCfgSetRingCntr},
 				{"cmmCfgGetRingCntr",	  (FARPROC*)&cmmCfgGetRingCntr},
 				{"cmmCfgSetSeqMode", (FARPROC*)&cmmCfgSetSeqMode},
-				{"cmmCfgGetSeqMode", (FARPROC*)&cmmCfgGetSeqMode},
+				{"cmmCfgGetSeqMode", (FARPROC*)&cmmCfgGetSeqMode},				
 				{"cmmCfgSetManExtLimit", (FARPROC*)&cmmCfgSetManExtLimit},
 				{"cmmCfgGetManExtLimit", (FARPROC*)&cmmCfgGetManExtLimit},
-				{"cmmCfgSetActSpdFilter", (FARPROC*)&cmmCfgSetActSpdFilter},
 				{"cmmHomeSetConfig",	  (FARPROC*)&cmmHomeSetConfig},
 				{"cmmHomeGetConfig",	  (FARPROC*)&cmmHomeGetConfig},
 				{"cmmHomeSetPosClrMode",	  (FARPROC*)&cmmHomeSetPosClrMode},
@@ -101,10 +100,10 @@ BOOL cmmLoadDll(void)
 				{"cmmHomeMove",		  (FARPROC*)&cmmHomeMove},
 				{"cmmHomeMoveAll",	  (FARPROC*)&cmmHomeMoveAll},
 				{"cmmHomeMoveAllStart",	  (FARPROC*)&cmmHomeMoveAllStart},
-				{"cmmHomeGetSuccess",	  (FARPROC*)&cmmHomeGetSuccess},
-				{"cmmHomeSetSuccess",	  (FARPROC*)&cmmHomeSetSuccess},
-				{"cmmHomeIsBusy",	  (FARPROC*)&cmmHomeIsBusy},
-				{"cmmHomeWaitDone",	  (FARPROC*)&cmmHomeWaitDone},
+				{"cmmHomeGetSuccess",	  (FARPROC*)&cmmHomeGetSuccess}, 
+				{"cmmHomeSetSuccess",	  (FARPROC*)&cmmHomeSetSuccess}, 
+				{"cmmHomeIsBusy",	  (FARPROC*)&cmmHomeIsBusy}, 
+				{"cmmHomeWaitDone",	  (FARPROC*)&cmmHomeWaitDone}, 
 				{"cmmSxSetSpeedRatio",	  (FARPROC*)&cmmSxSetSpeedRatio},
 				{"cmmSxGetSpeedRatio",	  (FARPROC*)&cmmSxGetSpeedRatio},
 				{"cmmSxMoveStart",	  (FARPROC*)&cmmSxMoveStart},
@@ -145,10 +144,6 @@ BOOL cmmLoadDll(void)
 				{"cmmIxLineStart",	(FARPROC*)&cmmIxLineStart},
 				{"cmmIxLineTo",	(FARPROC*)&cmmIxLineTo},
 				{"cmmIxLineToStart",	(FARPROC*)&cmmIxLineToStart},
-				{"cmmIxLine_Fx",	(FARPROC*)&cmmIxLine_Fx},
-				{"cmmIxLineStart_Fx",	(FARPROC*)&cmmIxLineStart_Fx},
-				{"cmmIxLineTo_Fx",	(FARPROC*)&cmmIxLineTo_Fx},
-				{"cmmIxLineToStart_Fx",	(FARPROC*)&cmmIxLineToStart_Fx},
 				{"cmmIxArcA",	(FARPROC*)&cmmIxArcA},
 				{"cmmIxArcAStart",	(FARPROC*)&cmmIxArcAStart},
 				{"cmmIxArcATo",	(FARPROC*)&cmmIxArcATo},
@@ -226,9 +221,6 @@ BOOL cmmLoadDll(void)
 				{"cmmMstAll_AutoGetData", (FARPROC*)&cmmMstAll_AutoGetData},
 				{"cmmMstAll_AutoGetInfo", (FARPROC*)&cmmMstAll_AutoGetInfo},
 				{"cmmMstAll_AutoGetInfo2", (FARPROC*)&cmmMstAll_AutoGetInfo2},
-				{"cmmMstAxis_ManScan", (FARPROC*)&cmmMstAxis_ManScan},
-				{"cmmMstAxis_AutoGetBuf", (FARPROC*)&cmmMstAxis_AutoGetBuf},
-
 				//====================== INTERRUPT FUNCTIONS ==========================================//
 				{"cmmIntSetMask", (FARPROC*)&cmmIntSetMask},
 				{"cmmIntGetMask", (FARPROC*)&cmmIntGetMask},
@@ -267,7 +259,7 @@ BOOL cmmLoadDll(void)
 				{"cmmCmpTrgHigh_Start", (FARPROC*)&cmmCmpTrgHigh_Start},
 				{"cmmCmpTrgHigh_Stop", (FARPROC*)&cmmCmpTrgHigh_Stop},
 				{"cmmCmpTrgHigh_Check", (FARPROC*)&cmmCmpTrgHigh_Check},
-
+				
 				{"cmmCmpQue_SetEnable", (FARPROC*)&cmmCmpQue_SetEnable},
 				{"cmmCmpQue_GetEnable", (FARPROC*)&cmmCmpQue_GetEnable},
 				{"cmmCmpQue_SetQueSize", (FARPROC*)&cmmCmpQue_SetQueSize},
@@ -278,11 +270,6 @@ BOOL cmmLoadDll(void)
 				{"cmmCmpQue_SetOutCnt", (FARPROC*)&cmmCmpQue_SetOutCnt},
 				{"cmmCmpQue_SetLtcLinkMode", (FARPROC*)&cmmCmpQue_SetLtcLinkMode},
 				{"cmmCmpQue_GetLtcLinkMode", (FARPROC*)&cmmCmpQue_GetLtcLinkMode},
-
-				{"cmmGnSetAxisName", (FARPROC*)&cmmGnSetAxisName},
-				{"cmmGnGetAxisName", (FARPROC*)&cmmGnGetAxisName},
-				{"cmmCmpTrgSetAxis", (FARPROC*)&cmmCmpTrgSetAxis},
-				{"cmmCmpTrgGetAxis", (FARPROC*)&cmmCmpTrgGetAxis},
 
 				//====================== Digital In/Out FUNCTIONS =====================================//
 				{"cmmDiSetInputLogic", (FARPROC*)&cmmDiSetInputLogic},
@@ -349,7 +336,7 @@ BOOL cmmLoadDll(void)
 				//====================== UTILITY FUNCTIONS =====================================//
 				{"cmmUtlProcessWndMsgS", (FARPROC*)&cmmUtlProcessWndMsgS},
 				{"cmmUtlProcessWndMsgM", (FARPROC*)&cmmUtlProcessWndMsgM},
-				{"cmmUtlDelayMicroSec", (FARPROC*)&cmmUtlDelayMicroSec},
+				{"cmmUtlDelayMicroSec", (FARPROC*)&cmmUtlDelayMicroSec},				
 				{"cmmUtlReadUserTable", (FARPROC*)&cmmUtlReadUserTable},
 				{"cmmUtlWriteUserTable", (FARPROC*)&cmmUtlWriteUserTable},
 				//====================== Extended LIST MOTION FUNCTIONS ========================//
@@ -367,32 +354,15 @@ BOOL cmmLoadDll(void)
 				{"cmmLmxGetRunItemStaPos", (FARPROC*)&cmmLmxGetRunItemStaPos},
 				{"cmmLmxGetRunItemTargPos", (FARPROC*)&cmmLmxGetRunItemTargPos},
 				{"cmmLmxGetSts", (FARPROC*)&cmmLmxGetSts},
-				{"cmmPtAddItem", (FARPROC*)&cmmPtAddItem},
-				{"cmmPtIsDone", (FARPROC*)&cmmPtIsDone},
-				{"cmmPtSetHold", (FARPROC*)&cmmPtSetHold},
-				//{"cmmPtClearQue", (FARPROC*)&cmmPtClearQue},
-				{"cmmPtMsConfig", (FARPROC*)&cmmPtMsConfig},
-				{"cmmPtHeadConfig", (FARPROC*)&cmmPtHeadConfig},
-				{"cmmPtHomeSetConfig", (FARPROC*)&cmmPtHomeSetConfig},
-				{"cmmPtHomeSetSpeedPattern", (FARPROC*)&cmmPtHomeSetSpeedPattern},
-				{"cmmPtHomeMoveStart", (FARPROC*)&cmmPtHomeMoveStart},
-				{"cmmPtHomeIsDone", (FARPROC*)&cmmPtHomeIsDone},
-				{"cmmPtStop", (FARPROC*)&cmmPtStop},
-				{"cmmPtGetCurSeq", (FARPROC*)&cmmPtGetCurSeq},
-				{"cmmPtAddItem2", (FARPROC*)&cmmPtAddItem2},
-				//{"cmmPtInit", (FARPROC*)&cmmPtInit},
-				{"cmmIxSetMasterAxis", (FARPROC*)&cmmIxSetMasterAxis},
-				{"cmmIxGetMasterAxis", (FARPROC*)&cmmIxGetMasterAxis},
-				{"cmmIxGtFxInfo", (FARPROC*)&cmmIxGetFxInfo},
-				{"cmmIxSmartStop", (FARPROC*)&cmmIxSmartStop},
-				// TODO
+								
+				// TODO 
 				{NULL, NULL}
 			   };
 	LIB_FUNCT *f;
-
-	if((g_hCmmLibrary = LoadLibrary (_T(__DLL_FILE_FULL_PATH__))) == NULL)
+	
+	if((g_hCmmLibrary = LoadLibrary (__DLL_FILE_FULL_PATH__)) == NULL)
     	return FALSE;
-
+	
 	f = &Func[0];
 	while(f->ptr != NULL)
 	{

@@ -61,6 +61,21 @@ CScreen_Main::CScreen_Main()
 
 CScreen_Main::~CScreen_Main()
 {
+	if( mp_main_font != NULL )
+	{
+		delete mp_main_font;
+		mp_main_big_font	= NULL;
+	}
+	if( mp_main_big_font != NULL )
+	{
+		delete mp_main_big_font;
+		mp_main_big_font = NULL;
+	}
+	if( mp_main_font1 != NULL )
+	{
+		delete mp_main_font1;
+		mp_main_font1 = NULL;
+	}
 }
 
 void CScreen_Main::DoDataExchange(CDataExchange* pDX)

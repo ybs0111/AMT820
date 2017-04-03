@@ -1513,7 +1513,6 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 
 //	double dp_Vel[3]; 
 	double d_Speed[3];
-	double dp_Pos[2];	
 /*
 //	double dRatio[3]; 
 	long lErrorCode;
@@ -1534,7 +1533,7 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 	{
 		if( nRet == CTL_DOOROPEN)
 		{
-			cmmSxStop(n_Axis, false, false)
+			cmmSxStop(n_Axis, false, false);
 			return BD_ERROR;
 		}
 
@@ -1999,7 +1998,7 @@ int CComizoaPublic::Check_SingleMove(int n_Axis, double d_Distance)
 int CComizoaPublic::Start_LinearMove(int n_MapIndex, double *dp_PosList, double *dp_SpdRatio)  //n_MapIndex는 미리 셋팅되어 있어야 한다 
 {//2축 동작 
 //	int    nSafetyCheck = 0, Ret, i=0;
-	int    i, nRet=-1;
+	int    i, nRet=-1,nRet_l = -1;
 	double dTargetPos[4]={0,};
 	long nListIsDone = 0;
 	double dp_Vel[3]={0,0,0};
@@ -2054,6 +2053,12 @@ int CComizoaPublic::Start_LinearMove(int n_MapIndex, double *dp_PosList, double 
 	for(i=0; i<ml_axiscnt[n_MapIndex]; i++)
 	{
 		nRet = CTL_Lib.Motor_SafetyCheck(1, mp_axisnum[n_MapIndex][i], dp_PosList[i]);
+		if( nRet == CTL_DOOROPEN)//2016.0330
+		{
+			cmmIxStop(n_MapIndex, false, false);
+			return BD_ERROR;
+		}
+
 		if (nRet == BD_ERROR)
 		{	//safety error 는 해당 함수에서 코드 정리 
 			cmmIxStopEmg(n_MapIndex);
@@ -2137,6 +2142,7 @@ int CComizoaPublic::Start_LinearMove(int n_MapIndex, double *dp_PosList, double 
 				sprintf(mc_normal_msg, "[%d] cmmIxIsDone return error", n_MapIndex);
 				Debug_File_Create(0, mc_normal_msg);
 			}
+			CTL_Lib.Alarm_Error_Occurrence(3017, CTL_dWARNING, mc_alarmcode);
 			return BD_ERROR;
 		}
 	}
@@ -2151,7 +2157,8 @@ int CComizoaPublic::Start_LinearMove(int n_MapIndex, double *dp_PosList, double 
 			sprintf(mc_normal_msg, "[%d] cmmIxIsDone return error", n_MapIndex);
 			Debug_File_Create(0, mc_normal_msg);
 		}
-		mn_retry_cnt[mp_axisnum[n_MapIndex][0]] = 0; 
+		mn_retry_cnt[mp_axisnum[n_MapIndex][0]] = 0;
+		CTL_Lib.Alarm_Error_Occurrence(3018, CTL_dWARNING, mc_alarmcode);
 		return BD_ERROR;
 	}
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2180,6 +2187,7 @@ int CComizoaPublic::Start_LinearMove(int n_MapIndex, double *dp_PosList, double 
 		}		
 
 		cmmIxStopEmg(n_MapIndex);
+		CTL_Lib.Alarm_Error_Occurrence(3019, CTL_dWARNING, mc_alarmcode);
 		return BD_ERROR;
 	}
 
@@ -2188,7 +2196,7 @@ int CComizoaPublic::Start_LinearMove(int n_MapIndex, double *dp_PosList, double 
 
 int CComizoaPublic::Check_LinearMove(int n_MapIndex, double *dp_PosList) 
 {
-	int nRet=0, i=0;
+	int nRet=0, i=0, nRet_l=0;
 	long nListIsDone = 0;
 	int  nCurrPosEndCnt = 0;
 	double dCurrPos[2] = {0,0};
@@ -2197,6 +2205,13 @@ int CComizoaPublic::Check_LinearMove(int n_MapIndex, double *dp_PosList)
 	if (mn_simulation_mode == 1)
 	{// 
 		return BD_GOOD;
+	}
+
+	nRet_l = CTL_Lib.Motor_LinearSafety(n_MapIndex,dp_PosList);
+	if( nRet_l == BD_ERROR)
+	{
+		cmmIxStop(n_MapIndex, false, false);
+		return BD_ERROR;
 	}
 
 	for(i=0; i<ml_axiscnt[n_MapIndex]; i++)
@@ -2253,7 +2268,9 @@ int CComizoaPublic::Check_LinearMove(int n_MapIndex, double *dp_PosList)
 							Debug_File_Create(0, mc_normal_msg);
 						}
 
-						cmmIxStopEmg(n_MapIndex);
+						//cmmIxStopEmg(n_MapIndex);
+						cmmIxStop(n_MapIndex, false, false);
+						CTL_Lib.Alarm_Error_Occurrence(3020, CTL_dWARNING, mc_alarmcode);
 						return BD_ERROR;
 					}
 					else
@@ -2261,6 +2278,10 @@ int CComizoaPublic::Check_LinearMove(int n_MapIndex, double *dp_PosList)
 						mn_retry_cnt[mp_axisnum[n_MapIndex][0]]++;
 						return BD_RETRY;
 					}
+				}
+				else if(ml_motion_move_time[mp_axisnum[n_MapIndex][0]][2] <= 0)//2013,0608
+				{
+					ml_motion_move_time[mp_axisnum[n_MapIndex][0]][0] = GetCurrentTime();
 				}
 			} 
 		}
@@ -2277,7 +2298,9 @@ int CComizoaPublic::Check_LinearMove(int n_MapIndex, double *dp_PosList)
 					Debug_File_Create(0, mc_normal_msg);
 				}
 
-				cmmIxStopEmg(n_MapIndex);
+				//cmmIxStopEmg(n_MapIndex);
+				cmmIxStop(n_MapIndex, false, false);
+				CTL_Lib.Alarm_Error_Occurrence(3021, CTL_dWARNING, mc_alarmcode);
 				return BD_ERROR;
 			}
 			else
@@ -2297,7 +2320,9 @@ int CComizoaPublic::Check_LinearMove(int n_MapIndex, double *dp_PosList)
 			Debug_File_Create(0, mc_normal_msg);
 		}
 
-		cmmIxStopEmg(n_MapIndex);
+		//cmmIxStopEmg(n_MapIndex);
+		cmmIxStop(n_MapIndex, false, false);
+		CTL_Lib.Alarm_Error_Occurrence(3022, CTL_dWARNING, mc_alarmcode);
 		return BD_ERROR;
 	}
 
@@ -3108,6 +3133,10 @@ int CComizoaPublic::HomeCheck_Mot(int n_Axis, int n_HomeMode, int n_TimeOut)
 					Debug_File_Create(0, mc_normal_msg);
 				} 
 			}			
+			else if(ml_motion_move_time[n_Axis][2] <= 0)
+			{
+				ml_motion_move_time[n_Axis][0] = GetCurrentTime();
+			}
 		}
 		break;
 
@@ -3133,6 +3162,10 @@ int CComizoaPublic::HomeCheck_Mot(int n_Axis, int n_HomeMode, int n_TimeOut)
 
 			mn_home_step[n_Axis] = 500;
 		}		 
+		else if(ml_motion_move_time[n_Axis][2] <= 0)
+		{
+			ml_motion_move_time[n_Axis][0] = GetCurrentTime();
+		}
 		break;
 
 	case 500 :  // HOMING 완료 
@@ -3271,7 +3304,7 @@ int CComizoaPublic::Debug_File_Create(int n_mode, CString s_msg)
 	mstr_file_name =  mstr_cur_year;
 	mstr_file_name += mstr_cur_month; 
 	mstr_file_name += mstr_cur_day; 
-	mstr_create_file = "D:\\AMT_LOG\\Motor\\" + mstr_file_name;
+	mstr_create_file = "C:\\AMT_LOG\\Motor\\" + mstr_file_name;
 	mstr_create_file += ".TXT";
 
 	sprintf(fileName, "%s", mstr_create_file);

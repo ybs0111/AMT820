@@ -101,25 +101,35 @@ void CScreen_Basic::OnInitialUpdate()
 	mp_basic_font = new CFont;
 	mp_basic_font->CreateFont(12,8,0,0,900,0,0,0,0,0,0,DEFAULT_QUALITY,0,"Arial");
 	/* ************************************************************************** */
-	Data_Init();
+	OnBasic_Data_Set();
 
-	Init_Button();
-	Init_Group();
-	Init_Digital();
-	Init_Label();
+	OnBasic_Data_Button();
+	OnBasic_Data_Group();
+	OnBasic_Digital();
+	OnBasic_Data_Label();
+	OnBasic_Data_EditBox_Set();
 
 	Init_Grid_File();
 	Init_Grid_Operate();
 
-	Data_Display();
-	OnBasic_Init_List(_T("C:\\AMT820\\motor\\"));  // 파일 폴더 초기화 함수
+	OnBasic_Data_Display();
+	OnBasic_Init_List(st_path.mstr_path_dvc);  // 파일 폴더 초기화 함수
 	/* ************************************************************************** */
+
+	st_handler.cwnd_basic = this;  // BASIC 화면에 대한 핸들 정보 설정
 
 	UpdateData(FALSE);
 }
 
 void CScreen_Basic::OnDestroy() 
 {
+	if( mp_basic_font != NULL )
+	{
+		delete mp_basic_font;
+		mp_basic_font = NULL;
+	}
+
+	st_handler.cwnd_basic = NULL;
 
 	CFormView::OnDestroy();
 }
@@ -172,7 +182,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			mcls_m_basic.OnMotorSpeed_Set_Data_Load();
 			mcls_m_basic.OnInterface_Data_Load();
 			
-			Data_Init();
+			 Data_Init();
 
 			m_p_grid.GridCellColor(m_grid_file, m_n_filename_pos, 1, WHITE_C, BLACK_C);
 			m_p_grid.GridCellColor(m_grid_file, m_n_filename_pos, 2, WHITE_C, BLACK_C);
@@ -325,7 +335,7 @@ void CScreen_Basic::OnCell_R_Click(WPARAM wParam, LPARAM lParam)
 		}
 	}
 }
-void CScreen_Basic::Init_Button()
+void CScreen_Basic::OnBasic_Data_Button()
 {
 	short shBtnColor = 30;
 
@@ -338,54 +348,9 @@ void CScreen_Basic::Init_Button()
 	m_btn_delete.SetIcon(IDI_DELETE_2);
 	m_btn_delete.OffsetColor(CButtonST::BTNST_COLOR_BK_IN, shBtnColor);
 	m_btn_delete.SetButtonColor(1);
-/*
-	m_chk_work_mode.SetFont(mp_basic_font);
-	m_chk_work_mode.SetIcon(IDI_DOUBLE, IDI_MODULE);
-	m_chk_work_mode.OffsetColor(CButtonST::BTNST_COLOR_BK_IN, shBtnColor);
-	m_chk_work_mode.SetButtonColor(1);
-
-	m_chk_module.SetFont(mp_basic_font);
-	m_chk_module.SetIcon(IDI_DOUBLE, IDI_MODULE);
-	m_chk_module.OffsetColor(CButtonST::BTNST_COLOR_BK_IN, shBtnColor);
-	m_chk_module.SetButtonColor(1);
-
-	m_chk_conveyor_move_mode.SetFont(mp_basic_font);
-	m_chk_conveyor_move_mode.SetIcon(IDI_NONSAFETY, IDI_NONSAFETY);
-	m_chk_conveyor_move_mode.OffsetColor(CButtonST::BTNST_COLOR_BK_IN, shBtnColor);
-	m_chk_conveyor_move_mode.SetButtonColor(1);
-
-	m_chk_length_first.SetFont(mp_basic_font);
-	m_chk_length_first.SetIcon(IDI_NONSAFETY, IDI_NONSAFETY);
-	m_chk_length_first.OffsetColor(CButtonST::BTNST_COLOR_BK_IN, shBtnColor);
-	m_chk_length_first.SetButtonColor(1);
-
-	m_chk_length_second.SetFont(mp_basic_font);
-	m_chk_length_second.SetIcon(IDI_NONSAFETY, IDI_NONSAFETY);
-	m_chk_length_second.OffsetColor(CButtonST::BTNST_COLOR_BK_IN, shBtnColor);
-	m_chk_length_second.SetButtonColor(1);
-
-	m_chk_length_third.SetFont(mp_basic_font);
-	m_chk_length_third.SetIcon(IDI_NONSAFETY, IDI_NONSAFETY);
-	m_chk_length_third.OffsetColor(CButtonST::BTNST_COLOR_BK_IN, shBtnColor);
-	m_chk_length_third.SetButtonColor(1);
-
-	m_chk_thickness.SetFont(mp_basic_font);
-	m_chk_thickness.SetIcon(IDI_NONSAFETY, IDI_NONSAFETY);
-	m_chk_thickness.OffsetColor(CButtonST::BTNST_COLOR_BK_IN, shBtnColor);
-	m_chk_thickness.SetButtonColor(1);
-
-	m_chk_barcode_read.SetFont(mp_basic_font);
-	m_chk_barcode_read.SetIcon(IDI_NONSAFETY, IDI_NONSAFETY);
-	m_chk_barcode_read.OffsetColor(CButtonST::BTNST_COLOR_BK_IN, shBtnColor);
-	m_chk_barcode_read.SetButtonColor(1);
-
-	m_chk_air_blow.SetFont(mp_basic_font);
-	m_chk_air_blow.SetIcon(IDI_NONSAFETY, IDI_NONSAFETY);
-	m_chk_air_blow.OffsetColor(CButtonST::BTNST_COLOR_BK_IN, shBtnColor);
-	m_chk_air_blow.SetButtonColor(1);*/
 }
 
-void CScreen_Basic::Init_Group()
+void CScreen_Basic::OnBasic_Data_Group()
 {
 	CSxLogFont main_font(16,FW_SEMIBOLD,false,"MS Sans Serif");
 
@@ -398,137 +363,29 @@ void CScreen_Basic::Init_Group()
 	m_group_operate_method.SetCatptionTextColor(BLUE_C);
 	m_group_operate_method.SetBorderColor(YELLOW_L);
 	m_group_operate_method.SetFontBold(TRUE);
-/*
-	m_groupWork_Info.SetFont(main_font);
-	m_groupWork_Info.SetCatptionTextColor(BLUE_C);
-	m_groupWork_Info.SetBorderColor(YELLOW_L);
-//	m_groupWork_Info.SetBackgroundColor(YELLOW_L);
-	m_groupWork_Info.SetFontBold(TRUE);
-
-	m_groupPass_Tray_Info.SetFont(main_font);
-	m_groupPass_Tray_Info.SetCatptionTextColor(BLUE_C);
-	m_groupPass_Tray_Info.SetBorderColor(YELLOW_L);
-//	m_groupPass_Tray_Info.SetBackgroundColor(YELLOW_L);
-	m_groupPass_Tray_Info.SetFontBold(TRUE);
-
-	m_groupPass_Tray.SetFont(main_font);
-	m_groupPass_Tray.SetCatptionTextColor(BLUE_C);
-	m_groupPass_Tray.SetBorderColor(YELLOW_L);
-//	m_groupPass_Tray.SetBackgroundColor(YELLOW_L);
-	m_groupPass_Tray.SetFontBold(TRUE);
-
-	m_groupTray_Used.SetFont(main_font);
-	m_groupTray_Used.SetCatptionTextColor(BLUE_C);
-	m_groupTray_Used.SetBorderColor(YELLOW_L);
-//	m_groupTray_Used.SetBackgroundColor(YELLOW_L);
-	m_groupTray_Used.SetFontBold(TRUE);
-
-	m_group_work_mode.SetFont(main_font);
-	m_group_work_mode.SetCatptionTextColor(BLUE_C);
-	m_group_work_mode.SetBorderColor(YELLOW_L);
-//	m_group_work_mode.SetBackgroundColor(YELLOW_L);
-	m_group_work_mode.SetFontBold(TRUE);
-
-	m_group_turn_mode.SetFont(main_font);
-	m_group_turn_mode.SetCatptionTextColor(BLUE_C);
-	m_group_turn_mode.SetBorderColor(YELLOW_L);
-//	m_group_turn_mode.SetBackgroundColor(YELLOW_L);
-	m_group_turn_mode.SetFontBold(TRUE);
-
-	m_group_device_mode.SetFont(main_font);
-	m_group_device_mode.SetCatptionTextColor(BLUE_C);
-	m_group_device_mode.SetBorderColor(YELLOW_L);
-//	m_group_device_mode.SetBackgroundColor(YELLOW_L);
-	m_group_device_mode.SetFontBold(TRUE);
-
-	m_group_retry.SetFont(main_font);
-	m_group_retry.SetCatptionTextColor(BLUE_C);
-	m_group_retry.SetBorderColor(YELLOW_L);
-//	m_group_retry.SetBackgroundColor(YELLOW_L);
-	m_group_retry.SetFontBold(TRUE);
-
-	m_group_tray_gap_info.SetFont(main_font);
-	m_group_tray_gap_info.SetCatptionTextColor(BLUE_C);
-	m_group_tray_gap_info.SetBorderColor(YELLOW_L);
-//	m_group_tray_gap_info.SetBackgroundColor(YELLOW_L);
-	m_group_tray_gap_info.SetFontBold(TRUE);
-
-	m_group_air_blow.SetFont(main_font);
-	m_group_air_blow.SetCatptionTextColor(BLUE_C);
-	m_group_air_blow.SetBorderColor(YELLOW_L);
-	//	m_group_tray_gap_info.SetBackgroundColor(YELLOW_L);
-	m_group_air_blow.SetFontBold(TRUE);
-
-	m_group_conveyor_move_mode.SetFont(main_font);
-	m_group_conveyor_move_mode.SetCatptionTextColor(BLUE_C);
-	m_group_conveyor_move_mode.SetBorderColor(YELLOW_L);
-	//	m_group_tray_gap_info.SetBackgroundColor(YELLOW_L);
-	m_group_conveyor_move_mode.SetFontBold(TRUE);
-
-	m_group_length_measure.SetFont(main_font);
-	m_group_length_measure.SetCatptionTextColor(BLUE_C);
-	m_group_length_measure.SetBorderColor(YELLOW_L);
-	//	m_group_tray_gap_info.SetBackgroundColor(YELLOW_L);
-	m_group_length_measure.SetFontBold(TRUE);
-
-	m_group_wait_time.SetFont(main_font);
-	m_group_wait_time.SetCatptionTextColor(BLUE_C);
-	m_group_wait_time.SetBorderColor(YELLOW_L);
-	//	m_group_tray_gap_info.SetBackgroundColor(YELLOW_L);
-	m_group_wait_time.SetFontBold(TRUE);
-
-	m_group_barcode_read.SetFont(main_font);
-	m_group_barcode_read.SetCatptionTextColor(BLUE_C);
-	m_group_barcode_read.SetBorderColor(YELLOW_L);
-	//	m_group_tray_gap_info.SetBackgroundColor(YELLOW_L);
-	m_group_barcode_read.SetFontBold(TRUE);*/
 }
 
-void CScreen_Basic::Init_Digital()
+
+void CScreen_Basic::OnBasic_Data_EditBox_Set()
+{
+	m_edit_device_type.SubclassDlgItem(IDC_EDIT_DEVICE_TYPE, this);
+	m_edit_device_type.bkColor(RGB(50, 100, 150));
+	m_edit_device_type.textColor(RGB(255, 255,255));
+	m_edit_device_type.setFont(-16, FW_BOLD, DEFAULT_PITCH | FF_DONTCARE, "Arial");
+}
+
+
+void CScreen_Basic::OnBasic_Digital()
 {
 /*	m_dgtPass_Row.SubclassDlgItem(IDC_DGT_PASS_ROW, this);
 	m_dgtPass_Row.SetStyle(IDB_BIG3, 2);
 	m_dgtPass_Row.SetValue(m_nPass_Row[1]);
 
-	m_dgtPass_Col.SubclassDlgItem(IDC_DGT_PASS_COL, this);
-	m_dgtPass_Col.SetStyle(IDB_BIG3, 2);
-	m_dgtPass_Col.SetValue(m_nPass_Col[1]);
-
-	m_dgt_retry.SetStyle(CDigit::DS_INT, 3, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
-	m_dgt_retry.SetVal(m_n_retry_cnt[1]);
-
-	m_dgt_pass_gap_x.SetStyle(CDigit::DS_FLOAT, 5, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
-	m_dgt_pass_gap_x.SetFloatVal(m_f_pass_tray_gap_x[1]);
-
-	m_dgt_pass_gap_y.SetStyle(CDigit::DS_FLOAT, 5, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
-	m_dgt_pass_gap_y.SetFloatVal(m_f_pass_tray_gap_y[1]);
-
-	m_dgt_reject_gap_x.SetStyle(CDigit::DS_FLOAT, 5, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
-	m_dgt_reject_gap_x.SetFloatVal(m_f_reject_tray_gap_x[1]);
-
-	m_dgt_air_blow_dn.SetStyle(CDigit::DS_INT, 5, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
-	m_dgt_air_blow_dn.SetVal(m_n_air_blow_dn[1]);
-
-	m_dgt_air_blow_up.SetStyle(CDigit::DS_INT, 5, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
-	m_dgt_air_blow_up.SetVal(m_n_air_blow_up[1]);
-
-	m_dgt_air_blow_count.SetStyle(CDigit::DS_INT, 5, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
-	m_dgt_air_blow_count.SetVal(m_n_air_blow_count[1]);
-
-	m_dgt_router_wait_time.SetStyle(CDigit::DS_INT, 5, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
-	m_dgt_router_wait_time.SetVal(m_n_router_wait_time[1]);
-
-	m_dgt_separator_wait_time.SetStyle(CDigit::DS_INT, 5, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
-	m_dgt_separator_wait_time.SetVal(m_n_separator_wait_time[1]);
-
-	m_dgt_module_wait_time.SetStyle(CDigit::DS_INT, 5, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
-	m_dgt_module_wait_time.SetVal(m_n_module_wait_time[1]);
-
 	m_dgt_conveyor_move_time.SetStyle(CDigit::DS_INT, 5, CDigit::DC_BGREEN, CDigit::DC_BDISABLE);
 	m_dgt_conveyor_move_time.SetVal(m_n_conveyor_move_time[1]);*/
 }
 
-void CScreen_Basic::Data_Init()
+void CScreen_Basic::OnBasic_Data_Set()
 {
 	
 	mstr_device_name[1]				= st_basic.mstr_device_name;
@@ -538,12 +395,12 @@ void CScreen_Basic::Data_Init()
 	m_n_mode_retest[1]				= st_basic.n_mode_retest;
 
 	m_n_count_retry[1]				= st_basic.n_count_retry;
-	Data_Backup();
+	OnBasic_Data_Backup();
 	
 }
 
 
-void CScreen_Basic::Init_Label()
+void CScreen_Basic::OnBasic_Data_Label()
 {
 /*	m_msgPass_Row.SetFont(mp_basic_font);
 	m_msgPass_Row.SetWindowText(_T("X"));
@@ -551,83 +408,7 @@ void CScreen_Basic::Init_Label()
 	m_msgPass_Row.SetColor(WHITE_C);
 	m_msgPass_Row.SetGradientColor(GREEN_C);
 	m_msgPass_Row.SetTextColor(BLACK_C);
-
-	m_msgPass_Col.SetFont(mp_basic_font);
-	m_msgPass_Col.SetWindowText(_T("Y"));
-	m_msgPass_Col.SetCenterText();
-	m_msgPass_Col.SetColor(WHITE_C);
-	m_msgPass_Col.SetGradientColor(GREEN_C);
-	m_msgPass_Col.SetTextColor(BLACK_C);
-
-	m_msg_pass_gap_x.SetFont(mp_basic_font);
-	m_msg_pass_gap_x.SetWindowText(_T("양품 가로"));
-	m_msg_pass_gap_x.SetCenterText();
-	m_msg_pass_gap_x.SetColor(WHITE_C);
-	m_msg_pass_gap_x.SetGradientColor(GREEN_C);
-	m_msg_pass_gap_x.SetTextColor(BLACK_C);
-
-	m_msg_pass_gap_y.SetFont(mp_basic_font);
-	m_msg_pass_gap_y.SetWindowText(_T("양품 세로"));
-	m_msg_pass_gap_y.SetCenterText();
-	m_msg_pass_gap_y.SetColor(WHITE_C);
-	m_msg_pass_gap_y.SetGradientColor(GREEN_C);
-	m_msg_pass_gap_y.SetTextColor(BLACK_C);
-
-	m_msg_reject_gap_x.SetFont(mp_basic_font);
-	m_msg_reject_gap_x.SetWindowText(_T("불량  가로"));
-	m_msg_reject_gap_x.SetCenterText();
-	m_msg_reject_gap_x.SetColor(WHITE_C);
-	m_msg_reject_gap_x.SetGradientColor(RED_C);
-	m_msg_reject_gap_x.SetTextColor(BLACK_C);
-
-	m_msg_air_blow_dn.SetFont(mp_basic_font);
-	m_msg_air_blow_dn.SetWindowText(_T("하강 대기"));
-	m_msg_air_blow_dn.SetCenterText();
-	m_msg_air_blow_dn.SetColor(WHITE_C);
-	m_msg_air_blow_dn.SetGradientColor(RED_C);
-	m_msg_air_blow_dn.SetTextColor(BLACK_C);
-
-	m_msg_air_blow_up.SetFont(mp_basic_font);
-	m_msg_air_blow_up.SetWindowText(_T("상승 대기"));
-	m_msg_air_blow_up.SetCenterText();
-	m_msg_air_blow_up.SetColor(WHITE_C);
-	m_msg_air_blow_up.SetGradientColor(RED_C);
-	m_msg_air_blow_up.SetTextColor(BLACK_C);
-
-	m_msg_air_blow_count.SetFont(mp_basic_font);
-	m_msg_air_blow_count.SetWindowText(_T("수 량"));
-	m_msg_air_blow_count.SetCenterText();
-	m_msg_air_blow_count.SetColor(WHITE_C);
-	m_msg_air_blow_count.SetGradientColor(RED_C);
-	m_msg_air_blow_count.SetTextColor(BLACK_C);
-
-	m_msg_router_wait_time.SetFont(mp_basic_font);
-	m_msg_router_wait_time.SetWindowText(_T("후 면"));
-	m_msg_router_wait_time.SetCenterText();
-	m_msg_router_wait_time.SetColor(WHITE_C);
-	m_msg_router_wait_time.SetGradientColor(RED_C);
-	m_msg_router_wait_time.SetTextColor(BLACK_C);
-
-	m_msg_separator_wait_time.SetFont(mp_basic_font);
-	m_msg_separator_wait_time.SetWindowText(_T("전 면"));
-	m_msg_separator_wait_time.SetCenterText();
-	m_msg_separator_wait_time.SetColor(WHITE_C);
-	m_msg_separator_wait_time.SetGradientColor(RED_C);
-	m_msg_separator_wait_time.SetTextColor(BLACK_C);
-
-	m_msg_module_wait_time.SetFont(mp_basic_font);
-	m_msg_module_wait_time.SetWindowText(_T("모듈 이동"));
-	m_msg_module_wait_time.SetCenterText();
-	m_msg_module_wait_time.SetColor(WHITE_C);
-	m_msg_module_wait_time.SetGradientColor(RED_C);
-	m_msg_module_wait_time.SetTextColor(BLACK_C);
-
-	m_msg_conveyor_move_time.SetFont(mp_basic_font);
-	m_msg_conveyor_move_time.SetWindowText(_T("이동"));
-	m_msg_conveyor_move_time.SetCenterText();
-	m_msg_conveyor_move_time.SetColor(WHITE_C);
-	m_msg_conveyor_move_time.SetGradientColor(RED_C);
-	m_msg_conveyor_move_time.SetTextColor(BLACK_C);*/
+*/
 }
 
 void CScreen_Basic::OnBtnBasicCancel() 
@@ -655,7 +436,7 @@ void CScreen_Basic::OnBtnBasicCancel()
 
 
 
-void CScreen_Basic::Data_Backup()
+void CScreen_Basic::OnBasic_Data_Backup()
 {
 	mstr_device_name[0]				= mstr_device_name[1];
 
@@ -666,8 +447,14 @@ void CScreen_Basic::Data_Backup()
 	m_n_count_retry[0]				= m_n_count_retry[1];
 }
 
-void CScreen_Basic::Data_Apply()
+void CScreen_Basic::OnBasic_Data_Apply()
 {
+	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->GetWindowText(mstr_temp_device[1]);
+	mstr_temp_device[1].MakeUpper();
+	mstr_temp_device[1].TrimLeft(' ');               
+	mstr_temp_device[1].TrimRight(' ');	
+
+
 	st_basic.mstr_device_name		= mstr_device_name[1];
 
 	st_basic.n_mode_interface		= m_n_mode_interface[1];
@@ -742,6 +529,10 @@ BOOL CScreen_Basic::DestroyWindow()
 	return CFormView::DestroyWindow();
 }
 
+void CScreen_Basic::OnBasic_Device_Display(CString str_dvc)
+{
+	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->SetWindowText(_T(str_dvc));
+}
 
 int CScreen_Basic::OnBasic_Init_List(LPCTSTR pszPath)
 {
@@ -752,6 +543,8 @@ int CScreen_Basic::OnBasic_Init_List(LPCTSTR pszPath)
 	HANDLE hFind;
     WIN32_FIND_DATA fd;
 	int n_count = 0;				// 리스트 박스에 추가한 목록 갯수 저장 변수
+
+	mn_device_name = -1;
 
 	if (str_path.Right (1) != "\\")
         str_path += "\\";
@@ -893,12 +686,12 @@ int CScreen_Basic::OnBasic_Input_Device_Check(CString str_device)
 	/* ************************************************************************** */
     /* 입력된 디바이스명 설정한다                                                 */
     /* ************************************************************************** */
+	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->GetWindowText(mstr_temp_device[1]);
+	mstr_temp_device[1].MakeUpper();
+	mstr_temp_device[1].TrimLeft(' ');               
+	mstr_temp_device[1].TrimRight(' ');
 
-	str_device.MakeUpper();
-	str_device.TrimLeft(' ');               
-	str_device.TrimRight(' ');
-
-	if(str_device.IsEmpty())  
+	if(mstr_temp_device[1].IsEmpty())  
 	{
 		if(st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
 		{
@@ -985,6 +778,7 @@ void CScreen_Basic::OnBtnBasicApply()
 	int n_response;  //  대화 상자 리턴 플래그
 	
 	CDialog_Infor  info_dlg;
+	CString m_strTemp;
 	
 	st_other.str_confirm_msg = _T("Basic : Setting Data Apply!");
 	
@@ -992,6 +786,18 @@ void CScreen_Basic::OnBtnBasicApply()
 	
 	if (n_response == IDOK)
 	{
+		if (st_basic.mstr_device_name != mstr_device_name[1])
+		{
+			if( g_lotMgr.GetLotCount() > 0 )
+			{
+				m_strTemp = "진행중인 랏이 있습니다.";
+				if ( g_local.GetLocalType() == LOCAL_ENG ) m_strTemp = "There is a Running LOT.";
+				DoModal_Msg( m_strTemp );
+				OnBasic_Device_Focus_Set();
+				return;
+		
+		}
+
 		Data_Apply();
 
 		OnBasic_Data_HisoryLog();
@@ -1000,118 +806,19 @@ void CScreen_Basic::OnBtnBasicApply()
 }
 
 
-
-
-void CScreen_Basic::Data_Display()
+void CScreen_Basic::OnBasic_Device_Focus_Set()
 {
-/*	m_chk_work_mode.SetCheck(m_n_work_mode[1]);
-	if(m_n_work_mode[1])
-	{
-		SetDlgItemText(IDC_CHK_WORK_MODE, "Dual");
-	}
-	else
-	{
-		SetDlgItemText(IDC_CHK_WORK_MODE, "Single");
-	}
+	if (mn_device_name == -1)
+		return;
+	
+	m_list_device_type.SetCurSel(mn_device_name);
+}
 
-	m_chk_module.SetCheck(m_n_module[1]);
-	if(m_n_module[1])
-	{
-		SetDlgItemText(IDC_CHK_MODULE_1, "UB Dimm");
-	}
-	else
-	{
-		SetDlgItemText(IDC_CHK_MODULE_1, "So Dimm");
-	}
+void CScreen_Basic::OnBasic_Data_Display()
+{
+	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->SetWindowText( &st_basic.mstr_device_name );	
 
-	m_chk_conveyor_move_mode.SetCheck(m_n_conveyor_mode[1]);
-	if(m_n_conveyor_mode[1])
-	{
-		SetDlgItemText(IDC_CHK_CONVEYOR_MOVE_MODE, "Manual Move");
-	}
-	else
-	{
-		SetDlgItemText(IDC_CHK_CONVEYOR_MOVE_MODE, "Auto Move");
-	}
-
-	m_rad_turn_mode		= m_n_turn_mode[1];
-	m_rad_device_mode	= m_n_device_mode[1];
-
-	m_chk_length_first.SetCheck(m_n_first_length_measure[1]);
-	if(m_n_first_length_measure[1])
-	{
-		SetDlgItemText(IDC_CHK_LENGTH_FIRST, "첫번째 측정");
-	}
-	else
-	{
-		SetDlgItemText(IDC_CHK_LENGTH_FIRST, "첫번째 미측정");
-	}
-
-	m_chk_length_second.SetCheck(m_n_second_length_measure[1]);
-	if(m_n_second_length_measure[1])
-	{
-		SetDlgItemText(IDC_CHK_LENGTH_SECOND, "두번째 측정");
-	}
-	else
-	{
-		SetDlgItemText(IDC_CHK_LENGTH_SECOND, "두번째 미측정");
-	}
-
-	m_chk_length_third.SetCheck(m_n_third_length_measure[1]);
-	if(m_n_third_length_measure[1])
-	{
-		SetDlgItemText(IDC_CHK_LENGTH_THIRD, "세번째 측정");
-	}
-	else
-	{
-		SetDlgItemText(IDC_CHK_LENGTH_THIRD, "세번째 미측정");
-	}
-
-	m_chk_thickness.SetCheck(m_n_thickness_measure[1]);
-	if(m_n_thickness_measure[1])
-	{
-		SetDlgItemText(IDC_CHK_THICKNESS, "두께 측정");
-	}
-	else
-	{
-		SetDlgItemText(IDC_CHK_THICKNESS, "두께 미측정");
-	}
-
-	m_chk_barcode_read.SetCheck(m_n_barcode_read[1]);
-	if(m_n_barcode_read[1])
-	{
-		SetDlgItemText(IDC_CHK_BARCODE_READ, "바코드 사용");
-	}
-	else
-	{
-		SetDlgItemText(IDC_CHK_BARCODE_READ, "바코드 미사용");
-	}
-
-	m_chk_air_blow.SetCheck(m_n_air_blow_mode[1]);
-	if(m_n_air_blow_mode[1])
-	{
-		SetDlgItemText(IDC_CHK_AIR_BLOW, "동시 샤워");
-	}
-	else
-	{
-		SetDlgItemText(IDC_CHK_AIR_BLOW, "개별 샤워");
-	}
-	UpdateData(FALSE);
-
-	m_dgtPass_Row.SetValue(m_nPass_Row[1]);
-	m_dgtPass_Col.SetValue(m_nPass_Col[1]);
-
-	m_dgt_retry.SetVal(m_n_retry_cnt[1]);
-	m_dgt_pass_gap_x.SetFloatVal(m_f_pass_tray_gap_x[1]);
-	m_dgt_pass_gap_y.SetFloatVal(m_f_pass_tray_gap_y[1]);
-	m_dgt_reject_gap_x.SetFloatVal(m_f_reject_tray_gap_x[1]);
-	m_dgt_air_blow_dn.SetVal(m_n_air_blow_dn[1]);
-	m_dgt_air_blow_up.SetVal(m_n_air_blow_up[1]);
-	m_dgt_air_blow_count.SetVal(m_n_air_blow_count[1]);
-	m_dgt_router_wait_time.SetVal(m_n_router_wait_time[1]);
-	m_dgt_separator_wait_time.SetVal(m_n_separator_wait_time[1]);
-	m_dgt_module_wait_time.SetVal(m_n_module_wait_time[1]);
-	m_dgt_conveyor_move_time.SetVal(m_n_conveyor_move_time[1]);*/
+	
 }
 
 void CScreen_Basic::Init_Grid_File()

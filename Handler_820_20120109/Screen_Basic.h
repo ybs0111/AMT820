@@ -61,6 +61,7 @@ public:
 	int				m_n_mode_device[2];
 	int				m_n_mode_retest[2];
 	int				m_n_count_retry[2];
+	int				mn_device_name;
 
 	TSpread			*m_grid_operate;
 	TSpread			*m_grid_file;
@@ -82,12 +83,14 @@ public:
 	/* 칼라 에디트 박스 클래스 변수 선언                                          */
 	/* ************************************************************************** */
 
+	CEditEx	 m_edit_device_type;
+
 // Operations
 public:
 	void Init_Grid_Operate();
 	void Display_File(int n_mode, int n_count, CString str_filename);
 	void Init_Grid_File();
-	void Data_Display();
+	void OnBasic_Data_Display();
 	void Init_Reject();
 	void Init_Pass();
 	void OnBasic_Data_HisoryLog();
@@ -95,15 +98,18 @@ public:
 	int OnBasic_New_Device_Check(CString str_device);
 	BOOL AddItem(int nIndex, WIN32_FIND_DATA *pfd);
 	int OnBasic_Init_List(LPCTSTR pszPath);
+	void OnBasic_Device_Display(CString str_dvc);
 	void Data_Recovery();
 	int Data_Comparison();
-	void Data_Apply();
-	void Data_Backup();
-	void Init_Label();
-	void Data_Init();
-	void Init_Digital();
-	void Init_Group();
-	void Init_Button();
+	void OnBasic_Data_Apply();
+	void OnBasic_Data_Backup();
+	void OnBasic_Data_Label();
+
+	void OnBasic_Data_Set();
+	void OnBasic_Digital();
+	void OnBasic_Data_Group();
+	void OnBasic_Data_Button();
+	void OnBasic_Data_EditBox_Set();
 
 // Overrides
 	// ClassWizard generated virtual function overrides

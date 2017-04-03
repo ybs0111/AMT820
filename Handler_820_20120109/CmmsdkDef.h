@@ -13,11 +13,11 @@
 
 // Device ID definition //
 #define COMI_SD401	0xB401
-#define COMI_SD402	0xB402
-#define COMI_SD403	0xB403
-#define COMI_SD404	0xB404
-#define COMI_SD414	0xB414
-#define COMI_SD424	0xB424
+#define COMI_SD402	0xB402 
+#define COMI_SD403	0xB403 
+#define COMI_SD404	0xB404 
+#define COMI_SD414	0xB414 
+#define COMI_SD424	0xB424 
 #define COMI_LX501	0xA501
 #define COMI_LX502	0xA502
 #define COMI_LX504	0xA504
@@ -46,12 +46,12 @@ typedef enum {COMW, OTPW, BUF0, BUF1}TMCWAddr;
 typedef enum {MSTSW, SSTSW}TMCRAddr;
 
 // Motion Chip Registers //
-enum {
-	PRMV, PRFL, PRFH, PRUR, PRDR, PRMG, PRDP, PRMD, PRIP, PRUS, PRDS, PRCP5, PRCI,
-	RMV=16, RFL, RFH, RUR, RDR, RMG, RDP, RMD, RIP, RUS, RDS, RFA, RENV1, RENV2, RENV3, RENV4, RENV5, RENV6, RENV7,
-	RCUN1=35, RCUN2, RCUN3, RCUN4, RCMP1, RCMP2, RCMP3, RCMP4, RCMP5, RIRQ, RLTC1, RLTC2, RLTC3, RLTC4,
-	RSTS=49, REST, RIST, RPLS, RSPD, PSDC,
-	RCI=60, RCIC,
+enum {	
+	PRMV, PRFL, PRFH, PRUR, PRDR, PRMG, PRDP, PRMD, PRIP, PRUS, PRDS, PRCP5, PRCI, 
+	RMV=16, RFL, RFH, RUR, RDR, RMG, RDP, RMD, RIP, RUS, RDS, RFA, RENV1, RENV2, RENV3, RENV4, RENV5, RENV6, RENV7, 
+	RCUN1=35, RCUN2, RCUN3, RCUN4, RCMP1, RCMP2, RCMP3, RCMP4, RCMP5, RIRQ, RLTC1, RLTC2, RLTC3, RLTC4, 
+	RSTS=49, REST, RIST, RPLS, RSPD, PSDC, 
+	RCI=60, RCIC, 
 	RIPS=63
 };
 
@@ -70,42 +70,42 @@ enum {
 #endif
 
 // Boolean type definition //
-typedef enum _TCmBool{
+typedef enum _TCmBool{ 
 	cmFALSE, cmTRUE
 }TCmBool;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MIO Property ID
-// <TCmMioPropId> 와 <TCmMioPropIdEx> 는 동일한 MIO Property ID를 나타내는 선언문입니다. <TCmMioPropIdEx> 형선언문은
+// MIO Property ID 
+// <TCmMioPropId> 와 <TCmMioPropIdEx> 는 동일한 MIO Property ID를 나타내는 선언문입니다. <TCmMioPropIdEx> 형선언문은 
 // <TCmMioPropId> 형을 이름만 바꾸어놓은 것입니다. 따라서 두 개의 선언문 중에서 아무거나 사용해도 됩니다.
 typedef enum _TCmMioPropId{
-	cmALM_LOGIC,	cmALM_MODE,		cmCMP_LOGIC,	cmDR_LOGIC, cmEL_LOGIC,		cmEL_MODE,
-	cmERC_LOGIC,	cmERC_OUT,		cmEZ_LOGIC,		cmINP_EN,	cmINP_LOGIC,	cmLTC_LOGIC,
-	cmLTC_LTC2SRC,	cmORG_LOGIC,	cmSD_EN,		cmSD_LOGIC, cmSD_LATCH,		cmSD_MODE,
-	cmSTA_MODE, 	cmSTA_TRG,		cmSTP_MODE,		cmCLR_CNTR, cmCLR_SIGTYPE,	cmCMP_PWIDTH,
+	cmALM_LOGIC,	cmALM_MODE,		cmCMP_LOGIC,	cmDR_LOGIC, cmEL_LOGIC,		cmEL_MODE, 
+	cmERC_LOGIC,	cmERC_OUT,		cmEZ_LOGIC,		cmINP_EN,	cmINP_LOGIC,	cmLTC_LOGIC, 
+	cmLTC_LTC2SRC,	cmORG_LOGIC,	cmSD_EN,		cmSD_LOGIC, cmSD_LATCH,		cmSD_MODE, 
+	cmSTA_MODE, 	cmSTA_TRG,		cmSTP_MODE,		cmCLR_CNTR, cmCLR_SIGTYPE,	cmCMP_PWIDTH, 
 	cmERC_ONTIME,	cmSVON_LOGIC,	cmERC_OUT_EL,	cmCNT_D_SRC,	cmCNT_G_SRC
 }TCmMioPropId;
 
 typedef enum _TCmMioPropIdEx{
-	cmMPID_ALM_LOGIC,	cmMPID_ALM_MODE,	cmMPID_CMP_LOGIC,	cmMPID_DR_LOGIC,	cmMPID_EL_LOGIC,	cmMPID_EL_MODE,
-	cmMPID_ERC_LOGIC,	cmMPID_ERC_OUT,		cmMPID_EZ_LOGIC,	cmMPID_INP_EN,		cmMPID_INP_LOGIC,	cmMPID_LTC_LOGIC,
-	cmMPID_LTC_LTC2SRC,	cmMPID_ORG_LOGIC,	cmMPID_SD_EN,		cmMPID_SD_LOGIC,	cmMPID_SD_LATCH,	cmMPID_SD_MODE,
-	cmMPID_STA_MODE,	cmMPID_STA_TRG,		cmMPID_STP_MODE,	cmMPID_CLR_CNTR,	cmMPID_CLR_SIGTYPE,	cmMPID_CMP_PWIDTH,
+	cmMPID_ALM_LOGIC,	cmMPID_ALM_MODE,	cmMPID_CMP_LOGIC,	cmMPID_DR_LOGIC,	cmMPID_EL_LOGIC,	cmMPID_EL_MODE, 
+	cmMPID_ERC_LOGIC,	cmMPID_ERC_OUT,		cmMPID_EZ_LOGIC,	cmMPID_INP_EN,		cmMPID_INP_LOGIC,	cmMPID_LTC_LOGIC, 
+	cmMPID_LTC_LTC2SRC,	cmMPID_ORG_LOGIC,	cmMPID_SD_EN,		cmMPID_SD_LOGIC,	cmMPID_SD_LATCH,	cmMPID_SD_MODE, 
+	cmMPID_STA_MODE,	cmMPID_STA_TRG,		cmMPID_STP_MODE,	cmMPID_CLR_CNTR,	cmMPID_CLR_SIGTYPE,	cmMPID_CMP_PWIDTH, 
 	cmMPID_ERC_ONTIME,	cmMPID_SVON_LOGIC,	cmMPID_ERC_OUT_EL,	cmMPID_CNT_D_SRC,	cmMPID_CNT_G_SRC,	cmMPID_HOME_ESC_DIS,
-	cmMPID_LTC_TRGSRC,	cmMPID_EN_ARDP, cmSWL_MODE
+	cmMPID_LTC_TRGSRC,	cmMPID_EN_ARDP
 }TCmMioPropIdEx;
 
 // Bit order of StReadMioStatuses() return value  //
 typedef enum _TCmMioState{
 	cmIOST_RDY,	cmIOST_ALM, cmIOST_ELP,		cmIOST_ELN,
-	cmIOST_ORG, cmIOST_DIR, cmIOST_RSV1,	cmIOST_PCS,
-	cmIOST_ERC, cmIOST_EZ,	cmIOST_CLR,		cmIOST_LTC,
-	cmIOST_SD,	cmIOST_INP, cmIOST_DRP,		cmIOST_DRN,
+	cmIOST_ORG, cmIOST_DIR, cmIOST_RSV1,	cmIOST_PCS, 
+	cmIOST_ERC, cmIOST_EZ,	cmIOST_CLR,		cmIOST_LTC,	
+	cmIOST_SD,	cmIOST_INP, cmIOST_DRP,		cmIOST_DRN, 
 	cmIOST_STA, cmIOST_STP, cmIOST_SVON
 }TCmMioState;
 
 // Motion operation status ID //
-typedef enum _TCmMotionState{
+typedef enum _TCmMotionState{ 
 	cmMST_STOP, cmMST_WAIT_DR, cmMST_WAIT_STA, cmMST_WAIT_INSYNC,
 	cmMST_WAIT_OTHER, cmMST_WAIT_ERC, cmMST_WAIT_DIR, cmMST_RESERVED1, cmMST_WAIT_PLSR,
 	cmMST_IN_RVSSPD, cmMST_IN_INISPD, cmMST_IN_ACC, cmMST_IN_WORKSPD, cmMST_IN_DEC,
@@ -113,58 +113,58 @@ typedef enum _TCmMotionState{
 }TCmMotionState;
 
 // Signal logic definition //
-typedef enum _TCmSigLogic{
-	cmLOGIC_A=0 /*Normal open*/, cmLOGIC_B=1/*Normal close*/
+typedef enum _TCmSigLogic{ 
+	cmLOGIC_A=0 /*Normal open*/, cmLOGIC_B=1/*Normal close*/ 
 }TCmSigLogic;
 
 // Axis index definition //
-typedef enum _TCmAxis{
-	cmX1, cmY1, cmZ1, cmU1, cmX2, cmY2, cmZ2, cmU2
+typedef enum _TCmAxis{ 
+	cmX1, cmY1, cmZ1, cmU1, cmX2, cmY2, cmZ2, cmU2 
 }TCmAxis;
 
 // Definition for axes mask  //
-typedef enum _TCmAxisMask{
+typedef enum _TCmAxisMask{ 
 	cmX1_MASK=0x1, cmY1_MASK=0x2, cmZ1_MASK=0x4, cmU1_MASK=0x8,
 	cmX2_MASK=0x10, cmY2_MASK=0x20, cmZ2_MASK=0x40, cmU2_MASK=0x80
 }TCmAxisMask;
 
 // Encoder and PA/PB input mode definition //
-typedef enum _TCmInMode{
+typedef enum _TCmInMode{ 
 	cmIMODE_AB1X, cmIMODE_AB2X, cmIMODE_AB4X, cmIMODE_CWCCW, cmIMODE_STEP
 }TCmInMode;
 
 // Command output mode definition //
-typedef enum _TCmOutMode{
+typedef enum _TCmOutMode{ 
 	cmOMODE_PDIR0, cmOMODE_PDIR1, cmOMODE_PDIR2, cmOMODE_PDIR3,
-	cmOMODE_CWCCW0, cmOMODE_CWCCW1, cmOMODE_CCWCW0, cmOMODE_CCWCW1,
+	cmOMODE_CWCCW0, cmOMODE_CWCCW1, cmOMODE_CCWCW0, cmOMODE_CCWCW1, 
 	cmOMODE_AB1, cmOMODE_AB2
 }TCmOutMode;
 
 // Control Mode //
-typedef enum _TCmCtrlMode{
+typedef enum _TCmCtrlMode{ 
 	cmCTRL_OPEN, // Open loop control mode
 	cmCTRL_SEMI_C, // Semi-closed loop control mode (applied only to absolute in-position commands)
 	cmCTRL_FULL_C // Full-closed loop control mode (this is not supported at current version)
 }TCmCtrlMode;
-
-// (Linear)Operation direction //
+			
+// (Linear)Operation direction //	
 typedef enum _TCmDir{
 	cmDIR_N /*(-)Dir*/, cmDIR_P /*(+)Dir*/
 }TCmDir;
 
 // Counter name //
-typedef enum _TCmCntr {
-	cmCNT_COMM/*Command*/, cmCNT_FEED/*Feedback*/, cmCNT_DEV/*Deviation*/,
+typedef enum _TCmCntr { 
+	cmCNT_COMM/*Command*/, cmCNT_FEED/*Feedback*/, cmCNT_DEV/*Deviation*/, 
 	cmCNT_GEN/*General*/, cmCNT_REM/*Remained*/
 }TCmCntr;
 
-// Speed mode index definition //
-typedef enum _TCmSpeedMode{
+// Speed mode index definition //	
+typedef enum _TCmSpeedMode{ 
 	cmSMODE_KEEP=-1/* Keep previous setting*/, cmSMODE_C=0 /*Constant */, cmSMODE_T /*Trapeziodal*/, cmSMODE_S /*S-curve*/
 }TCmSpeedMode;
 
 // Arc operation direction //
-typedef enum _TCmArcDir{
+typedef enum _TCmArcDir{ 
 	cmARC_CW, cmARC_CCW
 }TCmArcDir;
 
@@ -180,8 +180,8 @@ typedef enum _TCmCmpAction{
 
 // Backlash/Slip correction mode //
 typedef enum _TCmCorrMode{
-	cmCORR_DIS, // Disable correction
-	cmCORR_BACK, // Backlash correction mode
+	cmCORR_DIS, // Disable correction 
+	cmCORR_BACK, // Backlash correction mode 
 	cmCORR_SLIP // Slip correction mode
 }TCmCorrMode;
 
@@ -193,14 +193,6 @@ typedef enum _TCmExtOptionId{
 typedef enum _TCmIntHandlerType{
 	cmIHT_MESSAGE=0, cmIHT_EVENT, cmIHT_CALLBACK
 }TCmIntHandlerType;
-
-// Interrupt Mask
-typedef enum _TCmIntMaskType{
-	cmINT_IREN=0,	cmINT_IRN,		cmINT_IRNM,		cmINT_IRND,		cmINT_IRUS,
-	cmINT_IRUE,		cmINT_IRDS,		cmINT_IRDE,		cmINT_IRC1,		cmINT_IRC2,
-	cmINT_IRC3,		cmINT_IRC4,		cmINT_IRC5,		cmINT_IRCL,		cmINT_IRLT,
-	cmINT_IROL,		cmINT_IRSD,		cmINT_IRDR,		cmINT_IRSA
-}TCmIntMaskType;
 
 // Interrupt Handler Type //
 typedef enum _TCmStringID{
@@ -263,7 +255,7 @@ typedef enum _TCmIntSyncCond{
 // -. cmLMX_SEQM_WAIT_RUN: LMX 버퍼에 free space가 생길 때까지 대기하고 있다가 free space가
 //    생기면 예약하고 함수가 반환된다.
 typedef enum _TCmLmxSeqMode{
-	cmLMX_SEQM_SKIP_RUN,
+	cmLMX_SEQM_SKIP_RUN, 
 	cmLMX_SEQM_WAIT_RUN
 }TCmLmxSeqMode;
 
@@ -271,7 +263,7 @@ typedef enum _TCmLmxSeqMode{
 ////////////////////////////////////////////////////////////////////////////////////////////
 // TCmLmxStsId: cmmLmxGetSts() 함수를 통해서 읽어올 status ID 값의 정의
 typedef enum _TCmLmxStsId{
-	cmLMX_STARTED, // Lmx 기능이 활성화 되었는지를 나타내는 status
+	cmLMX_STARTED, // Lmx 기능이 활성화 되었는지를 나타내는 status 
 	cmLMX_BUSY, // Lmx가 현재 실제로 이송을 진행 중인지를 나타내는 status
 	cmLMX_FREE_SPACE, // Lmx 버퍼의 여유 공간. 반환되는 값은 바이트 단위가 아니라 등록할 수 있는 아이템 수이다.
 	cmLMX_RUN_ITEM_NO, // 현재 이송되고 있거나 마지막 이송된 Item의 번호.
@@ -320,7 +312,7 @@ typedef struct{
 //***********************************************************************************************
 
 // Interrupt Handler Callback Function Prototype //
-typedef void (WINAPI *TIntHandler) (LPVOID lParam);
+typedef void (WINAPI *TIntHandler) (LPVOID lParam); 
 
 
 //***********************************************************************************************
@@ -358,7 +350,7 @@ typedef struct{
 	short 	wSlot;
 	USHORT	wDiNum, wDiIniChan;
 	USHORT	wDoNum, wDoIniChan;
-	BOOL	bMotionDevice;
+	BOOL	bMotionDevice; 
 	HANDLE	Handle; // 모션장치인경우에는 CMotionDevice 클래스 포인터, SD4xx 장치인 경우에는 Device Handle
 }TDioDevInfo;
 
@@ -378,7 +370,7 @@ typedef struct{
 typedef union{
 	struct{
 		// B0 ~ B3 //
-		ULONG ALM_Logic: 1;
+		ULONG ALM_Logic: 1;		
 		ULONG ALM_Mode : 1;
 		ULONG CMP_Logic: 1;
 		ULONG DR_Logic: 1;
@@ -426,12 +418,6 @@ typedef struct{
 	long nVMode;
 	double fVel, fAcc, fDec, fRevVel;
 }TCmeHome;
-
-// 140616 YJB - ActSpdFilter
-typedef struct {
-	long bEnable;
-	double fCutOffFreq;
-}TFilter;
 
 typedef struct{
 	char szAxisName[CMM_MAX_STR_LEN_AXIS_TITLE+1];
@@ -488,11 +474,7 @@ typedef struct{
 	long nVMode;
 	double fVelIni, fVelWork, fAcc, fDec;
 	long nHPCM; // Home Position Clear Mode [Added at 2007/01/12]
-
-	long bActSpdEnable;
-	double fCutOffFreq;
-
-	DWORD dwReserved[251];
+	DWORD dwReserved[255];
 }TCmeAxis;
 
 //------------------------------------------------------------------------------------------------------//
@@ -527,14 +509,6 @@ typedef struct{
 	TCmeGeneral Gen;
 }TCmeData_V2;
 
-////////////////////////////////////고속 CMP DEFINITIONS////////////////////////////////////////
-
-#define cmmCMP_LOWSPEED 0
-#define cmmCMP_HIGHSPEED 1
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 //***********************************************************************************************
 //									ERROR CODE DEFINITIONs										*
 //***********************************************************************************************
@@ -543,21 +517,21 @@ typedef struct{
 #define cmERR_MEM_ALLOC_FAIL		-290	// Memory allocation fail
 #define cmERR_GLOBAL_MEM_FAIL		-292	// Global memory allocation fail
 #define cmERR_ISR_CONNEC_FAIL 		-310	// ISR registration fail
-#define cmERR_DIVIDE_BY_ZERO		-400	// Cause divide by zero error
+#define cmERR_DIVIDE_BY_ZERO		-400	// Cause divide by zero error 
 #define cmERR_WORNG_NUM_DATA		-500	// Number of data is too small or too big
 #define cmERR_VER_MISMATCH			-600 	// Version(of file or device) mismatch
 
 #define cmERR_INVALID_DEVICE_ID		-1010 // Invalid device id => Load Device 또는 SetDeviceId()에서...
 #define cmERR_INVALID_HANDLE		-1020
-#define cmERR_UNSUPORTED_FUNC		-1030
+#define cmERR_UNSUPORTED_FUNC		-1030 
 #define cmERR_INVALID_PARAMETER		-1101
 #define cmERR_INVALID_CHANNEL		-1105
 #define cmERR_INVALID_INPUT_RANGE	-1111 // Invalid range value (AI, AO)
 #define cmERR_INVALID_FREQ_RANGE	-1121 // Invalid input or output frequency
-#define	cmERR_FILE_CREATE_FAIL		-1501 // File create fail
+#define	cmERR_FILE_CREATE_FAIL		-1501 // File create fail 
 #define cmERR_FILE_OPEN_FAIL		-1511 // File open fail
 #define cmERR_FILE_READ_FAIL		-1522 // File reading fail
-#define cmERR_EVENT_CREATE_FAIL		-1550 // Event handle creation fail
+#define cmERR_EVENT_CREATE_FAIL		-1550 // Event handle creation fail			
 #define cmERR_INT_INSTANCE_FAIL		-1560 // Interrupt event instance creation fail
 #define	cmERR_DITHREAD_CRE			-1570 // D/I state change monitor thread creation fail
 #define cmERR_BUFFER_SMALL			-1580 // Buffer size is too small
@@ -565,10 +539,10 @@ typedef struct{
 #define cmERR_OUT_OF_RANGE			-1600 // The range of some parameter is out of range
 #define cmERR_INVALID_BUFFER		-1610 // buffer pointer is NULL
 #define cmERR_INVALID_BUF_SIZE		-1620 // buffer size if too big
-#define cmERR_LTCQ_ERROR_BASE		-1630
+#define cmERR_LTCQ_ERROR_BASE		-1630  
 #define cmERR_LTCQ_NULL_BUFFER		-1631 // Queue buffer is not allocated (refer to cmmLtcQue_SetSize() function)
 #define cmERR_LTCQ_BUF_EMPTY		-1632 // There's no new latch data in the queue berffer
-#define cmERR_LTCQ_INVALID_INDEX	-1633 // 'Index' argument of cmmLtcQue_PeekAt() function is invalid
+#define cmERR_LTCQ_INVALID_INDEX	-1633 // 'Index' argument of cmmLtcQue_PeekAt() function is invalid 
 
 #define cmERR_ON_MOTION				-5001
 #define cmERR_STOP_BY_SLP			-5002 // Abnormally stopped by positive soft limit
@@ -596,43 +570,13 @@ typedef struct{
 #define cmERR_SPEED_RANGE_OVER		-5130
 #define cmERR_INVALID_SPEED_SET		-5140 // Speed setting value is not valid
 #define cmERR_INVALID_IXMAP			-5150 // Invalid interpolation map
-#define cmERR_INVALID_LMMAP			-5160 // Invalid List-Motion Map
-#define cmERR_MOT_SEQ_SKIPPED		-5170 // Motion command is skipped because the axis is already running.
+#define cmERR_INVALID_LMMAP			-5160 // Invalid List-Motion Map 
+#define cmERR_MOT_SEQ_SKIPPED		-5170 // Motion command is skipped because the axis is already running.  
 #define cmERR_CMPIX_INVALID_MAP		-5180 // Interpolated position compare output map is not valid
 #define cmERR_INVALID_ARC_POS		-5190 // Position data for circular interpolation is invalid
 #define cmERR_LMX_ADD_ITEM_FAIL		-5200 // failed to add an job item to "extend list motion"
 #define cmERR_LMX_IS_NOT_ACTIVE		-5300 // 'Extended ListMotion' is not active.
 
 #define	cmERR_UNKNOWN				-9999
-
-typedef struct _PT_MOTION_TAB {
-	double *position;
-	double *time;
-	double total_time;
-	long pointCnt;
-} PT_MOTION_TAB;
-
-typedef struct {
-	int master_ms; // ms_no
-	int groupID;
-	float stop_time;
-	float e_stop_time;
-	int gantry_flag; // moving magnet방식 : -1, no gantry algorithm : 0, semi gantry algorithm : 1, gantry algorithm master : 2, gantry algorithm slave : 3.
-	int master_axis_no; // 실제로 제어할 축의 번호를 설정
-	int axis_cnt; // 제어할 모터의 개수
-	int axis_no[12]; // 제어할 축의 번호를 group 으로 지정
-	int motion_ms[12];
-} MOTION_CONFIG;
-
-#define CW_LIMIT_ON		0x1
-#define CCW_LIMIT_ON	CW_LIMIT_ON*2
-#define ZMODE_ON		CCW_LIMIT_ON*2
-#define MOVE_OFFSET_ON	ZMODE_ON*2
-#define SET_OFFSET_ON	MOVE_OFFSET_ON*2
-#define CW_LIMIT_OFF	0x0
-#define CCW_LIMIT_OFF	0x0
-#define ZMODE_OFF		0x0
-#define MOVE_OFFSET_OFF	0x0
-#define SET_OFFSET_OFF	0x0
 
 #endif

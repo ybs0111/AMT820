@@ -79,7 +79,7 @@ CMM_EXTERN long (WINAPI *cmmCfgGetUnitDist)		(long Axis, double* UnitDist);
 CMM_EXTERN long (WINAPI *cmmCfgSetUnitSpeed)	(long Axis, double UnitSpeed);
 CMM_EXTERN long (WINAPI *cmmCfgGetUnitSpeed)	(long Axis, double* UnitSpeed);
 CMM_EXTERN long (WINAPI *cmmCfgSetSpeedRange)	(long Axis, double MaxPPS);
-CMM_EXTERN long	(WINAPI *cmmCfgGetSpeedRange)	(long Axis, double* MinPPS, double* MaxPPS);
+CMM_EXTERN long	(WINAPI *cmmCfgGetSpeedRange)	(long Axis, double* MinPPS, double* MaxPPS); 
 CMM_EXTERN long (WINAPI *cmmCfgSetSpeedPattern)	(long Axis, long SpeedMode, double WorkSpeed, double Accel, double Decel);
 CMM_EXTERN long (WINAPI *cmmCfgGetSpeedPattern)	(long Axis, long* SpeedMode, double* WorkSpeed, double* Accel, double* Decel);
 CMM_EXTERN long	(WINAPI *cmmCfgSetSpeedPattern_T) (long Channel, long SpeedMode, double WorkSpeed, double AccelTime, double DecelTime); // <V5.0.4.0>
@@ -100,7 +100,6 @@ CMM_EXTERN long	(WINAPI *cmmCfgSetSeqMode)		(long SeqMode);
 CMM_EXTERN long	(WINAPI *cmmCfgGetSeqMode)		(long* SeqMode);
 CMM_EXTERN long	(WINAPI *cmmCfgSetManExtLimit)	(long Axis, long IsSetELP, long IsEnable, long ManState);
 CMM_EXTERN long	(WINAPI *cmmCfgGetManExtLimit)	(long Axis, long IsGetELP, long *IsEnable, long *ManState);
-CMM_EXTERN long (WINAPI *cmmCfgSetActSpdFilter)	(long Axis, long IsEnable, double fCutOffFreq);
 
 //====================== HOME-RETURN FUNCTIONS ================================================//
 CMM_EXTERN long (WINAPI *cmmHomeSetConfig)		(long Axis, long HomeMode, long EzCount, double EscDist, double Offset);
@@ -165,10 +164,6 @@ CMM_EXTERN long	(WINAPI *cmmIxLine) 			(long MapIndex, double* DistList, long Is
 CMM_EXTERN long	(WINAPI *cmmIxLineStart) 		(long MapIndex, double* DistList);
 CMM_EXTERN long	(WINAPI *cmmIxLineTo) 			(long MapIndex, double* PosList, long IsBlocking);
 CMM_EXTERN long	(WINAPI *cmmIxLineToStart)		(long MapIndex, double* PosList);
-CMM_EXTERN long	(WINAPI *cmmIxLine_Fx) 			(long MapIndex, double* DistList, long IsBlocking);
-CMM_EXTERN long	(WINAPI *cmmIxLineStart_Fx) 		(long MapIndex, double* DistList);
-CMM_EXTERN long	(WINAPI *cmmIxLineTo_Fx) 			(long MapIndex, double* PosList, long IsBlocking);
-CMM_EXTERN long	(WINAPI *cmmIxLineToStart_Fx)		(long MapIndex, double* PosList);
 CMM_EXTERN long	(WINAPI *cmmIxArcA) 			(long MapIndex, double XCentOffset, double YCentOffset, double EndAngle, long IsBlocking);
 CMM_EXTERN long	(WINAPI *cmmIxArcAStart) 		(long MapIndex, double XCentOffset, double YCentOffset, double EndAngle);
 CMM_EXTERN long	(WINAPI *cmmIxArcATo) 			(long MapIndex, double XCent, double YCent, double EndAngle, long IsBlocking);
@@ -235,7 +230,7 @@ CMM_EXTERN long	(WINAPI *cmmLmImmediacySet)		(long LmIndex);
 CMM_EXTERN long (WINAPI *cmmLmDoPutOne) 		(long LmIndex, HANDLE hDoDevice, long Channel, long OutState);
 CMM_EXTERN long (WINAPI *cmmLmDoPutMulti)		(long LmIndex, HANDLE hDoDevice, long ChannelGroup, long Mask, long OutStates);
 CMM_EXTERN long (WINAPI *cmmLmDoPulseOne)		(long LmIndex, HANDLE hDoDevice, long Channel, long OutState, long Duration);
-CMM_EXTERN long (WINAPI *cmmLmDoPulseMulti)		(long LmIndex, HANDLE hDoDevice, long ChannelGroup,
+CMM_EXTERN long (WINAPI *cmmLmDoPulseMulti)		(long LmIndex, HANDLE hDoDevice, long ChannelGroup, 
 				long Mask, long OutStates, long Duration);
 
 //====================== 상태감시 FUNCTIONS ===================================================//
@@ -250,11 +245,9 @@ CMM_EXTERN long	(WINAPI *cmmStGetMstString)		(long MstCode, char *Buffer, long B
 CMM_EXTERN long (WINAPI *cmmMstAll_SetCfg)		(long AxisMask1, long AxisMask2, long DataMask);
 CMM_EXTERN long (WINAPI *cmmMstAll_GetCfg)		(long *AxisMask1, long *AxisMask2, long *DataMask);
 CMM_EXTERN long (WINAPI *cmmMstAll_ManScan)		(TCmMstAll *pBuf);
-CMM_EXTERN long (WINAPI *cmmMstAxis_ManScan)	(int nAxis, TAxisMstPack *pBuf);
 CMM_EXTERN long (WINAPI *cmmMstAll_AutoStart)	(long TimerInterv);
 CMM_EXTERN long (WINAPI *cmmMstAll_AutoStop)	();
 CMM_EXTERN TCmMstAll* (WINAPI *cmmMstAll_AutoGetBuf) (void);
-CMM_EXTERN TAxisMstPack* (WINAPI *cmmMstAxis_AutoGetBuf)	(int nAxis);
 CMM_EXTERN long (WINAPI *cmmMstAll_AutoGetData)	(TCmMstAll *pBuf, long IsFrameSync);
 CMM_EXTERN long (WINAPI *cmmMstAll_AutoGetInfo)	(long *ScanCount, long *ScanInerv, long *ScanConsT);
 CMM_EXTERN long (WINAPI *cmmMstAll_AutoGetInfo2) (long AxisInDev, long *ScanCount, long *ScanInerv, long *ScanConsT);
@@ -262,7 +255,7 @@ CMM_EXTERN long (WINAPI *cmmMstAll_AutoGetInfo2) (long AxisInDev, long *ScanCoun
 //====================== INTERRUPT FUNCTIONS ==================================================//
 CMM_EXTERN long	(WINAPI *cmmIntSetMask)			(long Axis, long Mask);
 CMM_EXTERN long	(WINAPI *cmmIntGetMask)			(long Axis, long* Mask);
-CMM_EXTERN long (WINAPI *cmmIntHandlerSetup)	(long HandlerType, HANDLE Handler, UINT nMessage, LPVOID lParam);
+CMM_EXTERN long (WINAPI *cmmIntHandlerSetup)	(long HandlerType, HANDLE Handler, UINT nMessage, LPVOID lParam); 
 CMM_EXTERN long (WINAPI *cmmIntHandlerEnable)	(long IsEnable);
 CMM_EXTERN long	(WINAPI *cmmIntReadFlag)		(long *IntFlag1, long *IntFlag2);
 CMM_EXTERN long	(WINAPI *cmmIntReadErrorStatus)	(long Axis, long *ErrState);
@@ -310,11 +303,6 @@ CMM_EXTERN long	(WINAPI *cmmCmpQue_GetOutCnt)	(long Axis, long* OutCnt);
 CMM_EXTERN long	(WINAPI *cmmCmpQue_SetOutCnt)	(long Axis, long OutCnt);
 CMM_EXTERN long	(WINAPI *cmmCmpQue_SetLtcLinkMode) (long Axis, long Enable, long SrcLtcCnt, long CmpSrc, long CmpMethod, long Offset);
 CMM_EXTERN long	(WINAPI *cmmCmpQue_GetLtcLinkMode) (long Axis, long* Enable, long* SrcLtcCnt, long* CmpSrc, long* CmpMethod, long* Offset);
-
-CMM_EXTERN long (WINAPI *cmmGnSetAxisName)		(long Axis, const char *szAxisName);
-CMM_EXTERN long (WINAPI *cmmGnGetAxisName)		(long Axis, char *pszAxisName);
-CMM_EXTERN long	(WINAPI *cmmCmpTrgSetAxis) 		(long Axis, long CmpAxis);
-CMM_EXTERN long	(WINAPI *cmmCmpTrgGetAxis)		(long Axis, long* CmpAxis);
 
 //====================== Digital In/Out FUNCTIONS =============================================//
 CMM_EXTERN long (WINAPI *cmmDiSetInputLogic)	(long Channel, long InputLogic);
@@ -405,27 +393,6 @@ CMM_EXTERN long	(WINAPI *cmmLmxGetRunItemParam)	(long LmIndex, long ParamIdx, lo
 CMM_EXTERN long	(WINAPI *cmmLmxGetRunItemStaPos)(long LmIndex, long Axis, double* Position);
 CMM_EXTERN long	(WINAPI *cmmLmxGetRunItemTargPos)(long LmIndex, long Axis, double* Position);
 CMM_EXTERN long	(WINAPI *cmmLmxGetSts)			(long LmIndex, long LmxStsId, long *LmxStsVal);
-
-CMM_EXTERN long (WINAPI *cmmPtAddItem)          (int head_no, PT_MOTION_TAB pt, int final_flag);
-CMM_EXTERN long (WINAPI *cmmPtIsDone)           (int groupID, double in_time);
-CMM_EXTERN long (WINAPI *cmmPtSetHold)          (int groupId, bool isHold);
-//CMM_EXTERN long (WINAPI *cmmPtClearQue)         (void);
-CMM_EXTERN long (WINAPI *cmmPtMsConfig)         (MOTION_CONFIG *msConfig, int ms_count);
-CMM_EXTERN long (WINAPI *cmmPtHeadConfig)       (int *headConfig, int head_count);
-CMM_EXTERN long (WINAPI *cmmPtHomeSetConfig)     (long Axis, long HomeDir, long mode_flags, long CW_LimitPlus, long CCW_LimitMinus, int z_count, int move_offset, int set_offset);
-CMM_EXTERN long (WINAPI *cmmPtHomeSetSpeedPattern)  (long Axis, long SpeedMode, double Accel, double Decel, double reverse_speed, double forward_speed, double minimum_speed);
-CMM_EXTERN long (WINAPI *cmmPtHomeMoveStart)    (long Axis);
-CMM_EXTERN long (WINAPI *cmmPtHomeIsDone)       (long Axis);
-CMM_EXTERN long (WINAPI *cmmPtStop)             (int groupId);
-CMM_EXTERN long (WINAPI *cmmPtGetCurSeq)        (int groupID);
-//CMM_EXTERN bool (WINAPI *cmmPtInit)       (void);
-CMM_EXTERN long (WINAPI *cmmPtAddItem2)		(int head_no, int pointCnt, double *position, double *time, int final_flag);
-
-CMM_EXTERN long (WINAPI *cmmIxSetMasterAxis)	(long nAxis, long bSetValue);
-CMM_EXTERN long (WINAPI *cmmIxGetMasterAxis)	(long nAxis, long *bSetValue);
-CMM_EXTERN long (WINAPI *cmmIxGetFxInfo)	(long nMapIndex, long *bIsFx, long *nMaster);
-CMM_EXTERN long (WINAPI *cmmIxSmartStop)	(long nMapIndex, double decelTimeSec);
-
 
 #undef CMM_EXTERN
 

@@ -93,8 +93,8 @@ UINT OnThread_Handler_Check(LPVOID lParam)  // m_Thread[10]
 		Run_Handler_Check.ButtonCheck_BuzzerOff();
 		Run_Handler_Check.ButtonCheck_Auto();
 		Run_Handler_Check.ButtonCheck_Manual();
-		Run_Handler_Check.HandlerCheck_Safety();
-		Run_Handler_Check.StackerMutingCheck();
+// 		Run_Handler_Check.HandlerCheck_Safety();
+// 		Run_Handler_Check.StackerMutingCheck();
 
 	    Sleep(0);
 		sing.Unlock();
