@@ -357,17 +357,17 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
 
 
 			Func.SendHeatsinkMeasureStart(m_nVisTeachPos);
-			mn_RunVisStep = 2400;
+			mn_RunVisStep = 2800;
 			break;
 
-		case 2400:
+		case 2800:
 			break;
 
-		case 2500:
+		case 2900:
 			break;
 
 		case 5000:
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisY, st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_PRESS_START_POS] + (m_nVisCarriorPos*), COMI.mn_runspeed_rate);
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisY, st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_PRESS_START_POS] + (m_nVisCarriorPos*1), COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
 				mn_RunVisStep = 5100;
@@ -384,7 +384,8 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
 			break;
 
 		case 5100:
-			nRet_1 = Set_Device_Carrier_Camera_Y_Press_UpDown(IO_OFF);
+			Set_Device_Carrier_Camera_Y_Press_UpDown(IO_OFF);
+			break;
 
 
 		case 6000:
@@ -811,6 +812,9 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 				else
 				{
 					if( g_lotMgr.GetLotCount() > 0 )
+					{
+
+					}
 
 				}
 			}
@@ -985,7 +989,7 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 			nRet_1 = Robot_AutoMove_Safety_Zone( 3, 0 );
 			if( nRet_1 == RET_GOOD )
 			{
-				mn_RunHsStep = 4100
+				mn_RunHsStep = 4100;
 			}
 			break;
 			
@@ -1006,7 +1010,7 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 			nRet_1 = Robot_AutoMove_Safety_Zone( 3, 0 );
 			if( nRet_1 == RET_GOOD )
 			{
-				mn_RunHsStep = 4200
+				mn_RunHsStep = 4200;
 			}
 			break;
 
@@ -4432,132 +4436,4 @@ void CRun_HeatSinkVision_Transfer_Robot::Set_Device_Carrier_Camera_LED_LAMP_OnOf
 	}
 }
 
-void CRun_HeatSinkVision_Transfer_Robot::Set_Device_Carrier_Camera_Y_Press_UpDown(int OnOff)	
-{
-	CString strLogKey[10];
-	CString	strLogData[10];
-	
-	strLogKey[0] = _T("Mode Start");
-	strLogData[0].Format(_T("%d"),0);
-	
-	m_bVisionFwdBwdFlag	= false;
-	m_dwVisionwdBwd[0]	= GetCurrentTime();
-	
-	//OFF://Up
-	g_ioMgr.set_out_bit( st_io.o_Camera_Y_Press_Up_Sol, !OnOff);
-	g_ioMgr.set_out_bit( st_io.o_Camera_Y_Press_Down_Sol, OnOff);
-	
-	if (OnOff == IO_OFF)
-	{
-		clsLog.LogFunction(_T("DVC_VISION_ROBOT"),_T("UP"),0,_T("CAMERA_PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
-	}
-	else
-	{
-		clsLog.LogFunction(_T("DVC_VISION_ROBOT"),_T("DOWN"),0,_T("CAMERA_PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
-	}
-}
 
-
-int CRun_HeatSinkVision_Transfer_Robot::Chk_Device_Carrier_Camera_Y_Press_UpDown(int OnOff)
-{
-	CString strLogKey[10];
-	CString	strLogData[10];
-
-	strLogKey[0] = _T("Mode End");
-	strLogData[0].Format(_T("%d"),0);
-
-	int nWaitTime = WAIT_CAMERA_CLAMP_FWDBWD;
-
-	if (OnOff == IO_OFF)//Backward
-	{
-		if (m_bVisionFwdBwdFlag == false &&	g_ioMgr.get_in_bit(st_io.i_Camera_Y_Press_Up_Check, IO_ON)	== IO_ON &&
-			g_ioMgr.get_in_bit(st_io.i_Camera_Y_Press_Down_Check, IO_OFF)	== IO_OFF)
-		{
-			m_bVisionFwdBwdFlag		= true;
-			m_dwVisionwdBwd[0]	= GetCurrentTime();
-		}
-		else if (m_bVisionFwdBwdFlag == true && g_ioMgr.get_in_bit(st_io.i_Camera_Y_Press_Up_Check, IO_ON)	== IO_ON &&
-			g_ioMgr.get_in_bit(st_io.i_Camera_Y_Press_Down_Check, IO_OFF)	== IO_OFF)
-		{
-			m_dwVisionwdBwd[1] = GetCurrentTime();
-			m_dwVisionwdBwd[2] = m_dwVisionwdBwd[1] - m_dwVisionwdBwd[0];
-
-			if (m_dwVisionwdBwd[2] <= 0)
-			{
-				m_dwVisionwdBwd[0] = GetCurrentTime();
-				return RET_PROCEED;
-			}
-
-			if (m_dwVisionwdBwd[2] > (DWORD)st_wait.nOffWaitTime[nWaitTime])
-			{
-				clsLog.LogFunction(_T("DVC_VISION_ROBOT"),_T("UP"),1,_T("CAMERA_PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
-				return RET_GOOD;
-			}
-		}
-		else
-		{
-			m_dwVisionwdBwd[1] = GetCurrentTime();
-			m_dwVisionwdBwd[2] = m_dwVisionwdBwd[1] - m_dwVisionwdBwd[0];
-
-			if (m_dwVisionwdBwd[2] <= 0)
-			{
-				m_dwVisionwdBwd[0] = GetCurrentTime();
-				return RET_PROCEED;
-			}
-
-			if (m_dwVisionwdBwd[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
-			{
-				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Camera_Y_Press_Up_Check); 
-				clsLog.LogFunction(_T("DVC_VISION_ROBOT"),_T("UP"),1,_T("CAMERA_PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
-				return RET_ERROR;
-			}
-		}
-	}
-	else
-	{
-		if (m_bVisionFwdBwdFlag == false && g_ioMgr.get_in_bit(st_io.i_Camera_Y_Press_Up_Check, IO_OFF)	== IO_OFF &&
-			g_ioMgr.get_in_bit(st_io.i_Camera_Y_Press_Down_Check, IO_ON)	== IO_ON)
-		{
-			m_bVisionFwdBwdFlag	= true;
-			m_dwVisionwdBwd[0]	= GetCurrentTime();
-		}
-		else if (m_bVisionFwdBwdFlag == true && g_ioMgr.get_in_bit(st_io.i_Camera_Y_Press_Up_Check, IO_OFF)	== IO_OFF &&
-			g_ioMgr.get_in_bit(st_io.i_Camera_Y_Press_Down_Check, IO_ON)	== IO_ON)
-		{
-			m_dwVisionwdBwd[1]	= GetCurrentTime();
-			m_dwVisionwdBwd[2]	= m_dwVisionwdBwd[1] - m_dwVisionwdBwd[0];
-
-			if (m_dwVisionwdBwd[2] <= 0)
-			{
-				m_dwVisionwdBwd[0]	= GetCurrentTime();
-				return RET_PROCEED;
-			}
-
-			if(m_dwVisionwdBwd[2] > (DWORD)st_wait.nOnWaitTime[nWaitTime])
-			{
-				clsLog.LogFunction(_T("DVC_VISION_ROBOT"),_T("DOWN"),0,_T("CAMERA_PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
-				return RET_GOOD;
-			}
-		}
-		else
-		{
-			m_dwVisionwdBwd[1]	= GetCurrentTime();
-			m_dwVisionwdBwd[2]	= m_dwVisionwdBwd[1] - m_dwVisionwdBwd[0];
-
-			if (m_dwVisionwdBwd[2] <= 0)
-			{
-				m_dwVisionwdBwd[0]	= GetCurrentTime();
-				return RET_PROCEED;
-			}
-
-			if (m_dwVisionwdBwd[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
-			{
-				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Camera_Y_Jig_Press_Forward_Check); 
-				clsLog.LogFunction(_T("DVC_VISION_ROBOT"),_T("DOWN"),0,_T("CAMERA_PRESS"),_T("CYLINDER"),1,strLogKey,strLogData);
-				return RET_ERROR;
-			}
-		}
-	}
-
-	return RET_PROCEED;
-}

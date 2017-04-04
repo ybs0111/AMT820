@@ -159,8 +159,6 @@ public:
 	int Chk_HeatSink_Transfer_Pad_UpDown(int OnOff);
 	void Set_HeatSink_Vacuum_OnOff(int OnOff);
 	int Chk_HeatSink_Vacuum_OnOff(int OnOff);
-	void Set_Device_Carrier_Camera_Y_Press_UpDown(int OnOff);
-	int Chk_Device_Carrier_Camera_Y_Press_UpDown( int nOnOff );
 	void Set_Device_CameraY_Jig_Press_ForwardBackward( int OnOff );
 	int Chk_Device_CameraY_Jig_Press_ForwardBackward( int nOnOff );
 

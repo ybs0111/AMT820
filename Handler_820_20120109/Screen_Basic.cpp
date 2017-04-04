@@ -17,7 +17,7 @@
 
 #include "Dialog_KeyPad.h"
 #include "Keyboarddll.h"
-
+#include "AMTLotManager.h" //kwlee 2017.0403
 #include "Public_Function.h"
 #include "Dialog_Infor.h"
 /* ****************************************************************************** */
@@ -113,7 +113,8 @@ void CScreen_Basic::OnInitialUpdate()
 	Init_Grid_Operate();
 
 	OnBasic_Data_Display();
-	OnBasic_Init_List(st_path.mstr_path_dvc);  // 파일 폴더 초기화 함수
+	OnBasic_Init_List(st_path.mstr_path_Model);  // 파일 폴더 초기화 함수
+
 	/* ************************************************************************** */
 
 	st_handler.cwnd_basic = this;  // BASIC 화면에 대한 핸들 정보 설정
@@ -141,7 +142,17 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 	CDialog_Select	select_dlg;
 	CString			str_tmp;
 	int				n_response;
-	
+	int             nCnt;
+
+	nCnt = lpcc->Row;
+
+	//kwlee 2017.0403
+	if (nCnt <= 0 || g_lotMgr.GetLotCount() > 0)
+	{
+		return;
+	}
+	///
+
 	if(wParam == IDC_CUSTOM_FILE_LIST)
 	{
 		m_grid_file = (TSpread *) GetDlgItem(IDC_CUSTOM_FILE_LIST);
@@ -159,13 +170,18 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			
 		}
 
-		mstr_device_name[1] = m_p_grid.GridCellText(m_grid_file, lpcc->Row, lpcc->Col);
 		
-		if(OnBasic_Input_Device_Check(mstr_device_name[1]) == FALSE)  // 입력된 디바이스 이름 정상 유무 검사 함수
-		{
-			mstr_device_name[1] = mstr_device_name[0];
-			return ;
-		}
+		//mstr_device_name[1] = m_p_grid.GridCellText(m_grid_file, lpcc->Row, lpcc->Col);
+		//kwlee 2017.0403
+		char ch_temp[16];
+		m_grid_file->GetData(lpcc->Col,lpcc->Row,ch_temp);
+		mstr_device_name[1] = ch_temp;
+		
+// 		if(OnBasic_Input_Device_Check(mstr_device_name[1]) == FALSE)  // 입력된 디바이스 이름 정상 유무 검사 함수
+// 		{
+// 			mstr_device_name[1] = mstr_device_name[0];
+// 			return ;
+// 		}
 
 		st_other.str_confirm_msg = _T(mstr_device_name[1] + " 모델을 시작하시겠습니까?..");
 		
@@ -173,9 +189,43 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 		
 		if(n_response == IDOK)
 		{
+			//kwlee 2017.0403
+			if(OnBasic_Input_Device_Check(mstr_device_name[1]) == FALSE)  // 입력된 디바이스 이름 정상 유무 검사 함수
+			{
+				mstr_device_name[1] = mstr_device_name[0];
+				return;
+			}
+
 			st_basic.mstr_device_name = mstr_device_name[1];
 
+			
+			mcls_m_basic.OnBasic_Data_Load();
+			mcls_m_basic.On_Teach_Data_Load();
+			mcls_m_basic.OnMaintenance_Data_Load();
+			mcls_m_basic.OnWaitTime_Data_Load();
+			mcls_m_basic.OnMotorSpeed_Set_Data_Load();
+			mcls_m_basic.OnInterface_Data_Load();
+			
+			 //Data_Init();
+			
+			m_p_grid.GridCellColor(m_grid_file, m_n_filename_pos, 1, WHITE_C, BLACK_C);
+			m_p_grid.GridCellColor(m_grid_file, m_n_filename_pos, 2, WHITE_C, BLACK_C);
+
+			m_n_filename_pos = lpcc->Row;
+			m_p_grid.GridCellColor(m_grid_file, m_n_filename_pos, 1, GREEN_C, BLACK_C);
+			m_p_grid.GridCellColor(m_grid_file, m_n_filename_pos, 2, GREEN_C, BLACK_C);
+
+			//kwlee 2017.0403
+			m_p_grid.GridCellColor(m_grid_file, 0, 1, BLACK_L, YELLOW_C);
+			m_p_grid.GridCellColor(m_grid_file, 0, 2, BLACK_L, YELLOW_C);
+			if(st_handler.cwnd_title != NULL)
+			{
+				st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, FILE_MODE, 0);
+			}
+			Invalidate(FALSE);
+
 		}
+		
 	}
 	else if(wParam == IDC_CUSTOM_OPERATE)
 	{
@@ -373,7 +423,6 @@ void CScreen_Basic::OnBasic_Data_Set()
 	m_n_mode_interface[1]			= st_basic.n_mode_interface;
 	m_n_mode_device[1]				= st_basic.n_mode_device;
 	m_n_mode_retest[1]				= st_basic.n_mode_retest;
-
 	m_n_count_retry[1]				= st_basic.n_count_retry;
 	OnBasic_Data_Backup();
 	
@@ -405,10 +454,12 @@ void CScreen_Basic::OnBtnBasicCancel()
 	if(nResponse == IDOK){
 		Data_Recovery();					// 화면 셋팅 정보 백업 받아놓은 변수로 복구 함수
 
-
+	//	Data_Init();//kwlee 2017.0403
 
 		Init_Pass();
 		Init_Reject();
+		
+	//	Data_Display(); //kwlee 2017.0403
 
 	}
 }
@@ -428,6 +479,17 @@ void CScreen_Basic::OnBasic_Data_Backup()
 
 void CScreen_Basic::OnBasic_Data_Apply()
 {
+	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->GetWindowText(mstr_device_name[1]);
+	mstr_device_name[1].MakeUpper();
+	mstr_device_name[1].TrimLeft(' ');               
+	mstr_device_name[1].TrimRight(' ');	
+
+
+	st_basic.mstr_device_name		= mstr_device_name[1];
+
+	st_basic.n_mode_interface		= m_n_mode_interface[1];
+	st_basic.n_mode_device			= m_n_mode_device[1];
+	st_basic.n_mode_retest			= m_n_mode_retest[1];
 
 }
 
@@ -453,7 +515,6 @@ void CScreen_Basic::Data_Recovery()
 	m_n_mode_interface[1]			= m_n_mode_interface[0];
 	m_n_mode_device[1]				= m_n_mode_device[0];
 	m_n_mode_retest[1]				= m_n_mode_retest[0];
-
 	m_n_count_retry[1]				= m_n_count_retry[0];
 }
 
@@ -478,7 +539,7 @@ BOOL CScreen_Basic::DestroyWindow()
 			nResponse = select_dlg.DoModal();
 			
 			if(nResponse == IDOK){
-
+				//Data_Apply(); //kwlee 2017.0403
 				::PostMessage(st_handler.hWnd, WM_DATA_INIT_SAVE, 2, 1);  //데이터를 파일에 저장하라는 메세지
 			}
 		}
@@ -597,6 +658,8 @@ int CScreen_Basic::OnBasic_New_Device_Check(CString str_device)
 	/* ************************************************************************** */
     /* 입력된 디바이스명 설정한다                                                 */
     /* ************************************************************************** */
+	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->SetWindowText(_T(str_device));
+
 	str_device.MakeUpper();
 	str_device.TrimLeft(' ');               
 	str_device.TrimRight(' ');
@@ -613,7 +676,10 @@ int CScreen_Basic::OnBasic_New_Device_Check(CString str_device)
 	}
 	/* ************************************************************************** */
 
-	str_chk_file = _T("C:\\AMT820\\Motor\\") + str_device;  // 생성할 [폴더]+[파일명] 설정
+	//str_chk_file = _T("C:\\AMT820\\Motor\\") + str_device;  // 생성할 [폴더]+[파일명] 설정
+	//kwlee 2017.0403
+	str_chk_file = st_path.mstr_path_Model + str_device;  // 생성할 [폴더]+[파일명] 설정
+	
 	n_pos = str_chk_file.Find(".");  // 확장자 검사
 	if (n_pos == -1) 
 		str_chk_file += _T(".TXT");
@@ -651,6 +717,23 @@ int CScreen_Basic::OnBasic_Input_Device_Check(CString str_device)
     /* 입력된 디바이스명 설정한다                                                 */
     /* ************************************************************************** */
 
+	//((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->GetWindowText(mstr_device_name[1]);
+	//kwlee 2017.0403
+	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->SetWindowText(mstr_device_name[1]);
+	mstr_device_name[1].MakeUpper();
+	mstr_device_name[1].TrimLeft(' ');               
+	mstr_device_name[1].TrimRight(' ');
+
+	if(mstr_device_name[1].IsEmpty())  
+	{
+		if(st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
+		{
+			st_other.str_op_msg = _T("[DEVICE] A name input error occurrence.");
+			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
+		}
+		return FALSE;
+	}
+
 	/* ************************************************************************** */
 
 	str_chk_file = st_path.mstr_path_dvc + str_device;  // 생성할 [폴더]+[파일명] 설정
@@ -674,6 +757,7 @@ int CScreen_Basic::OnBasic_Input_Device_Check(CString str_device)
 	mstr_load_file = str_chk_file;  // 생성할 [폴더]+[파일명]+[확장자] 설정
 
 	return TRUE;
+	
 }
 
 
@@ -739,18 +823,41 @@ void CScreen_Basic::OnBtnBasicApply()
 	{
 		if (st_basic.mstr_device_name != mstr_device_name[1])
 		{
-
-		
+			if( g_lotMgr.GetLotCount() > 0 )
+			{
+				m_strTemp = "진행중인 랏이 있습니다.";
+				if ( g_local.GetLocalType() == LOCAL_ENG ) m_strTemp = "There is a Running LOT.";
+				DoModal_Msg( m_strTemp );
+				//OnBasic_Device_Focus_Set(); //kwlee 2017.0403
+				return;
+			}
 		}
 
+		///Data_Apply(); //kwlee 2017.0403
+		if (Data_Comparison() == RET_ERROR)
+		{	
+			OnBasic_Data_Apply();
+			OnBasic_Data_HisoryLog();
+			OnBasic_Data_Backup();
+		}
+		//Data_Backup(); //kwlee 2017.0403
 
-		OnBasic_Data_HisoryLog();
 	}
 }
 
 
+//kwlee 2017.0403
+// void CScreen_Basic::OnBasic_Device_Focus_Set()
+// {
+// 	if (mn_device_name == -1)
+// 		return;
+// 	
+// 	m_list_device_type.SetCurSel(mn_device_name);
+// }
+
 void CScreen_Basic::OnBasic_Data_Display()
 {
+	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->SetWindowText( st_basic.mstr_device_name );	
 
 	
 }
@@ -777,7 +884,7 @@ void CScreen_Basic::Init_Grid_File()
 	m_p_grid.GridCellCols(m_grid_file, max_col);
 	
 	m_p_grid.GridCellHeight_L(m_grid_file, 0, 20);
-	m_p_grid.GridCellWidth_L(m_grid_file, 1, 5);
+	m_p_grid.GridCellWidth_L(m_grid_file, 1, 8);
 	m_p_grid.GridCellControlStatic(m_grid_file, 0, 1);
 	m_p_grid.GridCellWidth_L(m_grid_file, 2, 27);
 	m_p_grid.GridCellControlStatic(m_grid_file, 0, 2);
@@ -860,14 +967,20 @@ void CScreen_Basic::OnBtnBasicCreate()
 		}
 
 
-		mcls_m_basic.OnBasic_Data_Save_As(str_filename);
-//		mcls_m_basic.On_Teach_Data_Save_As(str_filename);
+		//Data_Backup(); //kwlee 2017.0403
+		mcls_m_basic.OnBasic_Data_Save_As(str_filename); 
+	//	mcls_m_basic.On_Teach_Data_Save_As(str_filename);
 		mcls_m_basic.OnMaintenance_Data_Save_As(str_filename);
 		mcls_m_basic.OnInterface_Data_Save_As(str_filename);
-
+		
 		Init_Grid_File();
-		OnBasic_Init_List(_T("C:\\AMT820\\motor\\"));// 파일 폴더 초기화 함수
+
+		//OnBasic_Init_List(_T("C:\\AMT820\\motor\\"));// 파일 폴더 초기화 함수
+		//kwlee 2017.0403
+		OnBasic_Init_List(st_path.mstr_path_Model);// 파일 폴더 초기화 함수
+			
 	}
+	UpdateData(FALSE);
 }
 
 void CScreen_Basic::Init_Grid_Operate()
@@ -1131,9 +1244,10 @@ void CScreen_Basic::OnBtnDelete()
 		if (n_existence != -1)			// 파일 존재
 		{
 			DeleteFile(str_filename);  // 해당 파일 삭제
-			
-			Init_Grid_File();
+
 			OnBasic_Init_List(st_path.mstr_basic);// 파일 폴더 초기화 함수
+			Init_Grid_File();
+			
 		}
 		else  
 		{
