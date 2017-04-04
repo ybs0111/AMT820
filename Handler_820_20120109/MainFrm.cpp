@@ -99,6 +99,7 @@ tag_BUFFER_INFO				st_buffer_info[THREAD_MAX_SITE];
 tag_PICKER_INFO				st_picker[THREAD_MAX_SITE];
 st_carrier_buffer_info_param	st_carrier_buff_info[MAX_SHIFT_DATA_NUM];
 st_variable_param			st_var;
+struct st_vision_camera		st_vision;
 
 CPublic_Function			Func;
 struct st_serial_info		rs_232;

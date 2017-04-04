@@ -174,27 +174,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 		if(n_response == IDOK)
 		{
 			st_basic.mstr_device_name = mstr_device_name[1];
-			
-			mcls_m_basic.OnBasic_Data_Load();
-			mcls_m_basic.On_Teach_Data_Load();
-			mcls_m_basic.OnMaintenance_Data_Load();
-			mcls_m_basic.OnWaitTime_Data_Load();
-			mcls_m_basic.OnMotorSpeed_Set_Data_Load();
-			mcls_m_basic.OnInterface_Data_Load();
-			
-			 Data_Init();
 
-			m_p_grid.GridCellColor(m_grid_file, m_n_filename_pos, 1, WHITE_C, BLACK_C);
-			m_p_grid.GridCellColor(m_grid_file, m_n_filename_pos, 2, WHITE_C, BLACK_C);
-
-			m_n_filename_pos = lpcc->Row;
-			m_p_grid.GridCellColor(m_grid_file, m_n_filename_pos, 1, GREEN_C, BLACK_C);
-			m_p_grid.GridCellColor(m_grid_file, m_n_filename_pos, 2, GREEN_C, BLACK_C);
-
-			if(st_handler.cwnd_title != NULL)
-			{
-				st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, FILE_MODE, 0);
-			}
 		}
 	}
 	else if(wParam == IDC_CUSTOM_OPERATE)
@@ -425,12 +405,11 @@ void CScreen_Basic::OnBtnBasicCancel()
 	if(nResponse == IDOK){
 		Data_Recovery();					// 화면 셋팅 정보 백업 받아놓은 변수로 복구 함수
 
-		Data_Init();
+
 
 		Init_Pass();
 		Init_Reject();
-		
-		Data_Display();
+
 	}
 }
 
@@ -449,21 +428,7 @@ void CScreen_Basic::OnBasic_Data_Backup()
 
 void CScreen_Basic::OnBasic_Data_Apply()
 {
-	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->GetWindowText(mstr_temp_device[1]);
-	mstr_temp_device[1].MakeUpper();
-	mstr_temp_device[1].TrimLeft(' ');               
-	mstr_temp_device[1].TrimRight(' ');	
 
-
-	st_basic.mstr_device_name		= mstr_device_name[1];
-
-	st_basic.n_mode_interface		= m_n_mode_interface[1];
-	st_basic.n_mode_device			= m_n_mode_device[1];
-	st_basic.n_mode_retest			= m_n_mode_retest[1];
-
-	st_basic.n_count_retry			= m_n_count_retry[1];
-
-	OnBasic_Data_HisoryLog();
 }
 
 int CScreen_Basic::Data_Comparison()
@@ -513,7 +478,6 @@ BOOL CScreen_Basic::DestroyWindow()
 			nResponse = select_dlg.DoModal();
 			
 			if(nResponse == IDOK){
-				Data_Apply();
 
 				::PostMessage(st_handler.hWnd, WM_DATA_INIT_SAVE, 2, 1);  //데이터를 파일에 저장하라는 메세지
 			}
@@ -686,20 +650,7 @@ int CScreen_Basic::OnBasic_Input_Device_Check(CString str_device)
 	/* ************************************************************************** */
     /* 입력된 디바이스명 설정한다                                                 */
     /* ************************************************************************** */
-	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->GetWindowText(mstr_temp_device[1]);
-	mstr_temp_device[1].MakeUpper();
-	mstr_temp_device[1].TrimLeft(' ');               
-	mstr_temp_device[1].TrimRight(' ');
 
-	if(mstr_temp_device[1].IsEmpty())  
-	{
-		if(st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
-		{
-			st_other.str_op_msg = _T("[DEVICE] A name input error occurrence.");
-			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
-		}
-		return FALSE;
-	}
 	/* ************************************************************************** */
 
 	str_chk_file = st_path.mstr_path_dvc + str_device;  // 생성할 [폴더]+[파일명] 설정
@@ -788,35 +739,18 @@ void CScreen_Basic::OnBtnBasicApply()
 	{
 		if (st_basic.mstr_device_name != mstr_device_name[1])
 		{
-			if( g_lotMgr.GetLotCount() > 0 )
-			{
-				m_strTemp = "진행중인 랏이 있습니다.";
-				if ( g_local.GetLocalType() == LOCAL_ENG ) m_strTemp = "There is a Running LOT.";
-				DoModal_Msg( m_strTemp );
-				OnBasic_Device_Focus_Set();
-				return;
+
 		
 		}
 
-		Data_Apply();
 
 		OnBasic_Data_HisoryLog();
-		Data_Backup();
 	}
 }
 
 
-void CScreen_Basic::OnBasic_Device_Focus_Set()
-{
-	if (mn_device_name == -1)
-		return;
-	
-	m_list_device_type.SetCurSel(mn_device_name);
-}
-
 void CScreen_Basic::OnBasic_Data_Display()
 {
-	((CEdit*)GetDlgItem(IDC_EDIT_DEVICE_TYPE))->SetWindowText( &st_basic.mstr_device_name );	
 
 	
 }
@@ -925,7 +859,6 @@ void CScreen_Basic::OnBtnBasicCreate()
 			return;
 		}
 
-		Data_Backup();
 
 		mcls_m_basic.OnBasic_Data_Save_As(str_filename);
 //		mcls_m_basic.On_Teach_Data_Save_As(str_filename);

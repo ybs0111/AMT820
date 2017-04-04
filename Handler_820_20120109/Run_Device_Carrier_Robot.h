@@ -102,7 +102,7 @@ public:
 
 	int nRetryCyl;
 
-	int m_Thread_Flag[3];
+	int m_Thread_Flag[4];
 
 public:
 	void Thread_Run();

@@ -418,7 +418,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 						{
 							mn_BufferPos = i;
 							mn_RunMove = 2000;//LOADÇÏÀÚ
-							m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = CTL_NO;
+							m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
 							return;
 						}
 					}
@@ -487,18 +487,23 @@ void CRun_Device_Carrier_Robot::RunMove()
 		if( st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] == CTL_READY )
 		{
 			st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] = CTL_CHANGE;
-			m_Thread_Flag[1] = CTL_YES;
+			m_Thread_Flag[2] = CTL_YES;
 		}
-		if( m_Thread_Flag[0] == CTL_YES && m_Thread_Flag[1] == CTL_YES && m_Thread_Flag[2] == CTL_YES )
+		if( st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][0] == CTL_READY )
 		{
-			m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = CTL_NO;
+			st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][0] = CTL_CHANGE;
+			m_Thread_Flag[3] = CTL_YES;
+		}
+		if( m_Thread_Flag[0] == CTL_YES && m_Thread_Flag[1] == CTL_YES && m_Thread_Flag[2] == CTL_YES && m_Thread_Flag[3] == CTL_YES)
+		{
+			m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
 			mn_RunMove = 2100;
 		}
 		break;
 
 	case 2100:
 		if( st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_NO && st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] == CTL_NO &&
-			st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] == CTL_NO )
+			st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] == CTL_NO && st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][0] == CTL_NO )
 		{
 			mn_RunMove = 1100;
 		}
