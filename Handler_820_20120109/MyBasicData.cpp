@@ -1569,12 +1569,12 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
 
 	//kwlee 2017.0403
 	:: WritePrivateProfileString("BASIC", "MODEL_NAME", LPCTSTR(str_device), str_save_file);
-
-	mstr_temp.Format("%d", st_basic.n_mode_work);
-	:: WritePrivateProfileString("BASIC", "WORK_MODE", LPCTSTR(mstr_temp), str_save_file);
-
-	mstr_temp.Format("%d", st_basic.n_mode_turn);
-	:: WritePrivateProfileString("BASIC", "TURN_MODE", LPCTSTR(mstr_temp), str_save_file);
+	//kwlee 2017.0404
+// 	mstr_temp.Format("%d", st_basic.n_mode_work);
+// 	:: WritePrivateProfileString("BASIC", "WORK_MODE", LPCTSTR(mstr_temp), str_save_file);
+// 
+// 	mstr_temp.Format("%d", st_basic.n_mode_turn);
+// 	:: WritePrivateProfileString("BASIC", "TURN_MODE", LPCTSTR(mstr_temp), str_save_file);
 
 	mstr_temp.Format("%d", st_basic.n_mode_device);
 	:: WritePrivateProfileString("BASIC", "DEVICE_MODE", LPCTSTR(mstr_temp), str_save_file);

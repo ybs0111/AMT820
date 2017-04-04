@@ -393,6 +393,9 @@ void CScreen_Basic::OnBasic_Data_Group()
 	m_group_operate_method.SetCatptionTextColor(BLUE_C);
 	m_group_operate_method.SetBorderColor(YELLOW_L);
 	m_group_operate_method.SetFontBold(TRUE);
+
+
+
 }
 
 
@@ -986,9 +989,9 @@ void CScreen_Basic::OnBtnBasicCreate()
 void CScreen_Basic::Init_Grid_Operate()
 {
 	CRect	area_p, area_r;
-	int		x_p, y_p;
-	int		width_p, height_p;
-	int		cen_x_p, cen_y_p;
+	//int		x_p, y_p;
+	//int		width_p, height_p;
+	//int		cen_x_p, cen_y_p;
 	int		i, j;
 	int		max_row, max_col;
 	CString str_tmp;
@@ -999,9 +1002,11 @@ void CScreen_Basic::Init_Grid_Operate()
 
 	m_n_operate_cnt[0] = 3;
 	m_n_operate_cnt[1] = 4;
-	m_n_operate_cnt[2] = 4;
+	m_n_operate_cnt[2] = 3;
 
-	max_row = m_n_operate_cnt[0] + m_n_operate_cnt[1] + m_n_operate_cnt[2];
+	//max_row = m_n_operate_cnt[0] + m_n_operate_cnt[1] + m_n_operate_cnt[2];
+	//kwlee 2017.0404
+	max_row = 28;
 	max_col = 1;
 	
 	m_grid_operate = (TSpread*)GetDlgItem(IDC_CUSTOM_OPERATE);
@@ -1021,186 +1026,334 @@ void CScreen_Basic::Init_Grid_Operate()
 
 	GetDlgItem(IDC_GROUP_OPERATE_METHOD)->GetWindowRect(area_p); // group box rect 구하기 
 	ScreenToClient(area_p); // window상에서 group box 좌표 구하기
-	
-	width_p		= area_p.Width() - 15;
-	height_p	= area_p.Height() - 30;
-	
-	x_p			= (width_p / max_col);
-	y_p			= (height_p / max_row);
-	
-	// group box에서 grid 센터에 표시하기 위한 x좌표 구하기 
-	cen_x_p = area_p.left + (((area_p.Width() - 15) - (x_p * max_col)) / 2) + 8;
-	// group box에서 grid 센터에 표시하기 위한 y좌표 구하기 
-	cen_y_p = area_p.top + (((area_p.Height() - 30) - (y_p * max_row)) / 2) + 20;
+
+//kwlee 2017.0404
+// 	width_p		= area_p.Width() - 15;
+// 	height_p	= area_p.Height() - 10;
+// 	
+// 	x_p			= (width_p / max_col);
+// 	y_p			= (height_p / max_row);
+// 	
+// 	// group box에서 grid 센터에 표시하기 위한 x좌표 구하기 
+// 	cen_x_p = area_p.left + (((area_p.Width() - 15) - (x_p * max_col)) / 2) + 8;
+// 	// group box에서 grid 센터에 표시하기 위한 y좌표 구하기 
+// 	cen_y_p = area_p.top + (((area_p.Height() - 30) - (y_p * max_row)) / 2) + 20;
 	
 	// grid size 계산하여 중심에 다시 그리기 
-	m_grid_operate->MoveWindow(cen_x_p, cen_y_p, x_p*(max_col), y_p*(max_row), TRUE);
+//	m_grid_operate->MoveWindow(cen_x_p, cen_y_p, x_p*(max_col), y_p*(max_row), TRUE); //kwlee 2017.0404
 	
 	
-	for(i=0; i<max_row+1; i++)
+	for(i=0; i<max_row + 1; i++)
 	{
-		m_p_grid.GridCellHeight(m_grid_operate, i, y_p);
+		//m_p_grid.GridCellHeight(m_grid_operate, i, y_p);
+		//kwlee 2017.0404
+		m_p_grid.GridCellHeight(m_grid_operate, i, 18);
 		
 		for(j=0; j<max_col+1; j++)
 		{	
-			m_p_grid.GridCellWidth(m_grid_operate, j, x_p);
+			//m_p_grid.GridCellWidth(m_grid_operate, j, x_p);
+			//kwlee 2017.0404
+			m_p_grid.GridCellWidth(m_grid_operate, j, 21);
 			m_p_grid.GridCellControlStatic(m_grid_operate, i, j);
 		}
 	}
 
-	if(m_n_operate_used[0] == YES)
-	{
-		m_p_grid.GridCellFont(m_grid_operate, 1, 1, "MS Sans Serif", 18);
-		m_p_grid.GridCellColor(m_grid_operate, 1, 1, BLACK_L, YELLOW_C);
-		m_p_grid.GridCellText(m_grid_operate, 1, 1, "Interface 방법");
-		
-		m_p_grid.GridCellFont(m_grid_operate, 2, 1, "MS Sans Serif", 12);
-		m_p_grid.GridCellText(m_grid_operate, 2, 1, "Off-Line");
+// 	if(m_n_operate_used[0] == YES)
+// 	{
+	m_p_grid.GridCellFont(m_grid_operate, 1, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 1, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 1, 1, "Interface 방법");
 
-		m_p_grid.GridCellFont(m_grid_operate, 3, 1, "MS Sans Serif", 12);
-		m_p_grid.GridCellText(m_grid_operate, 3, 1, "On-Line");
-
-		if(m_n_mode_interface[1] == 0)
-		{	
-			m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_C, BLACK_C);
-			m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_D, BLACK_C);	
-		}
-		else
-		{
-			m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_D, BLACK_C);		
-			m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_C, BLACK_C);
-		}
-		
-		if(m_n_operate_used[1] == YES)
-		{
-			m_p_grid.GridCellFont(m_grid_operate, 4, 1, "MS Sans Serif", 18);
-			m_p_grid.GridCellColor(m_grid_operate, 4, 1, BLACK_L, YELLOW_C);
-			m_p_grid.GridCellText(m_grid_operate, 4, 1, "Device 방법");
-			
-			m_p_grid.GridCellFont(m_grid_operate, 5, 1, "MS Sans Serif", 12);
-			m_p_grid.GridCellText(m_grid_operate, 5, 1, "With");
-
-			m_p_grid.GridCellFont(m_grid_operate, 6, 1, "MS Sans Serif", 12);
-			m_p_grid.GridCellText(m_grid_operate, 6, 1, "WithOut");
-
-			m_p_grid.GridCellFont(m_grid_operate, 7, 1, "MS Sans Serif", 12);
-			m_p_grid.GridCellText(m_grid_operate, 7, 1, "No Tray");
-
-			if(m_n_mode_device[1] == 0)
-			{
-				m_p_grid.GridCellColor(m_grid_operate, 5, 1, GREEN_C, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_D, BLACK_C);
-			}
-			else if(m_n_mode_device[1] == 1)
-			{
-				m_p_grid.GridCellColor(m_grid_operate, 5, 1, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_C, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_D, BLACK_C);
-			}
-			else if(m_n_mode_device[1] == 2)
-			{
-				m_p_grid.GridCellColor(m_grid_operate, 5, 1, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_C, BLACK_C);
-			}
-
-			if(m_n_operate_used[2] == YES)
-			{
-				m_p_grid.GridCellFont(m_grid_operate, 8, 1, "MS Sans Serif", 18);
-				m_p_grid.GridCellColor(m_grid_operate, 8, 1, BLACK_L, YELLOW_C);
-				m_p_grid.GridCellText(m_grid_operate, 8, 1, "Retest 방법");
-				
-				m_p_grid.GridCellFont(m_grid_operate, 9, 1, "MS Sans Serif", 12);
-				m_p_grid.GridCellText(m_grid_operate, 9, 1, "Retest Off");
-
-				m_p_grid.GridCellFont(m_grid_operate, 10, 1, "MS Sans Serif", 12);
-				m_p_grid.GridCellText(m_grid_operate, 10, 1, "Retest On");
-
-				if(m_n_mode_retest[1] == 0)
-				{
-					m_p_grid.GridCellColor(m_grid_operate, 9, 1, GREEN_C, BLACK_C);
-					m_p_grid.GridCellColor(m_grid_operate, 10, 1, GREEN_D, BLACK_C);
-				}
-				else
-				{
-					m_p_grid.GridCellColor(m_grid_operate, 9, 1, GREEN_D, BLACK_C);
-					m_p_grid.GridCellColor(m_grid_operate, 10, 1, GREEN_C, BLACK_C);
-				}
-				
-				m_p_grid.GridCellFont(m_grid_operate, 11, 1, "MS Sans Serif", 20);
-				m_p_grid.GridCellColor(m_grid_operate, 11, 1, WHITE_C, BLACK_C);
-				str_tmp.Format("%d", m_n_count_retry[1]);
-				m_p_grid.GridCellText(m_grid_operate, 11, 1, str_tmp);
-			}
-		}
+	
+	m_p_grid.GridCellFont(m_grid_operate, 2, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 2, 1, "Off-Line");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 3, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 3, 1, "On-Line");
+	
+	if(m_n_mode_interface[1] == NOT_USE)
+	{	
+		m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_D, BLACK_C);	
 	}
 	else
 	{
-		if(m_n_operate_used[1] == YES)
-		{
-			m_p_grid.GridCellFont(m_grid_operate, 1, 1, "MS Sans Serif", 18);
-			m_p_grid.GridCellColor(m_grid_operate, 1, 1, BLACK_L, YELLOW_C);
-			m_p_grid.GridCellText(m_grid_operate, 1, 1, "Device 방법");
-		
-			m_p_grid.GridCellFont(m_grid_operate, 2, 1, "MS Sans Serif", 12);
-			m_p_grid.GridCellText(m_grid_operate, 2, 1, "With");
-
-			m_p_grid.GridCellFont(m_grid_operate, 3, 1, "MS Sans Serif", 12);
-			m_p_grid.GridCellText(m_grid_operate, 3, 1, "WithOut");
-
-			m_p_grid.GridCellFont(m_grid_operate, 4, 1, "MS Sans Serif", 12);
-			m_p_grid.GridCellText(m_grid_operate, 4, 1, "No Tray");
-
-			if(m_n_mode_device[1] == 0)
-			{
-				m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_C, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 4, 1, GREEN_D, BLACK_C);
-			}
-			else if(m_n_mode_device[1] == 1)
-			{
-				m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_C, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 4, 1, GREEN_D, BLACK_C);
-			}
-			else if(m_n_mode_device[1] == 2)
-			{
-				m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 4, 1, GREEN_C, BLACK_C);
-			}
-			
-			if(m_n_operate_used[2] == YES)
-			{
-				m_p_grid.GridCellFont(m_grid_operate, 5, 1, "MS Sans Serif", 18);
-				m_p_grid.GridCellColor(m_grid_operate, 5, 1, BLACK_L, YELLOW_C);
-				m_p_grid.GridCellText(m_grid_operate, 5, 1, "Retest 방법");
-				
-				m_p_grid.GridCellFont(m_grid_operate, 6, 1, "MS Sans Serif", 12);
-				m_p_grid.GridCellText(m_grid_operate, 6, 1, "Retest Off");
-
-				m_p_grid.GridCellFont(m_grid_operate, 7, 1, "MS Sans Serif", 12);
-				m_p_grid.GridCellText(m_grid_operate, 7, 1, "Retest On");
-
-				if(m_n_mode_retest[1]== 0)
-				{
-					m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_C, BLACK_C);
-					m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_D, BLACK_C);
-				}
-				else
-				{
-					m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_D, BLACK_C);
-					m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_C, BLACK_C);
-				}
-				
-				m_p_grid.GridCellFont(m_grid_operate, 8, 1, "MS Sans Serif", 20);
-				m_p_grid.GridCellColor(m_grid_operate, 8, 1, WHITE_C, BLACK_C);
-				str_tmp.Format("%d", m_n_count_retry[1]);
-				m_p_grid.GridCellText(m_grid_operate, 8, 1, str_tmp);
-			}
-		}
+		m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_D, BLACK_C);		
+		m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_C, BLACK_C);
 	}
+		
+// 		if(m_n_operate_used[1] == YES)
+// 		{
+	m_p_grid.GridCellFont(m_grid_operate, 4, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 4, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 4, 1, "Device 방법");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 5, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 5, 1, "With");
+
+	m_p_grid.GridCellFont(m_grid_operate, 6, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 6, 1, "WithOut");
+
+	m_p_grid.GridCellFont(m_grid_operate, 7, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 7, 1, "No Tray");
+
+	if(m_n_mode_device[1] == 0)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 5, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_D, BLACK_C);
+	}
+	else if(m_n_mode_device[1] == 1)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 5, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_D, BLACK_C);
+	}
+	else if(m_n_mode_device[1] == 2)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 5, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_C, BLACK_C);
+	}
+
+// 			if(m_n_operate_used[2] == YES)
+// 			{
+	m_p_grid.GridCellFont(m_grid_operate, 8, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 8, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 8, 1, "Retest 방법");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 9, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 9, 1, "Retest Off");
+
+	m_p_grid.GridCellFont(m_grid_operate, 10, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 10, 1, "Retest On");
+
+	if(m_n_mode_retest[1] == NOT_USE)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 9, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 10, 1, GREEN_D, BLACK_C);
+	}
+	else
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 9, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 10, 1, GREEN_C, BLACK_C);
+	}
+
+
+	//kwlee 2017.0404
+	m_p_grid.GridCellFont(m_grid_operate, 11, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 11, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 11, 1, "Test 방법");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 12, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 12, 1, "Test Mode Off");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 13, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 13, 1, "Test Mode On");
+	
+
+	if(m_nModeTester[1] == NOT_USE)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 12, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 13, 1, GREEN_D, BLACK_C);
+	}
+	else
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 12, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 13, 1, GREEN_C, BLACK_C);
+	}
+
+
+	//kwlee 2017.0404
+	m_p_grid.GridCellFont(m_grid_operate, 14, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 14, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 14, 1, "바코드 사용");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 15, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 15, 1, "Barcode Off");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 16, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 16, 1, "Barcode On");
+	
+	
+	if(m_nModeBcr[1] == NOT_USE)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 16, 1, GREEN_D, BLACK_C);
+	}
+	else
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 16, 1, GREEN_C, BLACK_C);
+	}
+	
+	
+	m_p_grid.GridCellFont(m_grid_operate, 17, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 17, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 17, 1, "Module 방법");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 18, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 18, 1, "Module Mode Off");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 19, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 19, 1, "Module Mode On");
+	
+	
+	if(m_nModeTester[1] == NOT_USE)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 18, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 19, 1, GREEN_D, BLACK_C);
+	}
+	else
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 18, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 19, 1, GREEN_C, BLACK_C);
+	}
+
+
+	m_p_grid.GridCellFont(m_grid_operate, 20, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 20, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 20, 1, "7387 방법");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 21, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 21, 1, "7387 Mode Off");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 22, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 22, 1, "7387 Mode On");
+	
+	
+	if(m_nmode_7387[1] == NOT_USE)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 21, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 22, 1, GREEN_D, BLACK_C);
+	}
+	else
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 21, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 22, 1, GREEN_C, BLACK_C);
+	}
+
+	m_p_grid.GridCellFont(m_grid_operate, 23, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 23, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 23, 1, "Tray Type");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 24, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 24, 1, "Type1");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 25, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 25, 1, "Type2");
+	
+	
+	if(m_nmode_tray_type[1] == NOT_USE)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 24, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 25, 1, GREEN_D, BLACK_C);
+	}
+	else
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 24, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 25, 1, GREEN_C, BLACK_C);
+	}
+
+	m_p_grid.GridCellFont(m_grid_operate, 26, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 26, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 26, 1, "7387 Alarm Skip");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 27, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 27, 1, "Alarm Skip");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 28, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 28, 1, "Alarm Use");
+	
+	
+	if(m_n7387InspectAlarmSkipMode[1] == NOT_USE)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 27, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 28, 1, GREEN_D, BLACK_C);
+	}
+	else
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 27, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 28, 1, GREEN_C, BLACK_C);
+	}
+	///
+
+
+				//kwlee 2017.0404
+// 				m_p_grid.GridCellFont(m_grid_operate, 11, 1, "MS Sans Serif", 20);
+// 				m_p_grid.GridCellColor(m_grid_operate, 11, 1, WHITE_C, BLACK_C);
+// 				str_tmp.Format("%d", m_n_count_retry[1]);
+// 				m_p_grid.GridCellText(m_grid_operate, 11, 1, str_tmp);
+			//}
+		//}
+	//}
+// 	else
+// 	{
+// 		if(m_n_operate_used[1] == YES)
+// 		{
+// 			m_p_grid.GridCellFont(m_grid_operate, 1, 1, "MS Sans Serif", 18);
+// 			m_p_grid.GridCellColor(m_grid_operate, 1, 1, BLACK_L, YELLOW_C);
+// 			m_p_grid.GridCellText(m_grid_operate, 1, 1, "Device 방법");
+// 		
+// 			m_p_grid.GridCellFont(m_grid_operate, 2, 1, "MS Sans Serif", 12);
+// 			m_p_grid.GridCellText(m_grid_operate, 2, 1, "With");
+// 
+// 			m_p_grid.GridCellFont(m_grid_operate, 3, 1, "MS Sans Serif", 12);
+// 			m_p_grid.GridCellText(m_grid_operate, 3, 1, "WithOut");
+// 
+// 			m_p_grid.GridCellFont(m_grid_operate, 4, 1, "MS Sans Serif", 12);
+// 			m_p_grid.GridCellText(m_grid_operate, 4, 1, "No Tray");
+// 
+// 			if(m_n_mode_device[1] == 0)
+// 			{
+// 				m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_C, BLACK_C);
+// 				m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_D, BLACK_C);
+// 				m_p_grid.GridCellColor(m_grid_operate, 4, 1, GREEN_D, BLACK_C);
+// 			}
+// 			else if(m_n_mode_device[1] == 1)
+// 			{
+// 				m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_D, BLACK_C);
+// 				m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_C, BLACK_C);
+// 				m_p_grid.GridCellColor(m_grid_operate, 4, 1, GREEN_D, BLACK_C);
+// 			}
+// 			else if(m_n_mode_device[1] == 2)
+// 			{
+// 				m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_D, BLACK_C);
+// 				m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_D, BLACK_C);
+// 				m_p_grid.GridCellColor(m_grid_operate, 4, 1, GREEN_C, BLACK_C);
+// 			}
+// 			
+// 			if(m_n_operate_used[2] == YES)
+// 			{
+// 				m_p_grid.GridCellFont(m_grid_operate, 5, 1, "MS Sans Serif", 18);
+// 				m_p_grid.GridCellColor(m_grid_operate, 5, 1, BLACK_L, YELLOW_C);
+// 				m_p_grid.GridCellText(m_grid_operate, 5, 1, "Retest 방법");
+// 				
+// 				m_p_grid.GridCellFont(m_grid_operate, 6, 1, "MS Sans Serif", 12);
+// 				m_p_grid.GridCellText(m_grid_operate, 6, 1, "Retest Off");
+// 
+// 				m_p_grid.GridCellFont(m_grid_operate, 7, 1, "MS Sans Serif", 12);
+// 				m_p_grid.GridCellText(m_grid_operate, 7, 1, "Retest On");
+// 
+// 				if(m_n_mode_retest[1]== 0)
+// 				{
+// 					m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_C, BLACK_C);
+// 					m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_D, BLACK_C);
+// 				}
+// 				else
+// 				{
+// 					m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_D, BLACK_C);
+// 					m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_C, BLACK_C);
+// 				}
+// 				
+// 				m_p_grid.GridCellFont(m_grid_operate, 8, 1, "MS Sans Serif", 20);
+// 				m_p_grid.GridCellColor(m_grid_operate, 8, 1, WHITE_C, BLACK_C);
+// 				str_tmp.Format("%d", m_n_count_retry[1]);
+// 				m_p_grid.GridCellText(m_grid_operate, 8, 1, str_tmp);
+// 			}
+// 		}
+// 	}
+	Invalidate(FALSE);
 }
 
 void CScreen_Basic::OnBtnDelete() 

@@ -24,7 +24,7 @@ CFastechPublic_IO  FAS_IO;
 
 CFastechPublic_IO::CFastechPublic_IO()
 {
-	mn_simulation_mode = 1;
+	//mn_simulation_mode = 0;
 }
 
 CFastechPublic_IO::~CFastechPublic_IO()

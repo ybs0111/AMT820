@@ -5043,6 +5043,7 @@
 #define IDC_CUSTOM_OPERATE              3736
 #define IDC_BTN_POWER_ON                3737
 #define IDC_BTN_POWER_OFF               3738
+#define IDC_CUSTOM_OPERATE2             3738
 #define IDC_BTN_LEFT                    3739
 #define IDC_BTN_HOME                    3740
 #define IDC_BTN_RIGHT                   3741

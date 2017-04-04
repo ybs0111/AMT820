@@ -55,13 +55,43 @@ public:
 // Attributes
 public:
 	int				m_n_filename_pos;
-	int				m_n_operate_cnt[3];
-	int				m_n_operate_used[3];
-	int				m_n_mode_interface[2];
-	int				m_n_mode_device[2];
+	int				m_n_operate_cnt[MAXOPERATORCNT];
+	int				m_n_operate_used[MAXOPERATORCNT];
+	int				m_n_mode_interface[2]; //V
+	int				m_n_mode_device[2]; ///V
 	int				m_n_mode_retest[2];
-	int				m_n_count_retry[2];
+
 	int				mn_device_name;
+
+	//kwlee 2017.0404
+	
+	int             m_nModeTester[2];
+	int             m_nModeBcr[2];
+	int             m_nModeModule[2];
+	int             m_nModeOffline[2];
+
+	int				m_nmode_7387[2];
+	int             m_nmode_tray_type[2]; //Type1, Type2
+	int				m_n7387InspectAlarmSkipMode[2];
+	int				m_n3874InspectMode[2];
+	int				n_Light_Curtain_Mode[2];
+	int				n_mode_case_assembly[2];
+	
+	int				m_n_count_retry[2];
+	int             m_nCountPickRetry[2];
+	int             m_nCountPartial[2];
+	int             m_nCount_elevator_Partial[2];
+	int				m_n7387AlarmCount[2];
+	int				n_rubb_count[2];
+	double			dEpoxyXLineOffSet[2];
+	double			dEpoxyYLineOffSet[2];
+	
+	double			dHSCarrierSpreadMoveOffset[2];
+	double			dHSCarrierSpreadMoveDistance[2];
+	double			dHeatSinkCarrierSpreadMove1Offset[2];
+	double			dHeatSinkCarrierSpreadMove2Offset[2];
+	double			dHeatSinkCarrierSpreadMove3Offset[2];
+	
 
 	TSpread			*m_grid_operate;
 	TSpread			*m_grid_file;

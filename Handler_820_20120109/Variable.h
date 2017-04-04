@@ -614,6 +614,9 @@ enum ENUM_WM_MESSAGE
 #define OFF_LINE_MODE		0
 #define ON_LINE_MODE		1
 
+#define NOT_USE             0
+#define USE                 1
+
 // 모듈 엘레베이터 Type
 #define TYPE_LOAD			0
 #define TYPE_LOADUNLOAD		1
@@ -1384,6 +1387,7 @@ extern  st_dsp_alarm_param  st_alarm;
 #define UNLOADTRAY_Y		3
 #define REJECTTRAY_X		25
 #define REJECTTRAY_Y		3
+#define MAXOPERATORCNT      50 //kwlee 2017.0404
 
 struct st_modulemap_size
 {
@@ -1483,42 +1487,47 @@ struct st_basic_param
 
 	int n_file_save;
 
+	//kwlee 2017.0405
+	//int n_mode_dc_test;			//
+	//int n_mode_work;			// 
+	//int n_mode_run;
+	//int n_mode_turn;
+	//int n_conveyor_move_mode;
+	
+	//kwlee 2017.0405 추가 예정.
+	// 20100517 tae 수정
 	int n_mode_interface;		// 장비 동작 모드 저장 변수		(1:ON LINE	0:OFF LINE)
 	int n_mode_device;			// 자재 사용 모드 저장 변수		(0:With		1:with out device 2:With out c-tray)
 	int n_mode_retest;			// RETEST 모드 저장 변수		(1:사용		0:미사용)
 	int n_mode_tester;			// 테스터 종류 저장 변수
 	int n_mode_bcr;
 	int n_mode_module;
-	int n_mode_dc_test;			//
-	int n_mode_work;			// 
-	int n_mode_run;
-	int n_mode_turn;
-	int n_conveyor_move_mode;
-	// 20100517 tae 수정
 	int n_mode_off_line;		// off-line 결과 설정 (0 : random 1 : All Good)
-	int n_count_retry;
 
+	int n_count_retry;
+	
 	int n_count_pick_retry;		// PICK 시도 횟수 저장 변수
 	int n_count_partial;		// PARTIAL 횟수 저장 변수
 	int n_count_elevator_partial;	// 엘레베이터 PARTIAL 횟수 저장 변수
 
 	int n_mode_tray_type;//TYPE1,TYPE2
-	int n_mode_7387;
 
 //	CString mstr_device_name;	// 선택된 디바이스 종류 저장 변수
 
 	double dEpoxyXLineOffSet;
 	double dEpoxyYLineOffSet;
-
-	int n_rubb_count;
+	
 	double dHSCarrierSpreadMoveOffset;
 	double dHSCarrierSpreadMoveDistance;
 	double dHeatSinkCarrierSpreadMove1Offset;
 	double dHeatSinkCarrierSpreadMove2Offset;
 	double dHeatSinkCarrierSpreadMove3Offset;
+	
+	int n_rubb_count;
 	int n_Light_Curtain_Mode;
 	int n_mode_case_assembly;
 
+	int n_mode_7387;
 	int n_7387InspectAlarmSkipMode;
 	int n7387AlarmCount;
 	int n_3874InspectMode;

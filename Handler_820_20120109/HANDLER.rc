@@ -1530,17 +1530,19 @@ BEGIN
     GROUPBOX        "model",IDC_GROUP_MODEL,470,6,161,443
     CONTROL         "",IDC_CUSTOM_FILE_LIST,"fpSpread70",WS_BORDER | 
                     WS_TABSTOP,474,84,153,354
-    GROUPBOX        "운영 정보",IDC_GROUP_OPERATE_METHOD,6,6,93,338
+    GROUPBOX        "운영 정보",IDC_GROUP_OPERATE_METHOD,6,5,189,483
     CONTROL         "",IDC_CUSTOM_OPERATE,"fpSpread70",WS_BORDER | 
-                    WS_TABSTOP,12,21,80,313
+                    WS_TABSTOP,12,17,86,466
     PUSHBUTTON      "delete model",IDC_BTN_DELETE,474,50,73,29
-    GROUPBOX        "tray type",IDC_STATIC_TRAY_TYPE,107,6,58,55,WS_GROUP
+    GROUPBOX        "tray type",IDC_STATIC_TRAY_TYPE,403,10,58,55,WS_GROUP
     CONTROL         "type1",IDC_RADIO_TYPE1,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,115,21,33,10
+                    WS_GROUP,411,25,33,10
     CONTROL         "type2",IDC_RADIO_TYPE2,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,115,41,33,10
+                    WS_GROUP,411,45,33,10
     EDITTEXT        IDC_EDIT_DEVICE_TYPE,474,21,153,24,ES_CENTER | 
                     ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "",IDC_CUSTOM_OPERATE2,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,101,17,86,466
 END
 
 IDD_MOTOR_PART DIALOG DISCARDABLE  0, 0, 629, 490

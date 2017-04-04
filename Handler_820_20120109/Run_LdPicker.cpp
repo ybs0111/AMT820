@@ -91,6 +91,19 @@ void CRun_LdPicker::Thread_Run()
 
 void CRun_LdPicker::RunInit()
 {
+	if (st_handler.mn_init_state[INIT_LD_ROBOT] != CTL_NO)		return;		// No 일때만 초기화 작업을 한다. 초기화가 끝나면 YES->READY가 되기 떄문에...
+	
+	switch(mn_InitStep)
+	{
+		case 0:
+			mn_InitStep = 100;
+			break;
+
+		case 100:
+			break;
+
+	}
+	
 }
 
 void CRun_LdPicker::RunMove()

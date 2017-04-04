@@ -165,11 +165,11 @@ CAlg_Mysql::CAlg_Mysql()
 		m_n_tray_table_type[i+5]	= TEXT_TYPE;
 	}
 	
-	if(MySql_Open("localhost", "root", "1111", 3306))	
-	{
-		WaitTime(0,1000);
-		WaitTime(1,300);	
-	}
+// 	if(MySql_Open("localhost", "root", "1111", 3306))	
+// 	{
+// 		WaitTime(0,1000);
+// 		WaitTime(1,300);	
+// 	}
 	
 	MySql_Close();
 	

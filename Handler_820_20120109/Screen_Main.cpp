@@ -91,6 +91,7 @@ BEGIN_MESSAGE_MAP(CScreen_Main, CFormView)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_LOT_OPEN, OnLotOpen)
 	ON_BN_CLICKED(IDC_BTN_DOOR_OPEN, OnBtnDoorOpen)
+	ON_WM_DESTROY()
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_WORK_END, OnMain_Work_Info_Display)  // 테스트 결과 정보 화면에 출력하기 위한 사용자 정의 메시지 추가 
 END_MESSAGE_MAP()
@@ -155,6 +156,32 @@ void CScreen_Main::OnInitialUpdate()
 /* ****************************************************************************** */
 /* 테스트 결과 정보 화면에 출력하기 위한 함수                                     */
 /* ****************************************************************************** */
+
+void CScreen_Main::OnDestroy() 
+{
+	st_handler.cwnd_main = NULL;		// MAIN 화면 핸들 초기화
+	if( mp_main_font != NULL )
+	{
+		delete mp_main_font;
+		mp_main_font = NULL;
+	}
+
+	if( mp_main_big_font != NULL )
+	{
+		delete mp_main_big_font;
+		mp_main_big_font = NULL;
+	}
+	
+	if( mp_main_font1 != NULL )
+	{
+		delete mp_main_font1;
+		mp_main_font1 = NULL;
+	}
+	CFormView::OnDestroy();
+	
+	// TODO: Add your message handler code here
+	
+}
 
 
 void CScreen_Main::OnMain_GroupBox_Set()
