@@ -44,6 +44,34 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Basic)
 	enum { IDD = IDD_SCREEN_BASIC };
+	CXPGroupBox	m_group_Retry_Cnt;
+	CEXDigitST	m_dgt_Retry_Cnt;
+	CEXDigitST	m_dgt_Rubb;
+	CEXDigitST	m_dgt_Pick_Retry_Cnt;
+	CEXDigitST	m_dgt_Partial_Cnt;
+	CEXDigitST	m_dgt_Offset_Dis;
+	CEXDigitST	m_dgt_Offset_30;
+	CEXDigitST	m_dgt_Offset_20;
+	CEXDigitST	m_dgt_Offset_10;
+	CEXDigitST	m_dgt_Offset;
+	CEXDigitST	m_dgt_Epoxy_Y;
+	CEXDigitST	m_dgt_Epoxy_X;
+	CEXDigitST	m_dgt_Elv_Partial_Cnt;
+	CEXDigitST	m_dgt_7387_Alarm_Cnt;
+	CGradientStatic	m_msg_Epoxy_Y;
+	CGradientStatic	m_msg_Offset_30;
+	CGradientStatic	m_msg_Offset_20;
+	CGradientStatic	m_msg_Offset_10;
+	CGradientStatic	m_msg_Offset;
+	CGradientStatic	m_msg_Epoxy_X;
+	CGradientStatic	m_msg_Distance;
+	CXPGroupBox	m_group_Rubb_Cnt;
+	CXPGroupBox	m_group_Pick_Retry_Cnt;
+	CXPGroupBox	m_group_Patial_Cnt;
+	CXPGroupBox	m_group_Epoxy_Offset;
+	CXPGroupBox	m_group_Elv_Partial_Cnt;
+	CXPGroupBox	m_group_Carrier_Move;
+	CXPGroupBox	m_group_7387_Alarm_Cnt;
 	CButtonST	m_btn_delete;
 	CButtonST	m_btn_create;
 	CXPGroupBox	m_group_operate_method;
@@ -55,13 +83,43 @@ public:
 // Attributes
 public:
 	int				m_n_filename_pos;
-	int				m_n_operate_cnt[3];
-	int				m_n_operate_used[3];
-	int				m_n_mode_interface[2];
-	int				m_n_mode_device[2];
+	int				m_n_operate_cnt[MAXOPERATORCNT];
+	int				m_n_operate_used[MAXOPERATORCNT];
+	int				m_n_mode_interface[2]; //V
+	int				m_n_mode_device[2]; ///V
 	int				m_n_mode_retest[2];
-	int				m_n_count_retry[2];
+
 	int				mn_device_name;
+
+	//kwlee 2017.0404
+	
+	int             m_nModeTester[2];
+	int             m_nModeBcr[2];
+	int             m_nModeModule[2];
+	int             m_nModeOffline[2];
+
+	int				m_nmode_7387[2];
+	int             m_nmode_tray_type[2]; //Type1, Type2
+	int				m_n7387InspectAlarmSkipMode[2];
+	int				m_n3874InspectMode[2];
+	int				n_Light_Curtain_Mode[2];
+	int				n_mode_case_assembly[2];
+	
+	int				m_n_count_retry[2];
+	int             m_nCountPickRetry[2];
+	int             m_nCountPartial[2];
+	int             m_nCount_elevator_Partial[2];
+	int				m_n7387AlarmCount[2];
+	int				n_rubb_count[2];
+	double			dEpoxyXLineOffSet[2];
+	double			dEpoxyYLineOffSet[2];
+	
+	double			dHSCarrierSpreadMoveOffset[2];
+	double			dHSCarrierSpreadMoveDistance[2];
+	double			dHeatSinkCarrierSpreadMove1Offset[2];
+	double			dHeatSinkCarrierSpreadMove2Offset[2];
+	double			dHeatSinkCarrierSpreadMove3Offset[2];
+	
 
 	TSpread			*m_grid_operate;
 	TSpread			*m_grid_file;
@@ -74,7 +132,9 @@ public:
 	CString mstr_device_name[2];		// 선택된 디바이스 종류 저장 변수
 	CString mstr_temp_device;			// 선택된 디바이스 종류 임시 저장 변수
 	CString mstr_load_file;				// 로딩할 파일에 대한 [폴더]+[파일명] 저장 변수
+
 //	int mn_device_name;					// 선택된 디바이스의 리스트 위치 저장 변수
+
 
 	CString mstr_new_device;			// 새로 생성할 디바이스의 이름.
 
@@ -88,6 +148,7 @@ public:
 // Operations
 public:
 	void Init_Grid_Operate();
+	void Init_Grid_Operate_1();
 	void Display_File(int n_mode, int n_count, CString str_filename);
 	void Init_Grid_File();
 	void OnBasic_Data_Display();
@@ -136,6 +197,19 @@ protected:
 	afx_msg void OnBtnBasicApply();
 	afx_msg void OnBtnBasicCreate();
 	afx_msg void OnBtnDelete();
+	afx_msg void OnDgtEpoxyX();
+	afx_msg void OnDgtEpoxyY();
+	afx_msg void OnDgtOffset();
+	afx_msg void OnDgtOffset10();
+	afx_msg void OnDgtOffset20();
+	afx_msg void OnDgtOffset30();
+	afx_msg void OnDgtOffsetDis();
+	afx_msg void OnDgtRubb();
+	afx_msg void OnDgt7387AlarmCnt();
+	afx_msg void OnDgtElvPartialCnt();
+	afx_msg void OnDgtPickRetryCnt();
+	afx_msg void OnDgtPartialCnt();
+	afx_msg void OnDgtRetryCnt();
 	//}}AFX_MSG
 	afx_msg void OnCell_L_Click(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnCell_R_Click(WPARAM wParam, LPARAM lParam);

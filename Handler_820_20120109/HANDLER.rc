@@ -1529,18 +1529,68 @@ BEGIN
     PUSHBUTTON      "Cancle",IDC_BTN_BASIC_CANCEL,552,455,79,33
     GROUPBOX        "model",IDC_GROUP_MODEL,470,6,161,443
     CONTROL         "",IDC_CUSTOM_FILE_LIST,"fpSpread70",WS_BORDER | 
-                    WS_TABSTOP,474,84,153,354
-    GROUPBOX        "운영 정보",IDC_GROUP_OPERATE_METHOD,6,6,93,338
+                    WS_TABSTOP,484,84,133,354
+    GROUPBOX        "운영 정보",IDC_GROUP_OPERATE_METHOD,6,5,189,483
     CONTROL         "",IDC_CUSTOM_OPERATE,"fpSpread70",WS_BORDER | 
-                    WS_TABSTOP,12,21,80,313
+                    WS_TABSTOP,12,17,86,466
     PUSHBUTTON      "delete model",IDC_BTN_DELETE,474,50,73,29
-    GROUPBOX        "tray type",IDC_STATIC_TRAY_TYPE,107,6,58,55,WS_GROUP
+    GROUPBOX        "tray type",IDC_STATIC_TRAY_TYPE,410,148,41,43,WS_GROUP
     CONTROL         "type1",IDC_RADIO_TYPE1,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,115,21,33,10
+                    WS_GROUP,417,159,33,10
     CONTROL         "type2",IDC_RADIO_TYPE2,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,115,41,33,10
+                    WS_GROUP,417,173,33,10
     EDITTEXT        IDC_EDIT_DEVICE_TYPE,474,21,153,24,ES_CENTER | 
                     ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "",IDC_CUSTOM_OPERATE2,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,101,17,86,466
+    GROUPBOX        "Epoxy_Offset",IDC_GROUP_EPOXY_OFFSET,199,7,128,86
+    CTEXT           "",IDC_DGT_EPOXY_X,236,22,86,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_EPOXY_Y,236,51,86,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "X",IDC_MSG_EPOXY_X,205,22,28,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "Y",IDC_MSG_XPOXY_Y,205,51,28,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    GROUPBOX        "Carrier_Move",IDC_GROUP_CARRIER_MOVE,199,94,128,162
+    CTEXT           "",IDC_DGT_OFFSET,244,110,74,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_OFFSET_10,244,140,74,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Offset",IDC_MSG_OFFSET,203,110,38,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "10",IDC_MSG_OFFSET_10,203,140,38,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "",IDC_DGT_OFFSET_20,244,167,74,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_OFFSET_30,244,196,74,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "20",IDC_MSG_OFFSET_20,203,167,38,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "30",IDC_MSG_OFFSET_30,203,196,38,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "",IDC_DGT_OFFSET_DIS,244,223,74,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Dis",IDC_MSG_DISTANCE,203,223,38,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    GROUPBOX        "Pick Retry Cnt",IDC_GROUP_PICK_RETRY_CNT,334,9,56,42
+    CTEXT           "",IDC_DGT_PICK_RETRY_CNT,346,20,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "Partial Cnt",IDC_GROUP_PARTIAL_CNT,395,10,56,42
+    CTEXT           "",IDC_DGT_PARTIAL_CNT,404,21,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "Elv Partial Cnt",IDC_GROUP_ELV_PARTIAL_CNT,334,55,56,42
+    CTEXT           "",IDC_DGT_ELV_PARTIAL_CNT,346,66,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "7387 Alarm Cnt",IDC_GROUP_7387_ALARM_CNT,395,56,58,42
+    CTEXT           "",IDC_DGT_7387_ALARM_CNT,406,67,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "Rubb Cnt",IDC_GROUP_RUBB_CNT,335,101,56,42
+    CTEXT           "",IDC_DGT_RUBB,346,112,36,25,SS_NOTIFY | SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    GROUPBOX        "Retry Cnt",IDC_GROUP_RETRY_CNT,394,101,56,42
+    CTEXT           "",IDC_DGT_RETRY_CNT,405,112,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
 END
 
 IDD_MOTOR_PART DIALOG DISCARDABLE  0, 0, 629, 490

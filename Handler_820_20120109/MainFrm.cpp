@@ -99,6 +99,7 @@ tag_BUFFER_INFO				st_buffer_info[THREAD_MAX_SITE];
 tag_PICKER_INFO				st_picker[THREAD_MAX_SITE];
 st_carrier_buffer_info_param	st_carrier_buff_info[MAX_SHIFT_DATA_NUM];
 st_variable_param			st_var;
+struct st_vision_camera		st_vision;
 
 CPublic_Function			Func;
 struct st_serial_info		rs_232;
@@ -175,6 +176,12 @@ CMainFrame::CMainFrame()
 		st_server[i].n_connect	= NO;
 	}
 
+	for (i = 0; i < MAXSITE; i++)
+	{
+		st_handler.mn_init_state[i] = CTL_NO;
+	}
+
+
 	st_handler.n_mot_board_initial	= FALSE;
 	st_handler.n_load_state			= FALSE;
 	st_handler.n_lot_flag			= CTL_LOTEND_FINISH;
@@ -183,6 +190,12 @@ CMainFrame::CMainFrame()
 
 	st_handler.mn_virtual_mode = 1;
 	COMI.mn_simulation_mode = 1;
+	FAS_IO.mn_simulation_mode = 1;
+	//kwlee 2017.0404 
+// 	st_handler.mn_virtual_mode = 0;
+// 	COMI.mn_simulation_mode = 0;
+// 	FAS_IO.mn_simulation_mode = 0;
+	
 
 	OnMain_Var_Default_Set();				// 메인 프레임 클래스 변수 초기화 함수
 
@@ -1479,7 +1492,7 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 
 			if (st_handler.cwnd_main != NULL)
 			{
-				st_handler.cwnd_main->PostMessage(WM_WORK_END, MAIN_TIMEINFO, st_work.mn_run_status);
+//				st_handler.cwnd_main->PostMessage(WM_WORK_END, MAIN_TIMEINFO, st_work.mn_run_status);
 			}
 		}
 	}

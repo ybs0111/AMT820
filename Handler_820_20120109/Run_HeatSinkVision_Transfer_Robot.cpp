@@ -40,6 +40,7 @@ CRun_HeatSinkVision_Transfer_Robot::CRun_HeatSinkVision_Transfer_Robot()
 	mn_InitStep = 0;
 	mn_RunHsStep = -1;
 	mn_RunVisStep = -1;
+	mn_MoveMeasureStep = 0;
 
 	int i =0, m = 0, x = 0, y = 0;
 	for( i = 0; i <m_nPickerPara; i++ )
@@ -66,6 +67,8 @@ CRun_HeatSinkVision_Transfer_Robot::CRun_HeatSinkVision_Transfer_Robot()
 			}
 		}
 	}
+	m_nCarriorPos = 0;
+	m_nVisCarriorPos = 0;
 }
 
 CRun_HeatSinkVision_Transfer_Robot::~CRun_HeatSinkVision_Transfer_Robot()
@@ -113,6 +116,7 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
 	switch(mn_RunVisStep)
 	{
 		case -1:
+			m_nTotalVError = 0;
 			mn_RunVisStep = 0;
 			break;
 
@@ -184,9 +188,514 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
 			break;
 
 		case 1100:
+			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_VISION_RBT][0] == CTL_REQ && st_sync.nHeatSinkRbt_Dvc_Req[THD_VISION_RBT][1] == WORK_PLACE )
+			{
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_VISION_RBT][0] = CTL_READY;
+				mn_RunHsStep = 1200;
+			}
 			break;
 
+		case 1200:
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][0] == CTL_CHANGE && st_sync.nHeatSinkRbt_Dvc_Req[THD_VISION_RBT][1] == WORK_PLACE )
+			{
+				m_nVisCarriorPos = 0;
+				m_nVisTeachPos = 0;
+				mn_RunHsStep = 2000;
+			}
+			break;
+
+		case 1800:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisZ, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_RunVisStep = 2000;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_RunVisStep = 1800;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				mn_RunVisStep = 1800;
+			}
+			break;
+
+		case 1900:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisY, st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_RunVisStep = 2000;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_RunVisStep = 1900;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				mn_RunVisStep = 1900;
+			}
+			break;
+
+
+		case 2000:
+			if( COMI.Get_MotCurrentPos(m_nRobot_Z) > (st_motor[m_nRobot_Z].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) )
+			{
+				mn_RunVisStep = 1800;
+				break;
+			}
+			if( COMI.Get_MotCurrentPos(m_nRobot_VisY) > (st_motor[m_nRobot_Z].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) )
+			{
+				mn_RunVisStep = 1900;
+				break;
+			}
+
+			if(st_basic.n_3874InspectMode == 0)
+			{
+				Set_Device_Carrier_Camera_LED_LAMP_OnOff(IO_ON);
+				Set_Device_Carrier_Camera_Y_Press_UpDown(IO_ON);
+			}
+			mn_RunHsStep = 2100;
+			break;
+
+		case 2100:			
+			if(st_basic.n_3874InspectMode == 0)
+			{
+				nRet_1 = Chk_Device_Carrier_Camera_Y_Press_UpDown(IO_ON);
+				if( nRet_1 == RET_GOOD )
+				{
+
+				}
+				else if( nRet_1 == RET_ERROR )
+				{
+					CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, m_strAlarmCode);
+				}
+				else
+				{
+					break;
+				}				
+			}
+			mn_RunHsStep = 2110;
+			break;
+
+		case 2110:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisY, st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_TOP_POS + m_nVisCarriorPos], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_RunVisStep = 2200;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_RunVisStep = 2110;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				mn_RunVisStep = 2110;
+			}
+			break;
+
+		case 2200:
+			st_vision.bHeatsinkMeasureCmp = FALSE;
+			st_vision.bEpoxyMeasureCmp = FALSE;
+			st_vision.nEpoxyMeasureResultFlag = -1;
+			st_vision.nHeatSinkMeasureResultFlag = -1;
+			Func.SendEpoxyMeasureStart();
+			mn_RunVisStep = 2300;
+			break;
+
+		case 2300:
+			if( st_vision.bEpoxyMeasureCmp == TRUE )
+			{
+				mn_RunVisStep = 2310;
+			}
+			break;
+
+		case 2310:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisY, st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_RunVisStep = 2400;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_RunVisStep = 2310;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				mn_RunVisStep = 2310;
+			}
+			break;
+
+		case 2400:
+			Set_Device_Carrier_Camera_LED_LAMP_OnOff(IO_OFF);
+			mn_RunVisStep = 2500;
+			break;
+
+		case 2500:
+			st_vision.bHeatsinkMeasureCmp = FALSE;
+			st_vision.bEpoxyMeasureCmp = FALSE;
+			st_vision.nEpoxyMeasureResultFlag = -1;
+			st_vision.nHeatSinkMeasureResultFlag = -1;
+			Func.SendHeatsinkMeasureStart(m_nVisTeachPos);
+			mn_RunVisStep = 2600;
+			break;
+
+		case 2600:
+			if( st_vision.bHeatsinkMeasureCmp == TRUE )
+			{
+				mn_RunVisStep = 2700;
+			}
+			break;
+
+		case 2700:
+
+
+
+
+
+			Func.SendHeatsinkMeasureStart(m_nVisTeachPos);
+			mn_RunVisStep = 2800;
+			break;
+
+		case 2800:
+			break;
+
+		case 2900:
+			break;
+
+		case 5000:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisY, st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_PRESS_START_POS] + (m_nVisCarriorPos*1), COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_RunVisStep = 5100;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_RunVisStep = 5000;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				mn_RunVisStep = 5000;
+			}
+			break;
+
+		case 5100:
+			Set_Device_Carrier_Camera_Y_Press_UpDown(IO_OFF);
+			break;
+
+
+		case 6000:
+			m_nVisCarriorPos++;
+			if( m_nVisCarriorPos >= 3)
+			{
+
+			}
+			else
+			{
+				mn_RunVisStep = 2000;
+			}
+
+
 	}
+}
+
+int CRun_HeatSinkVision_Transfer_Robot::Process_Measure_Vision()
+{
+	int nRet_1,nRet_2, nFuncRet = RET_PROCEED;
+	long lMotionDone=0;
+	bool bSkip = false;
+	char Jamcode[10];
+	CString strAlarm;
+	
+	Func.ThreadFunctionStepTrace(29, mn_MoveMeasureStep);
+	switch(mn_MoveMeasureStep)
+	{
+		case  0:
+			m_nContinusVError = 0;
+			mn_MoveMeasureStep = 1000;
+			break;
+
+		case 1000:
+			//nMode == 2 => Dispensor로 자재를 Pick할 수 있는 위치로 이동
+			nRet_1 = Robot_AutoMove_Safety_Zone( 1, 0 );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_MoveMeasureStep = 1100;
+			}
+			break;
+
+		case 1100:
+			if( COMI.Get_MotCurrentPos(m_nRobot_X) <= ( st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRASNFER_X_TURN_READY_POS] + st_motor[m_nRobot_X].mn_allow ) )
+			{
+
+				m_dpTargetPosList[0] = st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRANSFER_X_INSPECT_POS];
+				m_dpTargetPosList[1] = st_motor[m_nRobot_Y].md_pos[P_HEATSINK_TRANSFER_Y_INSPECT_POS];
+				
+				m_dpSpdRatio[0] = (double)COMI.mn_runspeed_rate;	//work 속도 
+				m_dpSpdRatio[1] = (double)COMI.mn_runspeed_rate;	// 가속 
+				m_dpSpdRatio[2] = (double)COMI.mn_runspeed_rate;	// 감속 
+				
+				nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, m_dpSpdRatio);
+				if(nRet_1 == BD_GOOD) //정상적으로 완료된 상태
+				{
+					mn_MoveMeasureStep = 1200;
+					
+				}
+				else if (nRet_1 == BD_RETRY)
+				{
+					mn_MoveMeasureStep = 1100;
+				}
+				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+				{
+					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					mn_MoveMeasureStep = 1100;
+				}
+			}
+			else
+			{
+				mn_MoveMeasureStep = 1000;
+			}
+			break;
+
+		case 1200:
+			if( COMI.Get_MotCurrentPos(m_nRobot_X) <= ( st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRASNFER_X_TURN_READY_POS] + st_motor[m_nRobot_X].mn_allow ) )
+			{
+				nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INSPECT_POS], COMI.mn_runspeed_rate);
+				if (nRet_1 == BD_GOOD) //좌측으로 이동
+				{
+					mn_MoveMeasureStep = 2000;
+				}
+				else if (nRet_1 == BD_RETRY)
+				{
+					mn_MoveMeasureStep = 1200;
+				}
+				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+				{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+					CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+					mn_MoveMeasureStep = 1200;
+				}
+			}
+			else
+			{
+				mn_MoveMeasureStep = 1000;
+			}
+			break;
+
+		case 2000:
+			if( st_basic.n_mode_7387 == CTL_YES )
+			{
+				st_vision.b7387MeasureCmp = false;
+				st_vision.n7387MeasureResultFlag = -1;
+				
+				Func.Send7387MeasureStart();
+				m_dwMCameraResWaitTime[0] = GetCurrentTime();
+				mn_MoveMeasureStep = 2100;
+			}
+			else
+			{
+				mn_MoveMeasureStep = 2200;
+			}
+			break;
+
+		case 2100:
+			m_dwMCameraResWaitTime[1] = GetCurrentTime();
+			m_dwMCameraResWaitTime[2] = m_dwMCameraResWaitTime[1] - m_dwMCameraResWaitTime[0];
+			if( m_dwMCameraResWaitTime[2] <= 0 ) m_dwMCameraResWaitTime[0] = GetCurrentTime();
+
+			if( st_vision.b7387MeasureCmp == true )
+			{
+				mn_MoveMeasureStep = 2200;
+			}
+			else
+			{
+				if( m_dwMCameraResWaitTime[2] > 10000 )
+				{//941000 1 A "MEASURE_VISION_IS_NOT_RESPONSE."
+					CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, "941000");
+				}
+			}
+			break;
+
+		case 2200:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_MoveMeasureStep = 3000;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_MoveMeasureStep = 2200;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+				mn_MoveMeasureStep = 2200;
+			}
+			break;
+
+		case 3000:
+			if( st_basic.n_mode_7387 == CTL_YES )
+			{
+
+				if(st_vision.n7387MeasureResultFlag == CTL_NO || st_basic.n_7387InspectAlarmSkipMode == CTL_YES )
+				{
+					st_vision.n7387MeasureAlarmCnt = 0;
+					mn_MoveMeasureStep = 4000;
+				}
+				else if(st_vision.n7387MeasureResultFlag > 0 && st_basic.n_7387InspectAlarmSkipMode == 0)
+				{	
+					st_vision.n7387MeasureAlarmCnt++;
+					st_basic.n7387AlarmCount++;
+					if(m_nContinusVError > st_basic.n7387AlarmCount)
+					{
+						m_nContinusVError = 0;
+						//941001 1 A "VISION_MEASURE_7387_ERROR_HEATSINK_TRANSFER.";						
+						CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, "941001");
+
+					}
+					else if(m_nTotalVError > st_vision.n7387MeasureAlarmCnt)
+					{
+						m_nTotalVError = 0;
+						sprintf(Jamcode, "110037");//20130825
+						
+						//941001 1 A "VISION_MEASURE_7387_ERROR_HEATSINK_TRANSFER.";						
+						CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, "941001");
+					}
+					else
+					{
+						//HeatSink 버리러 가기
+						mn_MoveMeasureStep = 3100;
+						
+					}
+				}
+			}
+			else
+			{
+				mn_MoveMeasureStep = 4000;
+			}
+			break;
+
+		case 3010:
+			//nMode == 2 => Dispensor로 자재를 Pick할 수 있는 위치로 이동
+			nRet_1 = Robot_AutoMove_Safety_Zone( 1, 0 );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_MoveMeasureStep = 3100;
+			}
+			break;
+
+		case 3100:
+			if( COMI.Get_MotCurrentPos(m_nRobot_X) <= ( st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRASNFER_X_TURN_READY_POS] + st_motor[m_nRobot_X].mn_allow ) )
+			{
+				
+				m_dpTargetPosList[0] = st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRANSFER_X_INSPECT_GABAGE_POS];
+				m_dpTargetPosList[1] = st_motor[m_nRobot_Y].md_pos[P_HEATSINK_TRANSFER_Y_INSPECT_GABAGE_POS];
+				
+				m_dpSpdRatio[0] = (double)COMI.mn_runspeed_rate;	//work 속도 
+				m_dpSpdRatio[1] = (double)COMI.mn_runspeed_rate;	// 가속 
+				m_dpSpdRatio[2] = (double)COMI.mn_runspeed_rate;	// 감속 
+				
+				nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, m_dpSpdRatio);
+				if(nRet_1 == BD_GOOD) //정상적으로 완료된 상태
+				{
+					mn_MoveMeasureStep = 3200;
+					
+				}
+				else if (nRet_1 == BD_RETRY)
+				{
+					mn_MoveMeasureStep = 3100;
+				}
+				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+				{
+					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					mn_MoveMeasureStep = 3100;
+				}
+			}
+			else
+			{
+				mn_MoveMeasureStep = 3010;
+			}
+			break;
+
+		case 3200:
+			nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRANSFER_X_INSPECT_GABAGE_POS], st_motor[m_nRobot_X].mn_allow);
+			nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_HEATSINK_TRANSFER_Y_INSPECT_GABAGE_POS], st_motor[m_nRobot_Y].mn_allow);
+			if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
+			{
+				nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INSPECT_GABAGE_POS], COMI.mn_runspeed_rate);
+				if (nRet_1 == BD_GOOD) //좌측으로 이동
+				{
+					mn_MoveMeasureStep = 3300;
+				}
+				else if (nRet_1 == BD_RETRY)
+				{
+					mn_MoveMeasureStep = 3200;
+				}
+				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+				{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+					CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+					mn_MoveMeasureStep = 3200;
+				}
+			}
+			else
+			{
+				mn_RunHsStep = 3010;
+			}
+			break;
+
+		case 3300:
+			//COMM
+			//피치를 벌린다
+			mn_RunHsStep = 3400;
+			break;
+
+		case 3400:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_MoveMeasureStep = 3500;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_MoveMeasureStep = 3400;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+				mn_MoveMeasureStep = 3400;
+			}
+			break;
+
+		case 3500://check GABAGE sensor
+			nRet_1 = g_ioMgr.get_in_bit(st_io.i_HeatSink_Garbage_Full_Chk_1, IO_ON);
+			nRet_2 = g_ioMgr.get_in_bit(st_io.i_HeatSink_Garbage_Full_Chk_2, IO_ON);
+			if( nRet_1 == IO_OFF || nRet_2 == IO_OFF )
+			{
+				strAlarm.Empty();
+				if( nRet_1 == IO_OFF ) strAlarm.Format("8%d%04d",IO_OFF,st_io.i_HeatSink_Garbage_Full_Chk_1);
+				else				   strAlarm.Format("8%d%04d",IO_OFF,st_io.i_HeatSink_Garbage_Full_Chk_2);
+				CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, strAlarm);
+			}
+			else
+			{
+				mn_MoveMeasureStep = 3600;
+			}
+			break;
+
+		case 3600:
+			nFuncRet = RET_ERROR;
+			mn_MoveMeasureStep = 0;
+			break;
+
+		case 4000:
+			nFuncRet = RET_GOOD;
+			mn_MoveMeasureStep = 0;
+			break;
+	}
+	return nFuncRet;
 }
 
 void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
@@ -259,14 +768,32 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 
 		case 1000:
 			m_nFindLotNo_Flag = -1;
+			m_nlast_pick = CTL_NO;
 			if( g_lotMgr.GetLotCount() > 0 )
 			{
-				if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
+				if( g_lotMgr.GetLotAt(0).GetInputHeatsinkCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
 				{
-					//load plate에 자재 요청
 					m_nFindLotNo_Flag = 0;
 					m_strLotNo[m_nFindLotNo_Flag] = g_lotMgr.GetLotAt(0).GetLotID();
 					m_strPartNo[m_nFindLotNo_Flag]  = g_lotMgr.GetLotAt(0).GetPartID();
+
+					if( ( g_lotMgr.GetLotAt(0).GetInputHeatsinkCnt(PRIME)-1) == g_lotMgr.GetLotAt(0).GetTotLotCount())
+					{
+						if( st_buffer_info[THD_PLACE_HEATSINK_DVC].st_pcb_info[0].nYesNo == CTL_YES || st_buffer_info[THD_PICK_HEATSINK_DVC].st_pcb_info[0].nYesNo == CTL_YES )
+						{
+							m_nlast_pick = CTL_YES;
+						}
+						else
+						{
+							m_nlast_pick = CTL_READY;
+						}
+					}
+					//load plate에 자재 요청
+					mn_RunHsStep = 1100;
+				}
+				else if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) == g_lotMgr.GetLotAt(0).GetTotLotCount() )
+				{
+
 				}
 				else if( g_lotMgr.GetLotCount() >= 2 )
 				{
@@ -280,8 +807,16 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 					{
 						return;
 					}
+					mn_RunHsStep = 1100;
 				}
-				mn_RunHsStep = 1100;
+				else
+				{
+					if( g_lotMgr.GetLotCount() > 0 )
+					{
+
+					}
+
+				}
 			}
 			break;
 
@@ -298,7 +833,8 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 			nRet_1 = Robot_AutoMove_Safety_Zone( 0, 0 );
 			if( nRet_1 == RET_GOOD )
 			{
-				mn_RunHsStep = 1200;
+				if( m_nlast_pick == CTL_YES ) mn_RunHsStep = 2000;
+				else						  mn_RunHsStep = 1200;
 			}
 			break;
 
@@ -339,27 +875,35 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 		case 2200:
 			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_READY && st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == WORK_PLACE)
 			{
-				mn_RunHsStep = 2230;
+				 mn_RunHsStep = 2300;
 			}
 			break;
 
 		case 2300:
-			if( g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_0_Check, IO_ON) == IO_ON &&	g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_180_Check, IO_OFF) == IO_OFF )
+			if( g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_0_Check, IO_ON) == IO_ON && g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_180_Check, IO_OFF) == IO_OFF )
 			{
-				//int Process_Dvc_Place(int nMode, int nWork_Site, int nPos);
-				nRet_1 = Process_Dvc_Place( 0, THD_PLACE_HEATSINK_DVC, 0 );
-				if( nRet_1 == RET_GOOD )
+				if( m_nlast_pick == CTL_YES ) 
 				{
-					mn_RunHsStep = 2400;
+					st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] = CTL_RETEST;
+					st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] = WORK_PLACE;
+					mn_RunHsStep = 3100;
 				}
-				else if( nRet_1 == RET_PICKER_NOT_FIND)
+				else
 				{
-					mn_RunHsStep = 2300;
-				}
-				else if( nRet_1 == RET_TRAY_NOT_FIND)
-				{
-					mn_RunHsStep = 2300;
-				}
+					nRet_1 = Process_Dvc_Place( 0, THD_PLACE_HEATSINK_DVC, 0 );
+					if( nRet_1 == RET_GOOD )
+					{
+						mn_RunHsStep = 2400;
+					}
+					else if( nRet_1 == RET_PICKER_NOT_FIND)
+					{
+						mn_RunHsStep = 2300;
+					}
+					else if( nRet_1 == RET_TRAY_NOT_FIND)
+					{
+						mn_RunHsStep = 2300;
+					}
+				}			
 			}
 			else
 			{
@@ -384,8 +928,18 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 			break;
 
 		case 2510:
-
-			if( st_picker[THD_PLACE_HEATSINK_DVC].st_pcb_info[0].nYesNo == CTL_YES && st_picker[THD_PICK_HEATSINK_DVC].st_pcb_info[0].nYesNo == CTL_YES )
+			if( m_nlast_pick == CTL_READY )
+			{
+				if( st_buffer_info[THD_PLACE_HEATSINK_DVC].st_pcb_info[0].nYesNo == CTL_YES || st_buffer_info[THD_PICK_HEATSINK_DVC].st_pcb_info[0].nYesNo == CTL_YES )
+				{
+					mn_RunHsStep = 3000;
+				}
+				else
+				{
+					mn_RunHsStep = 1000;
+				}
+			}
+			else if( st_buffer_info[THD_PLACE_HEATSINK_DVC].st_pcb_info[0].nYesNo == CTL_YES && st_buffer_info[THD_PICK_HEATSINK_DVC].st_pcb_info[0].nYesNo == CTL_YES )
 			{
 				mn_RunHsStep = 3000;
 			}
@@ -406,19 +960,125 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 			nRet_1 = Process_Dvc_Pickup( 0, THD_PICK_REVERSE_DVC );
 			if( nRet_1 == RET_GOOD )
 			{
-				mn_RunHsStep = 2000;
+				mn_RunHsStep = 3200;
 			}
 			else if( nRet_1 == RET_PICKER_NOT_FIND)
 			{
-				mn_RunHsStep = 1200;
+				mn_RunHsStep = 3100;
 			}
 			else if( nRet_1 == RET_TRAY_NOT_FIND)
 			{
-				mn_RunHsStep = 1200;
+				mn_RunHsStep = 3100;
 			}
 			break;
 
+		case 3200:
+			nRet_1 = Process_Measure_Vision();
+			if( nRet_1 == RET_GOOD )
+			{
+				g_lotMgr.GetLotAt(m_nFindLotNo_Flag).AddHeatSinkInputCnt(PRIME);//히트싱크 픽업증가
+				mn_RunHsStep = 4000;
+			}
+			else if(nRet_1 == RET_ERROR)//hestsink를 버렸다 다시 집는다.
+			{
+				mn_RunHsStep = 1000;
+			}
+			break;
 
+		case 4000://move carrier safety
+			nRet_1 = Robot_AutoMove_Safety_Zone( 3, 0 );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_RunHsStep = 4100;
+			}
+			break;
+			
+		case 4100:
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] == CTL_REQ && st_sync.nHeatSinkRbt_Dvc_Req[THD_HEATSINK_RBT][1] == WORK_PLACE)
+			{
+				m_nCarriorPos = 0;
+				st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] = CTL_READY;
+				mn_RunHsStep = 4200;
+			}
+			else if( m_nCarriorPos> 0 && st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] == CTL_CHANGE && st_sync.nHeatSinkRbt_Dvc_Req[THD_HEATSINK_RBT][1] == WORK_PLACE)
+			{
+				mn_RunHsStep = 4210;
+			}
+			break;
+
+		case 4110:
+			nRet_1 = Robot_AutoMove_Safety_Zone( 3, 0 );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_RunHsStep = 4200;
+			}
+			break;
+
+		case 4200:
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] == CTL_CHANGE && st_sync.nHeatSinkRbt_Dvc_Req[THD_HEATSINK_RBT][1] == WORK_PLACE)
+			{
+				mn_RunHsStep = 4210;
+			}
+			break;
+
+		case 4210:
+			if( ( COMI.Get_MotCurrentPos(m_nRobot_X) <= ( st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRASNFER_X_TURN_READY_POS] + st_motor[m_nRobot_X].mn_allow ) ) &&
+				( COMI.Get_MotCurrentPos(m_nRobot_Y) > ( st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS] - st_motor[m_nRobot_X].mn_allow ) ) )
+			{
+				nRet_1 = Process_Dvc_Place(0, THD_PACLE_CARRIER_DVC, m_nCarriorPos);
+				if( nRet_1 == RET_GOOD )
+				{
+					mn_RunHsStep = 4300;
+				}
+				else if( nRet_1 == RET_PICKER_NOT_FIND)
+				{
+					mn_RunHsStep = 4200;
+				}
+				else if( nRet_1 == RET_TRAY_NOT_FIND)
+				{
+					mn_RunHsStep = 4200;
+				}
+			}
+			else
+			{
+				mn_RunHsStep = 4000;
+			}
+			break;
+
+		case 4300:
+			m_nCarriorPos++;
+			if( m_nCarriorPos >= 3 )
+			{
+				mn_RunHsStep = 4900;
+			}
+			else
+			{
+				mn_RunHsStep = 1000;
+			}
+			break;
+
+		case 4900:
+			nRet_1 = Robot_AutoMove_Safety_Zone( 0, 0 );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_RunHsStep = 5000;
+			}
+			break;
+
+		case 5000:
+			if( COMI.Get_MotCurrentPos(m_nRobot_Y) < ( st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS] + st_motor[m_nRobot_X].mn_allow ) )
+			{
+				st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] = CTL_NO;
+				
+				st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][0] = CTL_REQ;
+				st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][1] = WORK_PLACE;
+				mn_RunHsStep = 1000;
+			}
+			else
+			{
+				mn_RunHsStep = 4900;
+			}
+			break;
 
 	}
 }
@@ -515,6 +1175,12 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveDispensor()
 			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_CHANGE && st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == WORK_PLACE )
 			{
 				mn_RunDispensorStep = 1110;
+			}
+			else if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_RETEST && st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == WORK_PLACE )//last pick
+			{
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] = CTL_FREE;
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] = WORK_PICK;
+				mn_RunDispensorStep = 4500;
 			}
 			break;
 
@@ -836,7 +1502,7 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveDispensor()
 				m_npSet_WorkPosYXCPB[1] = 0;
 				m_npSet_WorkPosYXCPB[3] = 0;
 
-				Func.Data_Exchange_PickPlace(PICKER_PLACE_MODE, 1, THD_PICK_REVERSE_DVC, THD_PLACE_HEATSINK_DVC, m_npSet_WorkPosYXCPB);
+				Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, THD_PICK_REVERSE_DVC, THD_PLACE_HEATSINK_DVC, m_npSet_WorkPosYXCPB);
 				Set_HeatSink_Reverse_Turn(OFF);
 				mn_RunDispensorStep = 4300;
 			}
@@ -1063,7 +1729,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 				{
 					if(st_picker[nWork_Site].st_pcb_info[i].nYesNo == CTL_YES)
 					{
-						if(i >= 0 && m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num) < 3 )//site 3
+						if(i >= 0 && m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num) < 3 )//site 3ea
 						{
 							if(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].n_exist[m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num)] == CTL_NO ) // 
 							{//버퍼에 자재가 없고, 사용 가능한 위치일때만  자재를 놓을수 있게 한다.
@@ -1098,6 +1764,16 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 			mn_PlaceStep = 900;
 			break;
 		}
+
+		dCurrInspectY = COMI.Get_MotCurrentPos(M_HEATSINK_INSPECT_Y);
+		if( dCurrInspectY > ( st_motor[M_HEATSINK_INSPECT_Y].md_pos[P_HEATSINK_INSPECT_Y_INIT_POS] + st_motor[M_HEATSINK_INSPECT_Y].mn_allow ) )
+		{
+			m_strAlarmCode.Format( _T("%02d0008"), M_HEATSINK_INSPECT_Y ); 
+			CTL_Lib.Alarm_Error_Occurrence(1240, dWARNING, m_strAlarmCode);
+			break;
+		}
+
+
 
 		nRet_1 = Func.Calculate_MovePos_Find(0, m_nRobot_X, nWork_Site, nPos, m_npFindWorkPosYXCPB, &m_dTemp_CalTargetPos_X);             //Calculate_MovePos_Find(int nMotNum, int nSite, int nWorkPart, int *npFirstYXP_Pos, double *dpGetTargetPos)
 		nRet_2 = Func.Calculate_MovePos_Find(0, m_nRobot_Y, nWork_Site, nPos, m_npFindWorkPosYXCPB, &m_dTemp_CalTargetPos_Y);
@@ -1140,7 +1816,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 		if (nRet_1 == BD_GOOD) //좌측으로 이동
 		{
 			m_bDvcWaitChk_Falg =  false;
-			mn_PlaceStep = 2950;
+			mn_PlaceStep = 3000;
 		}
 		else if (nRet_1 == BD_RETRY)
 		{
@@ -1268,16 +1944,16 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 				break;
 			}
 			if		( nPos == TOP)		m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_CARRIER_TOP_DOWN_POS];
-			else if( nPos == MIDDLE) m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_CARRIER_MID_DOWN_POS];
-			else/* if( nPos == BTM)*/	   m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_CARRIER_BOT_DOWN_POS];
+			else if( nPos == MIDDLE)	m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_CARRIER_MID_DOWN_POS];
+			else/* if( nPos == BTM)*/	m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_CARRIER_BOT_DOWN_POS];
 
-			if(st_basic.n_mode_7387 == 0)//not use
+			if(st_basic.n_mode_7387 != CTL_YES)//not use
 			{
 				m_dpTargetPosList[2] = m_dpTargetPosList[2] / 2;
 			}
 		}
 		else 
-		{//what happen
+		{//what happen error
 			m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS];
 			break;
 		}
@@ -1348,14 +2024,98 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 		} 
 		break;
 
+	case 3202:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, m_dpTargetPosList[2], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{ 
+			mn_PlaceStep = 3300;
+			
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_PlaceStep = 3202;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
+			mn_PlaceStep = 3202;
+		}		
+		break;
+		
+	case 3204:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{ 
+			mn_PlaceStep = 3205;			
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_PlaceStep = 3204;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
+			mn_PlaceStep = 3204;
+		}		
+		break;
+
+	case 3205:
+		if( COMI.Get_MotCurrentPos(m_nRobot_Z) > st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS] +  st_motor[m_nRobot_X].mn_allow)
+		{
+			mn_PlaceStep = 3204;
+			break;
+		}
+		nRet_1 = Func.Calculate_MovePos_Find(0, m_nRobot_X, nWork_Site, nPos, m_npFindWorkPosYXCPB, &m_dTemp_CalTargetPos_X);             //Calculate_MovePos_Find(int nMotNum, int nSite, int nWorkPart, int *npFirstYXP_Pos, double *dpGetTargetPos)
+		nRet_2 = Func.Calculate_MovePos_Find(0, m_nRobot_Y, nWork_Site, nPos, m_npFindWorkPosYXCPB, &m_dTemp_CalTargetPos_Y);
+		
+		if(nRet_1 == RET_GOOD && nRet_2 == RET_GOOD)
+		{//ok
+			m_dpTargetPosList[0] = m_dTemp_CalTargetPos_X;
+			m_dpTargetPosList[1] = m_dTemp_CalTargetPos_Y;
+		}
+		else
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1233, dWARNING, Func.m_strAlarmCode);
+			break;
+		}
+		
+		m_dpSpdRatio[0] = (double)COMI.mn_runspeed_rate;	//work 속도 
+		m_dpSpdRatio[1] = (double)COMI.mn_runspeed_rate;	// 가속 
+		m_dpSpdRatio[2] = (double)COMI.mn_runspeed_rate;	// 감속 
+		
+		
+		nRet_1 = CTL_Lib.Linear_Move(m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, m_dpSpdRatio); 
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{
+			mn_PlaceStep = 3202;
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_PlaceStep = 3205;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(1234, dWARNING, alarm.mstr_code);
+			mn_PlaceStep = 3205;
+		}
+		break; 
+
 	case 3300://rubs on each heatsink
-		m_nRubbRetry_Cnt++;
+		//carrier 사이트 위치별로 받아온다
 		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], st_motor[m_nRobot_X].mn_allow + st_basic.dHSCarrierSpreadMoveOffset);
 		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor[m_nRobot_Y].mn_allow);
 		nRet_3 = COMI.Check_MotPosRange(m_nRobot_Z, m_dpTargetPosList[2], st_motor[m_nRobot_Z].mn_allow);
 		if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD || nRet_3 != BD_GOOD)
 		{
-			mn_PlaceStep = 2000;
+			if( nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
+			{
+				mn_PlaceStep = 3204;
+
+			}
+			else//if( nRet_3 != BD_GOOD )
+			{
+				mn_PlaceStep = 3202;
+			}
 			break;
 		}
 		if( st_basic.n_rubb_count >= m_nRubbRetry_Cnt )
@@ -1364,10 +2124,11 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 			mn_PlaceStep = 3400;
 			break;
 		}
-		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_CHECK, m_nRobot_X, m_dpTargetPosList[0]+ st_basic.dHSCarrierSpreadMoveOffset , st_recipe.nRubHSRunSpeed);
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, m_dpTargetPosList[0]+ st_basic.dHSCarrierSpreadMoveOffset , st_recipe.nRubHSRunSpeed);
 		if (nRet_1 == BD_GOOD) //좌측으로 이동
 		{
-			mn_PlaceStep = 3310;		
+			m_nRubbRetry_Cnt++;
+			mn_PlaceStep = 3400;		
 		}
 		else if (nRet_1 == BD_RETRY)
 		{
@@ -1380,94 +2141,229 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 		}		
 		break;
 
-	case 3310:
-		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], st_motor[m_nRobot_X].mn_allow + 5);
+
+	case 3302:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, m_dpTargetPosList[2], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{ 
+			mn_PlaceStep = 3400;
+			
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_PlaceStep = 3302;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
+			mn_PlaceStep = 3302;
+		}		
+		break;
+		
+	case 3304:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{ 
+			mn_PlaceStep = 3305;			
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_PlaceStep = 3304;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
+			mn_PlaceStep = 3304;
+		}		
+		break;
+		
+	case 3305:
+		if( COMI.Get_MotCurrentPos(m_nRobot_Z) > st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS] +  st_motor[m_nRobot_X].mn_allow)
+		{
+			mn_PlaceStep = 3304;
+			break;
+		}
+		nRet_1 = Func.Calculate_MovePos_Find(0, m_nRobot_X, nWork_Site, nPos, m_npFindWorkPosYXCPB, &m_dTemp_CalTargetPos_X);             //Calculate_MovePos_Find(int nMotNum, int nSite, int nWorkPart, int *npFirstYXP_Pos, double *dpGetTargetPos)
+		nRet_2 = Func.Calculate_MovePos_Find(0, m_nRobot_Y, nWork_Site, nPos, m_npFindWorkPosYXCPB, &m_dTemp_CalTargetPos_Y);
+		
+		if(nRet_1 == RET_GOOD && nRet_2 == RET_GOOD)
+		{//ok
+			m_dpTargetPosList[0] = m_dTemp_CalTargetPos_X;
+			m_dpTargetPosList[1] = m_dTemp_CalTargetPos_Y;
+		}
+		else
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1233, dWARNING, Func.m_strAlarmCode);
+			break;
+		}
+		
+		m_dpSpdRatio[0] = (double)COMI.mn_runspeed_rate;	//work 속도 
+		m_dpSpdRatio[1] = (double)COMI.mn_runspeed_rate;	// 가속 
+		m_dpSpdRatio[2] = (double)COMI.mn_runspeed_rate;	// 감속 
+		
+		
+		nRet_1 = CTL_Lib.Linear_Move(m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, m_dpSpdRatio); 
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{
+			mn_PlaceStep = 3302;
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_PlaceStep = 3305;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(1234, dWARNING, alarm.mstr_code);
+			mn_PlaceStep = 3305;
+		}
+		break; 
+
+
+	case 3400:		
+		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], st_motor[m_nRobot_X].mn_allow + st_basic.dHSCarrierSpreadMoveOffset);
 		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor[m_nRobot_Y].mn_allow);
 		nRet_3 = COMI.Check_MotPosRange(m_nRobot_Z, m_dpTargetPosList[2], st_motor[m_nRobot_Z].mn_allow);
 		if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD || nRet_3 != BD_GOOD)
 		{
-			mn_PlaceStep = 2000;
+			if( nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
+			{
+				mn_PlaceStep = 3304;
+				
+			}
+			else//if( nRet_3 != BD_GOOD )
+			{
+				mn_PlaceStep = 3302;
+			}
 			break;
 		}
-		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_CHECK, m_nRobot_X, m_dpTargetPosList[0] - st_basic.dHSCarrierSpreadMoveOffset , st_recipe.nRubHSRunSpeed);
+		//약간 뒤로 빠진뒤에 올린다.
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, m_dpTargetPosList[0] - st_basic.dHSCarrierSpreadMoveOffset, st_recipe.nRubHSRunSpeed);
 		if (nRet_1 == BD_GOOD) //좌측으로 이동
 		{
 			mn_PlaceStep = 3300;		
 		}
 		else if (nRet_1 == BD_RETRY)
 		{
-			mn_PlaceStep = 3310;
+			mn_PlaceStep = 3400;
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
-			mn_PlaceStep = 3310;
+			mn_PlaceStep = 3400;
 		}		
 		break;
 
-	case 3400:
+	case 3402:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, m_dpTargetPosList[2], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{ 
+			mn_PlaceStep = 3500;
+			
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_PlaceStep = 3402;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
+			mn_PlaceStep = 3402;
+		}		
+		break;
+		
+	case 3404:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{ 
+			mn_PlaceStep = 3405;			
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_PlaceStep = 3404;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
+			mn_PlaceStep = 3404;
+		}		
+		break;
+		
+	case 3405:
+		if( COMI.Get_MotCurrentPos(m_nRobot_Z) > st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS] +  st_motor[m_nRobot_X].mn_allow)
+		{
+			mn_PlaceStep = 3404;
+			break;
+		}
+		nRet_1 = Func.Calculate_MovePos_Find(0, m_nRobot_X, nWork_Site, nPos, m_npFindWorkPosYXCPB, &m_dTemp_CalTargetPos_X);             //Calculate_MovePos_Find(int nMotNum, int nSite, int nWorkPart, int *npFirstYXP_Pos, double *dpGetTargetPos)
+		nRet_2 = Func.Calculate_MovePos_Find(0, m_nRobot_Y, nWork_Site, nPos, m_npFindWorkPosYXCPB, &m_dTemp_CalTargetPos_Y);
+		
+		if(nRet_1 == RET_GOOD && nRet_2 == RET_GOOD)
+		{//ok
+			m_dpTargetPosList[0] = m_dTemp_CalTargetPos_X;
+			m_dpTargetPosList[1] = m_dTemp_CalTargetPos_Y;
+		}
+		else
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1233, dWARNING, Func.m_strAlarmCode);
+			break;
+		}
+		
+		m_dpSpdRatio[0] = (double)COMI.mn_runspeed_rate;	//work 속도 
+		m_dpSpdRatio[1] = (double)COMI.mn_runspeed_rate;	// 가속 
+		m_dpSpdRatio[2] = (double)COMI.mn_runspeed_rate;	// 감속 
+		
+		
+		nRet_1 = CTL_Lib.Linear_Move(m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, m_dpSpdRatio); 
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{
+			mn_PlaceStep = 3402;
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_PlaceStep = 3405;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(1234, dWARNING, alarm.mstr_code);
+			mn_PlaceStep = 3405;
+		}
+		break; 
+
+
+	case 3500:
 		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], st_motor[m_nRobot_X].mn_allow + st_basic.dHSCarrierSpreadMoveOffset);
 		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor[m_nRobot_Y].mn_allow);
 		nRet_3 = COMI.Check_MotPosRange(m_nRobot_Z, m_dpTargetPosList[2], st_motor[m_nRobot_Z].mn_allow);
 		if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD || nRet_3 != BD_GOOD)
 		{
-			mn_PlaceStep = 2000;
+			if( nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
+			{
+				mn_PlaceStep = 3404;
+				
+			}
+			else//if( nRet_3 != BD_GOOD )
+			{
+				mn_PlaceStep = 3402;
+			}
 			break;
 		}
-		if( st_basic.n_rubb_count >= m_nRubbRetry_Cnt )
-		{
-			m_nRubbRetry_Cnt = 0;
-			mn_PlaceStep = 3400;
-			break;
-		}
-		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_CHECK, m_nRobot_X, m_dpTargetPosList[0] , st_recipe.nRubHSRunSpeed);
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, m_dpTargetPosList[0] , st_recipe.nRubHSRunSpeed);
 		if (nRet_1 == BD_GOOD) //좌측으로 이동
 		{
-			mn_PlaceStep = 3410;		
+			mn_PlaceStep = 3600;		
 		}
 		else if (nRet_1 == BD_RETRY)
 		{
-			mn_PlaceStep = 3400;
+			mn_PlaceStep = 3500;
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
-			mn_PlaceStep = 3400;
+			mn_PlaceStep = 3500;
 		}		
 		break;
 
-	case 3410:
-		//Work after glipper open
-		mn_PlaceStep = 3420;
-		break;
-
-	case 3420:
-		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], st_motor[m_nRobot_X].mn_allow + st_basic.dHSCarrierSpreadMoveOffset);
-		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor[m_nRobot_Y].mn_allow);
-		nRet_3 = COMI.Check_MotPosRange(m_nRobot_Z, m_dpTargetPosList[2], st_motor[m_nRobot_Z].mn_allow);
-		if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD || nRet_3 != BD_GOOD)
-		{
-			mn_PlaceStep = 2000;
-			break;
-		}
-		//약간 뒤로 빠진뒤에 올린다.
-		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_CHECK, m_nRobot_X, m_dpTargetPosList[0] - st_basic.dHSCarrierSpreadMoveOffset, st_recipe.nRubHSRunSpeed);
-		if (nRet_1 == BD_GOOD) //좌측으로 이동
-		{
-			mn_PlaceStep = 3430;		
-		}
-		else if (nRet_1 == BD_RETRY)
-		{
-			mn_PlaceStep = 3400;
-		}
-		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
-			mn_PlaceStep = 3400;
-		}		
-		break;
-
-	case 3430:
+	case 3600:
 		nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobot_Z,  st_motor[m_nRobot_Z].md_pos[P_UNLOADER_TRANSFER_X_INIT_POS], COMI.mn_runspeed_rate);
 		if (nRet_1 == BD_GOOD) //좌측으로 이동
 		{
@@ -1475,12 +2371,12 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 		}
 		else if (nRet_1 == BD_RETRY)
 		{
-			mn_PlaceStep = 3400;
+			mn_PlaceStep = 3600;
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
-			mn_PlaceStep = 3400;
+			mn_PlaceStep = 3600;
 		}
 		break;
 
@@ -1587,7 +2483,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 						m_npSet_WorkPosYXCPB[1] = m_npFindWorkPosYXCPB[1];
 						m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
 
-						Func.Data_Exchange_PickPlace(PICKER_PLACE_MODE, 1, THD_LD_HEATSINK_BUFF, nWork_Site, m_npSet_WorkPosYXCPB);
+						Func.Data_Exchange_PickPlace(PICKER_PLACE_MODE, 1, THD_HEATSINK_RBT, nWork_Site, m_npSet_WorkPosYXCPB);
 					}
 				}					 
 				else if(nWork_Site = THD_PACLE_CARRIER_DVC)
@@ -1597,10 +2493,10 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 						m_npPicker_YesNo[i] = CTL_NO;
 						//아래 함수에서 사용위해 위치 정보를 셋팅한다
 						m_npSet_WorkPosYXCPB[0] = m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num);
-						m_npSet_WorkPosYXCPB[1] = m_npFindWorkPosYXCPB[1] + (i - m_n_FirstPicker_Num);
+						m_npSet_WorkPosYXCPB[1] = nPos;//m_npFindWorkPosYXCPB[1] + (i - m_n_FirstPicker_Num);
 						m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
 
-						Func.Data_Exchange_PickPlace(PICKER_PLACE_MODE, 1, THD_PICK_HEATSINK_DVC, nWork_Site, m_npSet_WorkPosYXCPB);
+						Func.Data_Exchange_PickPlace(PICKER_PLACE_MODE, 1, THD_HEATSINK_RBT, nWork_Site, m_npSet_WorkPosYXCPB);
 					}
 				}				
 			}
@@ -1894,9 +2790,8 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 
 			m_dpSpdRatio[0] = (double)COMI.mn_runspeed_rate;	//work 속도 
 			m_dpSpdRatio[1] = (double)COMI.mn_runspeed_rate;	// 가속 
-			m_dpSpdRatio[2] = (double)COMI.mn_runspeed_rate;	// 감속 
-
-		
+			m_dpSpdRatio[2] = (double)COMI.mn_runspeed_rate;	// 감속
+			
 			nRet_1 = CTL_Lib.Linear_Move(m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, m_dpSpdRatio); 
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
@@ -1935,7 +2830,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			{//serial comm
 				mn_PickStep = 2960;
 			}
-			else//THD_PICK_HEATSINK_DVC
+			else//THD_PICK_REVERSE_DVC
 			{
 				mn_PickStep = 3000;
 			}
@@ -1967,7 +2862,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			{
 				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_BOX_DOWN_POS];
 			}
-			else if(nWork_Site == THD_PICK_HEATSINK_DVC)
+			else if(nWork_Site == THD_PICK_REVERSE_DVC)
 			{
 				nRet_1 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_0_Check, IO_ON);
 				nRet_2 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_180_Check, IO_OFF);
@@ -1976,6 +2871,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 					if(nRet_1 != IO_ON) strAlarm.Format("8%d%04d",st_io.i_HeatSink_Reverse_0_Check);
 					else						strAlarm.Format("8%d%04d",st_io.i_HeatSink_Reverse_180_Check);
 					CTL_Lib.Alarm_Error_Occurrence(1108, dWARNING, strAlarm);
+					break;
 				}
 				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_TURN_PLACE_POS];
 			}
@@ -1992,7 +2888,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 					Set_HeatSink_Vacuum_OnOff(IO_ON); 
 					Set_HeatSink_Transfer_Pad_UpDown(IO_ON); 	
 				}
-				else// if( nWork_Site == THD_PICK_HEATSINK_DVC)
+				else// if( nWork_Site == THD_PICK_REVERSE_DVC)
 				{
 
 				}
@@ -2017,7 +2913,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 				{
 					mn_PickStep = 3110;
 				}
-				else//	if( nWork_Site == THD_PICK_HEATSINK_DVC )
+				else//	if( nWork_Site == THD_PICK_REVERSE_DVC )
 				{//serial comm
 					mn_PickStep = 3300;
 				}
@@ -2107,7 +3003,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			break;
 
 		case 3700:
-			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_NO )
+			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_NO && st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == CTL_NO)//wait until cylinder is opened
 			{
 				mn_PickStep = 4000;
 			}
@@ -2154,8 +3050,8 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 
 		case 4110:
 			nRet_1 = Chk_HeatSink_Vacuum_OnOff(IO_OFF); //동작할 피커를 미리 내리면서 이동한다
-			if( nWork_Site == THD_PICK_HEATSINK_DVC ) 	nRet_2 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Transfer_CellIn_Check, IO_ON);
-			else																nRet_2 = IO_ON;
+			if( nWork_Site == THD_PICK_REVERSE_DVC ) 	nRet_2 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Transfer_CellIn_Check, IO_ON);
+			else										nRet_2 = IO_ON;
 			if(nRet_1 == RET_GOOD && nRet_2 == IO_ON )
 			{
 				m_bDvcWaitChk_Falg = false;
@@ -2174,7 +3070,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			break;
 
 		case 5000: //picker 정보와 상태를 확인한다
-			//THD_LD_HEATSINK_BUFF THD_PICK_HEATSINK_DVC
+			//THD_LD_HEATSINK_BUFF THD_PICK_REVERSE_DVC
 			nRet_1 = Func.Check_PickerStatus(1, nWork_Site, CTL_YES, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
 			if (nRet_1 != RET_GOOD) //
 			{
@@ -2190,7 +3086,6 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
 
-					//2017.0312 이상한데 왜 알람이 없었을까> 그냥 데이타가 이동하면 안되는데..
 					CTL_Lib.Alarm_Error_Occurrence(7927, dWARNING, Func.m_strAlarmCode);
 					break;
 				}
@@ -2212,10 +3107,10 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 							m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
 
 							Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, THD_HEATSINK_RBT, nWork_Site, m_npSet_WorkPosYXCPB);		
-							//if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).AddHeatSinkInputCnt(PRIME);)	
+							
 						}
 					}
-					else if(nWork_Site == THD_PICK_HEATSINK_DVC)
+					else if(nWork_Site == THD_PICK_REVERSE_DVC)
 					{
 						if(i >= 0 && m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num) < st_recipe.nLdBuffer_Num)
 						{
@@ -2294,10 +3189,9 @@ int CRun_HeatSinkVision_Transfer_Robot::Robot_AutoMove_Safety_Zone( int nMode, i
 	double dCurrentPosX =0, dCurrentPosY=0;
 
 	//nMode == 0 => Tray Pickup위치로 바로 갈수 있는 위치로 이동
-	//nMode == 1 => Dispensor로 자재를 Place할 수 있는 위치로 이동
-	//nMode == 2 => Dispensor로 자재를 Pick할 수 있는 위치로 이동
-	//nMode == 3 => dispensoe위치로 이동 가능한 이동
-	//nMode == 4 => Carrier위치로 이동가능한 위치로 이동
+	//nMode == 1 => Dispensor로 자재를 Place, Pick 할 수 있는 위치로 이동  대기로 이동
+	//nMode == 2 => dispensoe에서 나오는 위치  대기로 이동
+	//nMode == 3 => Carrier위치로 들어가는 위치
 
 	//n_site 아직
 	//n_flag == 아직
@@ -2339,10 +3233,10 @@ int CRun_HeatSinkVision_Transfer_Robot::Robot_AutoMove_Safety_Zone( int nMode, i
 			break;
 
 			//nMode == 0 => Tray Pickup위치로 바로 갈수 있는 위치로 이동
-			//nMode == 1 => Dispensor로 자재를 Place할 수 있는 위치로 이동
-			//nMode == 2 => Dispensor로 자재를 Pick할 수 있는 위치로 이동
-			//nMode == 3 => UV lamp위치로 이동 가능한 이동
-			//nMode == 4 => Carrier위치로 이동가능한 위치로 이동
+			//nMode == 1 => Dispensor로 자재를 Place, Pick 할 수 있는 위치로 이동  대기로 이동
+			//nMode == 2 => dispensoe에서 나오는 위치  대기로 이동
+			//nMode == 3 => Carrier위치로 들어가는 위치
+
 			//n_site ->   Turn -> ready , UV lmap  Carrier 1,2,3
 			//n_site = 0 turn pos ==0 place  pos 1 pick
 			//n_site = 1 uv lamp
@@ -2358,7 +3252,14 @@ int CRun_HeatSinkVision_Transfer_Robot::Robot_AutoMove_Safety_Zone( int nMode, i
 			{
 				if( dCurrentPosY >=  ( st_motor[m_nRobot_Y].md_pos[P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS] - st_motor[m_nRobot_Y].mn_allow ))
 				{
-					mn_SafetyStep = 1100;
+					if( nMode == 3 )//이미 들어와 있다
+					{
+						FuncRet = RET_GOOD;
+					}
+					else
+					{
+						mn_SafetyStep = 1100;
+					}
 				}
 				else if( ( dCurrentPosY <  ( st_motor[m_nRobot_Y].md_pos[P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS] - st_motor[m_nRobot_Y].mn_allow ) ) &&
 					( dCurrentPosY >=  ( st_motor[m_nRobot_Y].md_pos[P_HEATSINK_TRANSFER_Y_DISPENSOR_SAFETY_POS] - st_motor[m_nRobot_Y].mn_allow ) ) )
@@ -2368,10 +3269,6 @@ int CRun_HeatSinkVision_Transfer_Robot::Robot_AutoMove_Safety_Zone( int nMode, i
 					//nMode == 2 => Dispensor로 자재를 Pick할 수 있는 위치로 이동
 					if(nMode == 0 || nMode == 1 || nMode == 2)  
 					{//after it moves turn safety pos first, and return good
-						mn_SafetyStep = 2000;	//이미Carrier 안으로 들어가 있는 상태로 어느 위치에 있는지 확인한다 
-					}
-					else if(nMode == 3)//nMode == 3 => UV lamp위치로 이동 가능한 이동
-					{
 						mn_SafetyStep = 2000;	//이미Carrier 안으로 들어가 있는 상태로 어느 위치에 있는지 확인한다 
 					}
 					else// if(nMode == 4)
@@ -2443,15 +3340,9 @@ int CRun_HeatSinkVision_Transfer_Robot::Robot_AutoMove_Safety_Zone( int nMode, i
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, m_dpSpdRatio);
 			if(nRet_1 == BD_GOOD) //정상적으로 완료된 상태
 			{
-				if( nMode == 4 )
-				{
-					mn_SafetyStep = 1200;
-				}
-				else
-				{
-					FuncRet = RET_GOOD;
-					mn_SafetyStep = 0;
-				}
+				FuncRet = RET_GOOD;
+				mn_SafetyStep = 0;
+
 			}
 			else if (nRet_1 == BD_RETRY)
 			{
@@ -3495,3 +4386,54 @@ int CRun_HeatSinkVision_Transfer_Robot::Chk_Device_CameraY_Jig_Press_ForwardBack
 
 	return RET_PROCEED;
 }
+
+void CRun_HeatSinkVision_Transfer_Robot::Set_Device_Carrier_Camera_UV_LAMP_OnOff(int OnOff)	
+{
+	CString strLogKey[10];
+	CString	strLogData[10];
+	
+	strLogKey[0] = _T("Mode Start");
+	strLogData[0].Format(_T("%d"),0);
+	
+	
+	g_ioMgr.set_out_bit( st_io.o_Camera_UV_Lamp_HW_On_RY1, OnOff);
+	g_ioMgr.set_out_bit( st_io.o_Camera_UV_Lamp_HW_On_RY2, OnOff);
+	
+	if (OnOff == IO_ON)
+	{
+		clsLog.LogFunction(_T("DVC_HEASTSINK_ROBOT"),_T("ON"),0,_T("MEASURE_LAMP"),_T("LAMP"),1,strLogKey,strLogData);
+		clsLog.LogFunction(_T("DVC_HEASTSINK_ROBOT"),_T("ON"),1,_T("MEASURE_LAMP"),_T("LAMP"),1,strLogKey,strLogData);
+	}
+	else
+	{
+		clsLog.LogFunction(_T("DVC_HEASTSINK_ROBOT"),_T("OFF"),0,_T("MEASURE_LAMP"),_T("LAMP"),1,strLogKey,strLogData);
+		clsLog.LogFunction(_T("DVC_HEASTSINK_ROBOT"),_T("OFF"),1,_T("MEASURE_LAMP"),_T("LAMP"),1,strLogKey,strLogData);
+	}
+}
+
+
+void CRun_HeatSinkVision_Transfer_Robot::Set_Device_Carrier_Camera_LED_LAMP_OnOff(int OnOff)	
+{
+	CString strLogKey[10];
+	CString	strLogData[10];
+	
+	strLogKey[0] = _T("Mode Start");
+	strLogData[0].Format(_T("%d"),0);
+	
+	
+	g_ioMgr.set_out_bit( st_io.o_Camera_LED_Lamp_HW_On_RY1, OnOff);
+	g_ioMgr.set_out_bit( st_io.o_Camera_LED_Lamp_HW_On_RY2, OnOff);
+	
+	if (OnOff == IO_ON)
+	{
+		clsLog.LogFunction(_T("DVC_VISION_ROBOT"),_T("ON"),0,_T("INSPECT_LAMP"),_T("LAMP"),1,strLogKey,strLogData);
+		clsLog.LogFunction(_T("DVC_VISION_ROBOT"),_T("ON"),1,_T("INSPECT_LAMP"),_T("LAMP"),1,strLogKey,strLogData);
+	}
+	else
+	{
+		clsLog.LogFunction(_T("DVC_VISION_ROBOT"),_T("OFF"),0,_T("INSPECT_LAMP"),_T("LAMP"),1,strLogKey,strLogData);
+		clsLog.LogFunction(_T("DVC_VISION_ROBOT"),_T("OFF"),1,_T("INSPECT_LAMP"),_T("LAMP"),1,strLogKey,strLogData);
+	}
+}
+
+

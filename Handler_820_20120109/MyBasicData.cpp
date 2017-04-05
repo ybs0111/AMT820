@@ -1109,7 +1109,216 @@ void CMyBasicData::OnBasic_Data_Load()
 		}
 	}
 	/* ************************************************************************** */
+
+	:: GetPrivateProfileString("BASIC", "DEVICE_MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 2)
+	{
+		st_basic.n_mode_device = 1;
+		mstr_temp.Format("%d", st_basic.n_mode_device);
+		:: WritePrivateProfileString("BASIC", "DEVICE_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_mode_device = mn_chk;
+
+
+	:: GetPrivateProfileString("BASIC", "RETEST_MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_mode_retest = 0;
+		mstr_temp.Format("%d", st_basic.n_mode_retest);
+		:: WritePrivateProfileString("BASIC", "RETEST_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_mode_retest = mn_chk;
+
+	:: GetPrivateProfileString("BASIC", "TESTER_MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_mode_tester = 0;
+		mstr_temp.Format("%d", st_basic.n_mode_tester);
+		:: WritePrivateProfileString("BASIC", "TESTER_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_mode_tester = mn_chk;
+
+
+
+	:: GetPrivateProfileString("BASIC", "BCR_MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_mode_bcr = 0;
+		mstr_temp.Format("%d", st_basic.n_mode_bcr);
+		:: WritePrivateProfileString("BASIC", "BCR_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_mode_bcr = mn_chk;
 	
+
+
+	:: GetPrivateProfileString("BASIC", "MODULE_MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_mode_module = 0;
+		mstr_temp.Format("%d", st_basic.n_mode_module);
+		:: WritePrivateProfileString("BASIC", "MODULE_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_mode_module = mn_chk;
+
+	
+	:: GetPrivateProfileString("BASIC", "7387 MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_mode_7387 = 0;
+		mstr_temp.Format("%d", st_basic.n_mode_7387);
+		:: WritePrivateProfileString("BASIC", "7387 MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_mode_7387 = mn_chk;
+
+
+	:: GetPrivateProfileString("BASIC", "TRAY TYPE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_mode_tray_type = 0;
+		mstr_temp.Format("%d", st_basic.n_mode_tray_type);
+		:: WritePrivateProfileString("BASIC", "TRAY TYPE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_mode_tray_type = mn_chk;
+
+	
+	:: GetPrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_7387InspectAlarmSkipMode = 0;
+		mstr_temp.Format("%d", st_basic.n_7387InspectAlarmSkipMode);
+		:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_7387InspectAlarmSkipMode = mn_chk;
+
+
+	:: GetPrivateProfileString("BASIC", "3874 MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_3874InspectMode = 0;
+		mstr_temp.Format("%d", st_basic.n_3874InspectMode);
+		:: WritePrivateProfileString("BASIC", "3874 MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_3874InspectMode = mn_chk;
+
+
+	:: GetPrivateProfileString("BASIC", "LIGHT CURTAIN_MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_Light_Curtain_Mode = 0;
+		mstr_temp.Format("%d", st_basic.n_Light_Curtain_Mode);
+		:: WritePrivateProfileString("BASIC", "LIGHT CURTAIN_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_Light_Curtain_Mode = mn_chk;
+	
+	:: GetPrivateProfileString("BASIC", "CASE_ASSEMBLY_MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_mode_case_assembly = 0;
+		mstr_temp.Format("%d", st_basic.n_mode_case_assembly);
+		:: WritePrivateProfileString("BASIC", "CASE_ASSEMBLY_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_mode_case_assembly = mn_chk;
+	
+	//Count
+
+	:: GetPrivateProfileString("BASIC", "RETRY_COUNT", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_basic.n_count_retry = 0;
+		mstr_temp.Format("%d",st_basic.n_count_retry);
+		:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_count_retry = mn_chk;
+
+	:: GetPrivateProfileString("BASIC", "PICK_RETRY_COUNT", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_basic.n_count_pick_retry = 0;
+		mstr_temp.Format("%d",st_basic.n_count_pick_retry);
+		:: WritePrivateProfileString("BASIC", "PICK_RETRY_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_count_pick_retry = mn_chk;
+
+
+
+	:: GetPrivateProfileString("BASIC", "PARTIAL_COUNT", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_basic.n_count_partial = 0;
+		mstr_temp.Format("%d",st_basic.n_count_partial);
+		:: WritePrivateProfileString("BASIC", "PARTIAL_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_count_partial = mn_chk;
+
+
+
+	:: GetPrivateProfileString("BASIC", "ELEVATOR_PARTIAL", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_basic.n_count_elevator_partial = 0;
+		mstr_temp.Format("%d",st_basic.n_count_elevator_partial);
+		:: WritePrivateProfileString("BASIC", "ELEVATOR_PARTIAL", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_count_elevator_partial = mn_chk;
+
+
+	:: GetPrivateProfileString("BASIC", "7387ALARM_COUNT", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_basic.n7387AlarmCount = 0;
+		mstr_temp.Format("%d",st_basic.n7387AlarmCount);
+		:: WritePrivateProfileString("BASIC", "7387ALARM_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n7387AlarmCount = mn_chk;
+
+	:: GetPrivateProfileString("BASIC", "RUBB_COUNT", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_basic.n_rubb_count = 0;
+		mstr_temp.Format("%d",st_basic.n_rubb_count);
+		:: WritePrivateProfileString("BASIC", "RUBB_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_rubb_count = mn_chk;
+
+	//Offset
+	:: GetPrivateProfileString("BASIC", "EPOXY_X_OFFSET", "0", chr_data, 10, str_load_file);
+	st_basic.dEpoxyXLineOffSet = atof(chr_data);
+	
+	:: GetPrivateProfileString("BASIC", "EPOXY_Y_OFFSET", "0", chr_data, 10, str_load_file);
+	st_basic.dEpoxyYLineOffSet = atof(chr_data);
+
+	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", "0", chr_data, 10, str_load_file);
+	st_basic.dHSCarrierSpreadMoveOffset = atof(chr_data);
+
+	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", "0", chr_data, 10, str_load_file);
+	st_basic.dHSCarrierSpreadMoveDistance = atof(chr_data);
+
+	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", "0", chr_data, 10, str_load_file);
+	st_basic.dHeatSinkCarrierSpreadMove1Offset = atof(chr_data);
+
+	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", "0", chr_data, 10, str_load_file);
+	st_basic.dHeatSinkCarrierSpreadMove2Offset = atof(chr_data);
+
+	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", "0", chr_data, 10, str_load_file);
+	st_basic.dHeatSinkCarrierSpreadMove3Offset = atof(chr_data);
+
 	/*
 	:: GetPrivateProfileString("BasicData", "Device_Mode", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
@@ -1277,6 +1486,85 @@ void CMyBasicData::OnBasic_Data_Save()
 		}
 	}
 	:: WritePrivateProfileString("BasicData", "Model_Name", LPCTSTR(st_basic.mstr_device_name), st_path.mstr_basic);	//2017.0403
+	
+	//kwlee 2017.0403
+	:: WritePrivateProfileString("BASIC", "MODEL_NAME", LPCTSTR(st_basic.mstr_device_name), str_save_file);
+
+	mstr_temp.Format("%d", st_basic.n_mode_interface);
+	:: WritePrivateProfileString("BASIC", "INTERFACE_MODE", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_basic.n_mode_device);
+	:: WritePrivateProfileString("BASIC", "DEVICE_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_mode_retest);
+	:: WritePrivateProfileString("BASIC", "RETEST_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	//kwlee 2017.0405
+	mstr_temp.Format("%d", st_basic.n_mode_tester);
+	:: WritePrivateProfileString("BASIC", "TESTER_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_mode_bcr);
+	:: WritePrivateProfileString("BASIC", "BCR_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_mode_module);
+	:: WritePrivateProfileString("BASIC", "MODULE_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_mode_7387);
+	:: WritePrivateProfileString("BASIC", "7387 MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_mode_tray_type);
+	:: WritePrivateProfileString("BASIC", "TRAY TYPE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_7387InspectAlarmSkipMode);
+	:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_3874InspectMode);
+	:: WritePrivateProfileString("BASIC", "3874 MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_Light_Curtain_Mode);
+	:: WritePrivateProfileString("BASIC", "LIGHT CURTAIN_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_mode_case_assembly);
+	:: WritePrivateProfileString("BASIC", "CASE_ASSEMBLY_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_count_pick_retry);
+	:: WritePrivateProfileString("BASIC", "PICK_RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_count_partial);
+	:: WritePrivateProfileString("BASIC", "PARTIAL_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_count_elevator_partial);
+	:: WritePrivateProfileString("BASIC", "ELEVATOR_PARTIAL", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n7387AlarmCount);
+	:: WritePrivateProfileString("BASIC", "7387ALARM_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_rubb_count);
+	:: WritePrivateProfileString("BASIC", "RUBB_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dEpoxyXLineOffSet);
+	:: WritePrivateProfileString("BASIC", "EPOXY_X_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dEpoxyYLineOffSet);
+	:: WritePrivateProfileString("BASIC", "EPOXY_Y_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dHSCarrierSpreadMoveOffset);
+	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dHSCarrierSpreadMoveDistance);
+	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove1Offset);
+	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove2Offset);
+	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove3Offset);
+	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_count_retry);
+	:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
 	/* ************************************************************************** */
 
 	/*
@@ -1569,21 +1857,86 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
 
 	//kwlee 2017.0403
 	:: WritePrivateProfileString("BASIC", "MODEL_NAME", LPCTSTR(str_device), str_save_file);
-
-	mstr_temp.Format("%d", st_basic.n_mode_work);
-	:: WritePrivateProfileString("BASIC", "WORK_MODE", LPCTSTR(mstr_temp), str_save_file);
-
-	mstr_temp.Format("%d", st_basic.n_mode_turn);
-	:: WritePrivateProfileString("BASIC", "TURN_MODE", LPCTSTR(mstr_temp), str_save_file);
+	//kwlee 2017.0404
+// 	mstr_temp.Format("%d", st_basic.n_mode_work);
+// 	:: WritePrivateProfileString("BASIC", "WORK_MODE", LPCTSTR(mstr_temp), str_save_file);
+// 
+// 	mstr_temp.Format("%d", st_basic.n_mode_turn);
+// 	:: WritePrivateProfileString("BASIC", "TURN_MODE", LPCTSTR(mstr_temp), str_save_file);
 
 	mstr_temp.Format("%d", st_basic.n_mode_device);
 	:: WritePrivateProfileString("BASIC", "DEVICE_MODE", LPCTSTR(mstr_temp), str_save_file);
 
+	mstr_temp.Format("%d", st_basic.n_mode_retest);
+	:: WritePrivateProfileString("BASIC", "RETEST_MODE", LPCTSTR(mstr_temp), str_save_file);
+
+	//kwlee 2017.0405
+	mstr_temp.Format("%d", st_basic.n_mode_tester);
+	:: WritePrivateProfileString("BASIC", "TESTER_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_mode_bcr);
+	:: WritePrivateProfileString("BASIC", "BCR_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
 	mstr_temp.Format("%d", st_basic.n_mode_module);
 	:: WritePrivateProfileString("BASIC", "MODULE_MODE", LPCTSTR(mstr_temp), str_save_file);
 
+	mstr_temp.Format("%d", st_basic.n_mode_7387);
+	:: WritePrivateProfileString("BASIC", "7387 MODE", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_basic.n_mode_tray_type);
+	:: WritePrivateProfileString("BASIC", "TRAY TYPE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_7387InspectAlarmSkipMode);
+	:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_3874InspectMode);
+	:: WritePrivateProfileString("BASIC", "3874 MODE", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_basic.n_Light_Curtain_Mode);
+	:: WritePrivateProfileString("BASIC", "LIGHT CURTAIN_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_mode_case_assembly);
+	:: WritePrivateProfileString("BASIC", "CASE_ASSEMBLY_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_count_pick_retry);
+	:: WritePrivateProfileString("BASIC", "PICK_RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_basic.n_count_partial);
+	:: WritePrivateProfileString("BASIC", "PARTIAL_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n_count_elevator_partial);
+	:: WritePrivateProfileString("BASIC", "ELEVATOR_PARTIAL", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_basic.n7387AlarmCount);
+	:: WritePrivateProfileString("BASIC", "7387ALARM_COUNT", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_basic.n_rubb_count);
+	:: WritePrivateProfileString("BASIC", "RUBB_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dEpoxyXLineOffSet);
+	:: WritePrivateProfileString("BASIC", "EPOXY_X_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dEpoxyYLineOffSet);
+	:: WritePrivateProfileString("BASIC", "EPOXY_Y_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%.03f", st_basic.dHSCarrierSpreadMoveOffset);
+	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dHSCarrierSpreadMoveDistance);
+	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove1Offset);
+	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove2Offset);
+	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove3Offset);
+	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
 	mstr_temp.Format("%d", st_basic.n_count_retry);
 	:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
+
 }
 
 void CMyBasicData::OnInterface_Data_Save_As(CString str_device)

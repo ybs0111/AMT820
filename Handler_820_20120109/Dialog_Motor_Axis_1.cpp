@@ -94,6 +94,17 @@ BOOL CDialog_Motor_Axis_1::OnInitDialog()
 	Init_Radio();
 	Init_Button();
 
+// 	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_MODE, cmTRUE);
+	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_EN, cmFALSE);    //cmSD_EN=14 //cmFALSE = 0 SD 비활성, cmTRUE = 1 SD 활성 	
+// 	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_LOGIC, cmLOGIC_A); //cmSD_LOGIC=15, 0 (cmLOGIC_A) : A접점 방식,1 (cmLOGIC_B) : B접점 방식
+	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_LATCH, cmTRUE);//16
+
+// 	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_MODE, cmTRUE);
+	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_EN, cmFALSE);    //cmSD_EN=14 //cmFALSE = 0 SD 비활성, cmTRUE = 1 SD 활성 	
+// 	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_LOGIC, cmLOGIC_A); //cmSD_LOGIC=15, 0 (cmLOGIC_A) : A접점 방식,1 (cmLOGIC_B) : B접점 방식
+	COMI.Set_Motor_IO_Property(M_TRAY1_Z, cmSD_LATCH, cmTRUE);//16
+
+
 	if (COMI.mn_motorbd_init_end)
 	{
 		SetTimer(TM_STATUS_CHECK, 100, NULL);
@@ -140,23 +151,34 @@ void CDialog_Motor_Axis_1::Init_Button()
 	if (m_str_axis_name == "Tray 1 Z" ||
 		m_str_axis_name == "Tray 2 Z" ||
 		m_str_axis_name == "Loader Transfer Y" ||
-		m_str_axis_name == "")
+		m_str_axis_name == "Epoxy Transfrer Y" ||
+		m_str_axis_name == "HeatSink Transfer Y" ||
+		m_str_axis_name == "Unloader Transfer Y" ||
+		m_str_axis_name == "Dispenser Y")
 	{
 		m_btn_left.SetIcon(IDI_DN_E);
 	}
-	else if( m_str_axis_name == "Loader Transfer Z")
+	else if( m_str_axis_name == "Loader Transfer Z" ||
+		m_str_axis_name == "Epoxy Transfrer Z" ||
+		m_str_axis_name == "HeatSink Transfer Z" ||
+		m_str_axis_name == "Camera Y" ||
+		m_str_axis_name == "Camera Z" ||
+		m_str_axis_name == "Device UnPress Y" ||
+		m_str_axis_name == "Unloader Transfer Z")
 	{
 		m_btn_left.SetIcon(IDI_UP_E);
 	}
-	else if( m_str_axis_name == "BIN 1 R" ||
-		m_str_axis_name == "BIN 2 R" ||
-		m_str_axis_name == "REJECT R" )
-	{
-		m_btn_left.SetIcon( IDI_UP );
-	}
-	else if( m_str_axis_name == "Tray Remover X" )
+	else if( m_str_axis_name == "Tray Remover X" ||
+		m_str_axis_name == "Epoxy Screw" ||
+		m_str_axis_name == "HeatSink Transfer X")
 	{
 		m_btn_left.SetIcon( IDI_LEFT_E );
+	}
+	else if( m_str_axis_name == "Epoxy Transfrer X" ||
+		m_str_axis_name == "Carrier X" ||
+		m_str_axis_name == "Unloader Transfer X")
+	{
+		m_btn_left.SetIcon( IDI_RIGHT_E );
 	}
 	else
 	{
@@ -170,13 +192,34 @@ void CDialog_Motor_Axis_1::Init_Button()
 	if (m_str_axis_name == "Tray 1 Z" ||
 		m_str_axis_name == "Tray 2 Z" ||
 		m_str_axis_name == "Loader Transfer Y" ||
-		m_str_axis_name == "Loader Transfer Z" )
+		m_str_axis_name == "Epoxy Transfrer Y" ||
+		m_str_axis_name == "HeatSink Transfer Y" ||
+		m_str_axis_name == "Unloader Transfer Y" ||
+		m_str_axis_name == "Dispenser Y" )
 	{
 		m_btn_right.SetIcon(IDI_UP_E);
 	}
-	else if( m_str_axis_name == "Tray Remover X" )
+	else if( m_str_axis_name == "Loader Transfer Z" ||
+		m_str_axis_name == "Epoxy Transfrer Z" ||
+		m_str_axis_name == "HeatSink Transfer Z" ||
+		m_str_axis_name == "Camera Y" ||
+		m_str_axis_name == "Camera Z" ||
+		m_str_axis_name == "Device UnPress Y" ||
+		m_str_axis_name == "Unloader Transfer Z")
+	{
+		m_btn_right.SetIcon(IDI_DN_E);
+	}
+	else if( m_str_axis_name == "Tray Remover X" ||
+		m_str_axis_name == "Epoxy Screw" ||
+		m_str_axis_name == "HeatSink Transfer X")
 	{
 		m_btn_right.SetIcon( IDI_RIGHT_E );
+	}
+	else if( m_str_axis_name == "Epoxy Transfrer X" ||
+		m_str_axis_name == "Carrier X" ||
+		m_str_axis_name == "Unloader Transfer X")
+	{
+		m_btn_right.SetIcon( IDI_LEFT_E );
 	}
 	else
 	{

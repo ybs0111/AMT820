@@ -79,6 +79,28 @@ enum SAFETY_FLAG
 #define MAX_SITE_INFO		10
 #define MACHINE_MANUAL			0
 #define MACHINE_AUTO			1
+
+
+// *****************************************************************************
+//////////vision camera
+#define MEASURE_RESULT_RCV_7387		0
+#define MEASURE_RESULT_RCV_EPOXY	1
+#define MEASURE_RESULT_RCV_HEATSINK	2
+
+#define HOST_CMD_7387_MEASURE		1
+#define HOST_CMD_EPOXY_MEASURE		2
+#define HOST_CMD_HEATSINK_MEASURE	3
+#define HOST_CMD_INSPECT_OS_VIEW	4
+#define HOST_CMD_INSPECT_OS_DISABLE	5
+#define HOST_CMD_RECIPE_CHANGE		6
+#define HOST_CMD_HEATSINK_MEASURE2	7
+#define HOST_CMD_HEATSINK_MEASURE3	8
+#define HOST_CMD_NOBA_POS			9
+#define HOST_CMD_HEATSINK_POS		10
+
+#define HEATSINK_PICKER_PITCH_PORT  0//20130716
+
+
 // *****************************************************************************
 // 사용자 정의 메시지 ID 선언                                                   
 // *****************************************************************************
@@ -591,6 +613,9 @@ enum ENUM_WM_MESSAGE
 
 #define OFF_LINE_MODE		0
 #define ON_LINE_MODE		1
+
+#define NOT_USE             0
+#define USE                 1
 
 // 모듈 엘레베이터 Type
 #define TYPE_LOAD			0
@@ -1362,6 +1387,7 @@ extern  st_dsp_alarm_param  st_alarm;
 #define UNLOADTRAY_Y		3
 #define REJECTTRAY_X		25
 #define REJECTTRAY_Y		3
+#define MAXOPERATORCNT      50 //kwlee 2017.0404
 
 struct st_modulemap_size
 {
@@ -1461,42 +1487,49 @@ struct st_basic_param
 
 	int n_file_save;
 
+	//kwlee 2017.0405
+	//int n_mode_dc_test;			//
+	//int n_mode_work;			// 
+	//int n_mode_run;
+	//int n_mode_turn;
+	//int n_conveyor_move_mode;
+	//	int n_mode_off_line;		// off-line 결과 설정 (0 : random 1 : All Good)	
+	//kwlee 2017.0405 추가 예정.
+	// 20100517 tae 수정
 	int n_mode_interface;		// 장비 동작 모드 저장 변수		(1:ON LINE	0:OFF LINE)
 	int n_mode_device;			// 자재 사용 모드 저장 변수		(0:With		1:with out device 2:With out c-tray)
 	int n_mode_retest;			// RETEST 모드 저장 변수		(1:사용		0:미사용)
 	int n_mode_tester;			// 테스터 종류 저장 변수
 	int n_mode_bcr;
 	int n_mode_module;
-	int n_mode_dc_test;			//
-	int n_mode_work;			// 
-	int n_mode_run;
-	int n_mode_turn;
-	int n_conveyor_move_mode;
-	// 20100517 tae 수정
-	int n_mode_off_line;		// off-line 결과 설정 (0 : random 1 : All Good)
-	int n_count_retry;
 
+	int n_count_retry;
 	int n_count_pick_retry;		// PICK 시도 횟수 저장 변수
 	int n_count_partial;		// PARTIAL 횟수 저장 변수
 	int n_count_elevator_partial;	// 엘레베이터 PARTIAL 횟수 저장 변수
 
 	int n_mode_tray_type;//TYPE1,TYPE2
-	int n_mode_7387;
 
 //	CString mstr_device_name;	// 선택된 디바이스 종류 저장 변수
 
 	double dEpoxyXLineOffSet;
 	double dEpoxyYLineOffSet;
-
-	int n_rubb_count;
+	
 	double dHSCarrierSpreadMoveOffset;
 	double dHSCarrierSpreadMoveDistance;
 	double dHeatSinkCarrierSpreadMove1Offset;
 	double dHeatSinkCarrierSpreadMove2Offset;
 	double dHeatSinkCarrierSpreadMove3Offset;
+	
+	int n_rubb_count;
 	int n_Light_Curtain_Mode;
 	int n_mode_case_assembly;
-} ;
+
+	int n_mode_7387;
+	int n_7387InspectAlarmSkipMode;
+	int n7387AlarmCount;
+	int n_3874InspectMode;
+};
 extern  st_basic_param  st_basic;
 // ******************************************************************************
 
@@ -1938,6 +1971,7 @@ struct st_work_param
 	// daily cycle time
 	double	dDailyCycle;
 	int mn_machine_mode;
+	CString strLotInputID;
 };
 extern  st_work_param  st_work;
 
@@ -3109,7 +3143,54 @@ struct st_variable_param
 };
 extern  st_variable_param  st_var;
 
-						 
+typedef struct  _RCV_STRUCT
+{	
+	char sObjectID[20];	// ID : LotID_Count / LotID_Count_H
+	int nCmdID;		//1 : 경화제 검사,	2 : Epoxy 도포 검사,	3 : Heatsink 부착 상태 
+	int nJudge;		//0: 제어-> 검사 ,	1 : 양품 ,	2 : 불량 
+	int nDetailInfo;	// 0 : 제어->검사 , 1 : 경화액 도포 불량 , 2: 점 불량 , 3: 선 두께 불량, 4: 중심점 편심 
+	// 5: 삐침 불량 , 6 : 모양 불량 7, 선 짧음 , 8:  heatSink MisAlign
+	double x;//2014,0408
+	double y;
+	
+}RCV_STRUCT,*pRCV_STRUCT;
+
+struct st_vision_camera
+{
+	int		nEpoxyMeasureFlag;
+	int		nHeatsinkMeasureFlag;
+	BOOL	b7387MeasureCmp;
+	BOOL	bEpoxyMeasureCmp;
+	BOOL	bHeatsinkMeasureCmp;
+	
+	int		n7387MeasureResultFlag;
+	int		nEpoxyMeasureResultFlag;
+	int		nHeatSinkMeasureResultFlag;
+	
+	int		n7387MeasureAlarmCnt;
+	int		nEpoxyMeasureAlarmCnt;
+	int		nHeatSinkMeasureAlarmCnt;
+	int		nHeatSinkVisionCount;
+	int		nHeatSinkGabageCount;
+	
+	int		nRecipeSelect;
+	
+	int		n7387MeasureAlarmCnt_B;
+	int		nEpoxyMeasureAlarmCnt_B;
+	int		nHeatSinkMeasureAlarmCnt_B;
+	int		nHeatSinkVisionCount_B;
+	int		nHeatSinkGabageCount_B;
+	
+	//2014,0408
+	int		nNobaPosResultFlag;
+	BOOL	bNobaPosMeasureCmp;
+	
+	int		nHeatSinkPosResultFlag;
+	BOOL	bHeatSinkMeasureCmp;
+	
+};
+extern	struct st_vision_camera st_vision;
+					 
 #define BCR_MAX_CNT 4		//barcode read max count
 #define BCR_SND_WAIT (1000 * 5)
 #define BCR_RCV_WAIT (1000 * 15)

@@ -6,7 +6,7 @@
 #include "CtlBd_Library.h"
 
 
-#include "io.h"			//2011.0514  파일 존재 유무 검사 함수 호출하기 위해서는 반드시 필요
+#include "io.h"			//2011.0514  ?�일 존재 ?�무 검???�수 ?�출?�기 ?�해?�는 반드???�요
 #include "FAS_HSSI.h"
 #include "ComizoaPublic.h"
 #include "FastechPublic_IO.h"
@@ -44,20 +44,20 @@ CCtlBd_Library CTL_Lib;
 
 //////////////////////////////////////////////////////////////////////////////
 //version:0.1 (2011.1026) 
-//알람발생 처리방법, 모터 및 I/O 관련 라이브러리를 초기화 및 응용하여 실제사용하는 함수정리 
+//?�람발생 처리방법, 모터 �?I/O 관???�이브러리�? 초기??�??�용?�여 ?�제?�용?�는 ?�수?�리 
 //
-//참고 기본함수 
+//참고 기본?�수 
 //1. #include "ComizoaPublic.h"
 //2. #include "FastechPublic_IO.h"
 ///////////////////////////////////////////////////////////////////////////////
 
 int CCtlBd_Library::Alarm_Error_Occurrence(int n_jampos, int n_run_status, char c_alarmcode[10])
 {
-	//그간은 알람이 발생하면 각 쓰레드에서 jamcode 및 run status 정보를 바뀌어 장비를 정지하고 
-	//문제를 해결했으나 앞으로는 이 함수를 모든곳에서 사용하여 알람정보 및 가동 상태를 표준함수 하나를 
-	//사용하여 장비 가동 및 알람 문제를 처리한다 
+	//그간?� ?�람??발생?�면 �??�레?�에??jamcode �?run status ?�보�?바뀌어 ?�비�??��??�고 
+	//문제�??�결?�으???�으로는 ???�수�?모든곳에???�용?�여 ?�람?�보 �?가???�태�??��??�수 ?�나�?
+	//?�용?�여 ?�비 가??�??�람 문제�?처리?�다 
 	//
-	//각 쓰레드에 각각있던 알람 처리방법은 이 함수를 모두 사용한다 
+	//�??�레?�에 각각?�던 ?�람 처리방법?� ???�수�?모두 ?�용?�다 
    //
 	int n_cur_num = -1;
 
@@ -135,7 +135,7 @@ int CCtlBd_Library::Alarm_Error_Occurrence( int n_jampos, int n_run_status, CStr
 	return BD_GOOD;
 }
 
-int CCtlBd_Library::Initialize_motor_board(int n_bd_type, CString s_filename)	//motor 보드 초기화시 사용
+int CCtlBd_Library::Initialize_motor_board(int n_bd_type, CString s_filename)	//motor 보드 초기?�시 ?�용
 {
 	int nRet = 0, i=0;
 
@@ -174,11 +174,11 @@ int CCtlBd_Library::Initialize_motor_board(int n_bd_type, CString s_filename)	//
 			{//n_simul_mode => 0:
 
 				if(COMI.mn_simulation_mode == 1)
-				{//활성
+				{//?�성
 					COMI.Set_Simulation_Mode(i, 1); 
 				}
 				else
-				{//비활성 
+				{//비활??
 					COMI.Set_Simulation_Mode(i, 0); 
 				}
 			}		
@@ -353,11 +353,11 @@ int CCtlBd_Library::Initialize_motor_board(int n_bd_type, CString s_filename)	//
 	return  BD_GOOD;
 }
 
-//아래 내용은 I/O 보드 초기화시 필요한 내용을 예로 들은것이니 
-//장비별 필요한 내용을 셋팅하여 사용하면 된다.
+//?�래 ?�용?� I/O 보드 초기?�시 ?�요???�용???�로 ?��?것이??
+//?�비�??�요???�용???�팅?�여 ?�용?�면 ?�다.
 int CCtlBd_Library::Initialize_io_Board(int n_bd_type)
 {
-	//if(n_bd_type == 0) //파스텍 HSSI I/O board 
+	//if(n_bd_type == 0) //?�스??HSSI I/O board 
 	//{
 	//}
 	int i=0,j=0;
@@ -366,7 +366,7 @@ int CCtlBd_Library::Initialize_io_Board(int n_bd_type)
 	INT pMasterNo;
 	
 
-	/////////////////초기에 초기화시 //////////////////////////////////////////////////////////////////////
+	/////////////////초기??초기?�시 //////////////////////////////////////////////////////////////////////
 	Ret = FAS_IO.Set_IO_BoardOpen(&pMasterNo, START_NOTHING); //START_LOADDATA); //START_NOTHING); //START_CLEAR);
 	
 	if (Ret == FALSE)
@@ -1048,9 +1048,9 @@ int CCtlBd_Library::Motor_LinearSafety(int n_MapIndex, double *dp_PosList)
 }
 
 
-int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos, double d_jogcurrentpos) 	//모터 안전 정보 셋팅시 사용 
+int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos, double d_jogcurrentpos) 	//모터 ?�전 ?�보 ?�팅???�용 
 {
-	// 예) 
+	// ?? 
 	// n_Mode = 0:Home Check, 1:Start, 2:Check, 3:Jog, 4:Length Change
 	char cJamcode[10] = {NULL};
 	int nRet = 0, nRet_1 = 0, nRet_2 = 0, nRet_3 = 0, nRet_4 = 0, nRet_5 = 0, nRet_6 = 0;
@@ -1071,10 +1071,10 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 		d_CurPos[n_axis] = d_jogcurrentpos;
 	}
 	// **************************************************************************
-	// 모터 알람 상태 검사한다                                                   
-	// -> 알람 발생한 경우 알람 해제한다                                         
+	// 모터 ?�람 ?�태 검?�한??                                                  
+	// -> ?�람 발생??경우 ?�람 ?�제?�다                                         
 	// **************************************************************************
-	//software limit 값 셋팅 체크 에러 
+	//software limit �??�팅 체크 ?�러 
 	if(d_targetpos < COMI.md_limit_position[n_axis][0] && d_targetpos < d_jogcurrentpos ) //
 	{
 		//sprintf(cJamcode, "%02d0004", n_axis);
@@ -1082,9 +1082,9 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 		Alarm_Error_Occurrence(0, CTL_dWARNING, cJamcode);
 		
 // 		if (st_handler.cwnd_list != NULL)
-// 		{  // 리스트 바 화면 존재
+// 		{  // 리스??�??�면 존재
 // 			sprintf(st_msg.c_abnormal_msg, "Motor[%d] Software Limit Error_1[%4.3f] [%4.3f]", n_axis, COMI.md_limit_position[n_axis][0], d_targetpos);
-// 			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
+// 			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // ?�작 ?�패 출력 ?�청
 // 		}
 		// 2014.11.29 - Bredmin.
 		CString strTemp = "";
@@ -1101,9 +1101,9 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 		Alarm_Error_Occurrence(1, CTL_dWARNING, cJamcode);
 		
 // 		if (st_handler.cwnd_list != NULL)
-// 		{  // 리스트 바 화면 존재
+// 		{  // 리스??�??�면 존재
 // 			sprintf(st_msg.c_abnormal_msg, "Motor[%d] Software Limit Error_2[%4.3f] [%4.3f]", n_axis, COMI.md_limit_position[n_axis][1], d_targetpos);
-// 			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
+// 			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // ?�작 ?�패 출력 ?�청
 // 		}
 		// 2014.11.29 - Bredmin.
 		CString strTemp = "";
@@ -1113,24 +1113,24 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 	}
 
 	// **************************************************************************
-	// 모터 파워 상태 검사한다                                                   
-	// -> 모터 POWER OFF 시 POWER ON 상태로 만든다                               
+	// 모터 ?�워 ?�태 검?�한??                                                  
+	// -> 모터 POWER OFF ??POWER ON ?�태�?만든??                              
 	// **************************************************************************
-	if (g_comiMgr.Get_MotPower(n_axis) == CTL_ERROR )          // 모터 POWER 상태 검사 함수 
+	if (g_comiMgr.Get_MotPower(n_axis) == CTL_ERROR )          // 모터 POWER ?�태 검???�수 
 	{
-		if (COMI.Set_MotPower(n_axis, CTL_ON) == CTLBD_RET_GOOD)       // 모터 POWER ON 설정 함수 
+		if (COMI.Set_MotPower(n_axis, CTL_ON) == CTLBD_RET_GOOD)       // 모터 POWER ON ?�정 ?�수 
 		{
 // 			if (st_handler.cwnd_list != NULL)
-// 			{  // 리스트 바 화면 존재
+// 			{  // 리스??�??�면 존재
 // 				sprintf(st_msg.c_normal_msg, "[MotorPowerOn_1] Axis=%d, rcnt=%d", n_axis, st_motor[n_axis].n_retry_cnt);
-// 				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 동작 실패 출력 요청
+// 				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // ?�작 ?�패 출력 ?�청
 // 			}
 			// 2014.11.29 - Bredmin.
 			CString strTemp = "";
 			strTemp.Format( "[MotorPowerOn_1] Axis=%d, rcnt=%d", n_axis, st_motor[n_axis].n_retry_cnt );
 			Func.On_LogFile_Add( LOG_TOTAL, strTemp );
 
-			if (COMI.Get_MotPower(n_axis) == CTL_ERROR)  // 모터 POWER 상태 검사 함수 
+			if (COMI.Get_MotPower(n_axis) == CTL_ERROR)  // 모터 POWER ?�태 검???�수 
 			{
 				if (st_motor[n_axis].n_retry_cnt > (MOT_RTY_CNT))
 				{
@@ -1163,12 +1163,12 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 		}
 	}
 
-	if (COMI.Get_MotAlarmStatus(n_axis) == CTL_ERROR)      // 모터 ALARM 상태 검사 함수 
+	if (COMI.Get_MotAlarmStatus(n_axis) == CTL_ERROR)      // 모터 ALARM ?�태 검???�수 
 	{
-		if (COMI.Set_MotAlarmClear(n_axis) == CTL_GOOD)       // 모터 ALARM CLEAR 함수 
+		if (COMI.Set_MotAlarmClear(n_axis) == CTL_GOOD)       // 모터 ALARM CLEAR ?�수 
 		{
-			//091119 james			Sleep(1000);  // 일정 시간 후에 상태 확인하기 위해 SLEEP 사용한다 
-// 			if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
+			//091119 james			Sleep(1000);  // ?�정 ?�간 ?�에 ?�태 ?�인?�기 ?�해 SLEEP ?�용?�다 
+// 			if (st_handler.cwnd_list != NULL)  // 리스??�??�면 존재
 // 			{
 // 				sprintf(st_msg.c_normal_msg, "[Alarm Reset] Axis=%d, rcnt=%d", n_axis, COMI.mn_retry_cnt[n_axis]);
 // 				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
@@ -1178,7 +1178,7 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 			strTemp.Format( "[Alarm Reset] Axis=%d, rcnt=%d", n_axis, COMI.mn_retry_cnt[n_axis] );
 			Func.On_LogFile_Add( LOG_TOTAL, strTemp );
 
-			if (COMI.Get_MotAlarmStatus(n_axis) == CTL_ERROR )  // 모터 ALARM 상태 검사 함수 
+			if (COMI.Get_MotAlarmStatus(n_axis) == CTL_ERROR )  // 모터 ALARM ?�태 검???�수 
 			{
 				if (COMI.mn_retry_cnt[n_axis] > MOT_RTY_CNT)
 				{			
@@ -1189,7 +1189,7 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 					sprintf(alarm.mc_code, "0%02d005", n_axis);		// 2014.12.16 - Bredmin.
 					CtlBdFunc.ms_ErrMsg.Format("[Safety] Mot[%d] rcnt[%d] Get Alarm Check Error", n_axis, COMI.mn_retry_cnt[n_axis]);				
 					CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, n_axis, cJamcode, CtlBdFunc.ms_ErrMsg);
-					//2011.0210 COMI.mn_retry_cnt[n_axis] = 0;  // 알람 해제 시도 횟수 
+					//2011.0210 COMI.mn_retry_cnt[n_axis] = 0;  // ?�람 ?�제 ?�도 ?�수 
 					return BD_RETRY;
 				}
 				else
@@ -1211,7 +1211,7 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 				CtlBdFunc.ms_ErrMsg.Format("[Safety] Mot[%d] rcnt[%d] Set Alarm Return Error", n_axis, COMI.mn_retry_cnt[n_axis]);				
 				CtlBdFunc.Send_Error_Message(MOT_ERR_CODE, n_axis, cJamcode, CtlBdFunc.ms_ErrMsg);
 				
-				//2011.0210 COMI.mn_retry_cnt[n_axis] = 0;  // 알람 해제 시도 횟수 
+				//2011.0210 COMI.mn_retry_cnt[n_axis] = 0;  // ?�람 ?�제 ?�도 ?�수 
 				return BD_ERROR;
 			}
 			else
@@ -1224,7 +1224,7 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 	// **************************************************************************
 
 	// **************************************************************************
-	// 모터의 안전 위치를 체크한다. 장비에 맞게 넣는것 보다. 딴쪽에 지정해 놓고 불러다 써야 할듯.                                           
+	// 모터???�전 ?�치�?체크?�다. ?�비??맞게 ?�는�?보다. ?�쪽??지?�해 ?�고 불러???�야 ?�듯.                                           
 	//***************************************************************************
 	switch( n_axis )
 	{
@@ -1248,7 +1248,7 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 					else if( nRet_4 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Camera_Y_Jig_Press_Backward_Check);
 					else if( nRet_5 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Press_Up_Check);
 					else if( nRet_6 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Press_Down_Check);
-					else								alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Press_Carrier_Holder_Up_Check);//혹시나
+					else								alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Press_Carrier_Holder_Up_Check);//?�시??
 					CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
 					return CTL_ERROR;
 				}
@@ -1271,13 +1271,18 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 				nRet_2 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_OFF);
 				nRet_3 = g_ioMgr.get_in_bit(st_io.i_Press_Up_Check, IO_ON);
 				nRet_4 = g_ioMgr.get_in_bit(st_io.i_Press_Down_Check, IO_OFF);
-				if      ( nRet_1 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Slide_Guide_X2_Up_Check);
-				else if( nRet_2 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Slide_Guide_X2_Down_Check);
-				else if( nRet_3 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Press_Up_Check);
-				else if( nRet_4 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Press_Down_Check);
-				else								 alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Slide_Guide_X2_Up_Check);//혹시나
-				CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
-				return CTL_ERROR;
+				if( nRet_1 != IO_ON || nRet_2 != IO_OFF || nRet_3 != IO_ON || nRet_4 != IO_OFF)
+				{
+					if      ( nRet_1 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Slide_Guide_X2_Up_Check);
+					else if( nRet_2 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Slide_Guide_X2_Down_Check);
+					else if( nRet_3 != IO_ON ) alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Press_Up_Check);
+					else if( nRet_4 != IO_OFF ) alarm.mstr_code.Format(_T("8%d%04d"), IO_OFF, st_io.i_Press_Down_Check);
+					else								 alarm.mstr_code.Format(_T("8%d%04d"), IO_ON, st_io.i_Slide_Guide_X2_Up_Check);//?�시??
+					
+					CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+					return CTL_ERROR;
+
+				}
 			}
 			break;
 
@@ -1369,7 +1374,7 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 				}
 			}
 			else
-			{//P_EPOXY_TRANSFER_X_SUCKTION_POS은 생각하지 말자
+			{//P_EPOXY_TRANSFER_X_SUCKTION_POS?� ?�각?��? 말자
 // 				if (d_TargetPos < st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS] - st_motor[M_EPOXY_TRANSFER_Y].n_allow)
 // 				{
 // 					if(COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_X) < (st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_SUCKTION_POS] - st_motor[M_EPOXY_TRANSFER_X].mn_allow))
@@ -1401,7 +1406,7 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 			break;
 
 		case M_EPOXY_TRANSFER_Z:
-			// 당구장 무빙시 알람 관련 ..
+			// ?�구??무빙???�람 관??..
 			if(st_work.nEpoxyBiliardThreadRunMode == 1)
 			{
 				d_CurPos[0]		= COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_Y);
@@ -1439,7 +1444,7 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 
 	}
 
-	st_motor[n_axis].mn_retry_time_flag = CTL_NO;//2011.0201 추가 
+	st_motor[n_axis].mn_retry_time_flag = CTL_NO;//2011.0201 추�? 
 
 	return BD_GOOD;
 }
@@ -1474,7 +1479,7 @@ int CCtlBd_Library::FileSizeCheck(char * cp_filename, int n_size, int n_check)
 	
 	if(bContinue = finder.FindFile(cp_filename))
 	{	
-		if (n_check == BD_YES)			// Size를 체크하는것이면...
+		if (n_check == BD_YES)			// Size�?체크?�는것이�?..
 		{
 			finder.FindFile(cp_filename);
 			finder.FindNextFile();
@@ -1486,7 +1491,7 @@ int CCtlBd_Library::FileSizeCheck(char * cp_filename, int n_size, int n_check)
 			}
 			finder.Close();	
 		}
-		else						// Size를 확인하는것이면...
+		else						// Size�??�인?�는것이�?..
 		{
 			finder.FindFile(cp_filename);
 			finder.FindNextFile();
@@ -1506,36 +1511,36 @@ int CCtlBd_Library::LogFile_Write(char * cp_dir_path, char * cp_msg)
 {
 //2011.0417	sing.Lock(); //2011.0417 
 
-	CString mstr_cur_year, mstr_cur_month, mstr_cur_day, str_display_time; // 현재 년, 월, 일 정보 문자형으로 변환하여 저장할 변수 
-	int mn_cur_year, mn_cur_month, mn_cur_day, mn_cur_hour; // 현재 년, 월, 일 정보 저장 변수 
-	CString mstr_file_name, mstr_dir_path, str_msg;		// 마지막으로 생성된 파일 이름 저장 변수 
-	CString mstr_create_file;	// 알람 정보 저장할 파일에 대한 [폴더]+[파일명]+[확장자] 설정 변수 
-	CString mstr_list_name, mstr_temp_data;  // 각 부분별 알람 발생 횟수 정보 저장할 로그 파일 정보 저장 변수 
-	CString mstr_content;		// 한 라인에 출력할 문자열 정보 저장 변수 
-	COleDateTime time_cur;		// 검사할 시간 정보 저장 변수 
-	CTime m_time_current;		// 간략한 헝식의 현재 시간 정보 저장 변수
+	CString mstr_cur_year, mstr_cur_month, mstr_cur_day, str_display_time; // ?�재 ?? ?? ???�보 문자?�으�?변?�하???�?�할 변??
+	int mn_cur_year, mn_cur_month, mn_cur_day, mn_cur_hour; // ?�재 ?? ?? ???�보 ?�??변??
+	CString mstr_file_name, mstr_dir_path, str_msg;		// 마�?막으�??�성???�일 ?�름 ?�??변??
+	CString mstr_create_file;	// ?�람 ?�보 ?�?�할 ?�일???�??[?�더]+[?�일�?+[?�장?? ?�정 변??
+	CString mstr_list_name, mstr_temp_data;  // �?부분별 ?�람 발생 ?�수 ?�보 ?�?�할 로그 ?�일 ?�보 ?�??변??
+	CString mstr_content;		// ???�인??출력??문자???�보 ?�??변??
+	COleDateTime time_cur;		// 검?�할 ?�간 ?�보 ?�??변??
+	CTime m_time_current;		// 간략???�식???�재 ?�간 ?�보 ?�??변??
 	char chr_buf[20]={0,};
-	int mn_existence, nlength;			// 파일 존재 유무 설정 플래그 
-	char cfileName[256]={0,};			// 검색할 파일 정보 설정 함수 
-	FILE  *fp ;					// 파일에 대한 포인터 설정 변수 
+	int mn_existence, nlength;			// ?�일 존재 ?�무 ?�정 ?�래�?
+	char cfileName[256]={0,};			// 검?�할 ?�일 ?�보 ?�정 ?�수 
+	FILE  *fp ;					// ?�일???�???�인???�정 변??
 
 	CString BackupName;
 	CString mstr_cur_hour, mstr_cur_min, mstr_cur_sec;
 	int Ret=0;
 
 	nlength = strlen(cp_msg);
-	if(nlength <= 0) //저장할 메세지가 없다 
+	if(nlength <= 0) //?�?�할 메세지가 ?�다 
 	{
 		return BD_ERROR;
 	}
 	str_msg = cp_msg;
  
 	// **************************************************************************
-	// 파일 이름으로 사용할 날짜 정보를 얻는다                                   
+	// ?�일 ?�름?�로 ?�용???�짜 ?�보�??�는??                                  
 	// **************************************************************************
-	time_cur = COleDateTime::GetCurrentTime();  // 현재 시간 정보를 얻는다. 
+	time_cur = COleDateTime::GetCurrentTime();  // ?�재 ?�간 ?�보�??�는?? 
 
-	m_time_current = CTime::GetCurrentTime() ;  // 간략한 형식의 현재 시간 정보 얻는다. 
+	m_time_current = CTime::GetCurrentTime() ;  // 간략???�식???�재 ?�간 ?�보 ?�는?? 
 
 	mn_cur_year = time_cur.GetYear();  
 
@@ -1547,20 +1552,20 @@ int CCtlBd_Library::LogFile_Write(char * cp_dir_path, char * cp_msg)
 	// **************************************************************************
 
 	// **************************************************************************
-	// 날짜 정보를 문자형으로 변환하여 변수에 설정한다                           
+	// ?�짜 ?�보�?문자?�으�?변?�하??변?�에 ?�정?�다                           
 	// **************************************************************************
 	mstr_cur_year = LPCTSTR(_itoa( mn_cur_year, chr_buf, 10 ));  
 	mstr_cur_month.Format("%02d", mn_cur_month);
 	mstr_cur_day.Format("%02d", mn_cur_day);
 
 	// **************************************************************************
-	// 현재 시간 정보 얻는다                                                     
+	// ?�재 ?�간 ?�보 ?�는??                                                    
 	// **************************************************************************
-	mn_cur_hour = time_cur.GetHour();				// 현재 시간 정보를 설정한다. 
-	mstr_cur_hour.Format("%d",time_cur.GetHour());	// 현재 시간 정보를 설정한다.
-	mstr_cur_min.Format("%d",time_cur.GetMinute());	// 현재 분 정보를 설정한다. 
-	mstr_cur_sec.Format("%d",time_cur.GetSecond());	// 현재 초 정보를 설정한다. 
-	str_display_time = m_time_current.Format("%c");	// 리스트 파일에 출력할 타이틀 시간 정보 설정 
+	mn_cur_hour = time_cur.GetHour();				// ?�재 ?�간 ?�보�??�정?�다. 
+	mstr_cur_hour.Format("%d",time_cur.GetHour());	// ?�재 ?�간 ?�보�??�정?�다.
+	mstr_cur_min.Format("%d",time_cur.GetMinute());	// ?�재 �??�보�??�정?�다. 
+	mstr_cur_sec.Format("%d",time_cur.GetSecond());	// ?�재 �??�보�??�정?�다. 
+	str_display_time = m_time_current.Format("%c");	// 리스???�일??출력???�?��? ?�간 ?�보 ?�정 
 	// **************************************************************************
 
 
@@ -1575,12 +1580,12 @@ int CCtlBd_Library::LogFile_Write(char * cp_dir_path, char * cp_msg)
 	sprintf(cfileName, "%s", mstr_create_file);
 	mn_existence = access(cfileName,0) ;	
 	if (mn_existence == -1)
-	{//해당 파일이 존재하지 않는 상태이다 
+	{//?�당 ?�일??존재?��? ?�는 ?�태?�다 
 		CreateFolder(cp_dir_path); 
 	}
 	else 
-	{//해당 파일이 이미 존재한다.
-		//정상 
+	{//?�당 ?�일???��? 존재?�다.
+		//?�상 
 	}
 	
 	Ret = FileSizeCheck(cfileName, 1048576, BD_YES); //size and rename	
@@ -1609,15 +1614,15 @@ int CCtlBd_Library::LogFile_Write(char * cp_dir_path, char * cp_msg)
 
 		clearerr(fp); //2011.0418 
 
-		fclose(fp) ;  //2011.0417  파일 종료
+		fclose(fp) ;  //2011.0417  ?�일 종료
 
-//2011.0417		sing.Unlock(); //2011.0417 추가 
+//2011.0417		sing.Unlock(); //2011.0417 추�? 
 		return BD_ERROR;
 	}
 	// **************************************************************************
-	fclose(fp);  // 파일을 종료한다.
+	fclose(fp);  // ?�일??종료?�다.
 
-//2011.0417	sing.Unlock(); //2011.0417 추가 
+//2011.0417	sing.Unlock(); //2011.0417 추�? 
 	return BD_GOOD;
 }
 
@@ -1638,14 +1643,14 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 		}
 
 		nRet_1 = COMI.Check_MotPosRange(n_MotNum, d_MovePos, COMI.md_allow_value[n_MotNum]);
-		if (nRet_1 == BD_GOOD) //이미 해당 위치에 와 있으면 동작하지 않고 모터 이동을 끝낸다 
+		if (nRet_1 == BD_GOOD) //?��? ?�당 ?�치???� ?�으�??�작?��? ?�고 모터 ?�동???�낸??
 		{
 			nFuncRet = BD_GOOD;
 			break;
 		}
 		
 		mn_mot_retry_cnt[n_MotNum] = 10;
-		mn_mot_max_retry_cnt = 3; //최대 3회 리트라이 동작을 수행한다 
+		mn_mot_max_retry_cnt = 3; //최�? 3??리트?�이 ?�작???�행?�다 
 		mn_single_motmove_step[n_MotNum] = 100;
 		m_dwUntil_Wait[n_MotNum][0] = GetCurrentTime();
 		break;
@@ -1694,7 +1699,7 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 		break;
 		
 	case 100:
-		nRet_1 = COMI.Start_SingleMove(n_MotNum, d_MovePos, n_SpeedRate);  // 해당 위치로 이동
+		nRet_1 = COMI.Start_SingleMove(n_MotNum, d_MovePos, n_SpeedRate);  // ?�당 ?�치�??�동
 		
 		if (nRet_1 == BD_GOOD)
 		{
@@ -1725,7 +1730,7 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 				mn_single_motmove_step[n_MotNum] = 100;
 			}
 		}
-		else if (nRet_1 == BD_RETRY)  // 동작 재시도
+		else if (nRet_1 == BD_RETRY)  // ?�작 ?�시??
 		{
 			if(mn_mot_retry_cnt[n_MotNum] > mn_mot_max_retry_cnt) 
 			{
@@ -1748,8 +1753,8 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 			break;
 		}
 
-		nRet_1 = COMI.Check_SingleMove(n_MotNum, d_MovePos);  // 이동 완료 확인
-		if (nRet_1 == BD_GOOD)  // 정상 완료
+		nRet_1 = COMI.Check_SingleMove(n_MotNum, d_MovePos);  // ?�동 ?�료 ?�인
+		if (nRet_1 == BD_GOOD)  // ?�상 ?�료
 		{
 			mn_mot_retry_cnt[n_MotNum] = 0;
 			mn_single_motmove_step[n_MotNum] = 0;
@@ -1771,7 +1776,7 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 				mn_single_motmove_step[n_MotNum] = 100;
 			}
 		}
-		else if (nRet_1 == BD_RETRY)  // 동작 재시도
+		else if (nRet_1 == BD_RETRY)  // ?�작 ?�시??
 		{
 			mn_mot_retry_cnt[n_MotNum]++;
 			
@@ -1812,13 +1817,13 @@ int CCtlBd_Library::Linear_Move(int n_LinearMapIndex, long l_AxisCnt, long *lp_A
 		}
 
 		if(nCnt == l_AxisCnt)
-		{//이미 모든 모터의 현재 위치가 이동하려는 위치와 허용오차 안에 있으면 동작할 필요가 없으니 끝내자.
+		{//?��? 모든 모터???�재 ?�치가 ?�동?�려???�치?� ?�용?�차 ?�에 ?�으�??�작???�요가 ?�으???�내??
 			nFuncRet = BD_GOOD;
 			break;
 		}
 		
 		mn_linear_retry_cnt[n_LinearMapIndex] = 0;
-		mn_linear_max_retry_cnt = 3; //최대 3회 리트라이 동작을 수행한다 
+		mn_linear_max_retry_cnt = 3; //최�? 3??리트?�이 ?�작???�행?�다 
 		mn_linear_motmove_step[n_LinearMapIndex] = 100;
 		break;
 		
@@ -1878,7 +1883,7 @@ int CCtlBd_Library::Linear_Move(int n_LinearMapIndex, long l_AxisCnt, long *lp_A
 				mn_linear_motmove_step[n_LinearMapIndex] = 100;
 			}
 		}
-		else if (nRet[0] == BD_RETRY)  // 동작 재시도
+		else if (nRet[0] == BD_RETRY)  // ?�작 ?�시??
 		{
 			if(mn_linear_retry_cnt[n_LinearMapIndex] > mn_linear_max_retry_cnt) 
 			{
@@ -1894,7 +1899,7 @@ int CCtlBd_Library::Linear_Move(int n_LinearMapIndex, long l_AxisCnt, long *lp_A
 		
 	case 200:
 		nRet[0] = COMI.Check_LinearMove(n_LinearMapIndex, st_linearmot[n_LinearMapIndex].dp_PosList) ;
-		if (nRet[0] == BD_GOOD)  // 정상 완료
+		if (nRet[0] == BD_GOOD)  // ?�상 ?�료
 		{
 /*			CString strData1="";
 			CString strData2="";
@@ -1949,9 +1954,9 @@ int CCtlBd_Library::Linear_Move(int n_LinearMapIndex, long l_AxisCnt, long *lp_A
 				mn_linear_motmove_step[n_LinearMapIndex] = 100;
 			}
 		}
-		else if (nRet[0] == BD_RETRY)  // 동작 재시도
+		else if (nRet[0] == BD_RETRY)  // ?�작 ?�시??
 		{
-			// 무한루프에 빠질수도 있지만 횟수를 지정해서 사용하면 문제 없다
+			// 무한루프??빠질?�도 ?��?�??�수�?지?�해???�용?�면 문제 ?�다
 			mn_linear_retry_cnt[n_LinearMapIndex]++;
 			
 			if(mn_linear_retry_cnt[n_LinearMapIndex] > mn_linear_max_retry_cnt) 
@@ -1971,7 +1976,7 @@ int CCtlBd_Library::Linear_Move(int n_LinearMapIndex, long l_AxisCnt, long *lp_A
 
 
 int CCtlBd_Library::SD_Sensor_Enable(int n_Mode, int n_AxisNum, int n_Enable)
-{//Constant speed mode 에서는 SD 신호 입력이 무시됩니다.
+{//Constant speed mode ?�서??SD ?�호 ?�력??무시?�니??
 	int nFuncRet = BD_PROCEED;
 
 	if(n_Enable == CTL_YES) 
@@ -1981,7 +1986,7 @@ int CCtlBd_Library::SD_Sensor_Enable(int n_Mode, int n_AxisNum, int n_Enable)
 		COMI.Set_Motor_IO_Property(n_AxisNum, cmSD_MODE,cmTRUE);
 		COMI.Set_Motor_IO_Property(n_AxisNum, cmSD_LATCH, cmTRUE);
 
-		st_motor[n_AxisNum].n_sd_mv_chk = 1; //sd를 조건을 확인하기 위해 이동한다 
+		st_motor[n_AxisNum].n_sd_mv_chk = 1; //sd�?조건???�인?�기 ?�해 ?�동?�다 
 	}
 	else
 	{
@@ -2018,17 +2023,17 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
-	//SD 센서가 기준점을 잡는 센서 이다 
+	//SD ?�서가 기�??�을 ?�는 ?�서 ?�다 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	if(st_work.mn_run_status != dRUN)
-	{   //time out 시간 체크 문제 보완을 위해  
+	{   //time out ?�간 체크 문제 보완???�해  
 		if(m_bSD_MoveFlag[n_AxisNum] == true) m_bSD_MoveFlag[n_AxisNum] = false; 
 	}
 
 	switch(m_nSD_Elv_MoveStep[n_AxisNum])
 	{
 	case 0:	
-		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//트레이를 작업 가능한 영역에 UP하여 공급하는 위치, SD pos 센서 On 감지 후 센서 기준 - 방항으로 벗어난 후 + 방향으로 P_ELV_SUPPLY_OFFSET 티칭만큼 up 한후 모터 동작은 완료하고, 트레이르, 받든다 
+		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//?�레?��? ?�업 가?�한 ?�역??UP?�여 공급?�는 ?�치, SD pos ?�서 On 감�? ???�서 기�? - 방항?�로 벗어????+ 방향?�로 P_ELV_SUPPLY_OFFSET ?�칭만큼 up ?�후 모터 ?�작?� ?�료?�고, ?�레?�르, 받든??
 		{
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}			
@@ -2038,27 +2043,27 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 		}			
 		break;
 		///////////////////////////////////////////////////////////////////////////
-		// SD Sensor 기준 위 또는 아래인지 확인하여, 위면 내려가고, 아래면 올라간다 
+		// SD Sensor 기�? ???�는 ?�래?��? ?�인?�여, ?�면 ?�려가�? ?�래�??�라간다 
 		///////////////////////////////////////////////////////////////////////////
-	case 1000: //기준점 위치 확인 (SD Sensor 대비 high or 같은 위치인지인지, low인지 두가지 위치를 확인한다)			 
+	case 1000: //기�????�치 ?�인 (SD Sensor ?��?high or 같�? ?�치?��??��?, low?��? ?��?지 ?�치�??�인?�다)			 
 		nRet_1 = COMI.Get_MotIOSensor(n_AxisNum, MOT_SENS_SD); 	
 		dCurrentPos = COMI.Get_MotCurrentPos(n_AxisNum); 
 		CTL_Lib.SD_Sensor_Enable(0, n_AxisNum, CTL_NO); //sd sensor clear			
 
 		if(nRet_1 == BD_GOOD)
-		{//SD가 감지되면 위에 있는 상태 
+		{//SD가 감�??�면 ?�에 ?�는 ?�태 
 			m_bSD_MoveFlag[n_AxisNum] = false;
-			m_nSD_Elv_MoveStep[n_AxisNum] = 6000; //기준점보다 위에 있는 상태로 아래로 내리면서 SD를 지나가기를 기다리자 
+			m_nSD_Elv_MoveStep[n_AxisNum] = 6000; //기�??�보???�에 ?�는 ?�태�??�래�??�리면서 SD�?지?��?기�? 기다리자 
 		}
 		else //if(nRet_1 == BD_ERROR)
-		{//SD도 감지되지 않았고, SD 위치보다 낮은 상태로, 위로 올라가면서 SD를 찾는다 
+		{//SD??감�??��? ?�았�? SD ?�치보다 ??? ?�태�? ?�로 ?�라가면서 SD�?찾는??
 			m_bSD_MoveFlag[n_AxisNum] = false;
-			m_nSD_Elv_MoveStep[n_AxisNum] = 2000; //traget pos를 이동하는 루틴 
+			m_nSD_Elv_MoveStep[n_AxisNum] = 2000; //traget pos�??�동?�는 루틴 
 		}	 
 		break;
 
 		////////////////////////////////////////////////////////////
-		//SD 센서를 찾으면서 위로 이동하다 
+		//SD ?�서�?찾으면서 ?�로 ?�동?�다 
 		////////////////////////////////////////////////////////////	
 	case 2000: 
 		if(m_bSD_MoveFlag[n_AxisNum] == false)
@@ -2077,15 +2082,15 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 				break;
 			}
 			if(m_dwSdWaitTime[n_AxisNum][2] > MOT_ELE_MOVE_WAITLIMIT)
-			{//limit 시간 지남, 에러 처리후 재 시도하자 
-				COMI.Set_MotStop(1, n_AxisNum) ; //긴급정지 
+			{//limit ?�간 지?? ?�러 처리?????�도?�자 
+				COMI.Set_MotStop(1, n_AxisNum) ; //긴급?��? 
 				m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 				break;
 			}
 		}
 
-		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_START, n_AxisNum, st_motor[n_AxisNum].md_pos[P_ELV_TRAY_Z_READYPOS], COMI.mn_runspeed_rate);   //제일 밑까지 이동한다 
-		if (nRet_1 == BD_GOOD) //위로 이동 하면서 SD를 찾는다  
+		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_START, n_AxisNum, st_motor[n_AxisNum].md_pos[P_ELV_TRAY_Z_READYPOS], COMI.mn_runspeed_rate);   //?�일 밑까지 ?�동?�다 
+		if (nRet_1 == BD_GOOD) //?�로 ?�동 ?�면??SD�?찾는?? 
 		{					 				 
 			m_nSD_Elv_MoveStep[n_AxisNum] = 2100;
 		}
@@ -2109,8 +2114,8 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 	case 2100:
 		nRet_1 = COMI.Get_MotIOSensor(n_AxisNum, MOT_SENS_SD); 
 		if(nRet_1 == BD_GOOD)
-		{//정상적으로 체크했다. 
-			COMI.Set_MotStop(1, n_AxisNum) ; //긴급정지 
+		{//?�상?�으�?체크?�다. 
+			COMI.Set_MotStop(1, n_AxisNum) ; //긴급?��? 
 
 			st_motor[n_AxisNum].n_sd_mv_chk = 0; //clear
 			CTL_Lib.SD_Sensor_Enable(0, n_AxisNum, CTL_NO); //sd sensor clear
@@ -2118,11 +2123,11 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 			m_nSD_Elv_MoveStep[n_AxisNum] = 2200;
 			break;
 		}
-		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_CHECK, n_AxisNum, st_motor[n_AxisNum].md_pos[P_ELV_TRAY_Z_READYPOS], COMI.mn_runspeed_rate);  //2015.0407 james  //SD 위치까지 이동했는데 SD가 감지되지 않으면 트레이가 없는것이다
+		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_CHECK, n_AxisNum, st_motor[n_AxisNum].md_pos[P_ELV_TRAY_Z_READYPOS], COMI.mn_runspeed_rate);  //2015.0407 james  //SD ?�치까�? ?�동?�는??SD가 감�??��? ?�으�??�레?��? ?�는것이??
 		if (nRet_1 == BD_GOOD)   
-		{	//트레이가 없는 상태일것이다, 미리 트레이를 체크가능하여 트레이가 없으면 올라 갈 필요가 없다 
-			//이곳에 오면 문제가 있음 
-			if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//트레이를 작업 가능한 영역에 UP하여 공급하는 위치, SD pos 센서 On 감지 후 센서 기준 - 방항으로 벗어난 후 + 방향으로 P_ELV_SUPPLY_OFFSET 티칭만큼 up 한후 모터 동작은 완료하고, 트레이르, 받든다 
+		{	//?�레?��? ?�는 ?�태?�것?�다, 미리 ?�레?��? 체크가?�하???�레?��? ?�으�??�라 �??�요가 ?�다 
+			//?�곳???�면 문제가 ?�음 
+			if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//?�레?��? ?�업 가?�한 ?�역??UP?�여 공급?�는 ?�치, SD pos ?�서 On 감�? ???�서 기�? - 방항?�로 벗어????+ 방향?�로 P_ELV_SUPPLY_OFFSET ?�칭만큼 up ?�후 모터 ?�작?� ?�료?�고, ?�레?�르, 받든??
 			{
 				if(n_AxisNum == M_TRAY1_Z)
 				{
@@ -2135,7 +2140,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 				}
 				else
 				{
-					//james test m_nSD_Elv_MoveStep[n_AxisNum] = 1000; //트레이가 없는 상태  
+					//james test m_nSD_Elv_MoveStep[n_AxisNum] = 1000; //?�레?��? ?�는 ?�태  
 					m_nSD_Elv_MoveStep[n_AxisNum] = 0;
 					nFuncRet = RET_GOOD;
 				}
@@ -2146,7 +2151,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
+		{//모터 ?�람?� ?��? 처리?�으???�곳?�서?????�태�?바꾸�??�다  
 			CTL_Lib.Alarm_Error_Occurrence(273, dWARNING, alarm.mstr_code);
 
 			////////if (st_handler.cwnd_list != NULL)  
@@ -2159,27 +2164,27 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 		break;
 
 	case 2200:
-		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//트레이를 작업 가능한 영역에 UP하여 공급하는 위치, SD pos 센서 On 감지 후 센서 기준 - 방항으로 벗어난 후 + 방향으로 P_ELV_SUPPLY_OFFSET 티칭만큼 up 한후 모터 동작은 완료하고, 트레이르, 받든다 
+		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//?�레?��? ?�업 가?�한 ?�역??UP?�여 공급?�는 ?�치, SD pos ?�서 On 감�? ???�서 기�? - 방항?�로 벗어????+ 방향?�로 P_ELV_SUPPLY_OFFSET ?�칭만큼 up ?�후 모터 ?�작?� ?�료?�고, ?�레?�르, 받든??
 		{
 			nRet_1 = COMI.Get_MotIOSensor(n_AxisNum, MOT_SENS_SD); 
 			if(nRet_1 != BD_GOOD)
-			{//SD 센서가 감지되지 않으면 에러 
-				COMI.Set_MotStop(1, n_AxisNum) ; //긴급정지 
+			{//SD ?�서가 감�??��? ?�으�??�러 
+				COMI.Set_MotStop(1, n_AxisNum) ; //긴급?��? 
 
 				m_bSD_MoveFlag[n_AxisNum] = false;
-				m_nSD_Elv_MoveStep[n_AxisNum] = 1000; //재시도  루틴  
+				m_nSD_Elv_MoveStep[n_AxisNum] = 1000; //?�시?? 루틴  
 				break;
 			}
 		}
 
 		dCurrentPos = COMI.Get_MotCurrentPos(n_AxisNum); 
-		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//트레이를 작업 가능한 영역에 UP하여 공급하는 위치, SD pos 센서 On 감지 후 센서 기준 - 방항으로 벗어난 후 + 방향으로 P_ELV_SUPPLY_OFFSET 티칭만큼 up 한후 모터 동작은 완료하고, 트레이르, 받든다 
+		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//?�레?��? ?�업 가?�한 ?�역??UP?�여 공급?�는 ?�치, SD pos ?�서 On 감�? ???�서 기�? - 방항?�로 벗어????+ 방향?�로 P_ELV_SUPPLY_OFFSET ?�칭만큼 up ?�후 모터 ?�작?� ?�료?�고, ?�레?�르, 받든??
 		{
-			m_dTargetPos[n_AxisNum] = fabs(dCurrentPos + st_motor[n_AxisNum].md_pos[P_ELV_SUPPLY_OFFSET]); //현재 위치에 + P_ELV_SUPPLY_OFFSET 
+			m_dTargetPos[n_AxisNum] = fabs(dCurrentPos + st_motor[n_AxisNum].md_pos[P_ELV_SUPPLY_OFFSET]); //?�재 ?�치??+ P_ELV_SUPPLY_OFFSET 
 		}
 
 		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_START, n_AxisNum, m_dTargetPos[n_AxisNum], COMI.mn_runspeed_rate);   
-		if (nRet_1 == BD_GOOD) //조건에 따라 위로/아래로  이동  
+		if (nRet_1 == BD_GOOD) //조건???�라 ?�로/?�래�? ?�동  
 		{
 			m_nSD_Elv_MoveStep[n_AxisNum] = 2210;
 		}
@@ -2188,7 +2193,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
+		{//모터 ?�람?� ?��? 처리?�으???�곳?�서?????�태�?바꾸�??�다  
 			//st_sync_info.nSmema_Tray_Output_Req++;
 			//if( st_sync_info.nSmema_Tray_Output_Req > 3)
 			//{
@@ -2206,18 +2211,18 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 		break;
 
 	case 2210:
-		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_CHECK, n_AxisNum, m_dTargetPos[n_AxisNum], COMI.mn_runspeed_rate);  //2015.0407 james  //SD 위치까지 이동했는데 SD가 감지되지 않으면 트레이가 없는것이다
+		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_CHECK, n_AxisNum, m_dTargetPos[n_AxisNum], COMI.mn_runspeed_rate);  //2015.0407 james  //SD ?�치까�? ?�동?�는??SD가 감�??��? ?�으�??�레?��? ?�는것이??
 		if (nRet_1 == BD_GOOD)   
-		{	//트레이가 없는 상태일것이다, 미리 트레이를 체크가능하여 트레이가 없으면 올라 갈 필요가 없다 
-			//이곳에 오면 문제가 있음 
-			m_nSD_Elv_MoveStep[n_AxisNum] = 2300; //트레이가 있는 상태 				 
+		{	//?�레?��? ?�는 ?�태?�것?�다, 미리 ?�레?��? 체크가?�하???�레?��? ?�으�??�라 �??�요가 ?�다 
+			//?�곳???�면 문제가 ?�음 
+			m_nSD_Elv_MoveStep[n_AxisNum] = 2300; //?�레?��? ?�는 ?�태 				 
 		}
 		else if (nRet_1 == BD_RETRY)
 		{		 
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
+		{//모터 ?�람?� ?��? 처리?�으???�곳?�서?????�태�?바꾸�??�다  
 			//2016.1117
 // 			st_sync_info.nSmema_Tray_Output_Req++;
 // 			if( st_sync_info.nSmema_Tray_Output_Req > 3)
@@ -2237,16 +2242,16 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 		break;
 
 	case 2300:
-		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//트레이를 작업 가능한 영역에 UP하여 공급하는 위치, SD pos 센서 On 감지 후 센서 기준 - 방항으로 벗어난 후 + 방향으로 P_ELV_SUPPLY_OFFSET 티칭만큼 up 한후 모터 동작은 완료하고, 트레이르, 받든다 
+		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//?�레?��? ?�업 가?�한 ?�역??UP?�여 공급?�는 ?�치, SD pos ?�서 On 감�? ???�서 기�? - 방항?�로 벗어????+ 방향?�로 P_ELV_SUPPLY_OFFSET ?�칭만큼 up ?�후 모터 ?�작?� ?�료?�고, ?�레?�르, 받든??
 		{
 			nRet_1 = COMI.Get_MotIOSensor(n_AxisNum, MOT_SENS_SD); 
 			if(nRet_1 == BD_GOOD)
-			{//정상적으로 체크했다. 					
+			{//?�상?�으�?체크?�다. 					
 				m_nSD_Elv_MoveStep[n_AxisNum] = 2400; // 루틴   
 			}
 			else
 			{//error
-				m_nSD_Elv_MoveStep[n_AxisNum] = 1000; //재시도  루틴   
+				m_nSD_Elv_MoveStep[n_AxisNum] = 1000; //?�시?? 루틴   
 			}
 		}
 		break;
@@ -2257,9 +2262,9 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 
 	case 2500:
 		dCurrentPos = COMI.Get_MotCurrentPos(n_AxisNum); 
-		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//트레이를 작업 가능한 영역에 UP하여 공급하는 위치, SD pos 센서 On 감지 후 센서 기준 - 방항으로 벗어난 후 + 방향으로 P_ELV_SUPPLY_OFFSET 티칭만큼 up 한후 모터 동작은 완료하고, 트레이르, 받든다 
+		if(n_TargetPos_Site == P_ELV_SUPPLY_OFFSET)//?�레?��? ?�업 가?�한 ?�역??UP?�여 공급?�는 ?�치, SD pos ?�서 On 감�? ???�서 기�? - 방항?�로 벗어????+ 방향?�로 P_ELV_SUPPLY_OFFSET ?�칭만큼 up ?�후 모터 ?�작?� ?�료?�고, ?�레?�르, 받든??
 		{
-			m_dSD_Supply_Pos_Backup[n_AxisNum] = fabs(dCurrentPos + st_motor[n_AxisNum].md_pos[P_ELV_SUPPLY_OFFSET]); //현재 위치에 + P_ELV_SUPPLY_OFFSET 
+			m_dSD_Supply_Pos_Backup[n_AxisNum] = fabs(dCurrentPos + st_motor[n_AxisNum].md_pos[P_ELV_SUPPLY_OFFSET]); //?�재 ?�치??+ P_ELV_SUPPLY_OFFSET 
 		}
 
 		//m_dReference_Pos_Backup
@@ -2271,7 +2276,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 
 		//
 		////////////////////////////////////////////////////////////
-		//SD 센서를 감지하고 있으니 아래로 내려가자 
+		//SD ?�서�?감�??�고 ?�으???�래�??�려가??
 		////////////////////////////////////////////////////////////	
 	case 6000: 
 		if(m_bSD_MoveFlag[n_AxisNum] == false)
@@ -2290,15 +2295,15 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 				break;
 			}
 			if(m_dwSdWaitTime[n_AxisNum][2] > MOT_ELE_MOVE_WAITLIMIT)
-			{//limit 시간 지남, 에러 처리후 재 시도하자 
-				COMI.Set_MotStop(1, n_AxisNum) ; //긴급정지 
+			{//limit ?�간 지?? ?�러 처리?????�도?�자 
+				COMI.Set_MotStop(1, n_AxisNum) ; //긴급?��? 
 				m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 				break;
 			}
 		}
 
-		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_START, n_AxisNum, st_motor[n_AxisNum].md_pos[P_ELV_TRAY_Z_INITPOS], COMI.mn_runspeed_rate/3);   //밑으로 이동한다 
-		if (nRet_1 == BD_GOOD) //위로 이동 하면서 SD를 찾는다  
+		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_START, n_AxisNum, st_motor[n_AxisNum].md_pos[P_ELV_TRAY_Z_INITPOS], COMI.mn_runspeed_rate/3);   //밑으�??�동?�다 
+		if (nRet_1 == BD_GOOD) //?�로 ?�동 ?�면??SD�?찾는?? 
 		{					 				 
 			m_nSD_Elv_MoveStep[n_AxisNum] = 6100;
 		}
@@ -2307,7 +2312,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
+		{//모터 ?�람?� ?��? 처리?�으???�곳?�서?????�태�?바꾸�??�다  
 			CTL_Lib.Alarm_Error_Occurrence(375, dWARNING, alarm.mstr_code);
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
@@ -2316,8 +2321,8 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 	case 6100:
 		nRet_1 = COMI.Get_MotIOSensor(n_AxisNum, MOT_SENS_SD); 
 		if(nRet_1 == BD_ERROR)
-		{//정상적으로 체크했다. 
-			COMI.Set_MotStop(1, n_AxisNum) ; //긴급정지 			
+		{//?�상?�으�?체크?�다. 
+			COMI.Set_MotStop(1, n_AxisNum) ; //긴급?��? 			
 			CTL_Lib.SD_Sensor_Enable(0, n_AxisNum, CTL_NO); //sd sensor clear
 
 			m_nSD_Elv_MoveStep[n_AxisNum] = 7000;
@@ -2326,14 +2331,14 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_CHECK, n_AxisNum, st_motor[n_AxisNum].md_pos[P_ELV_TRAY_Z_INITPOS], COMI.mn_runspeed_rate);
 		if (nRet_1 == BD_GOOD)   
 		{	 
-			m_nSD_Elv_MoveStep[n_AxisNum] = 6200;  //완전히 내렸으나 아직도 SD룰 감지하고 있는 상태로 , TRAY FULL 상태이다 				 
+			m_nSD_Elv_MoveStep[n_AxisNum] = 6200;  //?�전???�렸?�나 ?�직??SD�?감�??�고 ?�는 ?�태�?, TRAY FULL ?�태?�다 				 
 		}
 		else if (nRet_1 == BD_RETRY)
 		{		 
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
+		{//모터 ?�람?� ?��? 처리?�으???�곳?�서?????�태�?바꾸�??�다  
 			CTL_Lib.Alarm_Error_Occurrence(276, dWARNING, alarm.mstr_code);
 			m_nSD_Elv_MoveStep[n_AxisNum] = 1000;
 		}
@@ -2377,15 +2382,15 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 	case 7000:
 		nRet_1 = COMI.Get_MotIOSensor(n_AxisNum, MOT_SENS_SD); 
 		if(nRet_1 == BD_ERROR)
-		{//SD 센서가 감지
-			COMI.Set_MotStop(1, n_AxisNum) ; //긴급정지 
+		{//SD ?�서가 감�?
+			COMI.Set_MotStop(1, n_AxisNum) ; //긴급?��? 
 
 			m_bSD_MoveFlag[n_AxisNum] = false;
-			m_nSD_Elv_MoveStep[n_AxisNum] = 1000; //이제 다시 위로 올라가 정해진 루틴으로 SD 기준 위치에 맞춘다    
+			m_nSD_Elv_MoveStep[n_AxisNum] = 1000; //?�제 ?�시 ?�로 ?�라가 ?�해�?루틴?�로 SD 기�? ?�치??맞춘??   
 		}
 		else
 		{
-			m_nSD_Elv_MoveStep[n_AxisNum] = 1000; //이제 다시 위로 올라가 정해진 루틴으로 SD 기준 위치에 맞춘다    
+			m_nSD_Elv_MoveStep[n_AxisNum] = 1000; //?�제 ?�시 ?�로 ?�라가 ?�해�?루틴?�로 SD 기�? ?�치??맞춘??   
 		}
 		break;
 	}	 
@@ -2393,7 +2398,7 @@ int CCtlBd_Library::Elevator_Job_Move_Pos(int nMode, int n_AxisNum,  int n_Targe
 	if(m_nSD_Elv_MoveStep[n_AxisNum] == 0 || nFuncRet == RET_GOOD)
 	{
 		CTL_Lib.SD_Sensor_Enable(0, n_AxisNum, CTL_NO); //sd sensor clear
-		m_nSd_Motor_MoveStart_Flag[n_AxisNum] = 0; //모터 이동 클리어 
+		m_nSd_Motor_MoveStart_Flag[n_AxisNum] = 0; //모터 ?�동 ?�리??
 	}
 
 	return nFuncRet;
@@ -2415,21 +2420,21 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 
 	
 	////////////////////
-	//모터 이름 정의 
+	//모터 ?�름 ?�의 
 	////////////////////
 	switch(l_Axis)
-	{//AMT8562는 29개의 모터를 사용한다 
-	case -1: //사용하지 않는 루틴
-		l_Axis = 0; //알람 코드 생성을 위해 초기화 추가 
+	{//AMT8562??29개의 모터�??�용?�다 
+	case -1: //?�용?��? ?�는 루틴
+		l_Axis = 0; //?�람 코드 ?�성???�해 초기??추�? 
 		strMsg_1 = _T("");		
 		break;
-	case 0: //0번모터 
+	case 0: //0번모??
 		strMsg_1.Format(_T("M_TRAY1_Z[%02ld]"), l_Axis);
 		break;
-	case 1:  //1번모터 
+	case 1:  //1번모??
 		strMsg_1.Format(_T("M_TRAY2_Z[%02ld]"), l_Axis);
 		break;
-	case 2:  //2번모터 
+	case 2:  //2번모??
 		strMsg_1.Format(_T("M_PRESS_Y[%02ld]"), l_Axis);
 		break;
 	case 3:   
@@ -2496,20 +2501,20 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 		l_Axis = 0;
 		break;  
 
-	}//모터 정보 이름 
+	}//모터 ?�보 ?�름 
 		 
 
 	//////////////////////////////////////////////////////////////////
-	//커미조아 모터 함수 에러 정보 취합
+	//커�?조아 모터 ?�수 ?�러 ?�보 취합
 	//////////////////////////////////////////////////////////////////
 	switch(l_ErrorIDNum)
 	{
-	case -1:        //사용하지 않는 루틴 
-		l_ErrorIDNum = 1; //알람 코드 생성을 위해 초기화 추가  
+	case -1:        //?�용?��? ?�는 루틴 
+		l_ErrorIDNum = 1; //?�람 코드 ?�성???�해 초기??추�?  
 		strMsg_2.Format(_T(""));
 		 break;	
 
-	//모터 구동작업중 알람 정보
+	//모터 구동?�업�??�람 ?�보
 	case 1:
 		 strMsg_2.Format(_T("MOTOR_POWER_OFF_ERROR[%04ld]"), abs(l_ErrorIDNum));
 		 break;
@@ -2532,7 +2537,7 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 		 strMsg_2.Format(_T("MOTOR_SAFETY_CHECK_ERROR[%04ld]"), abs(l_ErrorIDNum));
 		 break;
 
-	//모터 구동 관련 상태 및 리턴 관려 커미조아 사용 알람 정보
+	//모터 구동 관???�태 �?리턴 관??커�?조아 ?�용 ?�람 ?�보
 	case 10: 
 		strMsg_2.Format(_T("MOTOR_SET_IO_PROPERTY_ERROR[%04ld]"), abs(l_ErrorIDNum));
 		 break;
@@ -2601,7 +2606,7 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 		strMsg_2.Format(_T("MOTOR_MOTION_STATE_CHECK_ERROR[%04ld]"), abs(l_ErrorIDNum));
 		 break;
 
-	//List Motion 구동 동작 관련, 모터 번호 또는 이름에 이 내용을 더해서 메세지를 출력한다  
+	//List Motion 구동 ?�작 관?? 모터 번호 ?�는 ?�름?????�용???�해??메세지�?출력?�다  
 	case 41: 
 		strMsg_2.Format(_T("MOTOR_LIST_MOTION_LMMAPAXIS_CREATE_ERROR[%04ld]"), abs(l_ErrorIDNum));
 		 break;
@@ -2609,7 +2614,7 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 		strMsg_2.Format(_T("MOTOR_LINEAR_MOTION_IXMAPAXIS_CREATE_ERROR[%04ld]"), abs(l_ErrorIDNum));
 		 break;
 
-	//Motor board 관련 에러 
+	//Motor board 관???�러 
 	case 50: 
 		strMsg_2.Format(_T("MOTOR_BOARD_LOAD_DLL_OPEN_ERROR[%04ld]"), abs(l_ErrorIDNum));
 		 break;
@@ -2624,7 +2629,7 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 	////////////////////////////////////////////////////////////////////////////////////////////////
     //Motor dll return error id num
 	////////////////////////////////////////////////////////////////////////////////////////////////
-	case cmERR_NONE: //0: //정상인 상태 
+	case cmERR_NONE: //0: //?�상???�태 
 		 strMsg_2 = _T("[%04ld]"), abs(l_ErrorIDNum);
 		 break;
 	case cmERR_UNKNOWN:
@@ -2649,10 +2654,10 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 		 strMsg_2.Format(_T("Version(of file or device) mismatch[%04ld]"), abs(l_ErrorIDNum));
 		 break;
 	case cmERR_INVALID_DEVICE_ID://-1010
-		 strMsg_2.Format(_T("User set invalid device id. Refer to “DeviceId” property.[%04ld]"), abs(l_ErrorIDNum));
+		 strMsg_2.Format(_T("User set invalid device id. Refer to ?�DeviceId??property.[%04ld]"), abs(l_ErrorIDNum));
 		 break;
 	case cmERR_INVALID_HANDLE://-1020
-		 strMsg_2.Format(_T("Device handle is not valid. This means that loading a device has been failed or not performed. Refer to “GnLoadDevcie” function[%04ld]"), abs(l_ErrorIDNum));
+		 strMsg_2.Format(_T("Device handle is not valid. This means that loading a device has been failed or not performed. Refer to ?�GnLoadDevcie??function[%04ld]"), abs(l_ErrorIDNum));
 		 break;
 	case cmERR_UNSUPORTED_FUNC://-1030
 		 strMsg_2.Format(_T("User called an unsupported function for the specified product.[%04ld]"), abs(l_ErrorIDNum));
@@ -2688,7 +2693,7 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 		 strMsg_2.Format(_T("Buffer size is too small[%04ld]"), abs(l_ErrorIDNum));
 		 break;
 	case cmERR_HIGH_TIMER_UNSUPP://-1090
-		 strMsg_2.Format(_T("The installed hardware doesn‟t support a high-resolution performance counter.[%04ld]"), abs(l_ErrorIDNum));
+		 strMsg_2.Format(_T("The installed hardware doesn?�t support a high-resolution performance counter.[%04ld]"), abs(l_ErrorIDNum));
 		 break;
 	case cmERR_OUT_OF_RANGE://-1600
 		 strMsg_2.Format(_T("The range of some parameter is out of range that it is occured.[%04ld]"), abs(l_ErrorIDNum));
@@ -2793,16 +2798,16 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 	 }
 
 	 strMsg = strMsg_1 + _T("") + strMsg_2 + _T("") + strErrorMsg;	
-	 strMsg_ErrIDNum.Format(_T("%02ld%04ld"), l_Axis, abs(l_ErrorIDNum)); //필요시 사용위해 6자리의 에러 코드 정의 
+	 strMsg_ErrIDNum.Format(_T("%02ld%04ld"), l_Axis, abs(l_ErrorIDNum)); //?�요???�용?�해 6?�리???�러 코드 ?�의 
 	
 	 if(n_Mode > 0)
-	 {//장비에 알람 정보 처리 
+	 {//?�비???�람 ?�보 처리 
 
-		 //쓰레드에서 알람 관련 장비 스톱은 처리하게 하자 st_handler_info.nRunStatus = dWARNING;
+		 //?�레?�에???�람 관???�비 ?�톱?� 처리?�게 ?�자 st_handler_info.nRunStatus = dWARNING;
 	 }
 	 else if(n_Mode == 0)
-	 {//모터 관련 메세지만 로깅하여 파일에 쓰고, 장비는 정상 가동시킨다 
-		 //같은 메세지를 계속 쓰지 못하게 할것 
+	 {//모터 관??메세지�?로깅?�여 ?�일???�고, ?�비???�상 가?�시?�다 
+		 //같�? 메세지�?계속 ?��? 못하�??�것 
 		 if(str_Motor_Msg == strMsg)
 		 {
 			 return;
@@ -2813,9 +2818,9 @@ void CCtlBd_Library::Motor_Error_Occurrence(int n_Mode, long l_Axis, long l_Erro
 
 	 if(COMI.mn_errormsg_debug_mode)
 	 {
-		//OnStringToChar(strMsg, mc_normal_msg);  //msg 화면 출력 
+		//OnStringToChar(strMsg, mc_normal_msg);  //msg ?�면 출력 
 		sprintf( mc_normal_msg, strMsg);
-		COMI.Debug_File_Create(0, mc_normal_msg);    //file로 log	  
+		COMI.Debug_File_Create(0, mc_normal_msg);    //file�?log	  
 	 }
 
 	 str_Motor_Msg = strMsg; //������ ����� �޼��� ������ ����

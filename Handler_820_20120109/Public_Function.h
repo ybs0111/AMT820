@@ -30,6 +30,7 @@ public:
 	CMyInternetSession *m_pInternetSession;
 	CFtpConnection *m_pFtpConnection;
 	CInternetFile *m_pInternetFile;
+	COPYDATASTRUCT		m_msg;
 public:
 	CPublic_Function();
 	virtual ~CPublic_Function();
@@ -145,6 +146,16 @@ public:
 	void Case_Assembly_Able_Check();
 	void Case_Assembly_Place_Check();
 	void HS_Able_Signal(int OnOff);
+
+	BOOL SendLocalMsg(RCV_STRUCT msg);
+	BOOL Send7387MeasureStart();
+	BOOL SendEpoxyMeasureStart();
+	BOOL SendHeatsinkMeasureStart(int Pos);
+	BOOL SendNobaPosStart();
+	BOOL SendHeatSinkPosStart();
+	BOOL SendInspectOsView();
+	BOOL SendInspectOsDisable();
+
 };
 extern CPublic_Function  Func;
 #endif // !defined(AFX_PUBLIC_FUNCTION_H__460DDD39_583E_40D6_B8DC_012DB086B058__INCLUDED_)

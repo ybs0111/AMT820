@@ -32,6 +32,7 @@ public:
 	int mn_reinstate_step;
 	int mn_InitStep;
 	int mn_BufferPos;
+	int mn_MoveMeasureStep;
 	
 	int m_nRobot_X;
 	int m_nRobot_Y;
@@ -40,6 +41,11 @@ public:
 	int m_nRobot_DisY;
 	int m_nRobot_VisY;
 	int m_nRobot_VisZ;
+	int m_nCarriorPos;
+	int m_nVisCarriorPos;
+	int m_nVisTeachPos;
+
+	int m_nlast_pick;
 
 	int mn_retry_cnt;
 	long ml_retry_wait[3];
@@ -115,6 +121,15 @@ public:
 	CString m_strLotNo[2];
 	CString m_strPartNo[2];
 	CString m_strAlarmCode;
+
+	//////////////////////////////////////////////////////////////////////////
+	//Measure Vision
+	DWORD m_dwMCameraResWaitTime[3];
+	int m_nContinusVError;
+	int m_nTotalVError;
+	bool	m_bVisionFwdBwdFlag;
+	DWORD	m_dwVisionwdBwd[3];
+
 // Operations
 public:
 
@@ -124,7 +139,7 @@ public:
 	void RunMoveDispensor();
 	void RunInit();
 	
-
+	int Process_Measure_Vision();
 	int Process_Dvc_Pickup(int nMode, int nWork_Site);
 	int Process_Dvc_Place(int nMode, int nWork_Site, int nPos);
 	int Robot_AutoMove_Safety_Zone( int nMode, int n_pos);
@@ -144,11 +159,13 @@ public:
 	int Chk_HeatSink_Transfer_Pad_UpDown(int OnOff);
 	void Set_HeatSink_Vacuum_OnOff(int OnOff);
 	int Chk_HeatSink_Vacuum_OnOff(int OnOff);
-	void Set_Device_Carrier_Camera_Y_Press_UpDown(int OnOff);
-	int Chk_Device_Carrier_Camera_Y_Press_UpDown( int nOnOff );
 	void Set_Device_CameraY_Jig_Press_ForwardBackward( int OnOff );
 	int Chk_Device_CameraY_Jig_Press_ForwardBackward( int nOnOff );
 
+	void Set_Device_Carrier_Camera_UV_LAMP_OnOff(int OnOff);
+	void Set_Device_Carrier_Camera_LED_LAMP_OnOff(int OnOff);
+	void Set_Device_Carrier_Camera_Y_Press_UpDown(int OnOff);
+	int Chk_Device_Carrier_Camera_Y_Press_UpDown(int OnOff);
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -130,6 +130,7 @@ protected:
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnLotOpen();
 	afx_msg void OnBtnDoorOpen();
+	afx_msg void OnDestroy();
 	//}}AFX_MSG
 	afx_msg LRESULT OnMain_Work_Info_Display(WPARAM wParam,LPARAM lParam);  // 테스트 결과 정보 화면에 출력하기 위한 사용자 정의 메시지 추가 
 	DECLARE_MESSAGE_MAP()
