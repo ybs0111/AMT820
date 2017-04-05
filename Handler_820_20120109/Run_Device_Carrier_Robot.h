@@ -11,6 +11,8 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CRun_Device_Carrier_Robot command target
+#define CARRIER_LEFT	0
+#define CARRIER_RIGHT	1
 
 class CRun_Device_Carrier_Robot : public CObject
 {

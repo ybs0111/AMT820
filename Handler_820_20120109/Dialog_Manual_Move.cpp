@@ -36,7 +36,9 @@ void CDialog_Manual_Move::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CDialog_Manual_Move, CDialog)
 	//{{AFX_MSG_MAP(CDialog_Manual_Move)
 	ON_BN_CLICKED(IDC_BTN_EXIT, OnBtnExit)
+	ON_BN_CLICKED(IDC_BTN_CARRIER_LOOP, OnBtnCarrierLoop)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BTN_MOTOR_STOP, OnBtnMotorStop)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -113,4 +115,122 @@ void CDialog_Manual_Move::PostNcDestroy()
 	Func.m_p_move = NULL;
 
 	CDialog::PostNcDestroy();
+}
+
+void CDialog_Manual_Move::OnBtnCarrierLoop() 
+{
+	//mn_move_step[25] = 0;
+	SetTimer( TM_CARRIRER_LOOP, 100, NULL);
+	SetTimer( TM_CARRIRER_LOOP, 100, NULL);
+	
+}
+
+int CDialog_Manual_Move::Move_Carrier_Loop()
+{
+	int i = 0, nRet_1 = 0, nFuncRet = RET_PROCEED;
+	int m_axis = M_CARRIER_X;
+	
+	switch( m_move_step[m_axis])
+	{
+		case 0:
+			m_move_step[m_axis] = 100;
+			break;
+
+		case 100:
+			if( Run_Device_Carrier_Robot.Check_Carrier_Move_Enable(0) != RET_GOOD )//초기상태
+			{
+				break;
+			}
+			st_sync.nCarrierBcr_Req = CTL_REQ;
+			m_dwBcrWaitTime[m_axis][0] = GetCurrentTime();
+			m_move_step[m_axis] = 110;
+			break;
+
+		case 110:
+			m_dwBcrWaitTime[1] = GetCurrentTime();
+			m_dwBcrWaitTime[2] = m_dwBcrWaitTime[1] - m_dwBcrWaitTime[0];
+			if( m_dwBcrWaitTime[2] <= 0 ) m_dwBcrWaitTime[0] = GetCurrentTime();
+			
+			if( st_sync.nCarrierBcr_Req == CTL_READY )
+			{
+				m_move_step[m_axis] = 120;
+			}
+			else
+			{
+				if( m_dwBcrWaitTime[2] > 5000 )
+				{//940000 1 A "BARCODE_IS_NOT_RESPONSE."
+					CTL_Lib.Alarm_Error_Occurrence(1100, dWARNING, "940000");	
+					m_move_step[m_axis] = 100;
+				}
+			}
+			break;
+
+		case 120:
+			nRet_1 = atoi(st_msg.mstr_barcode);
+			if( nRet_1 > 0 && nRet_1 < 13)
+			{
+				for ( i = 0; i < 3; i++ )
+				{
+					sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[i], "%d",nRet_1);
+				}			
+				m_move_step[m_axis] = 130;
+			}
+			else
+			{//940001 1 A "BARCODE_IS_NOT_CORRECT_BARCODE_NUMBER."
+				CTL_Lib.Alarm_Error_Occurrence(1100, dWARNING, "940001");
+				m_move_step[m_axis] = 100;
+			}
+			break;
+
+		case 130:
+			if( Func.Check_RunAllSafety() != RET_GOOD )
+			{
+				break;
+			}
+			
+			if( CheckCarrierType() == RET_GOOD )
+			{
+				m_move_step[m_axis] = 1000;
+			}
+			else
+			{
+				m_dwWaitTime[0] = GetCurrentTime();
+				m_move_step[m_axis] = 140;
+			}
+			break;
+
+
+
+
+	}
+
+	return nFuncRet;
+}
+
+void CDialog_Manual_Move::OnTimer(UINT nIDEvent) 
+{
+	int nRet_1 = 0;
+	// TODO: Add your message handler code here and/or call default
+	if( nIDEvent == TM_CARRIRER_LOOP)
+	{
+		nRet_1 = Move_Carrier_Loop();
+		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
+		{
+
+		}
+
+	}
+	
+	CDialog::OnTimer(nIDEvent);
+}
+
+void CDialog_Manual_Move::OnBtnMotorStop() 
+{
+	int i = 0;
+	KillTimer( TM_CARRIRER_LOOP );	
+
+	for (i = 0; i < M_MOTOR_COUNT; i++)
+	{
+		COMI.Set_MotStop( 0 , i);
+	}
 }
