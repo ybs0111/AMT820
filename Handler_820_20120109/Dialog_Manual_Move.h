@@ -65,7 +65,7 @@ public:
 
 	int m_move_step[25];
 	DWORD m_dwBcrWaitTime[3];
-	DWORD m_dwWaitTime[25][3];
+	DWORD m_dwWaitTime[3];
 
 protected:
 

@@ -1493,7 +1493,7 @@ struct st_basic_param
 	//int n_mode_run;
 	//int n_mode_turn;
 	//int n_conveyor_move_mode;
-	
+	//	int n_mode_off_line;		// off-line 결과 설정 (0 : random 1 : All Good)	
 	//kwlee 2017.0405 추가 예정.
 	// 20100517 tae 수정
 	int n_mode_interface;		// 장비 동작 모드 저장 변수		(1:ON LINE	0:OFF LINE)
@@ -1502,10 +1502,8 @@ struct st_basic_param
 	int n_mode_tester;			// 테스터 종류 저장 변수
 	int n_mode_bcr;
 	int n_mode_module;
-	int n_mode_off_line;		// off-line 결과 설정 (0 : random 1 : All Good)
 
 	int n_count_retry;
-	
 	int n_count_pick_retry;		// PICK 시도 횟수 저장 변수
 	int n_count_partial;		// PARTIAL 횟수 저장 변수
 	int n_count_elevator_partial;	// 엘레베이터 PARTIAL 횟수 저장 변수

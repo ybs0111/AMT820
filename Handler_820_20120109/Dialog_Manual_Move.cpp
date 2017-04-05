@@ -5,6 +5,7 @@
 #include "handler.h"
 #include "Dialog_Manual_Move.h"
 #include "Public_Function.h"
+#include "Run_Device_Carrier_Robot.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -142,7 +143,7 @@ int CDialog_Manual_Move::Move_Carrier_Loop()
 				break;
 			}
 			st_sync.nCarrierBcr_Req = CTL_REQ;
-			m_dwBcrWaitTime[m_axis][0] = GetCurrentTime();
+			m_dwBcrWaitTime[0] = GetCurrentTime();
 			m_move_step[m_axis] = 110;
 			break;
 
@@ -188,7 +189,7 @@ int CDialog_Manual_Move::Move_Carrier_Loop()
 				break;
 			}
 			
-			if( CheckCarrierType() == RET_GOOD )
+			if( Run_Device_Carrier_Robot.CheckCarrierType() == RET_GOOD )
 			{
 				m_move_step[m_axis] = 1000;
 			}

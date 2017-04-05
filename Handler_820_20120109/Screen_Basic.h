@@ -44,6 +44,34 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Basic)
 	enum { IDD = IDD_SCREEN_BASIC };
+	CXPGroupBox	m_group_Retry_Cnt;
+	CEXDigitST	m_dgt_Retry_Cnt;
+	CEXDigitST	m_dgt_Rubb;
+	CEXDigitST	m_dgt_Pick_Retry_Cnt;
+	CEXDigitST	m_dgt_Partial_Cnt;
+	CEXDigitST	m_dgt_Offset_Dis;
+	CEXDigitST	m_dgt_Offset_30;
+	CEXDigitST	m_dgt_Offset_20;
+	CEXDigitST	m_dgt_Offset_10;
+	CEXDigitST	m_dgt_Offset;
+	CEXDigitST	m_dgt_Epoxy_Y;
+	CEXDigitST	m_dgt_Epoxy_X;
+	CEXDigitST	m_dgt_Elv_Partial_Cnt;
+	CEXDigitST	m_dgt_7387_Alarm_Cnt;
+	CGradientStatic	m_msg_Epoxy_Y;
+	CGradientStatic	m_msg_Offset_30;
+	CGradientStatic	m_msg_Offset_20;
+	CGradientStatic	m_msg_Offset_10;
+	CGradientStatic	m_msg_Offset;
+	CGradientStatic	m_msg_Epoxy_X;
+	CGradientStatic	m_msg_Distance;
+	CXPGroupBox	m_group_Rubb_Cnt;
+	CXPGroupBox	m_group_Pick_Retry_Cnt;
+	CXPGroupBox	m_group_Patial_Cnt;
+	CXPGroupBox	m_group_Epoxy_Offset;
+	CXPGroupBox	m_group_Elv_Partial_Cnt;
+	CXPGroupBox	m_group_Carrier_Move;
+	CXPGroupBox	m_group_7387_Alarm_Cnt;
 	CButtonST	m_btn_delete;
 	CButtonST	m_btn_create;
 	CXPGroupBox	m_group_operate_method;
@@ -120,6 +148,7 @@ public:
 // Operations
 public:
 	void Init_Grid_Operate();
+	void Init_Grid_Operate_1();
 	void Display_File(int n_mode, int n_count, CString str_filename);
 	void Init_Grid_File();
 	void OnBasic_Data_Display();
@@ -168,6 +197,19 @@ protected:
 	afx_msg void OnBtnBasicApply();
 	afx_msg void OnBtnBasicCreate();
 	afx_msg void OnBtnDelete();
+	afx_msg void OnDgtEpoxyX();
+	afx_msg void OnDgtEpoxyY();
+	afx_msg void OnDgtOffset();
+	afx_msg void OnDgtOffset10();
+	afx_msg void OnDgtOffset20();
+	afx_msg void OnDgtOffset30();
+	afx_msg void OnDgtOffsetDis();
+	afx_msg void OnDgtRubb();
+	afx_msg void OnDgt7387AlarmCnt();
+	afx_msg void OnDgtElvPartialCnt();
+	afx_msg void OnDgtPickRetryCnt();
+	afx_msg void OnDgtPartialCnt();
+	afx_msg void OnDgtRetryCnt();
 	//}}AFX_MSG
 	afx_msg void OnCell_L_Click(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnCell_R_Click(WPARAM wParam, LPARAM lParam);

@@ -197,18 +197,7 @@ void CRun_Device_Carrier_Robot::RunInit()
 		}
 		break;
 
-	case 500:
-		Set_Device_Press_UpDn_Cylinder(IO_OFF);
-		mn_InitStep = 510;
-		break;
 
-	case 510:
-		nRet_1 = Chk_Device_Press_UpDn_Cylinder( IO_OFF );
-
-
-
-
-		nRet_1 = Chk_Device_Carrier_Slide_Z_Cylinder_UpDown(CARRIER_LEFT, IO_OFF);
 
 
 
