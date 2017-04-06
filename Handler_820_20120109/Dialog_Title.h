@@ -27,11 +27,18 @@ public:
 	void OnTitle_Picture_Set();
 	void OnTitle_Form_Name_Change(int nViewID);
 	void OnTitle_Lable_Set();
+	//kwlee 2017.0406
+	void OnTitle_7387_Mode_Display(int n_device);
+	void OnTitle_3874_Mode_Display(int n_device);
+	void OnTitle_Barcode_Mode_Display(int n_device);
 	CDialog_Title();   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(CDialog_Title)
 	enum { IDD = IDD_DIALOG_TITLE };
+	CGradientStatic	m_msg_Barcode_mode_info;
+	CGradientStatic	m_msg_7387_mode_info;
+	CGradientStatic	m_msg_3874_mode_info;
 	CGradientStatic	m_msg_model_info;
 	CGradientStatic	m_msg_file_info;
 	CGradientStatic	m_msg_press_mode_info;

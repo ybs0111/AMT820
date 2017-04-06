@@ -55,6 +55,17 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Set_Maintenance)
 	enum { IDD = IDD_SCREEN_SET_MAINTENANCE };
+	CGradientStatic	m_msg_stop_1;
+	CGradientStatic	m_msg_rate_1;
+	CGradientStatic	m_msg_port_1;
+	CGradientStatic	m_msg_parity_1;
+	CGradientStatic	m_msg_data_1;
+	CXPGroupBox	m_group_serial_1;
+	CComboBox	m_cb_stop_1;
+	CComboBox	m_cb_rate_1;
+	CComboBox	m_cb_port_1;
+	CComboBox	m_cb_parity_1;
+	CComboBox	m_cb_data_1;
 	CMacButton	m_btn_password_change_level2;
 	CMacButton	m_btn_password_change_level1;
 	CMacButton	m_btn_data_backup;
@@ -140,7 +151,14 @@ public:
 	CString mstr_equip_id[2];
 
 	int mn_lamp_change_time[2];
+	//kwlee 2017.0406
+	int	m_n_port[MAX_PORT][2];
+	int	m_n_rate[MAX_PORT][2];
+	int	m_n_data[MAX_PORT][2];
+	int	m_n_stop[MAX_PORT][2];
+	int	m_n_parity[MAX_PORT][2];
 
+	
 private:
 	BOOL mb_first;     // 타워 램프 처음 생성 유무 플래그
 	CRect mr_area[8];  // 컨트롤 영역 크기 저장 변수
@@ -150,6 +168,9 @@ private:
 	int mn_g_lamp[2][8];  // GREEN 램프 상태 플래그		[0:OFF    1:ON    2:FLICKER]
 	int mn_pos_x[8][2], mn_pos_y[8][2];  // 컨트롤 위치 저장 변수
 	int mn_y_diff[8], mn_y_space[8];     // 출력 영역 저장 변수
+	
+
+
 
 	CUniButtonEx mp_btn_base[8], mp_btn_roof[8], mp_btn_pole[8], mp_btn_lower[8], mp_btn_upper[8];
 	CUniButtonEx mp_btn_step1[8], mp_btn_step2[8], mp_btn_step3[8], mp_btn_r_lamp[8], mp_btn_y_lamp[8], mp_btn_g_lamp[8];
@@ -187,6 +208,10 @@ public:
 	void GridControl(UINT nID, int type, int row, int col, int pos);
 	void GridColor(UINT nID, int row, int col, COLORREF bk, COLORREF tk);
 
+
+	int ConverterToData(int mode, int pos); 
+	int ConverterToPos(int mode, int data);
+	
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CScreen_Set_Maintenance)
@@ -224,6 +249,12 @@ protected:
 	afx_msg void OnSetfocusEditEcEquipId();
 	afx_msg void OnPadEquipArea();
 	afx_msg void OnSetfocusEditEquipArea();
+	afx_msg void OnBtnSerialConnect2();
+	afx_msg void OnBtnSerialApply2();
+	afx_msg void OnBtnSerialApply1();
+	afx_msg void OnBtnSerialConnect1();
+	afx_msg void OnBtnBcr1();
+	afx_msg void OnBtnOpen();
 	//}}AFX_MSG
 	afx_msg void OnRLampClick(UINT);
 	afx_msg void OnYLampClick(UINT);

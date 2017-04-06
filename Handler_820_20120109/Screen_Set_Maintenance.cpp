@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "Handler.h"
 #include "Screen_Set_Maintenance.h"
-
+#include "InterfaceBarcode.h"
 #include "io.h"  // 파일 존재 유무 검사 함수 호출하기 위해서는 반드시 INCLUDE 필요
 #include "FileDialogST.h"
 // ******************************************************************************
@@ -49,6 +49,17 @@ void CScreen_Set_Maintenance::DoDataExchange(CDataExchange* pDX)
 {
 	CFormView::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CScreen_Set_Maintenance)
+	DDX_Control(pDX, IDC_MSG_STOP_1, m_msg_stop_1);
+	DDX_Control(pDX, IDC_MSG_RATE_1, m_msg_rate_1);
+	DDX_Control(pDX, IDC_MSG_PORT_1, m_msg_port_1);
+	DDX_Control(pDX, IDC_MSG_PARITY_1, m_msg_parity_1);
+	DDX_Control(pDX, IDC_MSG_DATA_1, m_msg_data_1);
+	DDX_Control(pDX, IDC_GROUP_SERIAL_1, m_group_serial_1);
+	DDX_Control(pDX, IDC_COMBO_STOP_1, m_cb_stop_1);
+	DDX_Control(pDX, IDC_COMBO_RATE_1, m_cb_rate_1);
+	DDX_Control(pDX, IDC_COMBO_PORT_1, m_cb_port_1);
+	DDX_Control(pDX, IDC_COMBO_PARITY_1, m_cb_parity_1);
+	DDX_Control(pDX, IDC_COMBO_DATA_1, m_cb_data_1);
 	DDX_Control(pDX, IDC_BTN_PASSWORD_CHANGE_LEVLE2, m_btn_password_change_level2);
 	DDX_Control(pDX, IDC_BTN_PASSWORD_CHANGE_LEVLE1, m_btn_password_change_level1);
 	DDX_Control(pDX, IDC_BTN_DATA_BACKUP, m_btn_data_backup);
@@ -98,6 +109,11 @@ BEGIN_MESSAGE_MAP(CScreen_Set_Maintenance, CFormView)
 	ON_EN_SETFOCUS(IDC_EDIT_EQUIP_ID, OnSetfocusEditEquipId)
 	ON_BN_CLICKED(IDC_DGT_CHANGE_TIME, OnDgtChangeTime)
 	ON_BN_CLICKED(IDC_BTN_STEP_SAVE, OnBtnStepSave)
+	ON_BN_CLICKED(IDC_BTN_SERIAL_CONNECT_2, OnBtnSerialConnect2)
+	ON_BN_CLICKED(IDC_BTN_SERIAL_APPLY_1, OnBtnSerialApply1)
+	ON_BN_CLICKED(IDC_BTN_SERIAL_CONNECT_1, OnBtnSerialConnect1)
+	ON_BN_CLICKED(IDC_BTN_BCR1, OnBtnBcr1)
+	ON_BN_CLICKED(IDC_BTN_OPEN, OnBtnOpen)
 	//}}AFX_MSG_MAP
 	ON_COMMAND_RANGE(ID_LAMP_RLAMP, ID_LAMP_RLAMP+SELFCHECK, OnRLampClick)
 	ON_COMMAND_RANGE(ID_LAMP_YLAMP, ID_LAMP_YLAMP+SELFCHECK, OnYLampClick)
@@ -684,6 +700,21 @@ void CScreen_Set_Maintenance::OnMaintenance_Data_Set()
 	mn_lamp_change_time[1] = st_lamp.mn_lamp_change_time;
 
 	mstr_equip_id[1] = st_lamp.mstr_equip_id;
+
+	//kwlee 2016.0406
+	for(i = 0; i < MAX_PORT ; i++)
+	{
+		m_n_port[i][1]   = ConverterToPos(COM_PORT, rs_232.n_serial_port[i]);
+		m_n_rate[i][1]   = ConverterToPos(COM_BAUDRATE, rs_232.n_serial_baudrate[i]);
+		m_n_data[i][1]   = ConverterToPos(COM_DATA, rs_232.n_serial_data[i]);
+		m_n_stop[i][1]   = ConverterToPos(COM_STOP, rs_232.n_serial_stop[i]);
+		m_n_parity[i][1] = ConverterToPos(COM_PARITY, rs_232.n_serial_parity[i]);
+	}
+	m_cb_port_1.SetCurSel(m_n_port[0][1]);
+	m_cb_rate_1.SetCurSel(m_n_rate[0][1]);
+	m_cb_data_1.SetCurSel(m_n_data[0][1]);
+	m_cb_parity_1.SetCurSel(m_n_parity[0][1]);
+	m_cb_stop_1.SetCurSel(m_n_stop[0][1]);
 }
 
 void CScreen_Set_Maintenance::OnMaintenance_Button_Set()
@@ -909,6 +940,42 @@ void CScreen_Set_Maintenance::OnMaintenance_Label_Set()
 	m_msg_equip_id.SetTextFont(mp_maintenance_font);
 	m_msg_equip_id.SetColor(RGB(0, 0, 0), RGB(255, 255, 255), 3, 2);
 	m_msg_equip_id.SetTextAlign(CFloatST::STA_CENTER, 10);
+	
+	//kwlee 2016.0406
+	m_msg_port_1.SetFont(mp_maintenance_font);
+	m_msg_port_1.SetWindowText(_T("Port"));
+	m_msg_port_1.SetCenterText();
+	m_msg_port_1.SetColor(WHITE_C);
+	m_msg_port_1.SetGradientColor(ORANGE_C);
+	m_msg_port_1.SetTextColor(BLACK_C);
+	
+	m_msg_data_1.SetFont(mp_maintenance_font);
+	m_msg_data_1.SetWindowText(_T("Data"));
+	m_msg_data_1.SetCenterText();
+	m_msg_data_1.SetColor(WHITE_C);
+	m_msg_data_1.SetGradientColor(ORANGE_C);
+	m_msg_data_1.SetTextColor(BLACK_C);
+	
+	m_msg_parity_1.SetFont(mp_maintenance_font);
+	m_msg_parity_1.SetWindowText(_T("Parity"));
+	m_msg_parity_1.SetCenterText();
+	m_msg_parity_1.SetColor(WHITE_C);
+	m_msg_parity_1.SetGradientColor(ORANGE_C);
+	m_msg_parity_1.SetTextColor(BLACK_C);
+	
+	m_msg_rate_1.SetFont(mp_maintenance_font);
+	m_msg_rate_1.SetWindowText(_T("BaudRate"));
+	m_msg_rate_1.SetCenterText();
+	m_msg_rate_1.SetColor(WHITE_C);
+	m_msg_rate_1.SetGradientColor(ORANGE_C);
+	m_msg_rate_1.SetTextColor(BLACK_C);
+	
+	m_msg_stop_1.SetFont(mp_maintenance_font);
+	m_msg_stop_1.SetWindowText(_T("Stop"));
+	m_msg_stop_1.SetCenterText();
+	m_msg_stop_1.SetColor(WHITE_C);
+	m_msg_stop_1.SetGradientColor(ORANGE_C);
+	m_msg_stop_1.SetTextColor(BLACK_C);
 }
 
 void CScreen_Set_Maintenance::OnMaintenance_Digital_Count_Set()
@@ -1644,7 +1711,235 @@ int CScreen_Set_Maintenance::ExCopyFile(CString strFrom, CString strTo)
     return SHFileOperation(&shfo);
 
 }
+//kwlee 2017.0406
+int CScreen_Set_Maintenance::ConverterToData(int mode, int pos)
+{
+		int Ret;
 
+	switch(mode)
+	{
+		case COM_PORT:
+			switch(pos)
+			{
+				case 0:
+					Ret = 1;
+					break;
+				case 1:
+					Ret = 2;
+					break;
+				case 2:
+					Ret = 3;
+					break;
+				case 3:
+					Ret = 4;
+					break;
+				case 4:
+					Ret = 5;
+					break;
+				case 5:
+					Ret = 6;
+					break;
+				case 6:
+					Ret = 7;
+					break;
+				case 7:
+					Ret = 8;
+					break;
+				case 8:
+					Ret = 9;
+					break;
+			}
+			break;
+		case COM_BAUDRATE:
+			switch(pos)
+			{
+				case 0:
+					Ret = 2400;
+					break;
+				case 1:
+					Ret = 4800;
+					break;
+				case 2:
+					Ret = 9600;
+					break;
+				case 3:
+					Ret = 14400;
+					break;
+				case 4:
+					Ret = 19200;
+					break;
+				case 5:
+					Ret = 38400;
+					break;
+				case 6:
+					Ret = 57600;
+					break;
+				case 7:
+					Ret = 115200;
+					break;
+			}
+			break;
+		case COM_DATA:
+			switch(pos)
+			{
+				case 0:
+					Ret = 5;
+					break;
+				case 1:
+					Ret = 6;
+					break;
+				case 2:
+					Ret = 7;
+					break;
+				case 3:
+					Ret = 8;
+					break;
+			}
+			break;
+		case COM_STOP:
+			switch(pos)
+			{
+				case 0:
+					Ret = 1;
+					break;
+				case 1:
+					Ret = 2;
+					break;
+			}
+			break;
+		case COM_PARITY:
+			switch(pos)
+			{
+				case 0:
+					Ret = 0;
+					break;
+				case 1:
+					Ret = 1;
+					break;
+				case 2:
+					Ret = 2;
+					break;
+			}
+			break;
+	}
+
+	return Ret;
+}
+
+int CScreen_Set_Maintenance::ConverterToPos(int mode, int data)
+{
+	int Ret;
+
+	switch(mode)
+	{
+		case COM_PORT:
+			switch(data)
+			{
+				case 1:
+					Ret = 0;
+					break;
+				case 2:
+					Ret = 1;
+					break;
+				case 3:
+					Ret = 2;
+					break;
+				case 4:
+					Ret = 3;
+					break;
+				case 5:
+					Ret = 4;
+					break;
+				case 6:
+					Ret = 5;
+					break;
+				case 7:
+					Ret = 6;
+					break;
+				case 8:
+					Ret = 7;
+					break;
+				case 9:
+					Ret = 8;
+					break;
+			}
+			break;
+		case COM_BAUDRATE:
+			switch(data)
+			{
+				case 2400:
+					Ret = 0;
+					break;
+				case 4800:
+					Ret = 1;
+					break;
+				case 9600:
+					Ret = 2;
+					break;
+				case 14400:
+					Ret = 3;
+					break;
+				case 19200:
+					Ret = 4;
+					break;
+				case 38400:
+					Ret = 5;
+					break;
+				case 57600:
+					Ret = 6;
+					break;
+				case 115200:
+					Ret = 7;
+					break;
+			}
+			break;
+		case COM_DATA:
+			switch(data)
+			{
+				case 5:
+					Ret = 0;
+					break;
+				case 6:
+					Ret = 1;
+					break;
+				case 7:
+					Ret = 2;
+					break;
+				case 8:
+					Ret = 3;
+					break;
+			}
+			break;
+		case COM_STOP:
+			switch(data)
+			{
+				case 1:
+					Ret = 0;
+					break;
+				case 2:
+					Ret = 1;
+					break;
+			}
+			break;
+		case COM_PARITY:
+			switch(data)
+			{
+				case 0:
+					Ret = 0;
+					break;
+				case 1:
+					Ret = 1;
+					break;
+				case 2:
+					Ret = 2;
+					break;
+			}
+			break;
+	}
+
+	return Ret;
+}
+///////////
 void CScreen_Set_Maintenance::GridColor(UINT nID, int row, int col, COLORREF bk, COLORREF tk)
 {
 	TSpread *Grid = (TSpread*)GetDlgItem(nID);
@@ -1769,4 +2064,75 @@ void CScreen_Set_Maintenance::OnCellClick(WPARAM wParam, LPARAM lParam)
 	LPSS_CELLCOORD lpcc = (LPSS_CELLCOORD)lParam;
 
 	if (st_handler.n_menu_lock) return;
+}
+
+void CScreen_Set_Maintenance::OnBtnSerialConnect2() 
+{
+	// TODO: Add your control notification handler code here
+	
+}
+
+
+
+void CScreen_Set_Maintenance::OnBtnSerialApply1() 
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	int i = 0;
+	
+	m_n_port[i][1]			= m_cb_port_1.GetCurSel();
+	m_n_rate[i][1]			= m_cb_rate_1.GetCurSel();
+	m_n_data[i][1]			= m_cb_data_1.GetCurSel();
+	m_n_stop[i][1]			= m_cb_stop_1.GetCurSel();
+	m_n_parity[i][1]	    = m_cb_parity_1.GetCurSel();
+	
+	rs_232.n_serial_port[i]		= ConverterToData(COM_PORT, m_n_port[i][1]);
+	rs_232.n_serial_baudrate[i] = ConverterToData(COM_BAUDRATE, m_n_rate[i][1]);
+	rs_232.n_serial_data[i]     = ConverterToData(COM_DATA, m_n_data[i][1]);
+	rs_232.n_serial_stop[i]     = ConverterToData(COM_STOP, m_n_stop[i][1]);
+	rs_232.n_serial_parity[i]   = ConverterToData(COM_PARITY, m_n_parity[i][1]);
+}
+
+void CScreen_Set_Maintenance::OnBtnSerialConnect1() 
+{
+	// TODO: Add your control notification handler code here
+	int i = 0;
+	
+	st_serial.str_port_chk[i] = "NOT FOUND";
+	st_handler.mnSerial_Port_Creating[i] = CTL_NO;
+	
+	::PostMessage(st_handler.hWnd, WM_SERIAL_PORT, CTL_YES, rs_232.n_serial_port[i]);
+}
+
+void CScreen_Set_Maintenance::OnBtnBcr1() 
+{
+	// TODO: Add your control notification handler code here
+	CString strBcrCommand;
+	
+	st_sync.n_barcode_read_serial_num[0][0] = 0;
+	
+	
+	st_work.strBarcodeRecive = "";//수신 메세지 초기화
+	
+	clsBarcode.OnBarcodeReset();
+	
+	strBcrCommand.Format("%cLON%c", 0x02, 0x03);//바코드 리더기 읽기 시작 명령
+	clsBarcode.OnDataSend(strBcrCommand);
+	
+	//	st_serial.mstr_snd[BCR_PORT -1] = strBcrCommand;
+	//	::PostMessage(st_handler.hWnd, WM_DATA_SEND, BCR_PORT, 0);
+	//::Sleep(100);
+	
+	if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
+	{
+		sprintf(st_msg.c_normal_msg,"[BCR Test] %s",strBcrCommand);
+		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 동작 실패 출력 요청
+	}
+}
+
+void CScreen_Set_Maintenance::OnBtnOpen() 
+{
+	// TODO: Add your control notification handler code here
+	//kwlee 2017.0406
+	clsBarcode.OnOpen(rs_232.n_serial_port[0], rs_232.n_serial_baudrate[0], rs_232.n_serial_parity[0],rs_232.n_serial_data[0] , rs_232.n_serial_stop[0], 0x03);
 }

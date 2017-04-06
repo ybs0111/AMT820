@@ -1318,7 +1318,103 @@ void CMyBasicData::OnBasic_Data_Load()
 
 	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", "0", chr_data, 10, str_load_file);
 	st_basic.dHeatSinkCarrierSpreadMove3Offset = atof(chr_data);
+	
+	//kwlee 2017.0406
+	:: GetPrivateProfileString("RECIPE", "dLoaderTransferTrayDeviceGap", "0", chr_data, 10, str_load_file);
+	st_recipe.dLoaderTransferTrayDeviceGap = atof(chr_data);
 
+	:: GetPrivateProfileString("RECIPE", "dSatbleTime", "0", chr_data, 10, str_load_file);
+	st_recipe.dSatbleTime = atof(chr_data);
+
+	:: GetPrivateProfileString("RECIPE", "nEpoxyRunSpeed", "0", chr_data, 10, str_load_file);
+	st_recipe.nEpoxyRunSpeed = atof(chr_data);
+
+	:: GetPrivateProfileString("RECIPE", "nEpoxyXYRunSpeed_Vel", "0", chr_data, 10, str_load_file);
+	st_recipe.nEpoxyXYRunSpeed[0] = atof(chr_data);
+	
+	:: GetPrivateProfileString("RECIPE", "nEpoxyXYRunSpeed_Acc", "0", chr_data, 10, str_load_file);
+	st_recipe.nEpoxyXYRunSpeed[1] = atof(chr_data);
+
+	:: GetPrivateProfileString("RECIPE", "nEpoxyXYRunSpeed_Dec", "0", chr_data, 10, str_load_file);
+	st_recipe.nEpoxyXYRunSpeed[2] = atof(chr_data);
+
+	:: GetPrivateProfileString("RECIPE", "dEpoxyXOffSet", "0", chr_data, 10, str_load_file);
+	st_recipe.dEpoxyXOffSet = atof(chr_data);
+	
+	:: GetPrivateProfileString("RECIPE", "dEpoxyYOffSet", "0", chr_data, 10, str_load_file);
+	st_recipe.dEpoxyYOffSet = atof(chr_data);
+	
+	:: GetPrivateProfileString("RECIPE", "nRubHSRunSpeed", "0", chr_data, 10, str_load_file);
+	st_recipe.nRubHSRunSpeed = atof(chr_data);
+	
+	:: GetPrivateProfileString("RECIPE", "dTrayPitch_Y", "0", chr_data, 10, str_load_file);
+	st_recipe.dTrayPitch_Y = atof(chr_data);
+	
+	:: GetPrivateProfileString("RECIPE", "dTrayPitch_X", "0", chr_data, 10, str_load_file);
+	st_recipe.dTrayPitch_X = atof(chr_data);
+
+
+	:: GetPrivateProfileString("RECIPE", "fDispenserVppmA", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.fDispenserVppmA = 0;
+		mstr_temp.Format("%d",st_recipe.fDispenserVppmA);
+		:: WritePrivateProfileString("RECIPE", "fDispenserVppmA", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.fDispenserVppmA = mn_chk;
+
+
+	:: GetPrivateProfileString("RECIPE", "nEpoxyDotScrewCount", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.nEpoxyDotScrewCount = 0;
+		mstr_temp.Format("%d",st_recipe.nEpoxyDotScrewCount);
+		:: WritePrivateProfileString("RECIPE", "nEpoxyDotScrewCount", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.nEpoxyDotScrewCount = mn_chk;
+
+	:: GetPrivateProfileString("RECIPE", "nHsTrayY", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.nHsTrayY = 0;
+		mstr_temp.Format("%d",st_recipe.nHsTrayY);
+		:: WritePrivateProfileString("RECIPE", "nHsTrayY", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.nHsTrayY = mn_chk;
+	
+	:: GetPrivateProfileString("RECIPE", "nHsTrayX", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.nHsTrayX = 0;
+		mstr_temp.Format("%d",st_recipe.nHsTrayX);
+		:: WritePrivateProfileString("RECIPE", "nHsTrayX", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.nHsTrayX = mn_chk;
+
+	:: GetPrivateProfileString("RECIPE", "nTrayY", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.nTrayY = 0;
+		mstr_temp.Format("%d",st_recipe.nTrayY);
+		:: WritePrivateProfileString("RECIPE", "nTrayY", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.nTrayY = mn_chk;
+
+	:: GetPrivateProfileString("RECIPE", "nTrayX", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.nTrayX = 0;
+		mstr_temp.Format("%d",st_recipe.nTrayX);
+		:: WritePrivateProfileString("RECIPE", "nTrayX", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.nTrayX = mn_chk;
+	/////////////
 	/*
 	:: GetPrivateProfileString("BasicData", "Device_Mode", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
@@ -1542,29 +1638,82 @@ void CMyBasicData::OnBasic_Data_Save()
 	mstr_temp.Format("%d", st_basic.n_rubb_count);
 	:: WritePrivateProfileString("BASIC", "RUBB_COUNT", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dEpoxyXLineOffSet);
+	mstr_temp.Format("%0.2f", st_basic.dEpoxyXLineOffSet);
 	:: WritePrivateProfileString("BASIC", "EPOXY_X_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dEpoxyYLineOffSet);
+	mstr_temp.Format("%0.2f", st_basic.dEpoxyYLineOffSet);
 	:: WritePrivateProfileString("BASIC", "EPOXY_Y_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dHSCarrierSpreadMoveOffset);
+	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveOffset);
 	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dHSCarrierSpreadMoveDistance);
+	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveDistance);
 	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove1Offset);
+	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove1Offset);
 	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove2Offset);
+	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove2Offset);
 	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove3Offset);
+	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove3Offset);
 	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
 	mstr_temp.Format("%d", st_basic.n_count_retry);
 	:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
+
+	//kwlee 2017.0406
+	mstr_temp.Format("%0.2f", st_recipe.dLoaderTransferTrayDeviceGap);
+	:: WritePrivateProfileString("RECIPE", "dLoaderTransferTrayDeviceGap", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%0.2f", st_recipe.dSatbleTime);
+	:: WritePrivateProfileString("RECIPE", "dSatbleTime", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%0.2f", st_recipe.nEpoxyRunSpeed);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyRunSpeed", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%0.2f", st_recipe.nEpoxyXYRunSpeed[0]);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyXYRunSpeed_Vel", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%0.2f", st_recipe.nEpoxyXYRunSpeed[1]);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyXYRunSpeed_Acc", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%0.2f", st_recipe.nEpoxyXYRunSpeed[2]);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyXYRunSpeed_Dec", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dEpoxyXOffSet);
+	:: WritePrivateProfileString("RECIPE", "dEpoxyXOffSet", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dEpoxyYOffSet);
+	:: WritePrivateProfileString("RECIPE", "dEpoxyYOffSet", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.nRubHSRunSpeed);
+	:: WritePrivateProfileString("RECIPE", "nRubHSRunSpeed", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%0.2f", st_recipe.dTrayPitch_Y);
+	:: WritePrivateProfileString("RECIPE", "dTrayPitch_Y", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dTrayPitch_X);
+	:: WritePrivateProfileString("RECIPE", "dTrayPitch_X", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_recipe.fDispenserVppmA);
+	:: WritePrivateProfileString("RECIPE", "fDispenserVppmA", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_recipe.nEpoxyDotScrewCount);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyDotScrewCount", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_recipe.nHsTrayY);
+	:: WritePrivateProfileString("RECIPE", "nHsTrayY", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_recipe.nHsTrayX);
+	:: WritePrivateProfileString("RECIPE", "nHsTrayX", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_recipe.nTrayY);
+	:: WritePrivateProfileString("RECIPE", "nTrayY", LPCTSTR(mstr_temp), str_save_file);
+
+	mstr_temp.Format("%d", st_recipe.nTrayX);
+	:: WritePrivateProfileString("RECIPE", "nTrayX", LPCTSTR(mstr_temp), str_save_file);
+
 	/* ************************************************************************** */
 
 	/*
@@ -1913,30 +2062,82 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
 	mstr_temp.Format("%d", st_basic.n_rubb_count);
 	:: WritePrivateProfileString("BASIC", "RUBB_COUNT", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dEpoxyXLineOffSet);
+	mstr_temp.Format("%0.2f", st_basic.dEpoxyXLineOffSet);
 	:: WritePrivateProfileString("BASIC", "EPOXY_X_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dEpoxyYLineOffSet);
+	mstr_temp.Format("%0.2f", st_basic.dEpoxyYLineOffSet);
 	:: WritePrivateProfileString("BASIC", "EPOXY_Y_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 
-	mstr_temp.Format("%.03f", st_basic.dHSCarrierSpreadMoveOffset);
+	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveOffset);
 	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dHSCarrierSpreadMoveDistance);
+	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveDistance);
 	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove1Offset);
+	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove1Offset);
 	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 
-	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove2Offset);
+	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove2Offset);
 	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%.03f", st_basic.dHeatSinkCarrierSpreadMove3Offset);
+	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove3Offset);
 	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
 	mstr_temp.Format("%d", st_basic.n_count_retry);
 	:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
 
+
+	//kwlee 2017.0406
+	mstr_temp.Format("%0.2f", st_recipe.dLoaderTransferTrayDeviceGap);
+	:: WritePrivateProfileString("RECIPE", "dLoaderTransferTrayDeviceGap", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dSatbleTime);
+	:: WritePrivateProfileString("RECIPE", "dSatbleTime", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.nEpoxyRunSpeed);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyRunSpeed", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.nEpoxyXYRunSpeed[0]);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyXYRunSpeed_Vel", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.nEpoxyXYRunSpeed[1]);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyXYRunSpeed_Acc", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.nEpoxyXYRunSpeed[2]);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyXYRunSpeed_Dec", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dEpoxyXOffSet);
+	:: WritePrivateProfileString("RECIPE", "dEpoxyXOffSet", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dEpoxyYOffSet);
+	:: WritePrivateProfileString("RECIPE", "dEpoxyYOffSet", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.nRubHSRunSpeed);
+	:: WritePrivateProfileString("RECIPE", "nRubHSRunSpeed", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dTrayPitch_Y);
+	:: WritePrivateProfileString("RECIPE", "dTrayPitch_Y", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dTrayPitch_X);
+	:: WritePrivateProfileString("RECIPE", "dTrayPitch_X", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.fDispenserVppmA);
+	:: WritePrivateProfileString("RECIPE", "fDispenserVppmA", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nEpoxyDotScrewCount);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyDotScrewCount", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nHsTrayY);
+	:: WritePrivateProfileString("RECIPE", "nHsTrayY", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nHsTrayX);
+	:: WritePrivateProfileString("RECIPE", "nHsTrayX", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nTrayY);
+	:: WritePrivateProfileString("RECIPE", "nTrayY", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nTrayX);
+	:: WritePrivateProfileString("RECIPE", "nTrayX", LPCTSTR(mstr_temp), str_save_file);
 }
 
 void CMyBasicData::OnInterface_Data_Save_As(CString str_device)

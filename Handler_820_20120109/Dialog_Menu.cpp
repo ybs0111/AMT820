@@ -113,6 +113,7 @@ void CDialog_Menu::OnCreate_Menu_ListBox()
 		m_list_menu.AddString(_T("Work"), 1);
 		m_list_menu.AddString(_T("Alarm"), 2);
 		m_list_menu.AddString(_T("Step"), 3);
+		m_list_menu.AddString(_T("WaitTime"), 4); //kwlee 2017.0406
 	}
 }
 
@@ -163,6 +164,10 @@ void CDialog_Menu::OnCreate_Menu_Image_List()
 
 		hIcon = AfxGetApp()->LoadIcon(IDI_OPEN_FOLDER);
 		mp_menu_image_list.Add(hIcon);
+
+		//kwlee 2017.0406
+		hIcon = AfxGetApp()->LoadIcon(IDI_OPEN_FOLDER);
+		mp_menu_image_list.Add(hIcon);
 	}
 }
 
@@ -192,7 +197,12 @@ void CDialog_Menu::OnMenu_ID_Sending(CString str_selected_menu)
 	{
 		::PostMessage(st_handler.hWnd, WM_FORM_CHANGE, 6, 4);
 	}
-	else if (str_selected_menu == "DataView")
+// 	else if (str_selected_menu == "DataView")
+// 	{
+// 		::PostMessage(st_handler.hWnd, WM_FORM_CHANGE, 6, 6);
+// 	}
+	//kwlee 2017.0406
+	else if (str_selected_menu == "WaitTime")
 	{
 		::PostMessage(st_handler.hWnd, WM_FORM_CHANGE, 6, 6);
 	}

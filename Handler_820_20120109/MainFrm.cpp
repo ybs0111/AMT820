@@ -20,6 +20,7 @@
 #include "DataAPI.h"
 #include "Public_Function.h"
 #include "Screen_List_Error.h"
+#include "Screen_Wait_Time.h" //kwlee 2017.0406
 #include "Screen_IO_Map.h"
 #include "Screen_Basic.h"
 #include "Screen_Motor.h"
@@ -41,7 +42,7 @@
 #include "SrcPart/APartDatabase.h"
 #include "SrcPart//PartFunction.h"
 #include "Screen_Set_Maintenance.h"
-
+#include "InterfaceBarcode.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -914,6 +915,12 @@ void CMainFrame::OnSwitchToForm(int nForm)
 			case IDW_SCREEN_LIST_ERROR:
 				m_pNewActiveView = (CView*)new CScreen_List_Error;
 				break;
+				
+				//kwlee 2017.0406
+ 			case IDW_SCREEN_LIST_WAIT:
+ 				m_pNewActiveView = (CView*)new CScreen_Wait_Time;
+ 				break;
+
 			case IDW_SCREEN_ADMINISTRATOR:		// ADMINISTRATOR 출력 화면 
 				m_pNewActiveView = (CView*)new CScreen_Administrator;
 				break;
@@ -1009,6 +1016,7 @@ LRESULT CMainFrame::OnViewChangeMode(WPARAM wParam,LPARAM lParam)
 			else if (lParam==3)  OnListAlarm();			// 알람 리스트 화면 전환 
 			else if (lParam==4)  OnListStep();			// 쓰레드 정보 출력 화면 전환 
 			else if (lParam ==5) OnListError();
+			else if (lParam ==6) OnListWait();  //kwlee 2017.0406
 			
 			break;
 		case 7 : 
@@ -1798,10 +1806,19 @@ LRESULT CMainFrame::OnCommand_Server_1(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 */
+
+	// TODO: Add your control notification handler code here
+
+	
+
+
+
 void CMainFrame::OnMain_Port_Create(int n_port)
 {
 	char parity;
 	DWORD dwCommEvents;
+
+	
 	
 	if(st_serial.n_connect[n_port] == YES) return;
 	
@@ -2044,6 +2061,19 @@ void CMainFrame::OnListError()
 	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_List_Error)))   return;
 	OnSwitchToForm(IDW_SCREEN_LIST_ERROR);
 }
+//kwlee 2017.0406
+void CMainFrame::OnListWait()
+{
+	/* ************************************************************************** */
+    /* 화면 뷰 전환 불가능한 정보 검사한다.                                       */
+    /* ************************************************************************** */
+	int nmenu_chk = OnMenu_Change_Checking(); // 메뉴 사용 가능 여부 검사 함수
+	if (nmenu_chk != TRUE)  return;
+	
+	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_Wait_Time)))   return;
+	OnSwitchToForm(IDW_SCREEN_LIST_WAIT);
+}
+
 
 void CMainFrame::OnMain_Motor_Setting()
 {
@@ -2256,8 +2286,14 @@ void CMainFrame::Init_ToolTip()
 	m_wndToolBar.GetItemRect(n_index, rect_hot);
 	m_p_tooltip.AddTool(&m_wndToolBar, 
 						_T("<al_c><ct=0xFF0000><b>IO Screen</b><ct=0x00C000><br><hr=100%><br></ct>IO Information View Screen."), 
+						IDI_TT_MAIN, CSize(0, 0), rect_hot);	
+	//kwlee 2017.0406
+	n_index = m_wndToolBar.CommandToIndex(ID_WAIT);
+	m_wndToolBar.GetItemRect(n_index, rect_hot);
+	m_p_tooltip.AddTool(&m_wndToolBar, 
+		_T("<al_c><ct=0xFF0000><b>IO Screen</b><ct=0x00C000><br><hr=100%><br></ct>IO Information View Screen."), 
 						IDI_TT_MAIN, CSize(0, 0), rect_hot);
-	
+
 	n_index = m_wndToolBar.CommandToIndex(ID_LIST);
 	m_wndToolBar.GetItemRect(n_index, rect_hot);
 	m_p_tooltip.AddTool(&m_wndToolBar, 
