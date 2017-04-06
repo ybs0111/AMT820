@@ -80,24 +80,40 @@ void CRun_Epoxy_Transfer_Robot::Thread_Run()
 
 void CRun_Epoxy_Transfer_Robot::RunInit()
 {
-	if (st_sync.n_init_flag[THD_EMPTY_STACKER] != INIT_CLEAR)		return;		//INIT_CLEAR 일때만 초기화 작업을 한다. 초기화가 끝나면 INIT_CLEAR -> INIT_READY가 되기 떄문에...
+	int nRet_1 = 0, nRet_2 = 0, nRet_3 = 0;
+	if (st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
+	if (st_handler.mn_init_state[INIT_ULD_ROBOT] == CTL_NO ) return;
+	if (st_handler.mn_init_state[INIT_EPOXY_ROBOT] != CTL_NO )		return;		//INIT_CLEAR 일때만 초기화 작업을 한다. 초기화가 끝나면 INIT_CLEAR -> INIT_READY가 되기 떄문에...
 
 	switch( mn_InitStep )
 	{
-	case -1:
-		if( st_sync.n_init_flag[THD_WORK_TRANSFER] < INIT_READY ) break;
-		mn_InitStep = 0;
+	case 0:
+		mn_InitStep = 100;
 		break;
 
-	case 0:
-		Func.VppmOff();
-
+	case 100:
 		if( st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] == CTL_NO )
 		{
 			st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] = CTL_REQ;
 			st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][1] = WORK_PLACE;
+			mn_InitStep = 200;
 		}
 		break;
+
+	case 200:
+		if( st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] == CTL_READY )
+		{
+			st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] = CTL_CHANGE;
+			mn_InitStep = 300;
+		}
+		break;
+
+	case 300:
+
+		break;
+
+
+
 	}
 }
 

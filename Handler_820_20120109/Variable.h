@@ -2698,6 +2698,7 @@ struct tagRECIPE_INFO
 	//UnPress 일때의 디바이스 간격
 	double	dLoaderTransferTrayDeviceGap;
 	DWORD dSatbleTime;
+
 	double nEpoxyRunSpeed;
 	double nEpoxyXYRunSpeed[3];//[0]//vel [1]:acc [2] dec
 	int nEpoxyDotScrewCount;

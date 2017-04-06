@@ -57,6 +57,67 @@ void CRun_UnPress_Robot::Thread_Run()
 
 void CRun_UnPress_Robot::RunInit()
 {
+	int nRet_1 = 0, nRet_2 = 0, nRet_3 = 0;
+	if (st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
+	if (st_handler.mn_init_state[INIT_ULD_ROBOT] == CTL_NO ) return;
+	if (st_handler.mn_init_state[INIT_UNPRESS_ROBOT] != CTL_NO) return;
+	
+	switch( mn_InitStep )
+	{
+		case 0:
+			mn_InitStep = 100;
+			break;
+
+		case 100:
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][0] == CTL_REQ && st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][1] == WORK_PICK )
+			{
+				mn_InitStep = 200;
+			}
+			break;
+
+		case 200:
+			Set_UnPress_PushClamp_OnOff( 0, IO_OFF );
+			Set_UnPress_PushClamp_OnOff( 1, IO_OFF );
+			mn_InitStep = 300;
+			break;
+
+		case 300:
+			nRet_1 = Chk_UnPress_PushClamp_OnOff( 0, IO_OFF );
+			nRet_2 = Chk_UnPress_PushClamp_OnOff( 1, IO_OFF );
+			if( nRet_1 == RET_GOOD && nRet_2 == RET_GOOD )
+			{
+				mn_InitStep = 400;
+			}
+			else if( nRet_1 == RET_ERROR || nRet_2 == RET_ERROR )
+			{
+				CTL_Lib.Alarm_Error_Occurrence( 5000, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 400:
+			m_dTargetPosX = st_motor[m_nPressAxisX].md_pos[P_CARRIER_X_UNPRESS_POS];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nPressAxisX, m_dTargetPosX, COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_InitStep = 500;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_InitStep = 400;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				mn_InitStep = 400;
+			}
+			break;
+
+		case 500:
+			st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][0] = CTL_READY;
+			mn_InitStep = 600;
+
+
+	}
 }
 
 void CRun_UnPress_Robot::RunMove()

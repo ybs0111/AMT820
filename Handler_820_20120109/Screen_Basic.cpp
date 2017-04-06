@@ -1631,7 +1631,7 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	//kwlee 2017.0405
 	if(m_nModeTester[0] != m_nModeTester[1])
 	{
-		str_msg.Format( "[BASIC] Tester Mode Change %s -> %s", m_nModeTester[0], m_nModeTester[1]);
+		str_msg.Format( "[BASIC] Tester Mode Change %d -> %d", m_nModeTester[0], m_nModeTester[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
