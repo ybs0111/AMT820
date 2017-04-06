@@ -26,6 +26,8 @@
 #include "GridControlAlg.h"
 #include "Digit.h"
 
+#define TM_CARRIRER_LOOP	3288
+
 class CDialog_Manual_Move : public CDialog
 {
 public:
@@ -59,6 +61,11 @@ public:
 // Implementation
 public:
 	void OnButtonControl(bool bflag);
+	int Move_Carrier_Loop();
+
+	int m_move_step[25];
+	DWORD m_dwBcrWaitTime[3];
+	DWORD m_dwWaitTime[3];
 
 protected:
 
@@ -66,6 +73,9 @@ protected:
 	//{{AFX_MSG(CDialog_Manual_Move)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBtnExit();
+	afx_msg void OnBtnCarrierLoop();
+	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnBtnMotorStop();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

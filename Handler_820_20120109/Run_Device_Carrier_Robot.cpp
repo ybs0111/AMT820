@@ -24,6 +24,7 @@ IMPLEMENT_SERIAL(CRun_Device_Carrier_Robot, CObject, 1);
 CRun_Device_Carrier_Robot::CRun_Device_Carrier_Robot()
 {
 	int i = 0, j = 0;
+	mn_InitStep = 0;
 	mn_RunUpStep = 0;
 	mn_RunDownStep = 0;
 	mn_RunCarrierStatus = 0;
@@ -88,31 +89,121 @@ void CRun_Device_Carrier_Robot::Thread_Run()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void CRun_Device_Carrier_Robot::RunInit()
 {
-	if (st_sync.n_init_flag[THD_EMPTY_STACKER] != INIT_CLEAR)		return;		//INIT_CLEAR 일때만 초기화 작업을 한다. 초기화가 끝나면 INIT_CLEAR -> INIT_READY가 되기 떄문에...
+	int nRet_1 = 0, nRet_2 = 0, nRet_3 = 0;
+	if (st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
+	if (st_handler.mn_init_state[INIT_ULD_ROBOT] == CTL_NO ) return;
+	if (st_handler.mn_init_state[INIT_CARRIER_ROBOT] != CTL_NO) return;
 
 	switch( mn_InitStep )
 	{
-	case -1:
-		if( st_sync.n_init_flag[THD_WORK_TRANSFER] < INIT_READY ) break;
-		AllBufferClear();
-		mn_InitStep = 0;
-
 	case 0:
-		memset(&st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE])); //clear 
-		memset(&st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER])); //clear 
-		memset(&st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY])); //clear 
-		memset(&st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX])); //clear 
-		memset(&st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION])); //clear 
-		memset(&st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND])); //clear 
+		AllBufferClear();
+		mn_InitStep = 100;
 
-		memset(&st_carrier_buff_info[BTMSHIFT_BUFF_DOWN], 0x00, sizeof(st_carrier_buff_info[BTMSHIFT_BUFF_DOWN])); //clear 
-		memset(&st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD], 0x00, sizeof(st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD])); //clear 
-		memset(&st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN], 0x00, sizeof(st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN])); //clear 
-		memset(&st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN], 0x00, sizeof(st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN])); //clear 
-		memset(&st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN], 0x00, sizeof(st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN])); //clear 
-		memset(&st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN], 0x00, sizeof(st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN])); //clear 
-		
+	case 100:
+		Set_Device_Carrier_Clamp_FwdBwd(CARRIER_LEFT, IO_ON);
+		Set_Device_Carrier_Clamp_FwdBwd(CARRIER_RIGHT, IO_ON);
+		mn_InitStep = 110;		
 		break;
+
+	case 110:
+		nRet_1 = Chk_Device_Carrier_Clamp_FwdBwd(CARRIER_LEFT, IO_ON);
+		nRet_2 = Chk_Device_Carrier_Clamp_FwdBwd(CARRIER_RIGHT, IO_ON);
+		if( nRet_1 == RET_GOOD && nRet_2 == RET_GOOD )
+		{
+			mn_InitStep = 200;
+		}
+		else if( nRet_1 == RET_ERROR || nRet_2 == RET_ERROR )
+		{
+			CTL_Lib.Alarm_Error_Occurrence( 5000, dWARNING, m_strAlarmCode);
+		}
+		break;
+
+	case 200:
+		Set_Device_Carrier_Slide_Z_Cylinder_UpDown(CARRIER_LEFT, IO_OFF);
+		Set_Device_Carrier_Slide_Z_Cylinder_UpDown(CARRIER_RIGHT, IO_OFF);
+		mn_InitStep = 210;
+		break;
+
+	case 210:
+		nRet_1 = Chk_Device_Carrier_Slide_Z_Cylinder_UpDown(CARRIER_LEFT, IO_OFF);
+		nRet_2 = Chk_Device_Carrier_Slide_Z_Cylinder_UpDown(CARRIER_RIGHT, IO_OFF);
+		if( nRet_1 == RET_GOOD && nRet_2 == RET_GOOD )
+		{
+			mn_InitStep = 300;
+		}
+		else if( nRet_1 == RET_ERROR || nRet_2 == RET_ERROR )
+		{
+			CTL_Lib.Alarm_Error_Occurrence( 5001, dWARNING, m_strAlarmCode);
+		}
+		break;
+
+	case 300:
+		Set_Device_Carrier_Slide_Top_X_UpDown(IO_OFF);
+		mn_InitStep = 310;
+		break;
+
+	case 310:
+		nRet_1 = Chk_Device_Carrier_Slide_Top_X_UpDown( IO_OFF );
+		if( nRet_1 == RET_GOOD )
+		{
+			mn_InitStep = 400;
+		}
+		else if( nRet_1 == RET_ERROR )
+		{
+			CTL_Lib.Alarm_Error_Occurrence( 5002, dWARNING, m_strAlarmCode);
+		}
+		break;
+
+	case 400:
+		Set_Device_Carrier_HolderPin_Fix( 0, IO_OFF );
+		Set_Device_Carrier_HolderPin_Fix( 1, IO_OFF );
+		Set_Device_Carrier_HolderPin_Fix( 2, IO_OFF );
+		Set_Device_Carrier_Slide_Bottom_X_ForBackward( IO_OFF);
+		mn_InitStep = 410;
+		break;
+
+	case 410:
+		nRet_1 = Chk_Device_Carrier_HolderPin_Fix(1, IO_OFF);
+		nRet_2 = Chk_Device_Carrier_HolderPin_Fix(2, IO_OFF);
+		nRet_3 = Chk_Device_Carrier_Slide_Bottom_X_ForBackward( IO_OFF );
+		if( nRet_1 == RET_GOOD && nRet_2 == RET_GOOD && nRet_3 == RET_GOOD )
+		{
+			mn_InitStep = 500;
+		}
+		else if( nRet_1 == RET_ERROR || nRet_2 == RET_ERROR || nRet_3 == RET_ERROR )
+		{
+			CTL_Lib.Alarm_Error_Occurrence( 5003, dWARNING, m_strAlarmCode);
+		}
+		break;
+
+	case 500:
+
+
+
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nInspectAxis, st_motor[m_nInspectAxis].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD)
+		{
+			mn_InitStep = 500;
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_InitStep = 500;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+			mn_InitStep = 500;
+		}
+		break;
+
+
+
+
+
+
+
+
 	}
 }
 
@@ -127,11 +218,11 @@ void CRun_Device_Carrier_Robot::RunMove()
 	Func.ThreadFunctionStepTrace(11, mn_RunMove);
 	switch(mn_RunMove)
 	{
-	case -1:
-		mn_RunMove = 0;
+	case 0:
+		mn_RunMove = 10;
 		break;
 
-	case 0:		
+	case 10:		
 		if( g_lotMgr.GetLotCount() > 0 )
 		{
 			mn_RunMove = 100;
@@ -2676,24 +2767,20 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 {
 	int nFuncRet = RET_ERROR;
 	int nRet[10] = {0,};
-	nRet[0] = g_ioMgr.get_in_bit(st_io.i_Press_Up_Check);	// Press Unpress
-	nRet[1] = g_ioMgr.get_in_bit(st_io.i_Press_Down_Check);
-	nRet[2] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X1_Forward_Check);	// 하단에서 Jig 밀어줌 
-	nRet[3] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X1_Backward_Check);
-	nRet[4] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check);		// 상단에서 Jig 밀어줌 
-	nRet[5] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check);
-	nRet[6] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_Z1_Up_Check);		// Left z
-	nRet[7] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_Z1_Down_Check);
-	nRet[8] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_Z2_Up_Check);		// Right Z
-	nRet[9] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_Z2_Down_Check);
-	nRet[10] = g_ioMgr.get_in_bit(st_io.i_Carrier_1_Forward_Check);		// Left 끝단에서 Jig 걸어줌 
-	nRet[11] = g_ioMgr.get_in_bit(st_io.i_Carrier_1_Backward_Check);
-	nRet[12] = g_ioMgr.get_in_bit(st_io.i_Carrier_2_Forward_Check);		// Right 끝단에서 Jig 걸어줌 
-	nRet[13] = g_ioMgr.get_in_bit(st_io.i_Carrier_2_Backward_Check);		
-	nRet[14] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Up_Check);	
-	nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check);	
-	nRet[16] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Up_Check);	
-	nRet[17] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check);	
+	nRet[0] = g_ioMgr.get_in_bit(st_io.i_Press_Up_Check, IO_ON);	// Press Unpress
+	nRet[1] = g_ioMgr.get_in_bit(st_io.i_Press_Down_Check, IO_OFF);
+	nRet[2] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X1_Forward_Check, IO_OFF);	// 하단에서 Jig 밀어줌 
+	nRet[3] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X1_Backward_Check, IO_ON);
+	nRet[4] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_ON);		// 상단에서 Jig 밀어줌 
+	nRet[5] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_OFF);
+	nRet[6] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_Z1_Up_Check, IO_OFF);		// Left z
+	nRet[7] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_Z1_Down_Check, IO_ON);
+	nRet[8] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_Z2_Up_Check, IO_OFF);		// Right Z
+	nRet[9] = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_Z2_Down_Check, IO_ON);
+	nRet[10] = g_ioMgr.get_in_bit(st_io.i_Carrier_1_Forward_Check, IO_ON);		// Left 끝단에서 Jig 걸어줌 
+	nRet[11] = g_ioMgr.get_in_bit(st_io.i_Carrier_1_Backward_Check, IO_OFF);
+	nRet[12] = g_ioMgr.get_in_bit(st_io.i_Carrier_2_Forward_Check, IO_ON);		// Right 끝단에서 Jig 걸어줌 
+	nRet[13] = g_ioMgr.get_in_bit(st_io.i_Carrier_2_Backward_Check, IO_ON);		
 // 	nRet[14] = g_ioMgr.get_in_bit(st_io.i_Press_Carrier_Holder_Up_Check);	// 상단 중간에서 Jig Hole에 집어넣어 JIg 잡아줌 
 // 	nRet[15] = g_ioMgr.get_in_bit(st_io.i_Press_Carrier_Holder_Down_Check);	
 // 	nRet[16] = g_ioMgr.get_in_bit(st_io.i_Press_PIN_Guide_Forward_Check);		// 상단 중간에서 jig 앞뒤로 눌러서 jig 잡아줌 
@@ -2706,6 +2793,11 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 //	931004 1 A "CARRIRER_IS_NOT_STATUS_MODE."
 	if( nMode == 0)// 초기 상태
 	{
+		nRet[14] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Up_Check, IO_OFF);	
+		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_OFF);	
+		nRet[16] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Up_Check, IO_ON);	
+		nRet[17] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_ON);	
+
 		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_OFF && nRet[3] == IO_ON && nRet[4] == IO_ON && nRet[5] == IO_OFF && nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_OFF && 
 			nRet[9] == IO_ON && nRet[10] == IO_ON && nRet[11] == IO_OFF && nRet[12] == IO_ON && nRet[13] == IO_ON && nRet[14] == IO_OFF && nRet[15] == IO_OFF && nRet[16] == IO_ON && nRet[17] == IO_ON )
 		{
@@ -2718,6 +2810,11 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 	}
 	else if ( nMode == 1 )//상단 민 상태
 	{
+		nRet[14] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Up_Check, IO_ON);	
+		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_OFF);	
+		nRet[16] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Up_Check, IO_ON);	
+		nRet[17] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_ON);	
+
 		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_OFF && nRet[3] == IO_ON && nRet[4] == IO_ON && nRet[5] == IO_OFF && nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_OFF && 
 			nRet[9] == IO_ON && nRet[10] == IO_ON && nRet[11] == IO_OFF && nRet[12] == IO_ON && nRet[13] == IO_ON && nRet[14] == IO_ON && nRet[15] == IO_OFF && nRet[16] == IO_OFF && nRet[17] == IO_ON )
 		{
@@ -2730,6 +2827,11 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 	}
 	else if( nMode == 2 )//2 상단 다운 상태
 	{
+		nRet[14] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Up_Check, IO_OFF);	
+		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_ON);	
+		nRet[16] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Up_Check, IO_OFF);	
+		nRet[17] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_ON);	
+		
 		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_OFF && nRet[3] == IO_ON && nRet[4] == IO_ON && nRet[5] == IO_OFF && nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_OFF && 
 			nRet[9] == IO_ON && nRet[10] == IO_ON && nRet[11] == IO_OFF && nRet[12] == IO_ON && nRet[13] == IO_ON && nRet[14] == IO_OFF && nRet[15] == IO_ON && nRet[16] == IO_OFF && nRet[17] == IO_ON )
 		{
@@ -2742,6 +2844,11 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 	}
 	else if(nMode == 3)//3 한다 업 상태
 	{
+		nRet[14] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Up_Check, IO_OFF);	
+		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_ON);	
+		nRet[16] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Up_Check, IO_ON);	
+		nRet[17] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_OFF);	
+
 		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_OFF && nRet[3] == IO_ON && nRet[4] == IO_ON && nRet[5] == IO_OFF && nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_OFF && 
 			nRet[9] == IO_ON && nRet[10] == IO_ON && nRet[11] == IO_OFF && nRet[12] == IO_ON && nRet[13] == IO_ON && nRet[14] == IO_OFF && nRet[15] == IO_ON && nRet[16] == IO_ON && nRet[17] == IO_OFF )
 		{
