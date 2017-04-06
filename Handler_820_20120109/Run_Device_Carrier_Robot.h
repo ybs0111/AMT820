@@ -130,12 +130,12 @@ public:
 	int Btm_Carrierbuffer_sensor_flag_status_check( int n_mode, int n_check_site );
 
 	//PRESS
-	void Set_Device_Press_UpDn_Cylinder(int OnOff);
-	int Chk_Device_Press_UpDn_Cylinder( int nOnOff );
+// 	void Set_Device_Press_UpDn_Cylinder(int OnOff);
+// 	int Chk_Device_Press_UpDn_Cylinder( int nOnOff );
 
 	//TOP fwd bwd를 위한 up down 실린더(모터가  실린더를 다운시키고 난뒤에 민다.
-	void Set_Device_Carrier_Slide_Top_X_UpDown(int OnOff);
-	int Chk_Device_Carrier_Slide_Top_X_UpDown( int OnOff );
+// 	void Set_Device_Carrier_Slide_Top_X_UpDown(int OnOff);
+// 	int Chk_Device_Carrier_Slide_Top_X_UpDown( int OnOff );
 
 	//BTM fwd bwd
 	void Set_Device_Carrier_Slide_Bottom_X_ForBackward(int OnOff);

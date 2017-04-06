@@ -139,21 +139,17 @@ void CRun_Device_Carrier_Robot::RunInit()
 		break;
 
 	case 300:
-		Set_Device_Carrier_Slide_Top_X_UpDown(IO_OFF);
+		st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][0] = CTL_REQ;
+		st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][1] = WORK_PICK;
 		mn_InitStep = 310;
 		break;
 
 	case 310:
-		nRet_1 = Chk_Device_Carrier_Slide_Top_X_UpDown( IO_OFF );
-		if( nRet_1 == RET_GOOD )
+		if( st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][0] == CTL_READY )
 		{
-			mn_InitStep = 400;
+
 		}
-		else if( nRet_1 == RET_ERROR )
-		{
-			CTL_Lib.Alarm_Error_Occurrence( 5002, dWARNING, m_strAlarmCode);
-		}
-		break;
+
 
 	case 400:
 		Set_Device_Carrier_HolderPin_Fix( 0, IO_OFF );
@@ -178,31 +174,7 @@ void CRun_Device_Carrier_Robot::RunInit()
 		break;
 
 	case 500:
-
-
-
-		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nInspectAxis, st_motor[m_nInspectAxis].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
-		if (nRet_1 == BD_GOOD)
-		{
-			mn_InitStep = 500;
-		}
-		else if (nRet_1 == BD_RETRY)
-		{
-			mn_InitStep = 500;
-		}
-		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-		{
-			CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
-			mn_InitStep = 500;
-		}
 		break;
-
-
-
-
-
-
-
 
 	}
 }
@@ -2868,134 +2840,134 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 
 
 //로보트가 Top의 Carrier Slide를 밀기 위해 로보트의 UPDOWN실린더
-void CRun_Device_Carrier_Robot::Set_Device_Carrier_Slide_Top_X_UpDown(int OnOff)
-{
-	CString strLogKey[10];
-	CString	strLogData[10];
-
-	strLogKey[0] = _T("Mode Start");
-	strLogData[0].Format(_T("%d"),0);
-
-	m_bClampOnOffFlag	= false;
-	m_dwClampOnOff[0]	= GetCurrentTime();
-
-	g_ioMgr.set_out_bit( st_io.o_Slide_Guide_X2_Backward_Sol, OnOff);
-	g_ioMgr.set_out_bit( st_io.o_Slide_Guide_X2_Forward_Sol, !OnOff);
-
-	if (OnOff == IO_ON)//다운
-	{
-		clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("DOWN"),0,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
-	}
-	else
-	{
-		clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("UP"),0,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
-	}
-
-}
-
-int CRun_Device_Carrier_Robot::Chk_Device_Carrier_Slide_Top_X_UpDown( int OnOff )
-{
-	CString strLogKey[10];
-	CString	strLogData[10];
-
-	strLogKey[0] = _T("Mode End");
-	strLogData[0].Format(_T("%d"),0);
-
-	int nWaitTime = WAIT_CARRIER_CLAMP_FWDBWD;
-
-	if (OnOff == IO_OFF)//DOWN
-	{
-		if (m_bClampOnOffFlag == false &&	g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_ON)	== IO_ON &&
-			g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_OFF) == IO_OFF)
-		{
-			m_bClampOnOffFlag		= true;
-			m_dwClampOnOff[0]	= GetCurrentTime();
-		}
-		else if (m_bClampOnOffFlag == true && g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_ON)	== IO_ON &&
-			g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_OFF) == IO_OFF)
-		{
-			m_dwClampOnOff[1] = GetCurrentTime();
-			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
-
-			if (m_dwClampOnOff[2] <= 0)
-			{
-				m_dwClampOnOff[0] = GetCurrentTime();
-				return RET_PROCEED;
-			}
-
-			if (m_dwClampOnOff[2] > (DWORD)st_wait.nOffWaitTime[nWaitTime])
-			{
-				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("BACKWARD"),1,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
-				return RET_GOOD;
-			}
-		}
-		else
-		{
-			m_dwClampOnOff[1] = GetCurrentTime();
-			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
-
-			if (m_dwClampOnOff[2] <= 0)
-			{
-				m_dwClampOnOff[0] = GetCurrentTime();
-				return RET_PROCEED;
-			}
-
-			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
-			{
-				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Slide_Guide_X2_Down_Check); 
-				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("BACKWARD"),1,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
-				return RET_ERROR;
-			}
-		}
-	}
-	else
-	{
-		if (m_bClampOnOffFlag == false &&	g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_OFF)	== IO_OFF &&
-			g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_ON) == IO_ON)
-		{
-			m_bClampOnOffFlag			= true;
-			m_dwClampOnOff[0]	= GetCurrentTime();
-		}
-		else if (m_bClampOnOffFlag == true &&	g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_OFF)	== IO_OFF &&
-			g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_ON) == IO_ON)
-		{
-			m_dwClampOnOff[1]	= GetCurrentTime();
-			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];
-
-			if (m_dwClampOnOff[2] <= 0)
-			{
-				m_dwClampOnOff[0]	= GetCurrentTime();
-				return RET_PROCEED;
-			}
-
-			if(m_dwClampOnOff[2] > (DWORD)st_wait.nOnWaitTime[nWaitTime])
-			{
-				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("FORWARD"),1,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
-				return RET_GOOD;
-			}
-		}
-		else
-		{
-			m_dwClampOnOff[1]	= GetCurrentTime();
-			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];
-
-			if (m_dwClampOnOff[2] <= 0)
-			{
-				m_dwClampOnOff[0]	= GetCurrentTime();
-				return RET_PROCEED;
-			}
-
-			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
-			{
-				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Slide_Guide_X2_Down_Check); 
-				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("FORWARD"),1,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
-				return RET_ERROR;
-			}
-		}
-	}
-
-	return RET_PROCEED;
-}
+// void CRun_Device_Carrier_Robot::Set_Device_Carrier_Slide_Top_X_UpDown(int OnOff)
+// {
+// 	CString strLogKey[10];
+// 	CString	strLogData[10];
+// 
+// 	strLogKey[0] = _T("Mode Start");
+// 	strLogData[0].Format(_T("%d"),0);
+// 
+// 	m_bClampOnOffFlag	= false;
+// 	m_dwClampOnOff[0]	= GetCurrentTime();
+// 
+// 	g_ioMgr.set_out_bit( st_io.o_Slide_Guide_X2_Backward_Sol, OnOff);
+// 	g_ioMgr.set_out_bit( st_io.o_Slide_Guide_X2_Forward_Sol, !OnOff);
+// 
+// 	if (OnOff == IO_ON)//다운
+// 	{
+// 		clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("DOWN"),0,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
+// 	}
+// 	else
+// 	{
+// 		clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("UP"),0,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
+// 	}
+// 
+// }
+// 
+// int CRun_Device_Carrier_Robot::Chk_Device_Carrier_Slide_Top_X_UpDown( int OnOff )
+// {
+// 	CString strLogKey[10];
+// 	CString	strLogData[10];
+// 
+// 	strLogKey[0] = _T("Mode End");
+// 	strLogData[0].Format(_T("%d"),0);
+// 
+// 	int nWaitTime = WAIT_CARRIER_CLAMP_FWDBWD;
+// 
+// 	if (OnOff == IO_OFF)//DOWN
+// 	{
+// 		if (m_bClampOnOffFlag == false &&	g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_ON)	== IO_ON &&
+// 			g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_OFF) == IO_OFF)
+// 		{
+// 			m_bClampOnOffFlag		= true;
+// 			m_dwClampOnOff[0]	= GetCurrentTime();
+// 		}
+// 		else if (m_bClampOnOffFlag == true && g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_ON)	== IO_ON &&
+// 			g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_OFF) == IO_OFF)
+// 		{
+// 			m_dwClampOnOff[1] = GetCurrentTime();
+// 			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
+// 
+// 			if (m_dwClampOnOff[2] <= 0)
+// 			{
+// 				m_dwClampOnOff[0] = GetCurrentTime();
+// 				return RET_PROCEED;
+// 			}
+// 
+// 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nOffWaitTime[nWaitTime])
+// 			{
+// 				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("BACKWARD"),1,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
+// 				return RET_GOOD;
+// 			}
+// 		}
+// 		else
+// 		{
+// 			m_dwClampOnOff[1] = GetCurrentTime();
+// 			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
+// 
+// 			if (m_dwClampOnOff[2] <= 0)
+// 			{
+// 				m_dwClampOnOff[0] = GetCurrentTime();
+// 				return RET_PROCEED;
+// 			}
+// 
+// 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
+// 			{
+// 				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Slide_Guide_X2_Down_Check); 
+// 				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("BACKWARD"),1,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
+// 				return RET_ERROR;
+// 			}
+// 		}
+// 	}
+// 	else
+// 	{
+// 		if (m_bClampOnOffFlag == false &&	g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_OFF)	== IO_OFF &&
+// 			g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_ON) == IO_ON)
+// 		{
+// 			m_bClampOnOffFlag			= true;
+// 			m_dwClampOnOff[0]	= GetCurrentTime();
+// 		}
+// 		else if (m_bClampOnOffFlag == true &&	g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, IO_OFF)	== IO_OFF &&
+// 			g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, IO_ON) == IO_ON)
+// 		{
+// 			m_dwClampOnOff[1]	= GetCurrentTime();
+// 			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];
+// 
+// 			if (m_dwClampOnOff[2] <= 0)
+// 			{
+// 				m_dwClampOnOff[0]	= GetCurrentTime();
+// 				return RET_PROCEED;
+// 			}
+// 
+// 			if(m_dwClampOnOff[2] > (DWORD)st_wait.nOnWaitTime[nWaitTime])
+// 			{
+// 				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("FORWARD"),1,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
+// 				return RET_GOOD;
+// 			}
+// 		}
+// 		else
+// 		{
+// 			m_dwClampOnOff[1]	= GetCurrentTime();
+// 			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];
+// 
+// 			if (m_dwClampOnOff[2] <= 0)
+// 			{
+// 				m_dwClampOnOff[0]	= GetCurrentTime();
+// 				return RET_PROCEED;
+// 			}
+// 
+// 			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
+// 			{
+// 				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Slide_Guide_X2_Down_Check); 
+// 				clsLog.LogFunction(_T("DVC_CARRIER_ROBOT"),_T("FORWARD"),1,_T("TOP_CARRIER"),_T("CYLINDER"),1,strLogKey,strLogData);
+// 				return RET_ERROR;
+// 			}
+// 		}
+// 	}
+// 
+// 	return RET_PROCEED;
+// }
 
 void CRun_Device_Carrier_Robot::Set_Device_Carrier_Slide_Bottom_X_ForBackward(int OnOff)	
 {
