@@ -208,6 +208,7 @@ void CScreen_Wait_Time::OnWaitTime_Data_Recovery()
 
 void CScreen_Wait_Time::OnWaitTime_Data_Display()
 {
+	
 	OnWaitTime_Init_Time();
 
 	m_dgt_ta_avg_bd.SubclassDlgItem( IDC_DGT_TA_AVG_BD, this );
@@ -683,7 +684,7 @@ void CScreen_Wait_Time::OnChangeValue(int nid, int nrow, int ncol)
 		
 		st_msg.mstr_keypad_val = strTmp;
 		
-//		strTmp = KeyPad.GetNumEditString_I(0, 99999, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+		strTmp = KeyPad.GetNumEditString_I(0, 99999, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 
 		if (ncol == 1)
 		{
@@ -768,7 +769,7 @@ void CScreen_Wait_Time::OnBtnWaitApply()
 
 	CDialog_Select  select_dlg;
 	
-	st_msg.mstr_confirm_msg = _T("Wait Time : Setting Data Apply?");
+	st_other.str_confirm_msg = _T("Wait Time : Setting Data Apply?");
 
 	n_response = select_dlg.DoModal();
 	

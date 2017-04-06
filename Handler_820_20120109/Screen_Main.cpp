@@ -407,6 +407,10 @@ void CScreen_Main::OnMain_Status_Display()
 		st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, DEVICE_MODE, st_basic.n_mode_device);			// Device Mode
 		st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, FILE_MODE, 0);
 		st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MODEL_MODE, 0);
+		//kwlee 2017.0406
+		st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MODE_7387, st_basic.n_mode_7387);			// Device Mode
+		st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MODE_3874, st_basic.n_3874InspectMode);			// Device Mode
+		st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MODE_BCR, st_basic.n_mode_bcr);			// Device Mode
 	}
 }
 
@@ -898,3 +902,4 @@ void CScreen_Main::OnBtnDoorOpen()
 		}	
 	}	
 }
+

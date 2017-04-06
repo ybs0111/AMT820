@@ -273,6 +273,10 @@ enum ENUM_WM_MESSAGE
 #define PRESS_MODE			5
 #define FILE_MODE			6
 #define MODEL_MODE			7
+//kwlee 2017.0406
+#define MODE_7387           8
+#define MODE_3874           9
+#define MODE_BCR           10
 // *****************************************************************************
 
 // *****************************************************************************
@@ -736,6 +740,10 @@ enum ENUM_WM_MESSAGE
 
 #define WORK_CLEAR					0
 
+//kwlee 2017.0406
+#define EPOXY_VEL                    0
+#define EPOXY_ACC                    1
+#define EPOXY_DEC                    2
 /*
 //0¹ø º¸µå 
 #define 	M_TRAY1_Z			0
@@ -1972,6 +1980,10 @@ struct st_work_param
 	double	dDailyCycle;
 	int mn_machine_mode;
 	CString strLotInputID;
+
+	//kwlee 2017.0406
+	int n_barcode_recive;
+	CString strBarcodeRecive;
 };
 extern  st_work_param  st_work;
 
@@ -2076,7 +2088,8 @@ struct st_sync_param
 	//if Epoxy is going to safety, it may be conflict with Hearsink.
 	//so Heatsink transfer robot have to check where is it(heatsinkrobot may be able to work in turn position )
 	int nHeatsinkEpoxySateyflag;
-
+	
+	int n_barcode_read_serial_num[2][2]; //kwlee 2017.0406
 
 };
 extern st_sync_param	st_sync;

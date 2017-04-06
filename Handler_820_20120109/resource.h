@@ -391,6 +391,7 @@
 #define IDC_DGT_RETRY_WAIT              527
 #define IDC_DGT_Decel                   527
 #define IDI_RIGHT_E                     527
+#define IDC_DGT_DISPENSERVPPMA          527
 #define IDC_DGT_MAX_SPEED               528
 #define IDI_RIGHT_D                     528
 #define IDC_DGT_HOME_SPEED              529
@@ -530,6 +531,8 @@
 #define IDC_DGT_BOARD_CNT               774
 #define IDC_DGT_7387_ALARM_CNT          774
 #define IDC_DGT_RUBB                    775
+#define IDC_DGT_TRAY_Y                  776
+#define IDC_DGT_TRAY_X                  777
 #define IDC_EDIT_KEYPAD_TITLE           787
 #define IDC_RADIO_IN_STATE_12           796
 #define IDC_RADIO_IN_STATE_13           797
@@ -547,10 +550,13 @@
 #define IDC_DGT_WORKTIME_FRONT_2        835
 #define IDC_DGT_PICK_RETRY_CNT          836
 #define IDC_DGT_WORKTIME_FRONT_3        836
+#define IDC_DGT_EPOXY_SCREW_CNT         836
 #define IDC_DGT_MTRAY_X                 837
 #define IDC_DGT_WORKTIME_FRONT_4        837
+#define IDC_DGT_HSTRAY_Y                837
 #define IDC_DGT_MTRAY_Y                 838
 #define IDC_DGT_WORKTIME_FRONT_5        838
+#define IDC_DGT_HSTRAY_X                838
 #define IDC_DGT_WORKTIME_FRONT_6        839
 #define IDC_DGT_WORKTIME_MIN            839
 #define IDC_DGT_WORKTIME_FRONT_7        840
@@ -632,16 +638,19 @@
 #define IDC_GROUP_CARRIER_MOVE          980
 #define IDC_GROUP_JOG_LT                981
 #define IDC_GROUP_NOVIDEO               981
-#define IDC_GROUP_PICK_RETRY_CNT        981
+#define IDC_GROUP_EPOXY_SCREW_CNT       981
 #define IDC_GROUP_JOG_MZ                982
 #define IDC_GROUP_BOARD_CNT             982
+#define IDC_GROUP_HSTRAY_Y              982
 #define IDC_GROUP_ELV_PARTIAL_CNT       983
 #define IDC_DGT_LIMIT_01                984
 #define IDC_GROUP_7387_ALARM_CNT        984
 #define IDC_DGT_LIMIT_02                985
 #define IDC_GROUP_RUBB_CNT              985
 #define IDC_DGT_LIMIT_03                986
+#define IDC_GROUP_TRAY_Y                986
 #define IDC_DGT_LIMIT_04                987
+#define IDC_GROUP_TRAY_X                987
 #define IDC_DGT_LIMIT_05                988
 #define IDC_DGT_LIMIT_06                989
 #define IDC_DGT_LIMIT_07                990
@@ -710,6 +719,7 @@
 #define IDC_TITLE_PASS_CHK              1019
 #define IDC_CHECK_INSPECTION_AREA_L     1019
 #define IDC_COMBO_DATA_3                1019
+#define IDC_GROUP_HSTRAY_X              1019
 #define IDC_EDIT_PASS_CHK_DATA          1020
 #define IDC_BUTTON_INSPECTION_L         1020
 #define IDC_COMBO_STOP_3                1020
@@ -792,6 +802,7 @@
 #define IDC_BTN_MAIN_X_GO4              1037
 #define IDC_BTN_PICKER                  1037
 #define IDC_GROUP_SPEED                 1037
+#define IDC_GROUP_DISPENSERVPPMA        1037
 #define IDC_BTN_PASS_CHK_R              1038
 #define IDC_RADIO_ULD_ELV               1038
 #define IDC_RADIO_ELEVATOR_MODULE       1038
@@ -2851,13 +2862,16 @@
 #define IDC_GROUP_LOADER                2030
 #define IDC_BTN_LL_PLATE_LEFT           2031
 #define IDC_GROUP_LD_PICKER_ONOFF       2031
+#define IDC_MSG_7387_MODE_INFO          2031
 #define IDC_BTN_LL_PLATE_RIGHT          2032
 #define IDC_RADIO_LDP_CHECK             2032
 #define IDC_MSG_FILE_INFO               2032
 #define IDC_BTN_LR_PLATE_LEFT           2033
 #define IDC_BTN_LDP_ON                  2033
+#define IDC_MSG_3874_MODE_INFO          2033
 #define IDC_BTN_LR_PLATE_RIGHT          2034
 #define IDC_BTN_LDP_OFF                 2034
+#define IDC_MSG_BARCODE_MODE_INFO       2034
 #define IDC_GROUP_ULD_PICKER_ONOFF      2035
 #define IDC_BTN_D_PULLER_ON             2035
 #define IDC_RADIO_ULDP_CHECK            2036
@@ -4964,6 +4978,7 @@
 #define IDC_BTN_SERIAL_CONNECT_1        3675
 #define IDC_MOTOR_13                    3676
 #define IDC_BTN_SERIAL_APPLY_2          3676
+#define IDC_BTN_BCR1                    3676
 #define IDC_IO_TR_L                     3677
 #define IDC_BTN_SERIAL_CONNECT_2        3677
 #define IDC_IO_MAIN_ROBOT               3678
@@ -5176,7 +5191,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        546
+#define _APS_NEXT_RESOURCE_VALUE        548
 #define _APS_NEXT_COMMAND_VALUE         32818
 #define _APS_NEXT_CONTROL_VALUE         3785
 #define _APS_NEXT_SYMED_VALUE           117

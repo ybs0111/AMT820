@@ -26,6 +26,9 @@ void CDialog_Title::DoDataExchange(CDataExchange* pDX)
 {
 	CInitDialogBar::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDialog_Title)
+	DDX_Control(pDX, IDC_MSG_BARCODE_MODE_INFO, m_msg_Barcode_mode_info);
+	DDX_Control(pDX, IDC_MSG_7387_MODE_INFO, m_msg_7387_mode_info);
+	DDX_Control(pDX, IDC_MSG_3874_MODE_INFO, m_msg_3874_mode_info);
 	DDX_Control(pDX, IDC_MSG_MODEL_INFO, m_msg_model_info);
 	DDX_Control(pDX, IDC_MSG_FILE_INFO, m_msg_file_info);
 	DDX_Control(pDX, IDC_MSG_PRESS_MODE_INFO, m_msg_press_mode_info);
@@ -109,6 +112,25 @@ void CDialog_Title::OnTitle_Lable_Set()
 	m_msg_file_info.SetColor(RGB(0,0,255));
 	m_msg_file_info.SetGradientColor(RGB(0,0,0));
 	m_msg_file_info.SetTextColor(RGB(255,255,255));
+
+	//kwlee 2017.0406
+	m_msg_7387_mode_info.SetFont(mp_title_font);
+	m_msg_7387_mode_info.SetCenterText();
+	m_msg_7387_mode_info.SetColor(RGB(0,0,255));
+	m_msg_7387_mode_info.SetGradientColor(RGB(0,0,0));
+	m_msg_7387_mode_info.SetTextColor(RGB(255,255,255));
+
+	m_msg_3874_mode_info.SetFont(mp_title_font);
+	m_msg_3874_mode_info.SetCenterText();
+	m_msg_3874_mode_info.SetColor(RGB(0,0,255));
+	m_msg_3874_mode_info.SetGradientColor(RGB(0,0,0));
+	m_msg_3874_mode_info.SetTextColor(RGB(255,255,255));
+
+	m_msg_Barcode_mode_info.SetFont(mp_title_font);
+	m_msg_Barcode_mode_info.SetCenterText();
+	m_msg_Barcode_mode_info.SetColor(RGB(0,0,255));
+	m_msg_Barcode_mode_info.SetGradientColor(RGB(0,0,0));
+	m_msg_Barcode_mode_info.SetTextColor(RGB(255,255,255));
 }
 
 LRESULT CDialog_Title::OnStatusDataUpdate(WPARAM wParam,LPARAM lParam)
@@ -131,6 +153,20 @@ LRESULT CDialog_Title::OnStatusDataUpdate(WPARAM wParam,LPARAM lParam)
 	{
 		OnTitle_Device_Mode_Display(mn_change);
 	}
+	//kwlee 2017.0406
+	else if(wParam == MODE_7387)	// 7387 Mode
+	{
+		OnTitle_7387_Mode_Display(mn_change);
+	}
+	else if(wParam == MODE_3874)	// 3874 Mode
+	{
+		OnTitle_3874_Mode_Display(mn_change);
+	}
+	else if(wParam == MODE_BCR)	// Device Mode
+	{
+		OnTitle_Barcode_Mode_Display(mn_change);
+	}
+	//////////
 	else if(wParam == PRESS_MODE)	// Jig Mode
 	{
 		OnTitle_Press_Mode_Display(mn_change);
@@ -336,6 +372,87 @@ void CDialog_Title::OnTitle_Device_Mode_Display(int n_device)
 	
 	m_msg_device_mode_info.SetWindowText(_T(str_device));
 }
+//kwlee 2017.0406
+void CDialog_Title::OnTitle_7387_Mode_Display(int n_device)
+{
+	CString str_device;   // 임시 저장 변수
+	
+	switch(n_device)
+	{
+	case NOT_USE:
+		m_msg_7387_mode_info.SetColor(RGB(255,0,0));
+		str_device = _T("7387비사용");
+		break;
+		
+	case USE:
+		m_msg_7387_mode_info.SetColor(RGB(0,0,255));
+		str_device = _T("7387사용");
+		break;
+		
+
+	default:
+		m_msg_7387_mode_info.SetColor(RGB(255,0,0));
+		str_device = _T("ERROR");
+		break;
+	}
+	
+	m_msg_7387_mode_info.SetWindowText(_T(str_device));
+}
+
+void CDialog_Title::OnTitle_3874_Mode_Display(int n_device)
+{
+	CString str_device;   // 임시 저장 변수
+	
+	switch(n_device)
+	{
+	case NOT_USE:
+		m_msg_3874_mode_info.SetColor(RGB(255,0,0));
+		str_device = _T("3874비사용");
+		break;
+		
+	case USE:
+		m_msg_3874_mode_info.SetColor(RGB(0,0,255));
+		str_device = _T("3874사용");
+		break;
+		
+
+	
+	default:
+		m_msg_3874_mode_info.SetColor(RGB(255,0,0));
+		str_device = _T("ERROR");
+		break;
+	}
+	
+	m_msg_3874_mode_info.SetWindowText(_T(str_device));
+}
+
+void CDialog_Title::OnTitle_Barcode_Mode_Display(int n_device)
+{
+	CString str_device;   // 임시 저장 변수
+	
+	switch(n_device)
+	{
+	case NOT_USE:
+		m_msg_Barcode_mode_info.SetColor(RGB(255,0,0));
+		str_device = _T("BCR비사용");
+		break;
+		
+	case USE:
+		m_msg_Barcode_mode_info.SetColor(RGB(0,0,255));
+		str_device = _T("BCR사용");
+		break;
+		
+	default:
+		m_msg_Barcode_mode_info.SetColor(RGB(255,0,0));
+		str_device = _T("ERROR");
+		break;
+	}
+	
+	m_msg_Barcode_mode_info.SetWindowText(_T(str_device));
+}
+
+////////////
+
 
 void CDialog_Title::OnTitle_Press_Mode_Display(int npress)
 {

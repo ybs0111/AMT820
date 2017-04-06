@@ -113,6 +113,8 @@ void CScreen_IO_Map::OnInitialUpdate()
 	OnIO_Continue_Change();
 	OnIO_Name_Label_Set();
 	OnIO_Digital_Count_Set();
+	OnChangeSheet(m_nport, m_nslave); //kwlee 2017.0406
+	OnOutputCheck(m_nport, m_nslave); //kwlee 2017.0406
 
 	SetTimer(TMR_IO_READ, 50, NULL);
 }
@@ -705,13 +707,17 @@ void CScreen_IO_Map::OnOutputCheck(int port, int slave)
 
 			if(FAS_IO.n_out[bit] == IO_ON)
 			{
-				m_p_grid.GridCellColor(Grid, i+4, 5, RGB(st_work.n_grid_r[1][0], st_work.n_grid_g[1][0], st_work.n_grid_b[1][0]), RGB(st_work.n_text_r[1][0], st_work.n_text_g[1][0], st_work.n_text_b[1][0]));
+				//m_p_grid.GridCellColor(Grid, i+4, 5, RGB(st_work.n_grid_r[1][0], st_work.n_grid_g[1][0], st_work.n_grid_b[1][0]), RGB(st_work.n_text_r[1][0], st_work.n_text_g[1][0], st_work.n_text_b[1][0]));
+				//kwlee 2017.0406
+				m_p_grid.GridCellColor(Grid, i+4, 5, RGB(255,128,64), WHITE_C);
 				m_p_grid.GridCellFont(Grid, i+4, 5, "MS Sans Serif", 14);
 				m_p_grid.GridCellText(Grid, i+4, 5, "ON");
 			}
 			else
 			{
-				m_p_grid.GridCellColor(Grid, i+4, 5, RGB(st_work.n_grid_r[1][1], st_work.n_grid_g[1][1], st_work.n_grid_b[1][1]), RGB(st_work.n_text_r[1][1], st_work.n_text_g[1][1], st_work.n_text_b[1][1]));
+				//m_p_grid.GridCellColor(Grid, i+4, 5, RGB(st_work.n_grid_r[1][1], st_work.n_grid_g[1][1], st_work.n_grid_b[1][1]), RGB(st_work.n_text_r[1][1], st_work.n_text_g[1][1], st_work.n_text_b[1][1]));
+				//kwlee 2017.0406
+				m_p_grid.GridCellColor(Grid, i+4, 5, RGB(128,64,0), BLACK_C);
 				m_p_grid.GridCellFont(Grid, i+4, 5, "MS Sans Serif", 14);
 				m_p_grid.GridCellText(Grid, i+4, 5, "OFF");
 			}
@@ -779,13 +785,17 @@ void CScreen_IO_Map::OnInputCheck(int port, int slave)
 			bit = (m_nIo_Module[port][slave]*100)+i;
 			if(FAS_IO.n_in[bit] == IO_ON)
 			{
-				m_p_grid.GridCellColor(Grid, i+4, 5, RGB(st_work.n_grid_r[0][0], st_work.n_grid_g[0][0], st_work.n_grid_b[0][0]), RGB(st_work.n_text_r[0][0], st_work.n_text_g[0][0], st_work.n_text_b[0][0]));
+				//m_p_grid.GridCellColor(Grid, i+4, 5, RGB(st_work.n_grid_r[0][0], st_work.n_grid_g[0][0], st_work.n_grid_b[0][0]), RGB(st_work.n_text_r[0][0], st_work.n_text_g[0][0], st_work.n_text_b[0][0]));
+				//kwlee 2017.0406
+				m_p_grid.GridCellColor(Grid, i+4, 5, RGB(0,128,0), WHITE_C);
 				m_p_grid.GridCellFont(Grid, i+4, 5, "MS Sans Serif", 14);
 				m_p_grid.GridCellText(Grid, i+4, 5, "ON");
 			}
 			else
 			{
-				m_p_grid.GridCellColor(Grid, i+4, 5, RGB(st_work.n_grid_r[0][1], st_work.n_grid_g[0][1], st_work.n_grid_b[0][1]), RGB(st_work.n_text_r[0][1], st_work.n_text_g[0][1], st_work.n_text_b[0][1]));
+				//m_p_grid.GridCellColor(Grid, i+4, 5, RGB(st_work.n_grid_r[0][1], st_work.n_grid_g[0][1], st_work.n_grid_b[0][1]), RGB(st_work.n_text_r[0][1], st_work.n_text_g[0][1], st_work.n_text_b[0][1]));
+				//kwlee 2017.0406
+				m_p_grid.GridCellColor(Grid, i+4, 5, RGB(128,255,128), BLACK_L);
 				m_p_grid.GridCellFont(Grid, i+4, 5, "MS Sans Serif", 14);
 				m_p_grid.GridCellText(Grid, i+4, 5, "OFF");
 			}

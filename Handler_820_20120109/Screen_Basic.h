@@ -44,6 +44,18 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Basic)
 	enum { IDD = IDD_SCREEN_BASIC };
+	CXPGroupBox	m_group_Tray_Y;
+	CXPGroupBox	m_group_Tray_X;
+	CXPGroupBox	m_group_HsTray_Y;
+	CXPGroupBox	m_group_HsTrayX;
+	CXPGroupBox	m_group_DispenserVppmA;
+	CEXDigitST	m_dgt_Tray_Y;
+	CEXDigitST	m_dgt_Tray_X;
+	CEXDigitST	m_dgt_HsTray_Y;
+	CEXDigitST	m_dgt_HsTray_X;
+	CEXDigitST	m_dgt_DispenserVppmA;
+	CEXDigitST	m_dgt_EpoxyScrewCnt;
+	CXPGroupBox	m_group_EpoxyScrewCnt;
 	CXPGroupBox	m_group_Retry_Cnt;
 	CEXDigitST	m_dgt_Retry_Cnt;
 	CEXDigitST	m_dgt_Rubb;
@@ -119,6 +131,27 @@ public:
 	double			dHeatSinkCarrierSpreadMove1Offset[2];
 	double			dHeatSinkCarrierSpreadMove2Offset[2];
 	double			dHeatSinkCarrierSpreadMove3Offset[2];
+
+	//kwlee 2017.0406
+	double	m_dLoaderTransferTrayDeviceGap[2];
+	DWORD m_dSatbleTime[2];
+	double m_nEpoxyRunSpeed[2];
+	double m_nEpoxyXYRunSpeed[2][3];//[0]//vel [1]:acc [2] dec
+	
+	double m_dEpoxyXOffSet[2];
+	double m_dEpoxyYOffSet[2];
+	double m_nRubHSRunSpeed[2];
+	
+	double m_dTrayPitch_Y[2];			//트레이 피치간격 
+	double m_dTrayPitch_X[2];			//트레이 피치간격 	
+	
+	int m_nfDispenserVppmA[2];
+	int m_nEpoxyDotScrewCount[2];
+	int m_nHsTrayY[2];						// HeatSink tray Y 정보.......
+	int m_nHsTrayX[2];						// HeatSink tray X 정보.......
+	
+	int m_nTrayY[2];						// tray Y 정보.......
+	int m_nTrayX[2];	
 	
 
 	TSpread			*m_grid_operate;
@@ -210,6 +243,12 @@ protected:
 	afx_msg void OnDgtPickRetryCnt();
 	afx_msg void OnDgtPartialCnt();
 	afx_msg void OnDgtRetryCnt();
+	afx_msg void OnDgtEpoxyScrewCnt();
+	afx_msg void OnDgtHstrayY();
+	afx_msg void OnDgtHstrayX();
+	afx_msg void OnDgtTrayY();
+	afx_msg void OnDgtTrayX();
+	afx_msg void OnDgtDispenservppmA();
 	//}}AFX_MSG
 	afx_msg void OnCell_L_Click(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnCell_R_Click(WPARAM wParam, LPARAM lParam);

@@ -48,6 +48,18 @@ void CScreen_Basic::DoDataExchange(CDataExchange* pDX)
 {
 	CFormView::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CScreen_Basic)
+	DDX_Control(pDX, IDC_GROUP_TRAY_Y, m_group_Tray_Y);
+	DDX_Control(pDX, IDC_GROUP_TRAY_X, m_group_Tray_X);
+	DDX_Control(pDX, IDC_GROUP_HSTRAY_Y, m_group_HsTray_Y);
+	DDX_Control(pDX, IDC_GROUP_HSTRAY_X, m_group_HsTrayX);
+	DDX_Control(pDX, IDC_GROUP_DISPENSERVPPMA, m_group_DispenserVppmA);
+	DDX_Control(pDX, IDC_DGT_TRAY_Y, m_dgt_Tray_Y);
+	DDX_Control(pDX, IDC_DGT_TRAY_X, m_dgt_Tray_X);
+	DDX_Control(pDX, IDC_DGT_HSTRAY_Y, m_dgt_HsTray_Y);
+	DDX_Control(pDX, IDC_DGT_HSTRAY_X, m_dgt_HsTray_X);
+	DDX_Control(pDX, IDC_DGT_DISPENSERVPPMA, m_dgt_DispenserVppmA);
+	DDX_Control(pDX, IDC_DGT_EPOXY_SCREW_CNT, m_dgt_EpoxyScrewCnt);
+	DDX_Control(pDX, IDC_GROUP_EPOXY_SCREW_CNT, m_group_EpoxyScrewCnt);
 	DDX_Control(pDX, IDC_GROUP_RETRY_CNT, m_group_Retry_Cnt);
 	DDX_Control(pDX, IDC_DGT_RETRY_CNT, m_dgt_Retry_Cnt);
 	DDX_Control(pDX, IDC_DGT_RUBB, m_dgt_Rubb);
@@ -70,7 +82,6 @@ void CScreen_Basic::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_MSG_EPOXY_X, m_msg_Epoxy_X);
 	DDX_Control(pDX, IDC_MSG_DISTANCE, m_msg_Distance);
 	DDX_Control(pDX, IDC_GROUP_RUBB_CNT, m_group_Rubb_Cnt);
-	DDX_Control(pDX, IDC_GROUP_PICK_RETRY_CNT, m_group_Pick_Retry_Cnt);
 	DDX_Control(pDX, IDC_GROUP_PARTIAL_CNT, m_group_Patial_Cnt);
 	DDX_Control(pDX, IDC_GROUP_EPOXY_OFFSET, m_group_Epoxy_Offset);
 	DDX_Control(pDX, IDC_GROUP_ELV_PARTIAL_CNT, m_group_Elv_Partial_Cnt);
@@ -103,9 +114,15 @@ BEGIN_MESSAGE_MAP(CScreen_Basic, CFormView)
 	ON_BN_CLICKED(IDC_DGT_RUBB, OnDgtRubb)
 	ON_BN_CLICKED(IDC_DGT_7387_ALARM_CNT, OnDgt7387AlarmCnt)
 	ON_BN_CLICKED(IDC_DGT_ELV_PARTIAL_CNT, OnDgtElvPartialCnt)
-	ON_BN_CLICKED(IDC_DGT_PICK_RETRY_CNT, OnDgtPickRetryCnt)
+	//ON_BN_CLICKED(IDC_DGT_PICK_RETRY_CNT, OnDgtPickRetryCnt)
 	ON_BN_CLICKED(IDC_DGT_PARTIAL_CNT, OnDgtPartialCnt)
 	ON_BN_CLICKED(IDC_DGT_RETRY_CNT, OnDgtRetryCnt)
+	ON_BN_CLICKED(IDC_DGT_EPOXY_SCREW_CNT, OnDgtEpoxyScrewCnt)
+	ON_BN_CLICKED(IDC_DGT_HSTRAY_Y, OnDgtHstrayY)
+	ON_BN_CLICKED(IDC_DGT_HSTRAY_X, OnDgtHstrayX)
+	ON_BN_CLICKED(IDC_DGT_TRAY_Y, OnDgtTrayY)
+	ON_BN_CLICKED(IDC_DGT_TRAY_X, OnDgtTrayX)
+	ON_BN_CLICKED(IDC_DGT_DISPENSERVPPMA, OnDgtDispenservppmA)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(SSM_CLICK  , OnCell_L_Click)
 	ON_MESSAGE(SSM_RBUTTON  , OnCell_R_Click)
@@ -153,7 +170,6 @@ void CScreen_Basic::OnInitialUpdate()
 	Init_Grid_File();
 	Init_Grid_Operate();
 	Init_Grid_Operate_1();
-
 	OnBasic_Data_Display();
 	OnBasic_Init_List(st_path.mstr_path_Model);  // 파일 폴더 초기화 함수
 
@@ -185,6 +201,10 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 	CString			str_tmp;
 	int				n_response;
 	int             nCnt;
+	
+	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+//	char chr_buf[20] ;
+	double md_Temp;
 
 	nCnt = lpcc->Row;
 
@@ -378,64 +398,64 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			case 18:
 				if(m_nModeModule[1] == 0) return;
 				
-				m_p_grid.GridCellColor(m_grid_operate, 15, lpcc->Col, GREEN_C, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 16, lpcc->Col, GREEN_D, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 18, lpcc->Col, GREEN_C, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 19, lpcc->Col, GREEN_D, BLACK_C);
 				m_nModeModule[1] = 0;
 				break;
 				
 			case 19:
 				if(m_nModeModule[1] == 1) return;
 				
-				m_p_grid.GridCellColor(m_grid_operate, 15, lpcc->Col, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 16, lpcc->Col, GREEN_C, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 18, lpcc->Col, GREEN_D, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 19, lpcc->Col, GREEN_C, BLACK_C);
 				m_nModeModule[1] = 1;
 				break;
 
 			case 21:
 				if(m_nmode_7387[1] == 0) return;
 				
-				m_p_grid.GridCellColor(m_grid_operate, 15, lpcc->Col, GREEN_C, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 16, lpcc->Col, GREEN_D, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 21, lpcc->Col, GREEN_C, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 22, lpcc->Col, GREEN_D, BLACK_C);
 				m_nmode_7387[1] = 0;
 				break;
 				
 			case 22:
 				if(m_nmode_7387[1] == 1) return;
 				
-				m_p_grid.GridCellColor(m_grid_operate, 15, lpcc->Col, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 16, lpcc->Col, GREEN_C, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 21, lpcc->Col, GREEN_D, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 22, lpcc->Col, GREEN_C, BLACK_C);
 				m_nmode_7387[1] = 1;
 				break;
 
 			case 24:
 				if(m_nmode_tray_type[1] == 0) return;
 				
-				m_p_grid.GridCellColor(m_grid_operate, 15, lpcc->Col, GREEN_C, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 16, lpcc->Col, GREEN_D, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 24, lpcc->Col, GREEN_C, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 25, lpcc->Col, GREEN_D, BLACK_C);
 				m_nmode_tray_type[1] = 0;
 				break;
 				
 			case 25:
 				if(m_nmode_tray_type[1] == 1) return;
 				
-				m_p_grid.GridCellColor(m_grid_operate, 15, lpcc->Col, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 16, lpcc->Col, GREEN_C, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 24, lpcc->Col, GREEN_D, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 25, lpcc->Col, GREEN_C, BLACK_C);
 				m_nmode_tray_type[1] = 1;
 				break;
 
 			case 27:
 				if(m_n7387InspectAlarmSkipMode[1] == 0) return;
 				
-				m_p_grid.GridCellColor(m_grid_operate, 15, lpcc->Col, GREEN_C, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 16, lpcc->Col, GREEN_D, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 27, lpcc->Col, GREEN_C, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 28, lpcc->Col, GREEN_D, BLACK_C);
 				m_n7387InspectAlarmSkipMode[1] = 0;
 				break;
 				
 			case 28:
 				if(m_n7387InspectAlarmSkipMode[1] == 1) return;
 				
-				m_p_grid.GridCellColor(m_grid_operate, 15, lpcc->Col, GREEN_D, BLACK_C);
-				m_p_grid.GridCellColor(m_grid_operate, 16, lpcc->Col, GREEN_C, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 27, lpcc->Col, GREEN_D, BLACK_C);
+				m_p_grid.GridCellColor(m_grid_operate, 28, lpcc->Col, GREEN_C, BLACK_C);
 				m_n7387InspectAlarmSkipMode[1] = 1;
 				break;
 
@@ -507,7 +527,195 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			m_p_grid.GridCellColor(m_grid_operate, 9, lpcc->Col, GREEN_C, BLACK_C);
 			n_mode_case_assembly[1] = 1;
 			break;
+		//kwlee 2017.0406
+		case 11:
+			md_Temp = m_dLoaderTransferTrayDeviceGap[1];
+
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("%0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("DVC Gap");
 			
+			st_msg.mstr_keypad_val = mstr_temp;
+			
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_dLoaderTransferTrayDeviceGap[1] = atof(mstr_temp);
+			//int iTemp = atoi(mstr_temp);
+			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+			mstr_temp.Format("%0.2f",m_dLoaderTransferTrayDeviceGap[1]);
+			m_p_grid.GridCellText(m_grid_operate, 11, 1, mstr_temp);
+			break;
+
+		case 13:
+			md_Temp = m_dSatbleTime[1];
+			
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("%0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("Satble Time");
+			
+			st_msg.mstr_keypad_val = mstr_temp;
+			
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_dSatbleTime[1] = atof(mstr_temp);
+			//int iTemp = atoi(mstr_temp);
+			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+			mstr_temp.Format("%0.2f",m_dSatbleTime[1]);
+			m_p_grid.GridCellText(m_grid_operate, 13, 1, mstr_temp);
+			break;
+		
+		case 15:
+			md_Temp = m_nEpoxyRunSpeed[1];
+			
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("%0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed");
+			
+			st_msg.mstr_keypad_val = mstr_temp;
+			
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_nEpoxyRunSpeed[1] = atof(mstr_temp);
+			//int iTemp = atoi(mstr_temp);
+			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+			mstr_temp.Format("%0.2f",m_nEpoxyRunSpeed[1]);
+			m_p_grid.GridCellText(m_grid_operate, 15, 1, mstr_temp);
+			break;
+
+			////
+		case 17:
+			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_VEL];
+			
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("Vel  :  %0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Vel");
+			
+			st_msg.mstr_keypad_val = mstr_temp;
+			
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_nEpoxyXYRunSpeed[1][EPOXY_VEL] = atof(mstr_temp);
+			//int iTemp = atoi(mstr_temp);
+			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+			mstr_temp.Format("%0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
+			m_p_grid.GridCellText(m_grid_operate, 17, 1, mstr_temp);
+			break;
+
+		case 18:
+			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_ACC];
+			
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("Acc  :  %0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Acc");
+			
+			st_msg.mstr_keypad_val = mstr_temp;
+			
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_nEpoxyXYRunSpeed[1][EPOXY_ACC] = atof(mstr_temp);
+			//int iTemp = atoi(mstr_temp);
+			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+			mstr_temp.Format("%0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
+			m_p_grid.GridCellText(m_grid_operate, 18, 1, mstr_temp);
+			break;
+
+		case 19:
+			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_DEC];
+			
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("Dec  :  %0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Dec");
+			
+			st_msg.mstr_keypad_val = mstr_temp;
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_nEpoxyXYRunSpeed[1][EPOXY_DEC] = atof(mstr_temp);
+			mstr_temp.Format("%0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
+			m_p_grid.GridCellText(m_grid_operate, 19, 1, mstr_temp);
+			break;
+
+			//////
+		case 21:
+			md_Temp = m_dEpoxyXOffSet[1];
+			
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("%0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("Epoxy X Offset");
+			
+			st_msg.mstr_keypad_val = mstr_temp;
+			
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_dEpoxyXOffSet[1] = atof(mstr_temp);
+			//int iTemp = atoi(mstr_temp);
+			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+			mstr_temp.Format("%0.2f",m_dEpoxyXOffSet[1]);
+			m_p_grid.GridCellText(m_grid_operate, 21, 1, mstr_temp);
+			break;
+
+		case 23:
+			md_Temp = m_dEpoxyYOffSet[1];
+			
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("%0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("Epoxy Y Offset");
+			
+			st_msg.mstr_keypad_val = mstr_temp;
+			
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_dEpoxyYOffSet[1] = atof(mstr_temp);
+			//int iTemp = atoi(mstr_temp);
+			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+			mstr_temp.Format("%0.2f",m_dEpoxyYOffSet[1]);
+			m_p_grid.GridCellText(m_grid_operate, 23, 1, mstr_temp);
+			break;
+
+		case 25:
+			md_Temp = m_nRubHSRunSpeed[1];
+			
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("%0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("Rub Hs RunSpeed");
+			
+			st_msg.mstr_keypad_val = mstr_temp;
+			
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_nRubHSRunSpeed[1] = atof(mstr_temp);
+			//int iTemp = atoi(mstr_temp);
+			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+			mstr_temp.Format("%0.2f",m_nRubHSRunSpeed[1]);
+			m_p_grid.GridCellText(m_grid_operate, 25, 1, mstr_temp);
+			break;
+
+			////
+		case 27:
+			md_Temp = m_dTrayPitch_Y[1];
+			
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("Pitch_Y : %0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("Pitch_Y");
+			
+			st_msg.mstr_keypad_val = mstr_temp;
+			
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_dTrayPitch_Y[1] = atof(mstr_temp);
+			//int iTemp = atoi(mstr_temp);
+			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+			mstr_temp.Format("%0.2f",m_dTrayPitch_Y[1]);
+			m_p_grid.GridCellText(m_grid_operate, 27, 1, mstr_temp);
+			break;
+
+
+		case 28:
+			md_Temp = m_dTrayPitch_X[1];
+			
+			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+			mstr_temp.Format("Pitch_X : %0.2f",md_Temp);
+			st_msg.mstr_keypad_msg = _T("Pitch_Y");
+			
+			st_msg.mstr_keypad_val = mstr_temp;
+			
+			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+			m_dTrayPitch_X[1] = atof(mstr_temp);
+			//int iTemp = atoi(mstr_temp);
+			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+			mstr_temp.Format("%0.2f",m_dTrayPitch_X[1]);
+			m_p_grid.GridCellText(m_grid_operate, 28, 1, mstr_temp);
+			break;
+			//////
 		}
 	}
 }
@@ -609,9 +817,9 @@ void CScreen_Basic::OnBasic_Data_Group()
 	m_group_Rubb_Cnt.SetCatptionTextColor(RGB(145,25,0));
 	m_group_Rubb_Cnt.SetFontBold(TRUE);
 	
-	m_group_Pick_Retry_Cnt.SetFont(main_font);
-	m_group_Pick_Retry_Cnt.SetCatptionTextColor(RGB(145,25,0));
-	m_group_Pick_Retry_Cnt.SetFontBold(TRUE);
+// 	m_group_Pick_Retry_Cnt.SetFont(main_font);
+// 	m_group_Pick_Retry_Cnt.SetCatptionTextColor(RGB(145,25,0));
+// 	m_group_Pick_Retry_Cnt.SetFontBold(TRUE);
 	
 	m_group_Patial_Cnt.SetFont(main_font);
 	m_group_Patial_Cnt.SetCatptionTextColor(RGB(145,25,0));
@@ -636,6 +844,34 @@ void CScreen_Basic::OnBasic_Data_Group()
 	m_group_Retry_Cnt.SetFont(main_font);
 	m_group_Retry_Cnt.SetCatptionTextColor(RGB(145,25,0));
 	m_group_Retry_Cnt.SetFontBold(TRUE);
+
+	m_group_EpoxyScrewCnt.SetFont(main_font);
+	m_group_EpoxyScrewCnt.SetCatptionTextColor(RGB(145,25,0));
+	m_group_EpoxyScrewCnt.SetFontBold(TRUE);
+
+	//kwlee 2017.0406
+	m_group_HsTray_Y.SetFont(main_font);
+	m_group_HsTray_Y.SetCatptionTextColor(RGB(145,25,0));
+	m_group_HsTray_Y.SetFontBold(TRUE);
+	
+	m_group_HsTrayX.SetFont(main_font);
+	m_group_HsTrayX.SetCatptionTextColor(RGB(145,25,0));
+	m_group_HsTrayX.SetFontBold(TRUE);
+	
+	m_group_Tray_X.SetFont(main_font);
+	m_group_Tray_X.SetCatptionTextColor(RGB(145,25,0));
+	m_group_Tray_X.SetFontBold(TRUE);
+	
+	m_group_Tray_Y.SetFont(main_font);
+	m_group_Tray_Y.SetCatptionTextColor(RGB(145,25,0));
+	m_group_Tray_Y.SetFontBold(TRUE);
+	
+	m_group_DispenserVppmA.SetFont(main_font);
+	m_group_DispenserVppmA.SetCatptionTextColor(RGB(145,25,0));
+	m_group_DispenserVppmA.SetFontBold(TRUE);
+	
+
+
 }
 
 
@@ -659,50 +895,50 @@ void CScreen_Basic::OnBasic_Digital()
 	m_dgt_Rubb.SetStyle(IDB_BIG3, 2);
 	m_dgt_Rubb.SetValue(strTmp);
 	
-	strTmp.Format("%d",m_nCountPickRetry[1]);
-	m_dgt_Pick_Retry_Cnt.SubclassDlgItem(IDC_DGT_PICK_RETRY_CNT, this);
-	m_dgt_Pick_Retry_Cnt.SetStyle(IDB_BIG3, 2);
-	m_dgt_Pick_Retry_Cnt.SetValue(strTmp);
+// 	strTmp.Format("%d",m_nCountPickRetry[1]);
+// 	m_dgt_Pick_Retry_Cnt.SubclassDlgItem(IDC_DGT_PICK_RETRY_CNT, this);
+// 	m_dgt_Pick_Retry_Cnt.SetStyle(IDB_BIG3, 2);
+// 	m_dgt_Pick_Retry_Cnt.SetValue(strTmp);
 	
 	strTmp.Format("%d",m_nCountPartial[1]);
 	m_dgt_Partial_Cnt.SubclassDlgItem(IDC_DGT_PARTIAL_CNT, this);
 	m_dgt_Partial_Cnt.SetStyle(IDB_BIG3, 2);
 	m_dgt_Partial_Cnt.SetValue(strTmp);
 	
-	strTmp.Format("%3.2f",dHSCarrierSpreadMoveDistance[1]);
+	strTmp.Format("%0.2f",dHSCarrierSpreadMoveDistance[1]);
 	m_dgt_Offset_Dis.SubclassDlgItem(IDC_DGT_OFFSET_DIS, this);
-	m_dgt_Offset_Dis.SetStyle(IDB_BIG3, 5);
+	m_dgt_Offset_Dis.SetStyle(IDB_BIG3, 6);
 	m_dgt_Offset_Dis.SetValue(strTmp);
 
 
-	strTmp.Format("%3.2f",dHeatSinkCarrierSpreadMove3Offset[1]);
+	strTmp.Format("%0.2f",dHeatSinkCarrierSpreadMove3Offset[1]);
 	m_dgt_Offset_30.SubclassDlgItem(IDC_DGT_OFFSET_30, this);
-	m_dgt_Offset_30.SetStyle(IDB_BIG3, 5);
+	m_dgt_Offset_30.SetStyle(IDB_BIG3, 6);
 	m_dgt_Offset_30.SetValue(strTmp);
 	
-	strTmp.Format("%3.2f",dHeatSinkCarrierSpreadMove2Offset[1]);
+	strTmp.Format("%0.2f",dHeatSinkCarrierSpreadMove2Offset[1]);
 	m_dgt_Offset_20.SubclassDlgItem(IDC_DGT_OFFSET_20, this);
-	m_dgt_Offset_20.SetStyle(IDB_BIG3, 5);
+	m_dgt_Offset_20.SetStyle(IDB_BIG3, 6);
 	m_dgt_Offset_20.SetValue(strTmp);
 	
-	strTmp.Format("%3.2f",dHeatSinkCarrierSpreadMove1Offset[1]);
+	strTmp.Format("%0.2f",dHeatSinkCarrierSpreadMove1Offset[1]);
 	m_dgt_Offset_10.SubclassDlgItem(IDC_DGT_OFFSET_10, this);
-	m_dgt_Offset_10.SetStyle(IDB_BIG3, 5);
+	m_dgt_Offset_10.SetStyle(IDB_BIG3, 6);
 	m_dgt_Offset_10.SetValue(strTmp);
 	
-	strTmp.Format("%3.2f",dHSCarrierSpreadMoveOffset[1]);
+	strTmp.Format("%0.2f",dHSCarrierSpreadMoveOffset[1]);
 	m_dgt_Offset.SubclassDlgItem(IDC_DGT_OFFSET, this);
-	m_dgt_Offset.SetStyle(IDB_BIG3, 5);
+	m_dgt_Offset.SetStyle(IDB_BIG3, 6);
 	m_dgt_Offset.SetValue(strTmp);
 	
-	strTmp.Format("%3.2f",dEpoxyYLineOffSet[1]);
+	strTmp.Format("%0.2f",dEpoxyYLineOffSet[1]);
 	m_dgt_Epoxy_Y.SubclassDlgItem(IDC_DGT_EPOXY_Y, this);
-	m_dgt_Epoxy_Y.SetStyle(IDB_BIG3, 5);
+	m_dgt_Epoxy_Y.SetStyle(IDB_BIG3, 6);
 	m_dgt_Epoxy_Y.SetValue(strTmp);
 	
-	strTmp.Format("%3.2f",dEpoxyXLineOffSet[1]);
+	strTmp.Format("%0.2f",dEpoxyXLineOffSet[1]);
 	m_dgt_Epoxy_X.SubclassDlgItem(IDC_DGT_EPOXY_X, this);
-	m_dgt_Epoxy_X.SetStyle(IDB_BIG3, 5);
+	m_dgt_Epoxy_X.SetStyle(IDB_BIG3, 6);
 	m_dgt_Epoxy_X.SetValue(strTmp);
 	
 	strTmp.Format("%d",m_nCount_elevator_Partial[1]);
@@ -719,6 +955,37 @@ void CScreen_Basic::OnBasic_Digital()
 	m_dgt_Retry_Cnt.SubclassDlgItem(IDC_DGT_RETRY_CNT, this);
 	m_dgt_Retry_Cnt.SetStyle(IDB_BIG3, 2);
 	m_dgt_Retry_Cnt.SetValue(strTmp);
+	
+	strTmp.Format("%d",m_nEpoxyDotScrewCount[1]);
+	m_dgt_EpoxyScrewCnt.SubclassDlgItem(IDC_DGT_EPOXY_SCREW_CNT, this);
+	m_dgt_EpoxyScrewCnt.SetStyle(IDB_BIG3, 2);
+	m_dgt_EpoxyScrewCnt.SetValue(strTmp);
+	
+	//kwlee 2017.0406
+	strTmp.Format("%d",m_nHsTrayY[1]);
+	m_dgt_HsTray_Y.SubclassDlgItem(IDC_DGT_HSTRAY_Y, this);
+	m_dgt_HsTray_Y.SetStyle(IDB_BIG3, 2);
+	m_dgt_HsTray_Y.SetValue(strTmp);
+	
+	strTmp.Format("%d",m_nHsTrayX[1]);
+	m_dgt_HsTray_X.SubclassDlgItem(IDC_DGT_HSTRAY_X, this);
+	m_dgt_HsTray_X.SetStyle(IDB_BIG3, 2);
+	m_dgt_HsTray_X.SetValue(strTmp);
+	
+	strTmp.Format("%d",m_nTrayX[1]);
+	m_dgt_Tray_X.SubclassDlgItem(IDC_DGT_TRAY_X, this);
+	m_dgt_Tray_X.SetStyle(IDB_BIG3, 2);
+	m_dgt_Tray_X.SetValue(strTmp);
+	
+	strTmp.Format("%d",m_nTrayY[1]);
+	m_dgt_Tray_Y.SubclassDlgItem(IDC_DGT_TRAY_Y, this);
+	m_dgt_Tray_Y.SetStyle(IDB_BIG3, 2);
+	m_dgt_Tray_Y.SetValue(strTmp);
+
+	strTmp.Format("%d",m_nfDispenserVppmA[1]);
+	m_dgt_DispenserVppmA.SubclassDlgItem(IDC_DGT_DISPENSERVPPMA, this);
+	m_dgt_DispenserVppmA.SetStyle(IDB_BIG3, 2);
+	m_dgt_DispenserVppmA.SetValue(strTmp);
 
 
 
@@ -758,6 +1025,25 @@ void CScreen_Basic::OnBasic_Data_Set()
 	dHeatSinkCarrierSpreadMove2Offset[1]			= 	st_basic.dHeatSinkCarrierSpreadMove2Offset;	
 	dHeatSinkCarrierSpreadMove3Offset[1]			= 	st_basic.dHeatSinkCarrierSpreadMove3Offset;	
 	m_n_count_retry[1]								= 	st_basic.n_count_retry;
+
+	//kwlee 2017.0406
+	m_dLoaderTransferTrayDeviceGap[1]             =  st_recipe.dLoaderTransferTrayDeviceGap;
+	m_dSatbleTime[1]							  =  st_recipe.dSatbleTime;
+	m_nEpoxyRunSpeed[1]							  =  st_recipe.nEpoxyRunSpeed;
+	m_nEpoxyXYRunSpeed[1][EPOXY_VEL]               =  st_recipe.nEpoxyXYRunSpeed[EPOXY_VEL];
+	m_nEpoxyXYRunSpeed[1][EPOXY_ACC]               =  st_recipe.nEpoxyXYRunSpeed[EPOXY_ACC];
+	m_nEpoxyXYRunSpeed[1][EPOXY_DEC]               =  st_recipe.nEpoxyXYRunSpeed[EPOXY_DEC];
+	m_dEpoxyXOffSet[1]                            =  st_recipe.dEpoxyXOffSet;
+	m_dEpoxyYOffSet[1]                            =  st_recipe.dEpoxyYOffSet;
+	m_nRubHSRunSpeed[1]                           = st_recipe.nRubHSRunSpeed;
+	m_dTrayPitch_Y[1]			                  = st_recipe.dTrayPitch_Y;
+	m_dTrayPitch_X[1]			                  = st_recipe.dTrayPitch_X;
+	m_nfDispenserVppmA[1]                         = st_recipe.fDispenserVppmA;
+	m_nEpoxyDotScrewCount[1]                      = st_recipe.nEpoxyDotScrewCount; 
+	m_nHsTrayY[1]						          = st_recipe.nHsTrayY;
+	m_nHsTrayX[1]						          = st_recipe.nHsTrayX;
+	m_nTrayY[1]						              = st_recipe.nTrayY;
+    m_nTrayX[1]                                   = st_recipe.nTrayX;
 
 	OnBasic_Data_Backup();
 	
@@ -878,6 +1164,24 @@ void CScreen_Basic::OnBasic_Data_Backup()
 	dHeatSinkCarrierSpreadMove3Offset[0]	= dHeatSinkCarrierSpreadMove3Offset[1];
 	m_n_count_retry[0]						= m_n_count_retry[1];
 
+	//kwlee 2017.0406
+	m_dLoaderTransferTrayDeviceGap[0]  = m_dLoaderTransferTrayDeviceGap[1];  
+	m_dSatbleTime[0]				   = m_dSatbleTime[1];					
+	m_nEpoxyRunSpeed[0]				   = m_nEpoxyRunSpeed[1];					
+	m_nEpoxyXYRunSpeed[0][EPOXY_VEL]   = m_nEpoxyXYRunSpeed[1][EPOXY_VEL];
+	m_nEpoxyXYRunSpeed[0][EPOXY_ACC]   = m_nEpoxyXYRunSpeed[1][EPOXY_ACC];
+	m_nEpoxyXYRunSpeed[0][EPOXY_DEC]   = m_nEpoxyXYRunSpeed[1][EPOXY_DEC];
+	m_dEpoxyXOffSet[0]                 = m_dEpoxyXOffSet[1];                 
+	m_dEpoxyYOffSet[0]                 = m_dEpoxyYOffSet[1];                 
+	m_nRubHSRunSpeed[0]                = m_nRubHSRunSpeed[1];                
+	m_dTrayPitch_Y[0]			       = m_dTrayPitch_Y[1];			       
+	m_dTrayPitch_X[0]			       = m_dTrayPitch_X[1];			       
+	m_nfDispenserVppmA[0]              =  m_nfDispenserVppmA[1];              
+	m_nEpoxyDotScrewCount[0]           =  m_nEpoxyDotScrewCount[1];           
+	m_nHsTrayY[0]						= m_nHsTrayY[1];						
+	m_nHsTrayX[0]						= m_nHsTrayX[1];						
+	m_nTrayY[0]						   =  m_nTrayY[1];						   
+	m_nTrayX[0]                        =  m_nTrayX[1];  
 }
 
 void CScreen_Basic::OnBasic_Data_Apply()
@@ -919,7 +1223,28 @@ void CScreen_Basic::OnBasic_Data_Apply()
 	st_basic.dHeatSinkCarrierSpreadMove3Offset	= dHeatSinkCarrierSpreadMove3Offset[1];
 	st_basic.n_count_retry						= m_n_count_retry[1];
 
-									
+	//kwlee 2017.0406
+	st_recipe.dLoaderTransferTrayDeviceGap   = m_dLoaderTransferTrayDeviceGap[1];
+	st_recipe.dSatbleTime                    = m_dSatbleTime[1];
+	st_recipe.nEpoxyRunSpeed                 = m_nEpoxyRunSpeed[1];             
+	st_recipe.nEpoxyXYRunSpeed[EPOXY_VEL]    = m_nEpoxyXYRunSpeed[1][EPOXY_VEL];           ;//[0]//vel [1]:acc [2] dec
+	st_recipe.nEpoxyXYRunSpeed[EPOXY_ACC]    = m_nEpoxyXYRunSpeed[1][EPOXY_ACC];
+	st_recipe.nEpoxyXYRunSpeed[EPOXY_DEC]    = m_nEpoxyXYRunSpeed[1][EPOXY_DEC];
+	
+	st_recipe.dEpoxyXOffSet                  = m_dEpoxyXOffSet[1];
+	st_recipe.dEpoxyYOffSet                  = m_dEpoxyYOffSet[1];
+	st_recipe.nRubHSRunSpeed                 = m_nRubHSRunSpeed[1];
+	
+	st_recipe.dTrayPitch_Y                   = m_dTrayPitch_Y[1];			//트레이 피치간격 
+	st_recipe.dTrayPitch_X                   = m_dTrayPitch_X[1];			//트레이 피치간격 	
+	
+	st_recipe.fDispenserVppmA                = m_nfDispenserVppmA[1];
+	st_recipe.nEpoxyDotScrewCount            = m_nEpoxyDotScrewCount[1];
+	st_recipe.nHsTrayY                       = m_nHsTrayY[1];						// HeatSink tray Y 정보.......
+	st_recipe.nHsTrayX                       = m_nHsTrayX[1];						// HeatSink tray X 정보.......
+	
+	st_recipe.nTrayY                         = m_nTrayY[1];						// tray Y 정보.......
+	st_recipe.nTrayX						 = m_nTrayX[1];	
 }
 
 int CScreen_Basic::Data_Comparison()
@@ -956,6 +1281,25 @@ int CScreen_Basic::Data_Comparison()
 	if(dHeatSinkCarrierSpreadMove2Offset[0]		!= dHeatSinkCarrierSpreadMove2Offset[1])			return RET_ERROR;
 	if(dHeatSinkCarrierSpreadMove3Offset[0]		!= dHeatSinkCarrierSpreadMove3Offset[1])			return RET_ERROR;
 	
+	//kwlee 2017.0406
+	if(m_dLoaderTransferTrayDeviceGap[0]	!= m_dLoaderTransferTrayDeviceGap[1])   return RET_ERROR;
+	if(m_dSatbleTime[0]						!= m_dSatbleTime[1])					return RET_ERROR;
+	if(m_nEpoxyRunSpeed[0]					!= m_nEpoxyRunSpeed[1])					return RET_ERROR;
+	if(m_nEpoxyXYRunSpeed[0][EPOXY_VEL]		!= m_nEpoxyXYRunSpeed[1][EPOXY_VEL])	return RET_ERROR;
+	if(m_nEpoxyXYRunSpeed[0][EPOXY_ACC]		!= m_nEpoxyXYRunSpeed[1][EPOXY_ACC])	return RET_ERROR;
+	if(m_nEpoxyXYRunSpeed[0][EPOXY_DEC]		!= m_nEpoxyXYRunSpeed[1][EPOXY_DEC])	return RET_ERROR;
+	if(m_dEpoxyXOffSet[0]					!= m_dEpoxyXOffSet[1])					return RET_ERROR;
+	if(m_dEpoxyYOffSet[0]					!= m_dEpoxyYOffSet[1])					return RET_ERROR;
+	if(m_nRubHSRunSpeed[0]					!= m_nRubHSRunSpeed[1])					return RET_ERROR;
+	
+	if(m_dTrayPitch_Y[0]					!= m_dTrayPitch_Y[1])					return RET_ERROR;
+	if(m_dTrayPitch_X[0]					!= m_dTrayPitch_X[1])					return RET_ERROR;
+	if(m_nfDispenserVppmA[0]				!= m_nfDispenserVppmA[1])				return RET_ERROR;
+	if(m_nEpoxyDotScrewCount[0]				!= m_nEpoxyDotScrewCount[1])			return RET_ERROR;
+	if(m_nHsTrayY[0]						!= m_nHsTrayY[1])						return RET_ERROR;
+	if(m_nHsTrayX[0]						!= m_nHsTrayX[1])						return RET_ERROR;
+	if(m_nTrayY[0]							!= m_nTrayY[1])							return RET_ERROR;
+	if(m_nTrayX[0]							!= m_nTrayX[1])							return RET_ERROR;
 
 	return Ret;
 }
@@ -992,6 +1336,25 @@ void CScreen_Basic::Data_Recovery()
 	dHeatSinkCarrierSpreadMove2Offset[1]	= dHeatSinkCarrierSpreadMove2Offset[0];
 	dHeatSinkCarrierSpreadMove3Offset[1]	= dHeatSinkCarrierSpreadMove3Offset[0];
 	m_n_count_retry[1]						= m_n_count_retry[0];
+
+	//kwlee 2017.0406
+	m_dLoaderTransferTrayDeviceGap[1]   =   m_dLoaderTransferTrayDeviceGap[0];
+	m_dSatbleTime[1]				    =	 m_dSatbleTime[0];
+	m_nEpoxyRunSpeed[1]			 	    =	 m_nEpoxyRunSpeed[0];	
+	m_nEpoxyXYRunSpeed[1][EPOXY_VEL]    =   m_nEpoxyXYRunSpeed[0][EPOXY_VEL];
+	m_nEpoxyXYRunSpeed[1][EPOXY_ACC]    =   m_nEpoxyXYRunSpeed[0][EPOXY_ACC];
+	m_nEpoxyXYRunSpeed[1][EPOXY_DEC]    =   m_nEpoxyXYRunSpeed[0][EPOXY_DEC];
+	m_dEpoxyXOffSet[1]                  =   m_dEpoxyXOffSet[0];
+	m_dEpoxyYOffSet[1]                  =   m_dEpoxyYOffSet[0];
+	m_nRubHSRunSpeed[1]                 =   m_nRubHSRunSpeed[0];
+	m_dTrayPitch_Y[1]			        =  	 m_dTrayPitch_Y[0];   
+	m_dTrayPitch_X[1]			        =  	 m_dTrayPitch_X[0];   
+	m_nfDispenserVppmA[1]               =    m_nfDispenserVppmA[0];
+	m_nEpoxyDotScrewCount[1]            =    m_nEpoxyDotScrewCount[0];
+	m_nHsTrayY[1]				 	    =	 m_nHsTrayY[0];
+	m_nHsTrayX[1]					    =	 m_nHsTrayX[0];
+	m_nTrayY[1]					        =	 m_nTrayY[0];   
+    m_nTrayX[1]                         =    m_nTrayX[0];  
 }
 
 BOOL CScreen_Basic::DestroyWindow() 
@@ -1385,6 +1748,109 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	if(m_n_count_retry[0] != m_n_count_retry[1])
 	{
 		str_msg.Format( "[BASIC] Retry Count Change %d -> %d", m_n_count_retry[0], m_n_count_retry[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	//kwlee 2017.0406
+	if(m_dLoaderTransferTrayDeviceGap[0]	!=  m_dLoaderTransferTrayDeviceGap[1])
+	{
+		str_msg.Format( "[RECIPE] LoaderTransferTrayDeviceGap Change %s -> %s", m_dLoaderTransferTrayDeviceGap[0], m_dLoaderTransferTrayDeviceGap[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_dSatbleTime[0]	!=  m_dSatbleTime[1])
+	{
+		str_msg.Format( "[RECIPE] SatbleTime Change %s -> %s", m_dSatbleTime[0], m_dSatbleTime[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_nEpoxyRunSpeed[0]	!=  m_nEpoxyRunSpeed[1])
+	{
+		str_msg.Format( "[RECIPE] EpoxyRunSpeed Change %s -> %s", m_nEpoxyRunSpeed[0], m_nEpoxyRunSpeed[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_nEpoxyXYRunSpeed[0][EPOXY_VEL]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_VEL])
+	{
+		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_vel Change %s -> %s", m_nEpoxyXYRunSpeed[0][EPOXY_VEL], m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+
+	if(m_nEpoxyXYRunSpeed[0][EPOXY_ACC]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_ACC])
+	{
+		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_Acc Change %s -> %s", m_nEpoxyXYRunSpeed[0][EPOXY_ACC], m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_nEpoxyXYRunSpeed[0][EPOXY_DEC]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_DEC])
+	{
+		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_Dec Change %s -> %s", m_nEpoxyXYRunSpeed[0][EPOXY_DEC], m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_dEpoxyXOffSet[0]	!=  m_dEpoxyXOffSet[1])
+	{
+		str_msg.Format( "[RECIPE] EpoxyXOffSet Change %s -> %s", m_dEpoxyXOffSet[0], m_dEpoxyXOffSet[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_dEpoxyYOffSet[0]	!=  m_dEpoxyYOffSet[1])
+	{
+		str_msg.Format( "[RECIPE] EpoxyYOffSet Change %s -> %s", m_dEpoxyYOffSet[0], m_dEpoxyYOffSet[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_nRubHSRunSpeed[0]	!=  m_nRubHSRunSpeed[1])
+	{
+		str_msg.Format( "[RECIPE] RubHSRunSpeed Change %s -> %s", m_nRubHSRunSpeed[0], m_nRubHSRunSpeed[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+
+	if(m_dTrayPitch_Y[0]	!=  m_dTrayPitch_Y[1])
+	{
+		str_msg.Format( "[RECIPE] TrayPitch_YLoaderTransferTrayDeviceGap Change %s -> %s", m_dTrayPitch_Y[0], m_dTrayPitch_Y[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_dTrayPitch_X[0]	!=  m_dTrayPitch_X[1])
+	{
+		str_msg.Format( "[RECIPE] TrayPitch_X Change %s -> %s", m_dTrayPitch_X[0], m_dTrayPitch_X[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_nfDispenserVppmA[0]	!=  m_nfDispenserVppmA[1])
+	{
+		str_msg.Format( "[RECIPE] fDispenserVppmA Change %s -> %s", m_nfDispenserVppmA[0], m_nfDispenserVppmA[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_nEpoxyDotScrewCount[0]	!=  m_nEpoxyDotScrewCount[1])
+	{
+		str_msg.Format( "[RECIPE] EpoxyDotScrewCount Change %s -> %s", m_nEpoxyDotScrewCount[0], m_nEpoxyDotScrewCount[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+
+	if(m_nHsTrayY[0]	!=  m_nHsTrayY[1])
+	{
+		str_msg.Format( "[RECIPE] HsTrayY Change %s -> %s", m_nHsTrayY[0], m_nHsTrayY[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_nHsTrayX[0]	!=  m_nHsTrayX[1])
+	{
+		str_msg.Format( "[RECIPE] HsTrayX Change %s -> %s", m_nHsTrayX[0], m_nHsTrayX[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_nTrayY[0]	!=  m_nTrayY[1])
+	{
+		str_msg.Format( "[RECIPE] TrayY Change %s -> %s", m_nTrayY[0], m_nTrayY[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	
+	if(m_nTrayX[0]	!=  m_nTrayX[1])
+	{
+		str_msg.Format( "[RECIPE] TrayX Change %s -> %s", m_nTrayX[0], m_nTrayX[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 }
@@ -2100,19 +2566,108 @@ void CScreen_Basic::Init_Grid_Operate_1()
 	//kwlee 2017.0404
 	m_p_grid.GridCellFont(m_grid_operate, 10, 1, "MS Sans Serif", 18);
 	m_p_grid.GridCellColor(m_grid_operate, 10, 1, BLACK_L, YELLOW_C);
-	//m_p_grid.GridCellText(m_grid_operate, 10, 1, "Test 방법");
+	m_p_grid.GridCellText(m_grid_operate, 10, 1, "DVC Gap");
 	
-//	m_p_grid.GridCellFont(m_grid_operate, 11, 1, "MS Sans Serif", 12);
-//	m_p_grid.GridCellText(m_grid_operate, 11, 1, "Test Mode Off");
+	str_tmp.Format("%0.2f",m_dLoaderTransferTrayDeviceGap[1]);
+	m_p_grid.GridCellColor(m_grid_operate, 11, 1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 11, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 11, 1, str_tmp);
 	
-//	m_p_grid.GridCellFont(m_grid_operate, 12, 1, "MS Sans Serif", 12);
-//	m_p_grid.GridCellText(m_grid_operate, 12, 1, "Test Mode On");
 	
+	m_p_grid.GridCellFont(m_grid_operate, 12, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 12, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 12, 1, "SatbleTime");
+	
+	str_tmp.Format("%0.2f",m_dSatbleTime[1]);
+	m_p_grid.GridCellColor(m_grid_operate, 13, 1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 13, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 13, 1, str_tmp);
+
+	
+	m_p_grid.GridCellFont(m_grid_operate, 14, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 14, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 14, 1, "EpoxyRunSpeed");
+	
+	str_tmp.Format("%0.2f",m_nEpoxyRunSpeed[1]);
+	m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 15, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 15, 1, str_tmp);
+	
+
+	m_p_grid.GridCellFont(m_grid_operate, 16, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 16, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 16, 1, "EpoxyRunSpeed");
+	
+	str_tmp.Format("Vel  :   %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
+	m_p_grid.GridCellColor(m_grid_operate, 17, 1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 17, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 17, 1, str_tmp);
+	
+
+// 	m_p_grid.GridCellFont(m_grid_operate, 18, 1, "MS Sans Serif", 18);
+// 	m_p_grid.GridCellColor(m_grid_operate, 18, 1, BLACK_L, YELLOW_C);
+// 	m_p_grid.GridCellText(m_grid_operate, 18, 1, "EpoxyRunSpeed_Acc");
+	
+	str_tmp.Format("Acc  :   %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
+	m_p_grid.GridCellColor(m_grid_operate, 18,1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 18 ,1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 18 ,1, str_tmp);
+
+// 	m_p_grid.GridCellFont(m_grid_operate, 20, 1, "MS Sans Serif", 18);
+// 	m_p_grid.GridCellColor(m_grid_operate, 20, 1, BLACK_L, YELLOW_C);
+// 	m_p_grid.GridCellText(m_grid_operate, 20 ,1, "EpoxyRunSpeed_Dec");
+	
+	str_tmp.Format("Dec   :   %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
+	m_p_grid.GridCellColor(m_grid_operate, 19,1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 19,1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 19,1, str_tmp);
+
+
+	m_p_grid.GridCellFont(m_grid_operate, 20, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 20, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 20, 1, "EpoxyXOffSet");
+	
+	str_tmp.Format("%0.2f",m_dEpoxyXOffSet[1]);
+	m_p_grid.GridCellColor(m_grid_operate, 21, 1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 21, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 21, 1, str_tmp);
+
+	m_p_grid.GridCellFont(m_grid_operate, 22, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 22, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 22, 1, "EpoxyYOffSet");
+	
+	str_tmp.Format("%0.2f",m_dEpoxyYOffSet[1]);
+	m_p_grid.GridCellColor(m_grid_operate, 23, 1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 23, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 23, 1, str_tmp);
+
+	m_p_grid.GridCellFont(m_grid_operate, 24, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 24, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 24, 1, "RubHSRunSpeed");
+	
+	str_tmp.Format("%0.2f",m_nRubHSRunSpeed[1]);
+	m_p_grid.GridCellColor(m_grid_operate, 25, 1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 25, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 25, 1, str_tmp);
+
+	m_p_grid.GridCellFont(m_grid_operate, 26, 1, "MS Sans Serif", 18);
+	m_p_grid.GridCellColor(m_grid_operate, 26, 1, BLACK_L, YELLOW_C);
+	m_p_grid.GridCellText(m_grid_operate, 26, 1, "TrayPitch");
+	
+	str_tmp.Format("Pitch_Y : %0.2f",m_dTrayPitch_Y[1]);
+	m_p_grid.GridCellColor(m_grid_operate, 27, 1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 27, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 27, 1, str_tmp);
+
+	str_tmp.Format("Pitch_X : %0.2f",m_dTrayPitch_X[1]);
+	m_p_grid.GridCellColor(m_grid_operate, 28, 1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellFont(m_grid_operate, 28, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 28, 1, str_tmp);
 
 // 	if(m_nModeTester[1] == NOT_USE)
 // 	{
- 		m_p_grid.GridCellColor(m_grid_operate, 11, 1, GREEN_C, BLACK_C);
- 		m_p_grid.GridCellColor(m_grid_operate, 12, 1, GREEN_D, BLACK_C);
+ 		
+ 	///	m_p_grid.GridCellColor(m_grid_operate, 12, 1, GREEN_D, BLACK_C);
 // 	}
 // 	else
 // 	{
@@ -2122,8 +2677,8 @@ void CScreen_Basic::Init_Grid_Operate_1()
 
 
 	//kwlee 2017.0404
- 	m_p_grid.GridCellFont(m_grid_operate, 13, 1, "MS Sans Serif", 18);
- 	m_p_grid.GridCellColor(m_grid_operate, 13, 1, BLACK_L, YELLOW_C);
+//  	m_p_grid.GridCellFont(m_grid_operate, 13, 1, "MS Sans Serif", 18);
+//  	m_p_grid.GridCellColor(m_grid_operate, 13, 1, BLACK_L, YELLOW_C);
 // 	//m_p_grid.GridCellText(m_grid_operate, 13, 1, "바코드 사용");
 // 	
 // 	m_p_grid.GridCellFont(m_grid_operate, 14, 1, "MS Sans Serif", 12);
@@ -2135,8 +2690,8 @@ void CScreen_Basic::Init_Grid_Operate_1()
 	
 // 	if(m_nModeBcr[1] == NOT_USE)
 // 	{
- 		m_p_grid.GridCellColor(m_grid_operate, 14, 1, GREEN_C, BLACK_C);
- 		m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_D, BLACK_C);
+ 	//	m_p_grid.GridCellColor(m_grid_operate, 14, 1, GREEN_C, BLACK_C);
+ 	//	m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_D, BLACK_C);
 // 	}
 // 	else
 // 	{
@@ -2145,8 +2700,8 @@ void CScreen_Basic::Init_Grid_Operate_1()
 // 	}
 	
 	
-	m_p_grid.GridCellFont(m_grid_operate, 16, 1, "MS Sans Serif", 18);
-	m_p_grid.GridCellColor(m_grid_operate, 16, 1, BLACK_L, YELLOW_C);
+//	m_p_grid.GridCellFont(m_grid_operate, 16, 1, "MS Sans Serif", 18);
+//	m_p_grid.GridCellColor(m_grid_operate, 16, 1, BLACK_L, YELLOW_C);
 //	m_p_grid.GridCellText(m_grid_operate, 16, 1, "Module 방법");
 	
 //	m_p_grid.GridCellFont(m_grid_operate, 17, 1, "MS Sans Serif", 12);
@@ -2158,31 +2713,31 @@ void CScreen_Basic::Init_Grid_Operate_1()
 	
 // 	if(m_nModeTester[1] == NOT_USE)
 // 	{
- 		m_p_grid.GridCellColor(m_grid_operate, 17, 1, GREEN_C, BLACK_C);
- 		m_p_grid.GridCellColor(m_grid_operate, 18, 1, GREEN_D, BLACK_C);
+ 	//	m_p_grid.GridCellColor(m_grid_operate, 17, 1, GREEN_C, BLACK_C);
+ 	//	m_p_grid.GridCellColor(m_grid_operate, 18, 1, GREEN_D, BLACK_C);
 // 	}
 // 	else
 // 	{
-		m_p_grid.GridCellColor(m_grid_operate, 17, 1, GREEN_D, BLACK_C);
- 		m_p_grid.GridCellColor(m_grid_operate, 18, 1, GREEN_C, BLACK_C);
+	//	m_p_grid.GridCellColor(m_grid_operate, 17, 1, GREEN_D, BLACK_C);
+ 	//	m_p_grid.GridCellColor(m_grid_operate, 18, 1, GREEN_C, BLACK_C);
 // 	}
 
 
-	m_p_grid.GridCellFont(m_grid_operate, 19, 1, "MS Sans Serif", 18);
-	m_p_grid.GridCellColor(m_grid_operate, 19, 1, BLACK_L, YELLOW_C);
+//	m_p_grid.GridCellFont(m_grid_operate, 19, 1, "MS Sans Serif", 18);
+//	m_p_grid.GridCellColor(m_grid_operate, 19, 1, BLACK_L, YELLOW_C);
 	//m_p_grid.GridCellText(m_grid_operate, 19, 1, "7387 방법");
 	
-	m_p_grid.GridCellFont(m_grid_operate, 20, 1, "MS Sans Serif", 12);
+//	m_p_grid.GridCellFont(m_grid_operate, 20, 1, "MS Sans Serif", 12);
 //	m_p_grid.GridCellText(m_grid_operate, 20, 1, "7387 Mode Off");
 	
-	m_p_grid.GridCellFont(m_grid_operate, 21, 1, "MS Sans Serif", 12);
+//	m_p_grid.GridCellFont(m_grid_operate, 21, 1, "MS Sans Serif", 12);
 //	m_p_grid.GridCellText(m_grid_operate, 21, 1, "7387 Mode On");
 	
 	
 // 	if(m_nmode_7387[1] == NOT_USE)
 // 	{
- 		m_p_grid.GridCellColor(m_grid_operate, 20, 1, GREEN_C, BLACK_C);
- 		m_p_grid.GridCellColor(m_grid_operate, 21, 1, GREEN_D, BLACK_C);
+ 	//	m_p_grid.GridCellColor(m_grid_operate, 20, 1, GREEN_C, BLACK_C);
+ 	//	m_p_grid.GridCellColor(m_grid_operate, 21, 1, GREEN_D, BLACK_C);
 // 	}
 // 	else
 // 	{
@@ -2190,8 +2745,8 @@ void CScreen_Basic::Init_Grid_Operate_1()
 // 		m_p_grid.GridCellColor(m_grid_operate, 21, 1, GREEN_C, BLACK_C);
 // 	}
 
- 	m_p_grid.GridCellFont(m_grid_operate, 22, 1, "MS Sans Serif", 18);
- 	m_p_grid.GridCellColor(m_grid_operate, 22, 1, BLACK_L, YELLOW_C);
+//  	m_p_grid.GridCellFont(m_grid_operate, 22, 1, "MS Sans Serif", 18);
+//  	m_p_grid.GridCellColor(m_grid_operate, 22, 1, BLACK_L, YELLOW_C);
 // 	m_p_grid.GridCellText(m_grid_operate, 23, 1, "Tray Type");
 // 	
 // 	m_p_grid.GridCellFont(m_grid_operate, 24, 1, "MS Sans Serif", 12);
@@ -2203,8 +2758,8 @@ void CScreen_Basic::Init_Grid_Operate_1()
 	
 // 	if(m_nmode_tray_type[1] == NOT_USE)
 // 	{
- 		m_p_grid.GridCellColor(m_grid_operate, 23, 1, GREEN_C, BLACK_C);
- 		m_p_grid.GridCellColor(m_grid_operate, 24, 1, GREEN_D, BLACK_C);
+//  		m_p_grid.GridCellColor(m_grid_operate, 23, 1, GREEN_C, BLACK_C);
+//  		m_p_grid.GridCellColor(m_grid_operate, 24, 1, GREEN_D, BLACK_C);
 // 	}
 // 	else
 // 	{
@@ -2212,8 +2767,8 @@ void CScreen_Basic::Init_Grid_Operate_1()
 // 		m_p_grid.GridCellColor(m_grid_operate, 25, 1, GREEN_C, BLACK_C);
 // 	}
 // 
- 	m_p_grid.GridCellFont(m_grid_operate, 25, 1, "MS Sans Serif", 18);
- 	m_p_grid.GridCellColor(m_grid_operate, 25, 1, BLACK_L, YELLOW_C);
+//  	m_p_grid.GridCellFont(m_grid_operate, 25, 1, "MS Sans Serif", 18);
+//  	m_p_grid.GridCellColor(m_grid_operate, 25, 1, BLACK_L, YELLOW_C);
 // 	m_p_grid.GridCellText(m_grid_operate, 26, 1, "7387 Alarm Skip");
 // 	
 // 	m_p_grid.GridCellFont(m_grid_operate, 27, 1, "MS Sans Serif", 12);
@@ -2225,8 +2780,8 @@ void CScreen_Basic::Init_Grid_Operate_1()
 // 	
 // 	if(m_n7387InspectAlarmSkipMode[1] == NOT_USE)
 // 	{
- 		m_p_grid.GridCellColor(m_grid_operate, 26, 1, GREEN_C, BLACK_C);
- 		m_p_grid.GridCellColor(m_grid_operate, 27, 1, GREEN_D, BLACK_C);
+//  		m_p_grid.GridCellColor(m_grid_operate, 26, 1, GREEN_C, BLACK_C);
+//  		m_p_grid.GridCellColor(m_grid_operate, 27, 1, GREEN_D, BLACK_C);
 // 	}
 // 	else
 // 	{
@@ -2313,6 +2868,7 @@ void CScreen_Basic::Init_Grid_Operate_1()
 	Invalidate(FALSE);
 }
 
+
 void CScreen_Basic::OnBtnDelete() 
 {
 	// TODO: Add your control notification handler code here
@@ -2372,7 +2928,7 @@ void CScreen_Basic::OnDgtEpoxyX()
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
 	char chr_buf[20] ;
 	double md_X;
-	int mn_x;
+
 	
 	md_X = m_dgt_Epoxy_X.GetValue();
 	mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
@@ -2381,11 +2937,12 @@ void CScreen_Basic::OnDgtEpoxyX()
     
 	st_msg.mstr_keypad_val = mstr_temp;
 	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 1000, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 	dEpoxyXLineOffSet[1] = atof(mstr_temp);
 	//int iTemp = atoi(mstr_temp);
 	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	m_dgt_Epoxy_X.SetValue( dEpoxyXLineOffSet[1]);
+	mstr_temp.Format("%0.2f",dEpoxyXLineOffSet[1]);
+	m_dgt_Epoxy_X.SetValue( mstr_temp);
 }
 
 void CScreen_Basic::OnDgtEpoxyY() 
@@ -2393,7 +2950,7 @@ void CScreen_Basic::OnDgtEpoxyY()
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
 	char chr_buf[20] ;
 	double md_Y;
-	int mn_x;
+	
 	
 	md_Y = m_dgt_Epoxy_Y.GetValue();
 	mstr_temp = LPCTSTR(_ltoa(md_Y, chr_buf, 10));
@@ -2402,11 +2959,12 @@ void CScreen_Basic::OnDgtEpoxyY()
     
 	st_msg.mstr_keypad_val = mstr_temp;
 	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 1000, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 	dEpoxyYLineOffSet[1] = atof(mstr_temp);
 	//int iTemp = atoi(mstr_temp);
 	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	m_dgt_Epoxy_Y.SetValue( dEpoxyYLineOffSet[1]);
+	mstr_temp.Format("%0.2f",dEpoxyYLineOffSet[1]);
+	m_dgt_Epoxy_Y.SetValue( mstr_temp);
 	
 }
 
@@ -2416,7 +2974,7 @@ void CScreen_Basic::OnDgtOffset()
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
 	char chr_buf[20] ;
 	double mdTemp;
-	int mn_x;
+
 	
 	mdTemp = m_dgt_Offset.GetValue();
 	mstr_temp = LPCTSTR(_ltoa(mdTemp, chr_buf, 10));
@@ -2425,11 +2983,12 @@ void CScreen_Basic::OnDgtOffset()
     
 	st_msg.mstr_keypad_val = mstr_temp;
 	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 1000, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 	dHSCarrierSpreadMoveOffset[1] = atof(mstr_temp);
 	//int iTemp = atoi(mstr_temp);
 	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	m_dgt_Offset.SetValue( dHSCarrierSpreadMoveOffset[1]);
+	mstr_temp.Format("%0.2f",dHSCarrierSpreadMoveOffset[1]);
+	m_dgt_Offset.SetValue( mstr_temp);
 }
 
 void CScreen_Basic::OnDgtOffset10() 
@@ -2438,7 +2997,7 @@ void CScreen_Basic::OnDgtOffset10()
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
 	char chr_buf[20] ;
 	double mdTemp;
-	int mn_x;
+
 	
 	mdTemp = m_dgt_Offset_10.GetValue();
 	mstr_temp = LPCTSTR(_ltoa(mdTemp, chr_buf, 10));
@@ -2447,11 +3006,12 @@ void CScreen_Basic::OnDgtOffset10()
     
 	st_msg.mstr_keypad_val = mstr_temp;
 	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 1000, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 	dHeatSinkCarrierSpreadMove1Offset[1] = atof(mstr_temp);
 	//int iTemp = atoi(mstr_temp);
 	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	m_dgt_Offset_10.SetValue( dHeatSinkCarrierSpreadMove1Offset[1]);
+	mstr_temp.Format("%0.2f",dHeatSinkCarrierSpreadMove1Offset[1]);
+	m_dgt_Offset_10.SetValue( mstr_temp);
 	
 }
 
@@ -2461,7 +3021,7 @@ void CScreen_Basic::OnDgtOffset20()
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
 	char chr_buf[20] ;
 	double mdTemp;
-	int mn_x;
+	
 	
 	mdTemp = m_dgt_Offset_20.GetValue();
 	mstr_temp = LPCTSTR(_ltoa(mdTemp, chr_buf, 10));
@@ -2470,11 +3030,12 @@ void CScreen_Basic::OnDgtOffset20()
     
 	st_msg.mstr_keypad_val = mstr_temp;
 	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 1000, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 	dHeatSinkCarrierSpreadMove2Offset[1] = atof(mstr_temp);
 	//int iTemp = atoi(mstr_temp);
 	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	m_dgt_Offset_20.SetValue( dHeatSinkCarrierSpreadMove2Offset[1]);
+	mstr_temp.Format("%0.2f",dHeatSinkCarrierSpreadMove2Offset[1]);
+	m_dgt_Offset_20.SetValue( mstr_temp);
 }
 
 void CScreen_Basic::OnDgtOffset30() 
@@ -2483,7 +3044,7 @@ void CScreen_Basic::OnDgtOffset30()
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
 	char chr_buf[20] ;
 	double mdTemp;
-	int mn_x;
+
 	
 	mdTemp = m_dgt_Offset_30.GetValue();
 	mstr_temp = LPCTSTR(_ltoa(mdTemp, chr_buf, 10));
@@ -2492,11 +3053,12 @@ void CScreen_Basic::OnDgtOffset30()
     
 	st_msg.mstr_keypad_val = mstr_temp;
 	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 1000, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 	dHeatSinkCarrierSpreadMove3Offset[1] = atof(mstr_temp);
 	//int iTemp = atoi(mstr_temp);
 	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	m_dgt_Offset_30.SetValue( dHeatSinkCarrierSpreadMove3Offset[1]);
+	mstr_temp.Format("%0.2f",dHeatSinkCarrierSpreadMove2Offset[1]);
+	m_dgt_Offset_30.SetValue( mstr_temp);
 }
 
 void CScreen_Basic::OnDgtOffsetDis() 
@@ -2505,7 +3067,7 @@ void CScreen_Basic::OnDgtOffsetDis()
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
 	char chr_buf[20] ;
 	double mdTemp;
-	int mn_x;
+
 	
 	mdTemp = m_dgt_Offset_Dis.GetValue();
 	mstr_temp = LPCTSTR(_ltoa(mdTemp, chr_buf, 10));
@@ -2514,11 +3076,12 @@ void CScreen_Basic::OnDgtOffsetDis()
     
 	st_msg.mstr_keypad_val = mstr_temp;
 	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 1000, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 	dHSCarrierSpreadMoveDistance[1] = atof(mstr_temp);
 	//int iTemp = atoi(mstr_temp);
 	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	m_dgt_Offset_Dis.SetValue( dHSCarrierSpreadMoveDistance[1]);
+	mstr_temp.Format("%0.2f",dHSCarrierSpreadMoveDistance[1]);
+	m_dgt_Offset_Dis.SetValue( mstr_temp);
 }
 
 void CScreen_Basic::OnDgtRubb() 
@@ -2628,4 +3191,112 @@ void CScreen_Basic::OnDgtRetryCnt()
 	mstr_temp = KeyPad.GetNumEditString_I(1, 100, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 	m_n_count_retry[1] = atoi(mstr_temp);
 	m_dgt_Retry_Cnt.SetValue( m_n_count_retry[1]);
+}
+
+void CScreen_Basic::OnDgtEpoxyScrewCnt() 
+{
+	// TODO: Add your control notification handler code here
+	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+	char chr_buf[20] ;
+	int mn_Cnt;
+	
+	mn_Cnt = m_dgt_EpoxyScrewCnt.GetValue();
+	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	
+	st_msg.mstr_keypad_msg = _T("EPoxy Screw Cnt");
+    
+	st_msg.mstr_keypad_val = mstr_temp;
+	mstr_temp = KeyPad.GetNumEditString_I(1, 100, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	m_nEpoxyDotScrewCount[1] = atoi(mstr_temp);
+	m_dgt_EpoxyScrewCnt.SetValue( m_nEpoxyDotScrewCount[1]);
+}
+
+void CScreen_Basic::OnDgtHstrayY() 
+{
+	// TODO: Add your control notification handler code here
+	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+	char chr_buf[20] ;
+	int mn_Cnt;
+	
+	mn_Cnt = m_dgt_HsTray_Y.GetValue();
+	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	
+	st_msg.mstr_keypad_msg = _T("HsTray Y Cnt");
+    
+	st_msg.mstr_keypad_val = mstr_temp;
+	mstr_temp = KeyPad.GetNumEditString_I(1, 100, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	m_nHsTrayY[1] = atoi(mstr_temp);
+	m_dgt_HsTray_Y.SetValue( m_nHsTrayY[1]);
+}
+
+void CScreen_Basic::OnDgtHstrayX() 
+{
+	// TODO: Add your control notification handler code here
+	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+	char chr_buf[20] ;
+	int mn_Cnt;
+	
+	mn_Cnt = m_dgt_HsTray_X.GetValue();
+	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	
+	st_msg.mstr_keypad_msg = _T("HsTray X Cnt");
+    
+	st_msg.mstr_keypad_val = mstr_temp;
+	mstr_temp = KeyPad.GetNumEditString_I(1, 100, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	m_nHsTrayX[1] = atoi(mstr_temp);
+	m_dgt_HsTray_X.SetValue( m_nHsTrayX[1]);
+}
+
+void CScreen_Basic::OnDgtTrayY() 
+{
+	// TODO: Add your control notification handler code here
+	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+	char chr_buf[20] ;
+	int mn_Cnt;
+	
+	mn_Cnt = m_dgt_Tray_Y.GetValue();
+	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	
+	st_msg.mstr_keypad_msg = _T("Tray Y Cnt");
+    
+	st_msg.mstr_keypad_val = mstr_temp;
+	mstr_temp = KeyPad.GetNumEditString_I(1, 100, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	m_nTrayY[1] = atoi(mstr_temp);
+	m_dgt_Tray_Y.SetValue( m_nTrayY[1]);
+}
+
+void CScreen_Basic::OnDgtTrayX() 
+{
+	// TODO: Add your control notification handler code here
+	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+	char chr_buf[20] ;
+	int mn_Cnt;
+	
+	mn_Cnt = m_dgt_Tray_X.GetValue();
+	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	
+	st_msg.mstr_keypad_msg = _T("Tray X Cnt");
+    
+	st_msg.mstr_keypad_val = mstr_temp;
+	mstr_temp = KeyPad.GetNumEditString_I(1, 100, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	m_nTrayX[1] = atoi(mstr_temp);
+	m_dgt_Tray_X.SetValue( m_nTrayX[1]);
+}
+
+void CScreen_Basic::OnDgtDispenservppmA() 
+{
+	// TODO: Add your control notification handler code here
+	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+	char chr_buf[20] ;
+	int mn_Cnt;
+	
+	mn_Cnt = m_dgt_DispenserVppmA.GetValue();
+	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	
+	st_msg.mstr_keypad_msg = _T("EPoxy Screw Cnt");
+    
+	st_msg.mstr_keypad_val = mstr_temp;
+	mstr_temp = KeyPad.GetNumEditString_I(1, 100, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+	m_nfDispenserVppmA[1] = atoi(mstr_temp);
+	m_dgt_DispenserVppmA.SetValue( m_nfDispenserVppmA[1]);
 }

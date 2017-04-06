@@ -33,7 +33,7 @@ class CScreen_Wait_Time : public CFormView
 public:
 	CScreen_Wait_Time();           // protected constructor used by dynamic creation
 	DECLARE_DYNCREATE(CScreen_Wait_Time)
-
+		
 // Form Data
 public:
 	//{{AFX_DATA(CScreen_Wait_Time)
