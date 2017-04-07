@@ -37,17 +37,17 @@ public:
 	TSpread			*m_grid_output;
 
 	int				m_n_part;
-	int				m_n_in[32];
-	int				m_n_in_port[32];
-	int				m_n_in_num[32];
-	int				m_n_out[32];
-	int				m_n_out_port[32];
-	int				m_n_out_num[32];
+	int				m_n_in[40];
+	int				m_n_in_port[40]; //32->40
+	int				m_n_in_num[40]; //32->40
+	int				m_n_out[40];    //32->40
+	int				m_n_out_port[40]; //32->40
+	int				m_n_out_num[40]; //32->40
 	int				m_n_in_cnt;
 	int				m_n_out_cnt;
 
-	CString			m_str_in[32];
-	CString			m_str_out[32];
+	CString			m_str_in[40]; //32->40
+	CString			m_str_out[40]; //32->40
 // Construction
 public:
 	void OnOutputCheck();

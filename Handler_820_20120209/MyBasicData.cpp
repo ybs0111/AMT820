@@ -1324,7 +1324,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	st_recipe.dLoaderTransferTrayDeviceGap = atof(chr_data);
 
 	:: GetPrivateProfileString("RECIPE", "dSatbleTime", "0", chr_data, 10, str_load_file);
-	st_recipe.dSatbleTime = atof(chr_data);
+	st_recipe.dSatbleTime = atol(chr_data);
 
 	:: GetPrivateProfileString("RECIPE", "nEpoxyRunSpeed", "0", chr_data, 10, str_load_file);
 	st_recipe.nEpoxyRunSpeed = atof(chr_data);
@@ -1560,7 +1560,9 @@ void CMyBasicData::OnBasic_Data_Save()
 	/* ************************************************************************** */
     /*  데이터 저장할 파일 설정한다 [파일 확장자 검사]                            */
     /* ************************************************************************** */
-	str_save_file = st_path.mstr_path_dvc + st_basic.mstr_device_name;  // 티칭 데이터 저장 파일 설정
+	//str_save_file = st_path.mstr_path_dvc + st_basic.mstr_device_name;  // 티칭 데이터 저장 파일 설정
+	//kwlee 2017.0406
+	str_save_file = st_path.mstr_path_Model + st_basic.mstr_device_name;  // 티칭 데이터 저장 파일 설정
 	
 	n_pos = str_save_file.Find(".");  // 확장자 위치 검사
 	
@@ -1666,7 +1668,7 @@ void CMyBasicData::OnBasic_Data_Save()
 	mstr_temp.Format("%0.2f", st_recipe.dLoaderTransferTrayDeviceGap);
 	:: WritePrivateProfileString("RECIPE", "dLoaderTransferTrayDeviceGap", LPCTSTR(mstr_temp), str_save_file);
 
-	mstr_temp.Format("%0.2f", st_recipe.dSatbleTime);
+	mstr_temp.Format("%0.2f", (double)st_recipe.dSatbleTime);
 	:: WritePrivateProfileString("RECIPE", "dSatbleTime", LPCTSTR(mstr_temp), str_save_file);
 
 	mstr_temp.Format("%0.2f", st_recipe.nEpoxyRunSpeed);
