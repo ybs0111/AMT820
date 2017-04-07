@@ -253,19 +253,49 @@ void CRun_Epoxy_Transfer_Robot::RunMove()
 		}
 		break;
 
+	case 4100:
+		mn_BufferPos++;
+		if( mn_BufferPos >= 3 )
+		{
+			mn_RunStep = 5000;
+		}
+		else
+		{
+			mn_RunStep = 2000;
+		}
+		break;
 
+	case 5000:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{
+			Func.VppmOff();
+			mn_RunStep = 5100;
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_RunStep = 0;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+			mn_RunStep = 0;
+		}
+		break;
 
+	case 5100:
+		nRet_1 = Robot_Move_Safety_Zone( 1, 0, 0 );
+		if( nRet_1 == RET_GOOD )
+		{
+			mn_RunStep = 5200;
+		}
+		break;
 
-
+	case 5200:
 		st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] = CTL_NO;
 		st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][1] = CTL_NO;
 		mn_RunStep = 0;
 		break;
-
-
-
-
-
 
 	default:
 		if (st_handler.cwnd_list != NULL)	// 리스트 바 화면 존재
