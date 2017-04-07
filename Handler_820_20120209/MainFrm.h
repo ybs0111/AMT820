@@ -100,6 +100,7 @@ public:
 	void OnMain_Motor_Setting();
 	void OnListError();
 	void OnListWait();//kwlee 2017.0406
+	void OnListRecipe();//kwlee 2017.0407
 	void OnOpen(int nPort); //kwlee 2017.0406
 	void OnMain_Port_Close();
 	void OnMain_Port_Create(int n_port);

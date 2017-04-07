@@ -210,8 +210,10 @@ void CDialog_Part_IO::Init_Input()
 	for(i=0; i<m_n_in_cnt; i++)
 	{
 		m_p_grid.GridCellFont(m_grid_input, i+1, 1, "MS Sans Serif", 10);
-		m_p_grid.GridCellColor(m_grid_input, i+1, 1, RGB(st_work.n_grid_r[0][1], st_work.n_grid_g[0][1], st_work.n_grid_b[0][1]), 
-													 RGB(st_work.n_text_r[0][1], st_work.n_text_g[0][1], st_work.n_text_b[0][1]));
+		//m_p_grid.GridCellColor(m_grid_input, i+1, 1, RGB(st_work.n_grid_r[0][1], st_work.n_grid_g[0][1], st_work.n_grid_b[0][1]), 
+		//											 RGB(st_work.n_text_r[0][1], st_work.n_text_g[0][1], st_work.n_text_b[0][1]));
+		
+
 		m_p_grid.GridCellText(m_grid_input, i+1, 1, "OFF");
 
 		m_p_grid.GridCellFont(m_grid_input, i+1, 2, "MS Sans Serif", 10);
@@ -269,8 +271,10 @@ void CDialog_Part_IO::Init_Output()
 	for(i=0; i<m_n_out_cnt; i++)
 	{
 		m_p_grid.GridCellFont(m_grid_output, i+1, 1, "MS Sans Serif", 10);
-		m_p_grid.GridCellColor(m_grid_output, i+1, 1, RGB(st_work.n_grid_r[1][1], st_work.n_grid_g[1][1], st_work.n_grid_b[1][1]), 
-													  RGB(st_work.n_text_r[1][1], st_work.n_text_g[1][1], st_work.n_text_b[1][1]));
+		//m_p_grid.GridCellColor(m_grid_output, i+1, 1, RGB(st_work.n_grid_r[1][1], st_work.n_grid_g[1][1], st_work.n_grid_b[1][1]), 
+		//											  RGB(st_work.n_text_r[1][1], st_work.n_text_g[1][1], st_work.n_text_b[1][1]));
+		//kwlee 2017.0407
+		m_p_grid.GridCellColor(m_grid_output, i+1, 1, RGB(255, 128, 64), WHITE_C);
 		m_p_grid.GridCellText(m_grid_output, i+1, 1, "OFF");
 		
 		m_p_grid.GridCellFont(m_grid_output, i+1, 2, "MS Sans Serif", 10);
@@ -290,17 +294,28 @@ void CDialog_Part_IO::OnInputCheck()
 	{
 		bit = (m_n_in_port[i] * 100) + m_n_in_num[i];
 		
-		if(g_ioMgr.Get_In_Bit(bit) == IO_ON)
+// 		if(g_ioMgr.Get_In_Bit(bit) == IO_ON)
+// 		{
+// 			m_p_grid.GridCellText(m_grid_input, i+1, 1, "ON");
+// 			m_p_grid.GridCellColor(m_grid_input, i+1, 1, RGB(st_work.n_grid_r[0][0], st_work.n_grid_g[0][0], st_work.n_grid_b[0][0]), 
+// 														 RGB(st_work.n_text_r[0][0], st_work.n_text_g[0][0], st_work.n_text_b[0][0]));
+// 		}
+// 		else
+// 		{
+// 			m_p_grid.GridCellText(m_grid_input, i+1, 1, "OFF");
+// 			m_p_grid.GridCellColor(m_grid_input, i+1, 1, RGB(st_work.n_grid_r[0][1], st_work.n_grid_g[0][1], st_work.n_grid_b[0][1]), 
+// 													     RGB(st_work.n_text_r[0][1], st_work.n_text_g[0][1], st_work.n_text_b[0][1]));
+// 		}
+		//kwlee 2017.0407
+		if(FAS_IO.Get_In_Bit(bit) == IO_ON)
 		{
 			m_p_grid.GridCellText(m_grid_input, i+1, 1, "ON");
-			m_p_grid.GridCellColor(m_grid_input, i+1, 1, RGB(st_work.n_grid_r[0][0], st_work.n_grid_g[0][0], st_work.n_grid_b[0][0]), 
-														 RGB(st_work.n_text_r[0][0], st_work.n_text_g[0][0], st_work.n_text_b[0][0]));
+			m_p_grid.GridCellColor(m_grid_input, i+1, 1, RGB(0, 128, 0), WHITE_C);
 		}
 		else
 		{
 			m_p_grid.GridCellText(m_grid_input, i+1, 1, "OFF");
-			m_p_grid.GridCellColor(m_grid_input, i+1, 1, RGB(st_work.n_grid_r[0][1], st_work.n_grid_g[0][1], st_work.n_grid_b[0][1]), 
-													     RGB(st_work.n_text_r[0][1], st_work.n_text_g[0][1], st_work.n_text_b[0][1]));
+			m_p_grid.GridCellColor(m_grid_input, i+1, 1, RGB(128, 255, 128), BLACK_L);
 		}
 	}
 }
@@ -316,17 +331,28 @@ void CDialog_Part_IO::OnOutputCheck()
 	{
 		bit = (m_n_out_port[i] * 100) + m_n_out_num[i];
 
-		if(g_ioMgr.Get_Out_Bit(bit) == IO_ON)
+// 		if(g_ioMgr.Get_Out_Bit(bit) == IO_ON)
+// 		{
+// 			m_p_grid.GridCellText(m_grid_output, i+1, 1, "ON");
+// 			m_p_grid.GridCellColor(m_grid_output, i+1, 1, RGB(st_work.n_grid_r[1][0], st_work.n_grid_g[1][0], st_work.n_grid_b[1][0]), 
+// 														  RGB(st_work.n_text_r[1][0], st_work.n_text_g[1][0], st_work.n_text_b[1][0]));
+// 		}
+// 		else
+// 		{
+// 			m_p_grid.GridCellText(m_grid_output, i+1, 1, "OFF");
+// 			m_p_grid.GridCellColor(m_grid_output, i+1, 1, RGB(st_work.n_grid_r[1][1], st_work.n_grid_g[1][1], st_work.n_grid_b[1][1]), 
+// 														  RGB(st_work.n_text_r[1][1], st_work.n_text_g[1][1], st_work.n_text_b[1][1]));
+// 		}
+		//kwlee 2017.0407
+		if(FAS_IO.Get_Out_Bit(bit) == IO_ON)
 		{
 			m_p_grid.GridCellText(m_grid_output, i+1, 1, "ON");
-			m_p_grid.GridCellColor(m_grid_output, i+1, 1, RGB(st_work.n_grid_r[1][0], st_work.n_grid_g[1][0], st_work.n_grid_b[1][0]), 
-														  RGB(st_work.n_text_r[1][0], st_work.n_text_g[1][0], st_work.n_text_b[1][0]));
+			m_p_grid.GridCellColor(m_grid_output, i+1, 1, RGB(255, 128, 64), WHITE_C);
 		}
 		else
 		{
 			m_p_grid.GridCellText(m_grid_output, i+1, 1, "OFF");
-			m_p_grid.GridCellColor(m_grid_output, i+1, 1, RGB(st_work.n_grid_r[1][1], st_work.n_grid_g[1][1], st_work.n_grid_b[1][1]), 
-														  RGB(st_work.n_text_r[1][1], st_work.n_text_g[1][1], st_work.n_text_b[1][1]));
+			m_p_grid.GridCellColor(m_grid_output, i+1, 1, RGB(128, 64, 0), BLACK_C);
 		}
 	}
 }

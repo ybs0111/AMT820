@@ -21,6 +21,7 @@
 #include "Public_Function.h"
 #include "Screen_List_Error.h"
 #include "Screen_Wait_Time.h" //kwlee 2017.0406
+#include "Screen_Set_Recipe.h" //kwlee 2017.0407
 #include "Screen_IO_Map.h"
 #include "Screen_Basic.h"
 #include "Screen_Motor.h"
@@ -920,7 +921,11 @@ void CMainFrame::OnSwitchToForm(int nForm)
  			case IDW_SCREEN_LIST_WAIT:
  				m_pNewActiveView = (CView*)new CScreen_Wait_Time;
  				break;
-
+				//kwlee 2017.0407
+			case IDW_SCREEN_LIST_RECIPE:
+				m_pNewActiveView = (CView*)new CScreen_Set_Recipe;
+ 				break;
+				//
 			case IDW_SCREEN_ADMINISTRATOR:		// ADMINISTRATOR 출력 화면 
 				m_pNewActiveView = (CView*)new CScreen_Administrator;
 				break;
@@ -1017,6 +1022,7 @@ LRESULT CMainFrame::OnViewChangeMode(WPARAM wParam,LPARAM lParam)
 			else if (lParam==4)  OnListStep();			// 쓰레드 정보 출력 화면 전환 
 			else if (lParam ==5) OnListError();
 			else if (lParam ==6) OnListWait();  //kwlee 2017.0406
+			else if (lParam ==7) OnListRecipe();  //kwlee 2017.0407
 			
 			break;
 		case 7 : 
@@ -1819,7 +1825,6 @@ void CMainFrame::OnMain_Port_Create(int n_port)
 	DWORD dwCommEvents;
 
 	
-	
 	if(st_serial.n_connect[n_port] == YES) return;
 	
 	dwCommEvents = m_ports[n_port].MmdSerialGetCommEvents();  // 시리얼 이벤트 설정
@@ -2073,7 +2078,18 @@ void CMainFrame::OnListWait()
 	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_Wait_Time)))   return;
 	OnSwitchToForm(IDW_SCREEN_LIST_WAIT);
 }
-
+//kwlee 2017.0407
+void CMainFrame::OnListRecipe()
+{
+	/* ************************************************************************** */
+    /* 화면 뷰 전환 불가능한 정보 검사한다.                                       */
+    /* ************************************************************************** */
+	int nmenu_chk = OnMenu_Change_Checking(); // 메뉴 사용 가능 여부 검사 함수
+	if (nmenu_chk != TRUE)  return;
+	
+	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_Set_Recipe)))   return;
+	OnSwitchToForm(IDW_SCREEN_LIST_RECIPE);
+}
 
 void CMainFrame::OnMain_Motor_Setting()
 {

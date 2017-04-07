@@ -555,10 +555,10 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			st_msg.mstr_keypad_val = mstr_temp;
 			
 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_dSatbleTime[1] = atof(mstr_temp);
+			m_dSatbleTime[1] = atol(mstr_temp);
 			//int iTemp = atoi(mstr_temp);
 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",m_dSatbleTime[1]);
+			mstr_temp.Format("%0.2f",(double)m_dSatbleTime[1]);
 			m_p_grid.GridCellText(m_grid_operate, 13, 1, mstr_temp);
 			break;
 		
@@ -584,7 +584,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_VEL];
 			
 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("Vel  :  %0.2f",md_Temp);
+			mstr_temp.Format("%0.2f",md_Temp);
 			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Vel");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
@@ -593,7 +593,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			m_nEpoxyXYRunSpeed[1][EPOXY_VEL] = atof(mstr_temp);
 			//int iTemp = atoi(mstr_temp);
 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
+			mstr_temp.Format("Vel  :  %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
 			m_p_grid.GridCellText(m_grid_operate, 17, 1, mstr_temp);
 			break;
 
@@ -601,7 +601,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_ACC];
 			
 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("Acc  :  %0.2f",md_Temp);
+			mstr_temp.Format("%0.2f",md_Temp);
 			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Acc");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
@@ -610,7 +610,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			m_nEpoxyXYRunSpeed[1][EPOXY_ACC] = atof(mstr_temp);
 			//int iTemp = atoi(mstr_temp);
 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
+			mstr_temp.Format("Acc  :  %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
 			m_p_grid.GridCellText(m_grid_operate, 18, 1, mstr_temp);
 			break;
 
@@ -618,13 +618,13 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_DEC];
 			
 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("Dec  :  %0.2f",md_Temp);
+			mstr_temp.Format("%0.2f",md_Temp);
 			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Dec");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 			m_nEpoxyXYRunSpeed[1][EPOXY_DEC] = atof(mstr_temp);
-			mstr_temp.Format("%0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
+			mstr_temp.Format("Dec  :  %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
 			m_p_grid.GridCellText(m_grid_operate, 19, 1, mstr_temp);
 			break;
 
@@ -685,7 +685,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			md_Temp = m_dTrayPitch_Y[1];
 			
 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("Pitch_Y : %0.2f",md_Temp);
+			mstr_temp.Format("%0.2f",md_Temp);
 			st_msg.mstr_keypad_msg = _T("Pitch_Y");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
@@ -694,7 +694,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			m_dTrayPitch_Y[1] = atof(mstr_temp);
 			//int iTemp = atoi(mstr_temp);
 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",m_dTrayPitch_Y[1]);
+			mstr_temp.Format("Pitch_Y :  %0.2f",m_dTrayPitch_Y[1]);
 			m_p_grid.GridCellText(m_grid_operate, 27, 1, mstr_temp);
 			break;
 
@@ -703,7 +703,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			md_Temp = m_dTrayPitch_X[1];
 			
 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("Pitch_X : %0.2f",md_Temp);
+			mstr_temp.Format("%0.2f",md_Temp);
 			st_msg.mstr_keypad_msg = _T("Pitch_Y");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
@@ -712,7 +712,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			m_dTrayPitch_X[1] = atof(mstr_temp);
 			//int iTemp = atoi(mstr_temp);
 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",m_dTrayPitch_X[1]);
+			mstr_temp.Format("Pitch_X :  %0.2f",m_dTrayPitch_X[1]);
 			m_p_grid.GridCellText(m_grid_operate, 28, 1, mstr_temp);
 			break;
 			//////
@@ -1654,7 +1654,7 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	}
 	if(m_nmode_tray_type[0] != m_nmode_tray_type[1])
 	{
-		str_msg.Format( "[BASIC] m_nmode_tray_type Change %s -> %s", m_nmode_tray_type[0], m_nmode_tray_type[1]);
+		str_msg.Format( "[BASIC] m_nmode_tray_type Change %d -> %d", m_nmode_tray_type[0], m_nmode_tray_type[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
@@ -1677,15 +1677,15 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	}
 	if(n_mode_case_assembly[0] != n_mode_case_assembly[1])
 	{
-		str_msg.Format( "[BASIC] case_assembly Mode Change %s -> %s", n_mode_case_assembly[0], n_mode_case_assembly[1]);
+		str_msg.Format( "[BASIC] case_assembly Mode Change %d -> %d", n_mode_case_assembly[0], n_mode_case_assembly[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
-	if(m_nCountPickRetry[0] != m_nCountPickRetry[1])
-	{
-		str_msg.Format( "[BASIC] CountPickRetry Change %d -> %d", m_nCountPickRetry[0], m_nCountPickRetry[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
+// 	if(m_nCountPickRetry[0] != m_nCountPickRetry[1])
+// 	{
+// 		str_msg.Format( "[BASIC] CountPickRetry Change %d -> %d", m_nCountPickRetry[0], m_nCountPickRetry[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
 	
 	if(m_nCountPartial[0] != m_nCountPartial[1])
 	{
@@ -1700,7 +1700,7 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	}
 	if(m_n7387AlarmCount[0] != m_n7387AlarmCount[1])
 	{
-		str_msg.Format( "[BASIC] 7387AlarmCount Change %s -> %s", m_n7387AlarmCount[0], m_n7387AlarmCount[1]);
+		str_msg.Format( "[BASIC] 7387AlarmCount Change %d -> %d", m_n7387AlarmCount[0], m_n7387AlarmCount[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
@@ -1712,36 +1712,36 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	
 	if(dEpoxyXLineOffSet[0] != dEpoxyXLineOffSet[1])
 	{
-		str_msg.Format( "[BASIC] EpoxyXLineOffSet Change %d -> %d", dEpoxyXLineOffSet[0], dEpoxyXLineOffSet[1]);
+		str_msg.Format( "[BASIC] EpoxyXLineOffSet Change %0.2f -> 0.2f", dEpoxyXLineOffSet[0], dEpoxyXLineOffSet[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(dHSCarrierSpreadMoveOffset[0] != dHSCarrierSpreadMoveOffset[1])
 	{
-		str_msg.Format( "[BASIC] HSCarrierSpreadMoveOffset Change %d -> %d", dHSCarrierSpreadMoveOffset[0], dHSCarrierSpreadMoveOffset[1]);
+		str_msg.Format( "[BASIC] HSCarrierSpreadMoveOffset Change %0.2f -> 0.2f", dHSCarrierSpreadMoveOffset[0], dHSCarrierSpreadMoveOffset[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	if(dHSCarrierSpreadMoveDistance[0] != dHSCarrierSpreadMoveDistance[1])
 	{
-		str_msg.Format( "[BASIC] HSCarrierSpreadMoveDistance Change %s -> %s", dHSCarrierSpreadMoveDistance[0], dHSCarrierSpreadMoveDistance[1]);
+		str_msg.Format( "[BASIC] HSCarrierSpreadMoveDistance Change %0.2f -> 0.2f", dHSCarrierSpreadMoveDistance[0], dHSCarrierSpreadMoveDistance[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(dHeatSinkCarrierSpreadMove1Offset[0] != dHeatSinkCarrierSpreadMove1Offset[1])
 	{
-		str_msg.Format( "[BASIC] HeatSinkCarrierSpreadMove1Offset Change %d -> %d", dHeatSinkCarrierSpreadMove1Offset[0], dHeatSinkCarrierSpreadMove1Offset[1]);
+		str_msg.Format( "[BASIC] HeatSinkCarrierSpreadMove1Offset Change %0.2f -> 0.2f", dHeatSinkCarrierSpreadMove1Offset[0], dHeatSinkCarrierSpreadMove1Offset[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(dHeatSinkCarrierSpreadMove2Offset[0] != dHeatSinkCarrierSpreadMove2Offset[1])
 	{
-		str_msg.Format( "[BASIC] HeatSinkCarrierSpreadMove2Offset Change %d -> %d", dHeatSinkCarrierSpreadMove2Offset[0], dHeatSinkCarrierSpreadMove2Offset[1]);
+		str_msg.Format( "[BASIC] HeatSinkCarrierSpreadMove2Offset Change%0.2f -> 0.2f", dHeatSinkCarrierSpreadMove2Offset[0], dHeatSinkCarrierSpreadMove2Offset[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(dHeatSinkCarrierSpreadMove3Offset[0] != dHeatSinkCarrierSpreadMove3Offset[1])
 	{
-		str_msg.Format( "[BASIC] HeatSinkCarrierSpreadMove3Offset Change %d -> %d", dHeatSinkCarrierSpreadMove3Offset[0], dHeatSinkCarrierSpreadMove3Offset[1]);
+		str_msg.Format( "[BASIC] HeatSinkCarrierSpreadMove3Offset Change %0.2f -> 0.2f", dHeatSinkCarrierSpreadMove3Offset[0], dHeatSinkCarrierSpreadMove3Offset[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
@@ -1754,103 +1754,103 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	//kwlee 2017.0406
 	if(m_dLoaderTransferTrayDeviceGap[0]	!=  m_dLoaderTransferTrayDeviceGap[1])
 	{
-		str_msg.Format( "[RECIPE] LoaderTransferTrayDeviceGap Change %s -> %s", m_dLoaderTransferTrayDeviceGap[0], m_dLoaderTransferTrayDeviceGap[1]);
+		str_msg.Format( "[RECIPE] LoaderTransferTrayDeviceGap Change %0.2f -> 0.2f", m_dLoaderTransferTrayDeviceGap[0], m_dLoaderTransferTrayDeviceGap[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_dSatbleTime[0]	!=  m_dSatbleTime[1])
 	{
-		str_msg.Format( "[RECIPE] SatbleTime Change %s -> %s", m_dSatbleTime[0], m_dSatbleTime[1]);
+		str_msg.Format( "[RECIPE] SatbleTime Change %0.2f -> 0.2f", m_dSatbleTime[0], m_dSatbleTime[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_nEpoxyRunSpeed[0]	!=  m_nEpoxyRunSpeed[1])
 	{
-		str_msg.Format( "[RECIPE] EpoxyRunSpeed Change %s -> %s", m_nEpoxyRunSpeed[0], m_nEpoxyRunSpeed[1]);
+		str_msg.Format( "[RECIPE] EpoxyRunSpeed Change %d -> %d", m_nEpoxyRunSpeed[0], m_nEpoxyRunSpeed[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_nEpoxyXYRunSpeed[0][EPOXY_VEL]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_VEL])
 	{
-		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_vel Change %s -> %s", m_nEpoxyXYRunSpeed[0][EPOXY_VEL], m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
+		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_vel Change %d -> %d", m_nEpoxyXYRunSpeed[0][EPOXY_VEL], m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 
 	if(m_nEpoxyXYRunSpeed[0][EPOXY_ACC]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_ACC])
 	{
-		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_Acc Change %s -> %s", m_nEpoxyXYRunSpeed[0][EPOXY_ACC], m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
+		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_Acc Change %d -> %d", m_nEpoxyXYRunSpeed[0][EPOXY_ACC], m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_nEpoxyXYRunSpeed[0][EPOXY_DEC]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_DEC])
 	{
-		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_Dec Change %s -> %s", m_nEpoxyXYRunSpeed[0][EPOXY_DEC], m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
+		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_Dec Change %d -> %d", m_nEpoxyXYRunSpeed[0][EPOXY_DEC], m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_dEpoxyXOffSet[0]	!=  m_dEpoxyXOffSet[1])
 	{
-		str_msg.Format( "[RECIPE] EpoxyXOffSet Change %s -> %s", m_dEpoxyXOffSet[0], m_dEpoxyXOffSet[1]);
+		str_msg.Format( "[RECIPE] EpoxyXOffSet Change %0.2f -> 0.2f", m_dEpoxyXOffSet[0], m_dEpoxyXOffSet[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_dEpoxyYOffSet[0]	!=  m_dEpoxyYOffSet[1])
 	{
-		str_msg.Format( "[RECIPE] EpoxyYOffSet Change %s -> %s", m_dEpoxyYOffSet[0], m_dEpoxyYOffSet[1]);
+		str_msg.Format( "[RECIPE] EpoxyYOffSet Change %0.2f -> 0.2f", m_dEpoxyYOffSet[0], m_dEpoxyYOffSet[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_nRubHSRunSpeed[0]	!=  m_nRubHSRunSpeed[1])
 	{
-		str_msg.Format( "[RECIPE] RubHSRunSpeed Change %s -> %s", m_nRubHSRunSpeed[0], m_nRubHSRunSpeed[1]);
+		str_msg.Format( "[RECIPE] RubHSRunSpeed Change %d -> %d", m_nRubHSRunSpeed[0], m_nRubHSRunSpeed[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 
 	if(m_dTrayPitch_Y[0]	!=  m_dTrayPitch_Y[1])
 	{
-		str_msg.Format( "[RECIPE] TrayPitch_YLoaderTransferTrayDeviceGap Change %s -> %s", m_dTrayPitch_Y[0], m_dTrayPitch_Y[1]);
+		str_msg.Format( "[RECIPE] TrayPitch_YLoaderTransferTrayDeviceGap Change %0.2f -> 0.2f", m_dTrayPitch_Y[0], m_dTrayPitch_Y[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_dTrayPitch_X[0]	!=  m_dTrayPitch_X[1])
 	{
-		str_msg.Format( "[RECIPE] TrayPitch_X Change %s -> %s", m_dTrayPitch_X[0], m_dTrayPitch_X[1]);
+		str_msg.Format( "[RECIPE] TrayPitch_X Change %0.2f -> 0.2f", m_dTrayPitch_X[0], m_dTrayPitch_X[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_nfDispenserVppmA[0]	!=  m_nfDispenserVppmA[1])
 	{
-		str_msg.Format( "[RECIPE] fDispenserVppmA Change %s -> %s", m_nfDispenserVppmA[0], m_nfDispenserVppmA[1]);
+		str_msg.Format( "[RECIPE] fDispenserVppmA Change %d -> %d", m_nfDispenserVppmA[0], m_nfDispenserVppmA[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_nEpoxyDotScrewCount[0]	!=  m_nEpoxyDotScrewCount[1])
 	{
-		str_msg.Format( "[RECIPE] EpoxyDotScrewCount Change %s -> %s", m_nEpoxyDotScrewCount[0], m_nEpoxyDotScrewCount[1]);
+		str_msg.Format( "[RECIPE] EpoxyDotScrewCount Change %d -> %d", m_nEpoxyDotScrewCount[0], m_nEpoxyDotScrewCount[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 
 	if(m_nHsTrayY[0]	!=  m_nHsTrayY[1])
 	{
-		str_msg.Format( "[RECIPE] HsTrayY Change %s -> %s", m_nHsTrayY[0], m_nHsTrayY[1]);
+		str_msg.Format( "[RECIPE] HsTrayY Change %d -> %d", m_nHsTrayY[0], m_nHsTrayY[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_nHsTrayX[0]	!=  m_nHsTrayX[1])
 	{
-		str_msg.Format( "[RECIPE] HsTrayX Change %s -> %s", m_nHsTrayX[0], m_nHsTrayX[1]);
+		str_msg.Format( "[RECIPE] HsTrayX Change %d -> %d", m_nHsTrayX[0], m_nHsTrayX[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_nTrayY[0]	!=  m_nTrayY[1])
 	{
-		str_msg.Format( "[RECIPE] TrayY Change %s -> %s", m_nTrayY[0], m_nTrayY[1]);
+		str_msg.Format( "[RECIPE] TrayY Change %d -> %d", m_nTrayY[0], m_nTrayY[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
 	if(m_nTrayX[0]	!=  m_nTrayX[1])
 	{
-		str_msg.Format( "[RECIPE] TrayX Change %s -> %s", m_nTrayX[0], m_nTrayX[1]);
+		str_msg.Format( "[RECIPE] TrayX Change %d -> %d", m_nTrayX[0], m_nTrayX[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 }
@@ -1897,6 +1897,11 @@ void CScreen_Basic::OnBtnBasicApply()
 			OnBasic_Data_Apply();
 			OnBasic_Data_HisoryLog();
 			OnBasic_Data_Backup();
+
+			//kwlee 2017.0406
+			st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MODE_7387, st_basic.n_mode_7387);			// Device Mode
+			st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MODE_3874, st_basic.n_3874InspectMode);			// Device Mode
+			st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MODE_BCR, st_basic.n_mode_bcr);			// Device Mode
 		}
 		//Data_Backup(); //kwlee 2017.0403
 
@@ -2578,7 +2583,7 @@ void CScreen_Basic::Init_Grid_Operate_1()
 	m_p_grid.GridCellColor(m_grid_operate, 12, 1, BLACK_L, YELLOW_C);
 	m_p_grid.GridCellText(m_grid_operate, 12, 1, "SatbleTime");
 	
-	str_tmp.Format("%0.2f",m_dSatbleTime[1]);
+	str_tmp.Format("%0.2f",(double)m_dSatbleTime[1]);
 	m_p_grid.GridCellColor(m_grid_operate, 13, 1, GREEN_C, BLACK_C);
 	m_p_grid.GridCellFont(m_grid_operate, 13, 1, "MS Sans Serif", 12);
 	m_p_grid.GridCellText(m_grid_operate, 13, 1, str_tmp);
