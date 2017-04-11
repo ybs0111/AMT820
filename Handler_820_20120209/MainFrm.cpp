@@ -98,6 +98,7 @@ tagTEST_SITE_INFO			st_test_site_info[THREAD_MAX_SITE];
 tagRECIPE_INFO				st_recipe;
 tagALL_TRAY_INFO			st_tray_info[THREAD_MAX_SITE];
 tag_BUFFER_INFO				st_buffer_info[THREAD_MAX_SITE];
+tag_BUFFER_INFO				st_manaualbuffer_info[THREAD_MAX_SITE];
 tag_PICKER_INFO				st_picker[THREAD_MAX_SITE];
 st_carrier_buffer_info_param	st_carrier_buff_info[MAX_SHIFT_DATA_NUM];
 st_variable_param			st_var;
@@ -140,6 +141,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_NCRBUTTONDOWN()
 	ON_COMMAND(ID_PGM_INFO, OnPgmInfo)
 	ON_COMMAND(ID_MOTOR_SPEED, OnMotorSpeed)
+	ON_WM_COPYDATA() //kwlee 2017.0411
 	//}}AFX_MSG_MAP
 	ON_NOTIFY(TBN_DROPDOWN, AFX_IDW_TOOLBAR, OnToolbarDropDown)		// 텍스트 툴바 드롭 다운 제어를 위한 사용자 정의 메시지 선언 
 	ON_MESSAGE(WM_MAINFRAME_WORK, OnMainframe_Work)
@@ -178,11 +180,32 @@ CMainFrame::CMainFrame()
 		st_server[i].n_connect	= NO;
 	}
 
-	for (i = 0; i < MAXSITE; i++)
+	for( i = 0; i < MAXSITE; i++ )
 	{
 		st_handler.mn_init_state[i] = CTL_NO;
 	}
 
+	for ( i = 0; i < MAX_WAIT_TIME; i++ )
+	{
+		st_wait.nOnWaitTime[i] = 200;
+		st_wait.nOffWaitTime[i] = 200;
+		st_wait.nLimitWaitTime[i] = 10000;
+	}
+
+
+	st_recipe.nLdBuffer_Num = 1;
+	st_recipe.nTrayNum = 2;
+	st_recipe.nHsTrayY = 5;
+	st_recipe.nHsTrayX = 9;
+	st_recipe.nTrayX = 1;
+	st_recipe.nTrayY = 2;
+	st_recipe.nEpoxyRunSpeed = 20;
+	st_recipe.nEpoxyDotScrewCount = 20;
+	st_recipe.nEpoxyRunSpeed = 20;
+	st_basic.dHSCarrierSpreadMoveOffset = 5.0;
+	st_basic.n_rubb_count = 3;
+	st_recipe.nRubHSRunSpeed = 10;
+	st_recipe.dTrayPitch_Y = 95;
 
 	st_handler.n_mot_board_initial	= FALSE;
 	st_handler.n_load_state			= FALSE;
@@ -190,13 +213,13 @@ CMainFrame::CMainFrame()
 	st_handler.n_ad_board_create	= NO;
 	st_handler.n_initial_flag		= NO;
 
-	st_handler.mn_virtual_mode = 1;
-	COMI.mn_simulation_mode = 1;
-	FAS_IO.mn_simulation_mode = 1;
+// 	st_handler.mn_virtual_mode = 1;
+// 	COMI.mn_simulation_mode = 1;
+// 	FAS_IO.mn_simulation_mode = 1;
 	//kwlee 2017.0404 
-// 	st_handler.mn_virtual_mode = 0;
-// 	COMI.mn_simulation_mode = 0;
-// 	FAS_IO.mn_simulation_mode = 0;
+	st_handler.mn_virtual_mode = 0;
+	COMI.mn_simulation_mode = 0;
+	FAS_IO.mn_simulation_mode = 0;
 	
 
 	OnMain_Var_Default_Set();				// 메인 프레임 클래스 변수 초기화 함수
@@ -1858,7 +1881,7 @@ void CMainFrame::OnMain_Port_Create(int n_port)
 											   rs_232.n_serial_data[n_port], 
 											   rs_232.n_serial_stop[n_port], 
 											   1024, 
-											   dwCommEvents)) 
+ 											   dwCommEvents)) 
 	{
 		m_ports[n_port].MmdSerialStartMonitoring();
 	}
@@ -2374,4 +2397,213 @@ void CMainFrame::OnMotorSpeed()
 	
 	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_Motor_Speed)))   return;
 	OnSwitchToForm(IDW_SCREEN_MOTOR_SPEED);		
+}
+//kwlee 2017.0411 Vision 관련
+BOOL CMainFrame::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct) 
+{
+	// TODO: Add your message handler code here and/or call default
+	RCV_STRUCT strRcvMsg;
+	strRcvMsg = *(pRCV_STRUCT)(pCopyDataStruct->lpData);
+	
+
+	switch(strRcvMsg.nCmdID)
+	{
+	case 1:
+		if(st_basic.n_7387InspectAlarmSkipMode == 1)
+		{
+			st_vision.n7387MeasureResultFlag = 0;
+			st_vision.b7387MeasureCmp = TRUE;
+		}
+		else
+		{
+			switch(strRcvMsg.nJudge)
+			{
+			case ERROR_PASS:
+				st_vision.n7387MeasureResultFlag = 0;
+				st_vision.b7387MeasureCmp = TRUE;
+				break;
+				
+			case ERROR_DEFECT:
+				if(st_basic.n_7387InspectAlarmSkipMode == 1) // 20131022 kks
+				{
+					st_vision.n7387MeasureResultFlag = 0;
+				}
+				else
+				{
+					switch(strRcvMsg.nDetailInfo)
+					{
+					case ERROR_HEATSINK_MISALIGN_DEFECT:
+						st_vision.n7387MeasureResultFlag = ERROR_HEATSINK_MISALIGN_DEFECT;
+						break;
+						
+					case ERROR_DEVICE_MARK_DEFECT:
+						st_vision.n7387MeasureResultFlag = ERROR_DEVICE_MARK_DEFECT;
+						break;
+					default:
+						st_vision.n7387MeasureResultFlag = ERROR_HEATSINK_MISALIGN_DEFECT;
+						break;
+					}
+				}
+				st_vision.b7387MeasureCmp = TRUE;
+				break;
+			}
+			break;
+		}/**/
+		break;
+
+	case 2:
+		switch(strRcvMsg.nJudge)
+		{
+		case ERROR_PASS:
+			st_vision.nEpoxyMeasureResultFlag = 0;
+			st_vision.bEpoxyMeasureCmp = TRUE;
+			break;
+			
+		case ERROR_DEFECT:
+			if(st_basic.n_3874InspectAlarmSkipMode == 1)
+			{
+				st_vision.nEpoxyMeasureResultFlag = 0;
+			}
+			else
+			{
+				switch(strRcvMsg.nDetailInfo)
+				{
+				case ERROR_EPOXY_DOT_DEFECT:
+					st_vision.nEpoxyMeasureResultFlag = ERROR_EPOXY_DOT_DEFECT;
+					break;
+					
+				case ERROR_EPOXY_LINE_THICK1_DEFECT:
+					st_vision.nEpoxyMeasureResultFlag = ERROR_EPOXY_LINE_THICK1_DEFECT;
+					break;
+					
+				case ERROR_EPOXY_CENTER_DEFECT:
+					st_vision.nEpoxyMeasureResultFlag = ERROR_EPOXY_CENTER_DEFECT;
+					break;
+					
+				case ERROR_EPOXY_LINE_THICK2_DEFECT:
+					st_vision.nEpoxyMeasureResultFlag = ERROR_EPOXY_LINE_THICK2_DEFECT;
+					break;
+					
+				case ERROR_EPOXY_LINE_THICK3_DEFECT:
+					st_vision.nEpoxyMeasureResultFlag = ERROR_EPOXY_LINE_THICK3_DEFECT;
+					break;
+					
+				case ERROR_EPOXY_LINE_THICK4_DEFECT:
+					st_vision.nEpoxyMeasureResultFlag = ERROR_EPOXY_LINE_THICK4_DEFECT;
+					break;
+
+				case ERROR_DEVICE_MARK_DEFECT:
+					st_vision.nEpoxyMeasureResultFlag = ERROR_DEVICE_MARK_DEFECT;
+					break;
+				}
+			}
+			st_vision.bEpoxyMeasureCmp = TRUE;
+		}
+		break;
+
+	case 3:
+		if(st_basic.n_3874InspectAlarmSkipMode == 1)
+		{
+			st_vision.nHeatSinkMeasureResultFlag = 0;
+			st_vision.bHeatsinkMeasureCmp = TRUE;
+		}
+		else
+		{
+			switch(strRcvMsg.nJudge)
+			{
+			case ERROR_PASS:
+				st_vision.nHeatSinkMeasureResultFlag = 0;
+				st_vision.bHeatsinkMeasureCmp = TRUE;
+				break;
+				
+			case ERROR_DEFECT:
+				st_vision.nHeatSinkMeasureResultFlag = ERROR_HEATSINK_MISALIGN_DEFECT;
+				st_vision.bHeatsinkMeasureCmp = TRUE;				
+				break;
+			}
+		}
+		break;
+
+	case 7:
+		if(st_basic.n_3874InspectAlarmSkipMode == 1)
+		{
+			st_vision.nHeatSinkMeasureResultFlag = 0;
+			st_vision.bHeatsinkMeasureCmp = TRUE;
+		}
+		else
+		{
+			switch(strRcvMsg.nJudge)
+			{
+			case ERROR_PASS:
+				st_vision.nHeatSinkMeasureResultFlag = 0;
+				st_vision.bHeatsinkMeasureCmp = TRUE;
+				break;
+				
+			case ERROR_DEFECT:
+				st_vision.nHeatSinkMeasureResultFlag = ERROR_HEATSINK_MISALIGN_DEFECT;
+				st_vision.bHeatsinkMeasureCmp = TRUE;				
+				break;
+			}
+		}
+		break;
+
+	case 8:
+		if(st_basic.n_3874InspectAlarmSkipMode == 1)
+		{
+			st_vision.nHeatSinkMeasureResultFlag = 0;
+			st_vision.bHeatsinkMeasureCmp = TRUE;
+		}
+		else
+		{
+			switch(strRcvMsg.nJudge)
+			{
+			case ERROR_PASS:
+				st_vision.nHeatSinkMeasureResultFlag = 0;
+				st_vision.bHeatsinkMeasureCmp = TRUE;
+				break;
+				
+			case ERROR_DEFECT:
+				st_vision.nHeatSinkMeasureResultFlag = ERROR_HEATSINK_MISALIGN_DEFECT;
+				st_vision.bHeatsinkMeasureCmp = TRUE;				
+				break;
+			}
+		}
+		break;
+
+	default:
+		break;
+	
+	}
+
+	CString	strTmp;
+	strTmp.Format("[RCV] LotID : %s, CMD : %d, Judge : %d, Detail : %d",strRcvMsg.sObjectID, strRcvMsg.nCmdID, strRcvMsg.nJudge, strRcvMsg.nDetailInfo);
+	//kwlee 2017.0411
+	if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
+	{
+		sprintf(st_other.c_normal_msg, strTmp);
+		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
+	}
+/*		
+	
+	if(strRcvMsg.nCmdID == 1)
+	{
+		st_vision.b7387MeasureCmp = TRUE;
+		st_vision.n7387MeasureResultFlag = 0;
+	}
+
+	if(strRcvMsg.nCmdID == 3)
+	{
+		st_vision.bHeatsinkMeasureCmp = TRUE;
+		st_vision.nHeatSinkMeasureResultFlag = 0;
+	}
+
+	if(strRcvMsg.nCmdID == 2)
+	{
+		st_vision.bEpoxyMeasureCmp = TRUE;
+		st_vision.nEpoxyMeasureResultFlag = 0;
+	}
+*/
+//	PublicFunction.MessageDisplay(strTmp);
+	//kwlee 2017.0411
+	return CFrameWnd::OnCopyData(pWnd, pCopyDataStruct);
 }

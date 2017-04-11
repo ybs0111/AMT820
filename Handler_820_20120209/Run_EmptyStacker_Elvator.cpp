@@ -5,6 +5,10 @@
 #include "handler.h"
 #include "Run_EmptyStacker_Elvator.h"
 #include "IO_Manager.h"
+#include "CmmsdkDef.h"
+#include "AMTLotManager.h"
+#include "FastechPublic_IO.h"
+#include "LogFromat.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -19,8 +23,8 @@ IMPLEMENT_SERIAL(CRun_EmptyStacker_Elvator, CObject, 1);
 
 CRun_EmptyStacker_Elvator::CRun_EmptyStacker_Elvator()
 {
-	mn_RunStep = -1;
-	mn_InitStep = -1;
+	mn_RunStep = 0;
+	mn_InitStep = 0;
 	m_nRetry = 0;
 	m_nAxisNum = M_TRAY2_Z;
 }
@@ -39,6 +43,7 @@ void CRun_EmptyStacker_Elvator::Thread_Run()
 	switch( st_work.mn_run_status)
 	{
 	case dINIT:
+		RunInit();
 		break;
 
 	case dRUN:
@@ -60,15 +65,105 @@ void CRun_EmptyStacker_Elvator::Thread_Run()
 
 void CRun_EmptyStacker_Elvator::RunInit()
 {
-	if (st_sync.n_init_flag[THD_EMPTY_STACKER] != INIT_CLEAR)		return;		//INIT_CLEAR 일때만 초기화 작업을 한다. 초기화가 끝나면 INIT_CLEAR -> INIT_READY가 되기 떄문에...
+	int nRet_1 = 0;
 
-	switch( mn_InitStep )
+	if( st_handler.mn_init_state[INIT_EMPTYSTACKER_ELV] != CTL_NO ) return;
+
+	st_handler.mn_init_state[INIT_EMPTYSTACKER_ELV] = CTL_YES;
+
+	switch(mn_InitStep)
 	{
-	case -1:
-		if( st_sync.n_init_flag[THD_WORK_TRANSFER] < INIT_READY ) break;
+	case 0:		
+		mn_InitStep = 100;
+		break;
+		
+	case 100:
+		nRet_1 = g_ioMgr.get_in_bit( st_io.i_unloading_stacker_tray1_type_chk, IO_ON );
+		if( nRet_1 == IO_OFF )
+		{
+			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_unloading_stacker_tray1_type_chk);
+			CTL_Lib.Alarm_Error_Occurrence(3001, dWARNING, m_strAlarmCode);
+		}
+		else
+		{
+			mn_InitStep = 200;
+		}
+		break;
+		
+	case 200:
+		Set_Tray_Fix_Clamp_ForBackward(IO_ON);
+		mn_InitStep = 210;
+		break;
+		
+	case 210:
+		nRet_1 = Chk_Tray_Fix_Clamp_ForBackward(IO_ON);
+		if(nRet_1 == RET_GOOD)
+		{
+			mn_InitStep = 300;
+		}
+		else if(nRet_1 == RET_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(3002, dWARNING, m_strAlarmCode);
+			mn_InitStep = 900;
+		}
+		break;
+		
+	case 300:
+		COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_EN, cmFALSE);    //cmSD_EN=14 //cmFALSE = 0 SD 비활성, cmTRUE = 1 SD 활성 	
+		COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_LATCH, cmTRUE);//16
+		mn_InitStep = 310;
+		break;
+		
+	case 310:
+		nRet_1 = COMI.HomeCheck_Mot( m_nAxisNum, st_motor[m_nAxisNum].mn_homecheck_method, MOTTIMEOUT);
+		if( nRet_1 == BD_GOOD)
+		{
+			mn_InitStep = 400;
+		}
+		else if( nRet_1 == BD_ERROR)
+		{
+			mn_InitStep = 900;
+			CTL_Lib.Alarm_Error_Occurrence( 3003, dWARNING, COMI.mc_alarmcode);
+		}
+		break;
+		
+	case 400:
+		nRet_1 = COMI.Get_MotIOSensor(m_nAxisNum, MOT_SENS_SD); 	
+		if(nRet_1 == BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
+		{//910012 1 A "EMPTY_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
+			m_strAlarmCode.Format(_T("910012"));
+			CTL_Lib.Alarm_Error_Occurrence(3004, dWARNING, m_strAlarmCode);
+			mn_InitStep = 900;
+		}
+		else if(nRet_1 == BD_ERROR)//로더 플레이드에 트레이가 감지 되지않은 상태 
+		{
+			mn_InitStep = 500;
+		}
+		break;
+		
+	case 500:
+		nRet_1 = g_ioMgr.get_in_bit( st_io.i_Unloading_Stacker_Tray_Limit_Check, IO_OFF);
+		if( nRet_1 == IO_ON)
+		{
+			m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_Unloading_Stacker_Tray_Limit_Check);
+			CTL_Lib.Alarm_Error_Occurrence(3005, dWARNING, m_strAlarmCode);
+			mn_RunStep = 900;
+		}
+		else
+		{
+			mn_InitStep = 1000;
+		}
+		break;
+		
+	case 900:
 		mn_InitStep = 0;
-
-	case 0:
+		st_handler.mn_initial_error = TRUE;
+		break;
+		
+	case 1000:
+		st_handler.mn_init_state[INIT_EMPTYSTACKER_ELV] = CTL_YES;
+		mn_InitStep = 0;
+		mn_RunStep = 0;
 		break;
 	}
 }
@@ -254,9 +349,8 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		{
 			if (st_handler.cwnd_main != NULL)
 			{
-				st_other.nBuzYesNo = YES;
-				st_other.strBoxMsg = _T("[TRAY FULL] Empty stacker is full. \r\n Please Remove it.");
-				st_handler.cwnd_main->SendMessage(WM_WORK_COMMAND, MAIN_MESSAGE_BOX_CREATE_REQ, 0);
+				st_msg.mstr_event_msg[0] = _T("[TRAY FULL] Empty stacker is full. \r\n Please Remove it.");
+				::PostMessage(st_handler.hWnd, WM_MAIN_EVENT, CTL_YES, 0);
 			}
 		}
 		break;
@@ -365,7 +459,7 @@ int CRun_EmptyStacker_Elvator::Ready_Stacker_Move_Check( int mode )
 
 	if( (nRet_1 == RET_PROCEED || nRet_2 == RET_PROCEED ) && st_basic.n_mode_device != WITHOUT_DVC ) 
 	{
-		break;
+		
 	}
 	else if( ( nRet_1 == RET_ERROR || nRet_2 == RET_ERROR) && st_basic.n_mode_device != WITHOUT_DVC)
 	{
@@ -384,4 +478,133 @@ int CRun_EmptyStacker_Elvator::Ready_Stacker_Move_Check( int mode )
 		nFuncRet = RET_GOOD;
 	}
 	return nFuncRet;
+}
+
+void CRun_EmptyStacker_Elvator::Set_Tray_Fix_Clamp_ForBackward(int OnOff)
+{
+	CString strLogKey[10];
+	CString	strLogData[10];
+
+	strLogKey[0] = _T("Mode Start");
+	strLogData[0].Format(_T("%d"),0);
+
+	m_bClampOnOffFlag	= false;
+	m_dwClampOnOff[0]	= GetCurrentTime();
+
+	g_ioMgr.set_out_bit( st_io.o_Unloading_Stacker_Tray_Lock_Sol, OnOff);
+	g_ioMgr.set_out_bit( st_io.o_Unloading_Stacker_Tray_Unlock_Sol, !OnOff);
+
+	if (OnOff == IO_ON)
+	{
+		clsLog.LogFunction(_T("ULD_TRAY_STACKER_ELEVATOR"),_T("LOCK"),0,_T("TRAY"),_T("CYLINDER"),1,strLogKey,strLogData);
+	}
+	else
+	{
+		clsLog.LogFunction(_T("ULD_TRAY_STACKER_ELEVATOR"),_T("UNLOCK"),0,_T("TRAY"),_T("CYLINDER"),1,strLogKey,strLogData);
+	}
+}
+
+//센서가 없다 sol 출력시간만큼 딜레이
+int CRun_EmptyStacker_Elvator::Chk_Tray_Fix_Clamp_ForBackward(int OnOff)
+{
+	CString strLogKey[10];
+	CString	strLogData[10];
+
+	strLogKey[0] = _T("Mode End");
+	strLogData[0].Format(_T("%d"),0);
+
+	int nWaitTime = WAIT_TRAY_ALIGN_CLAMP;
+
+	if (OnOff == IO_OFF)
+	{
+		if (m_bClampOnOffFlag == false && g_ioMgr.get_in_bit(st_io.i_Unloading_Stacker_Tray_Lock_Check, IO_OFF) == IO_OFF &&
+			g_ioMgr.get_in_bit(st_io.i_Unloading_Stacker_Tray_Unlock_Check, IO_ON) == IO_ON )
+		{
+			m_bClampOnOffFlag		= true;
+			m_dwClampOnOff[0]	= GetCurrentTime();
+		}
+		else if (m_bClampOnOffFlag == true && g_ioMgr.get_in_bit(st_io.i_Unloading_Stacker_Tray_Lock_Check, IO_OFF) == IO_OFF &&
+			g_ioMgr.get_in_bit(st_io.i_Unloading_Stacker_Tray_Unlock_Check, IO_ON) == IO_ON )
+		{
+			m_dwClampOnOff[1] = GetCurrentTime();
+			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
+
+			if (m_dwClampOnOff[2] <= 0)
+			{
+				m_dwClampOnOff[0] = GetCurrentTime();
+				return RET_PROCEED;
+			}
+
+			if (m_dwClampOnOff[2] > (DWORD)st_wait.nOffWaitTime[nWaitTime])
+			{
+				clsLog.LogFunction(_T("ULD_TRAY_STACKER_ELEVATOR"),_T("UNLOCK"),1,_T("TRAY"),_T("CYLINDER"),1,strLogKey,strLogData);
+				return RET_GOOD;
+			}
+		}
+		else
+		{
+			m_dwClampOnOff[1] = GetCurrentTime();
+			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
+
+			if (m_dwClampOnOff[2] <= 0)
+			{
+				m_dwClampOnOff[0] = GetCurrentTime();
+				return RET_PROCEED;
+			}
+
+			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
+			{
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Unloading_Stacker_Tray_Lock_Check); 
+				clsLog.LogFunction(_T("ULD_TRAY_STACKER_ELEVATOR"),_T("UNLOCK"),1,_T("TRAY"),_T("CYLINDER"),1,strLogKey,strLogData);
+				return RET_ERROR;
+			}
+		}
+	}
+	else
+	{
+		if (m_bClampOnOffFlag == false && g_ioMgr.get_in_bit(st_io.i_Unloading_Stacker_Tray_Lock_Check, IO_ON) == IO_ON &&
+			g_ioMgr.get_in_bit(st_io.i_Unloading_Stacker_Tray_Unlock_Check, IO_OFF) == IO_OFF )
+		{
+			m_bClampOnOffFlag			= true;
+			m_dwClampOnOff[0]	= GetCurrentTime();
+		}
+		else if (m_bClampOnOffFlag == true && g_ioMgr.get_in_bit(st_io.i_Unloading_Stacker_Tray_Lock_Check, IO_ON) == IO_ON &&
+			g_ioMgr.get_in_bit(st_io.i_Unloading_Stacker_Tray_Unlock_Check, IO_OFF) == IO_OFF )
+		{
+			m_dwClampOnOff[1]	= GetCurrentTime();
+			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];
+
+			if (m_dwClampOnOff[2] <= 0)
+			{
+				m_dwClampOnOff[0]	= GetCurrentTime();
+				return RET_PROCEED;
+			}
+
+			if(m_dwClampOnOff[2] > (DWORD)st_wait.nOnWaitTime[nWaitTime])
+			{
+				clsLog.LogFunction(_T("ULD_TRAY_STACKER_ELEVATOR"),_T("LOCK"),1,_T("TRAY"),_T("CYLINDER"),1,strLogKey,strLogData);
+				return RET_GOOD;
+			}
+		}
+		else
+		{
+			m_dwClampOnOff[1]	= GetCurrentTime();
+			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];
+
+			if (m_dwClampOnOff[2] <= 0)
+			{
+				m_dwClampOnOff[0]	= GetCurrentTime();
+				return RET_PROCEED;
+			}
+
+			if (m_dwClampOnOff[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
+			{
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Unloading_Stacker_Tray_Lock_Check); 
+				clsLog.LogFunction(_T("ULD_TRAY_STACKER_ELEVATOR"),_T("LOCK"),1,_T("TRAY"),_T("CYLINDER"),1,strLogKey,strLogData);
+				return RET_ERROR;
+			}
+		}
+	}
+
+	return RET_PROCEED;
 }

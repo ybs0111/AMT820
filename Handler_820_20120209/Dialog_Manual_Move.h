@@ -26,7 +26,19 @@
 #include "GridControlAlg.h"
 #include "Digit.h"
 
-#define TM_CARRIRER_LOOP	3288
+#define TM_TRAY1			901
+#define TM_TRAY2			902
+#define TM_TRAY_TRANSFER	903
+#define TM_CARRIER_MOVE		904
+#define TM_UNPRESS_MOVE		905
+#define TM_VISION_MOVE		906
+#define TM_EPOXY_MOVE		907
+#define TM_HEATSINK_MOVE	908
+#define TM_HSVISION_MOVE	909
+#define TM_DISPENSOR		910
+#define TM_LOADER_MOVE		911
+#define TM_LOAD_PLATE		912
+#define TM_DVCBUFFER		913
 
 class CDialog_Manual_Move : public CDialog
 {
@@ -38,14 +50,83 @@ public:
 
 // Construction
 public:
+	int mn_retry_cnt;
+	int m_nRetry;
+	int nJobFlag;
+	int m_move_step[100];
+	int nTrayExist;
+	int mn_RunTopFwdStep;
+	int m_nTrayDeviceGap;
+	int mn_RunDownStep;
+	int mn_RunUpStep;
+	int mn_RunBtmFwdStep;
+	int mn_jig_rotator;
+	int mn_move_carrier;
+	int mn_BufferPos;
+	int mn_SafetyStep;
+	int mn_MoveStep;
+	int mn_dotPos;
+	int m_nCarriorPos;
+	int m_nlast_pick;
+	BOOL bHeatsinkMeasureCmp;
+	int m_nVisCarriorPos;
+	int m_nVisTeachPos;
+	int m_nWork_Pos;
+
+	int mn_FirstSecond;
+	int mn_StartEnd;
+
+	int ml_motflag[3];
+	int m_Thread_Flag[5];
+
+	int nTransferTrayExist;
+	int m_nTransfer_WaitPosMove_Flag;
+	DWORD m_dwWaitTime[3];
+	DWORD m_dwWaitUntil[3];
+	DWORD m_dwUpCarrierWaitTime[3];
+	CString m_strAlarmCode;
+	int nLdPlate_Tray_Supply_Req[30];
+	int nWorkTransfer_Req[30][5];
+	int m_nTransferJobFlag[30];
+	double m_dpTargetPos[30];
+	int nCarrierRbt_Dvc_Req[30][5];
+	int nCarrierSateyflag[30];
+	double m_dTargetPos[100];
+
+	int nHeatSinkRbt_Dvc_Req[30][5];
+	DWORD m_dwWaitDispenserAirBlow[3];
+	int m_npSet_WorkPosYXCPB[5];
+
+	int nLdWorkRbt_Dvc_Req[30][5];
+	int m_npFindWorkPosYXCPB[5];
+	int nUldWorkRbt_Dvc_Req[30][5];
+
+	DWORD m_dwSatbleWaitTime[3];
+
+	int	m_n_FirstPicker_Num;
+	int	m_n_FirstTray_X_Num;
+	int	m_n_FirstTray_Y_Num;
+
+	int m_npBuff_Info[4];
+	int	m_npBuff_Status[4];
+	int	m_npBuff_OutputStatus[4];
+
+
+	void Init_Data();
+	void Init_Show();
 	void Init_Group();
 	void Init_Button();
+	void Init_Timer();
 	BOOL Create();
 	CDialog_Manual_Move(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(CDialog_Manual_Move)
 	enum { IDD = IDD_DIALOG_MANUAL_MOVE };
+	CComboBox	m_cbo_carrier;
+	CComboBox	m_cbo_tray_transfer;
+	CComboBox	m_cbo_tray2;
+	CComboBox	m_cbo_tray1;
 	CButtonST	m_btn_exit;
 	//}}AFX_DATA
 
@@ -60,12 +141,33 @@ public:
 
 // Implementation
 public:
+	int m_nTray1;
+	int m_nTray2;
+	int m_nTrayTransfer;
 	void OnButtonControl(bool bflag);
-	int Move_Carrier_Loop();
+	int Move_TrayElv1();
+	int Move_TrayElv2();
+	int Move_TrayTransfer();
+	int Move_CarrierTransfer();
+	int Move_UnPressTransfer();
+	int Move_EpoxyTransfer();
+    int Move_HeatSinkTransfer();
+	int Move_VisionTransfer();
+	int Move_Dispensor();
+	int Move_LoadPlate();
+	int Move_LoadTransfer();
+	int Move_BufferTransfer();
+	int Move_DvcBuffer();
 
-	int m_move_step[25];
-	DWORD m_dwBcrWaitTime[3];
-	DWORD m_dwWaitTime[3];
+	int CarrierTopForward( int nMode );
+	int CheckCarrierType();
+	int CarrierMoveDown();
+	int CarrierMoveUp();
+	int CarrierBtmForwrad();
+	int Check_Carrier_Move_Enable( int nMode);
+	int Robot_Move_Safety_Zone( int nMode, int n_site, int n_flag);
+	int Move_Billiard_Epoxy( int nMode, int nSite);
+	int Move_BuffDispensor();
 
 protected:
 
@@ -73,9 +175,12 @@ protected:
 	//{{AFX_MSG(CDialog_Manual_Move)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBtnExit();
-	afx_msg void OnBtnCarrierLoop();
+	afx_msg void OnElevatorGo1();
+	afx_msg void OnElevatorGo2();
+	afx_msg void OnElevatorGo3();
 	afx_msg void OnTimer(UINT nIDEvent);
-	afx_msg void OnBtnMotorStop();
+	afx_msg void OnReqTrayChange();
+	afx_msg void OnBtnEndlessLoop();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

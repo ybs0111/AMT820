@@ -159,7 +159,7 @@ void CScreen_Main::OnInitialUpdate()
 
 void CScreen_Main::OnDestroy() 
 {
-	st_handler.cwnd_main = NULL;		// MAIN 화면 핸들 초기화
+	st_handler.cwnd_main = NULL;
 	if( mp_main_font != NULL )
 	{
 		delete mp_main_font;
@@ -171,18 +171,18 @@ void CScreen_Main::OnDestroy()
 		delete mp_main_big_font;
 		mp_main_big_font = NULL;
 	}
-	
+
 	if( mp_main_font1 != NULL )
 	{
 		delete mp_main_font1;
 		mp_main_font1 = NULL;
 	}
+
 	CFormView::OnDestroy();
 	
 	// TODO: Add your message handler code here
 	
 }
-
 
 void CScreen_Main::OnMain_GroupBox_Set()
 {	
@@ -362,12 +362,12 @@ void CScreen_Main::OnMain_Loader_Set()
 
 			if(g_ioMgr.Get_Out_Bit(st_io.o_unload_safety) == IO_ON)
 			{
-				g_ioMgr.Set_Out_Bit(st_io.o_unload_safety, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_unload_safety, IO_OFF);
 			}
 			
 			if(g_ioMgr.Get_Out_Bit(st_io.o_unload_ready) == IO_ON)
 			{
-				g_ioMgr.Set_Out_Bit(st_io.o_unload_ready, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_unload_ready, IO_OFF);
 			}
 			
 			if(st_handler.cwnd_list != NULL)	// 리스트 바 화면 존재
@@ -383,12 +383,12 @@ void CScreen_Main::OnMain_Loader_Set()
 
 			if(g_ioMgr.Get_Out_Bit(st_io.o_unload_safety) == IO_ON)
 			{
-				g_ioMgr.Set_Out_Bit(st_io.o_unload_safety, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_unload_safety, IO_OFF);
 			}
 			
 			if(g_ioMgr.Get_Out_Bit(st_io.o_unload_ready) == IO_ON)
 			{
-				g_ioMgr.Set_Out_Bit(st_io.o_unload_ready, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_unload_ready, IO_OFF);
 			}
 		}
 */

@@ -29,6 +29,12 @@ CRun_Epoxy_Transfer_Robot::CRun_Epoxy_Transfer_Robot()
 	m_lpAxisNum[1] = M_EPOXY_TRANSFER_Y;
 	m_lpAxisNum[2] = M_EPOXY_TRANSFER_Z;
 
+	COMI.ml_axiscnt[m_nLinearMove_Index] = 2;
+	COMI.mp_axisnum[m_nLinearMove_Index][0] = M_EPOXY_TRANSFER_X;
+	COMI.mp_axisnum[m_nLinearMove_Index][1] = M_EPOXY_TRANSFER_Y;
+	COMI.mp_axisnum[m_nLinearMove_Index][2] = M_EPOXY_TRANSFER_Z;
+
+
 
 	m_nRobot_X = M_EPOXY_TRANSFER_X;
 	m_nRobot_Y = M_EPOXY_TRANSFER_Y;
@@ -49,10 +55,10 @@ CRun_Epoxy_Transfer_Robot::~CRun_Epoxy_Transfer_Robot()
 
 void CRun_Epoxy_Transfer_Robot::Thread_Run()
 {
-
 	switch( st_work.mn_run_EpoxyStatus)
 	{
 	case dINIT:
+		RunInit();
 		break;
 
 	case dRUN:
@@ -80,39 +86,114 @@ void CRun_Epoxy_Transfer_Robot::Thread_Run()
 
 void CRun_Epoxy_Transfer_Robot::RunInit()
 {
-	int nRet_1 = 0, nRet_2 = 0, nRet_3 = 0;
-	if (st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
-	if (st_handler.mn_init_state[INIT_ULD_ROBOT] == CTL_NO ) return;
-	if (st_handler.mn_init_state[INIT_EPOXY_ROBOT] != CTL_NO )		return;		//INIT_CLEAR 일때만 초기화 작업을 한다. 초기화가 끝나면 INIT_CLEAR -> INIT_READY가 되기 떄문에...
+	int nRet_1 = 0;
+	if( st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
+ 	if( st_handler.mn_init_state[INIT_ULD_ROBOT] == CTL_NO ) return;
+	if( st_handler.mn_init_state[INIT_EPOXY_ROBOT] != CTL_NO ) return;
+	st_handler.mn_init_state[INIT_EPOXY_ROBOT] = CTL_YES;
 
 	switch( mn_InitStep )
 	{
-	case 0:
-		mn_InitStep = 100;
-		break;
+		case 0:
+			mn_InitStep = 100;
+			break;
 
-	case 100:
-		if( st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] == CTL_NO )
-		{
-			st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] = CTL_REQ;
-			st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][1] = WORK_PLACE;
+		case 100:
+			Func.VppmOff();
 			mn_InitStep = 200;
-		}
-		break;
+			break;
 
-	case 200:
-		if( st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] == CTL_READY )
-		{
-			st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] = CTL_CHANGE;
-			mn_InitStep = 300;
-		}
-		break;
+		case 200:
+			nRet_1 = COMI.HomeCheck_Mot(m_nRobot_Z, st_motor[m_nRobot_Z].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 300;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
 
-	case 300:
+		case 300:
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] == CTL_REQ && 
+				st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][1] == WORK_PICK)
+			{
+				mn_InitStep = 310;
+			}
+			break;
 
-		break;
+		case 310:
+			nRet_1 = COMI.HomeCheck_Mot(m_nRobot_X, st_motor[m_nRobot_X].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 320;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
 
+		case 320:
+			nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobot_X, st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY], COMI.mn_manualspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_InitStep = 400;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_InitStep = 320;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+			}
+			break;
 
+		case 400:
+			nRet_1 = COMI.HomeCheck_Mot(m_nRobot_Y, st_motor[m_nRobot_Y].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 500;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
+			
+		case 500:
+			nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SAFETY], COMI.mn_manualspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_InitStep = 1000;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_InitStep = 500;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+			}
+			break;
+
+		case 900:
+			mn_InitStep = 0;
+			st_handler.mn_initial_error = TRUE;
+			break;
+			
+		case 1000:
+			st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] = CTL_READY;
+			st_handler.mn_init_state[INIT_EPOXY_ROBOT] = CTL_YES;
+			mn_InitStep = 0;
+			break;
 
 	}
 }

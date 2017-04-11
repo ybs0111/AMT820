@@ -254,16 +254,16 @@ void AMotor::_finish_manual()
 	if( m_MotMoveMode == MMMODE_MANUAL ||
 		m_MotMoveMode == MMMODE_HOME )
 	{
-/*		if( st_handler.cwnd_motorAxis )
+		if( st_handler.cwnd_motorAxis )
 		{
 			st_handler.cwnd_motorAxis->PostMessage( WM_MOTOR_COMPLETION, m_MotMoveMode, 0 );
 		}
 
-		if( st_handler.cwnd_visionteaching )
-		{
-			st_handler.cwnd_visionteaching->PostMessage( WM_MOTOR_COMPLETION, m_MotMoveMode, 0 );
-		}
-*/
+//		if( st_handler.cwnd_visionteaching )
+//		{
+//			st_handler.cwnd_visionteaching->PostMessage( WM_MOTOR_COMPLETION, m_MotMoveMode, 0 );
+//		}
+
 		m_MotMoveMode = MMMODE_NONE;
 	}
 }

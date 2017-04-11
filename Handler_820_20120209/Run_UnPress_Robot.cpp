@@ -38,6 +38,7 @@ void CRun_UnPress_Robot::Thread_Run()
 	switch( st_work.mn_run_status)
 	{
 		case dINIT:
+			RunInit();
 			break;
 
 		case dRUN:
@@ -58,71 +59,227 @@ void CRun_UnPress_Robot::Thread_Run()
 void CRun_UnPress_Robot::RunInit()
 {
 	int nRet_1 = 0, nRet_2 = 0, nRet_3 = 0;
-	if (st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
-	if (st_handler.mn_init_state[INIT_ULD_ROBOT] == CTL_NO ) return;
-	if (st_handler.mn_init_state[INIT_UNPRESS_ROBOT] != CTL_NO) return;
+	if( st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
+ 	if( st_handler.mn_init_state[INIT_ULD_ROBOT] == CTL_NO ) return;
+	if( st_handler.mn_init_state[INIT_UNPRESS_ROBOT] != CTL_NO ) return;
+	
+	st_handler.mn_init_state[INIT_UNPRESS_ROBOT] = CTL_YES;
 	
 	switch( mn_InitStep )
 	{
 		case 0:
+			mn_InitStep = 10;
+			break;
+			
+		case 10:
+			Func.VppmOff();
 			mn_InitStep = 100;
 			break;
 
 		case 100:
-			if( st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][0] == CTL_REQ && st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][1] == WORK_PICK )
+			nRet_1 = COMI.HomeCheck_Mot(m_nPressAxisY, st_motor[m_nPressAxisY].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
 			{
 				mn_InitStep = 200;
 			}
-			break;
-
-		case 200:
-			Set_UnPress_PushClamp_OnOff( 0, IO_OFF );
-			Set_UnPress_PushClamp_OnOff( 1, IO_OFF );
-			mn_InitStep = 300;
-			break;
-
-		case 300:
-			nRet_1 = Chk_UnPress_PushClamp_OnOff( 0, IO_OFF );
-			nRet_2 = Chk_UnPress_PushClamp_OnOff( 1, IO_OFF );
-			if( nRet_1 == RET_GOOD && nRet_2 == RET_GOOD )
+			else if( nRet_1 == BD_ERROR)
 			{
-				mn_InitStep = 400;
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
+			
+		case 200:
+			Set_UnPress_PushClamp_OnOff(0, IO_OFF);//Z_UPDOWN
+			Set_UnPress_PushClamp_OnOff(1, IO_OFF);//unpress
+			mn_InitStep = 210;
+			break;
+			
+		case 210:
+			nRet_1 = Chk_UnPress_PushClamp_OnOff(0, IO_OFF );
+			nRet_2 = Chk_UnPress_PushClamp_OnOff(1, IO_OFF );
+			if( nRet_1 == RET_GOOD && nRet_2 == RET_GOOD)
+			{
+				mn_InitStep = 300;
 			}
 			else if( nRet_1 == RET_ERROR || nRet_2 == RET_ERROR )
 			{
-				CTL_Lib.Alarm_Error_Occurrence( 5000, dWARNING, m_strAlarmCode);
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 300:
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][0] == CTL_REQ && 
+				st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][1] == WORK_PICK)
+			{
+				mn_InitStep = 400;
 			}
 			break;
 
 		case 400:
-			m_dTargetPosX = st_motor[m_nPressAxisX].md_pos[P_CARRIER_X_UNPRESS_POS];
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nPressAxisX, m_dTargetPosX, COMI.mn_runspeed_rate);
-			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			nRet_1 = COMI.HomeCheck_Mot(m_nPressAxisX, st_motor[m_nPressAxisX].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
 			{
 				mn_InitStep = 500;
 			}
-			else if (nRet_1 == BD_RETRY)
+			else if( nRet_1 == BD_ERROR)
 			{
-				mn_InitStep = 400;
-			}
-			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
-				mn_InitStep = 400;
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
 			}
 			break;
 
 		case 500:
 			st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][0] = CTL_READY;
-			mn_InitStep = 600;
+			st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][1] = WORK_PICK;
+			mn_InitStep = 510;
+			break;
+
+		case 510:
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][0] == CTL_CHANGE && 
+				st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][1] == WORK_PICK)
+			{
+				mn_InitStep = 600;
+			}
+			break;
+
+		case 600:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nPressAxisX, st_motor[m_nPressAxisX].md_pos[P_CARRIER_X_PUSH_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_InitStep = 610;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_InitStep = 600;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, alarm.mstr_code);
+				mn_InitStep = 900;
+			}
+			break;
+
+		case 610:
+			Set_UnPress_PushClamp_OnOff(0, IO_ON);//Z_UPDOWN
+			mn_InitStep = 620;
+			break;
+			
+		case 620:
+			nRet_1 = Chk_UnPress_PushClamp_OnOff(0, IO_ON );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 630;
+			}
+			else if( nRet_1 == RET_ERROR)
+			{
+				mn_InitStep = 620;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 630:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nPressAxisX, st_motor[m_nPressAxisX].md_pos[P_CARRIER_X_PRESS_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_InitStep = 700;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_InitStep = 630;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, alarm.mstr_code);
+				mn_InitStep = 900;
+			}
+			break;
+
+		case 700:
+			st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][0] = CTL_FREE;
+			st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][1] = WORK_PICK;
+			mn_InitStep = 710;
+			break;
+
+		case 710:
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][0] == CTL_NO && 
+				st_sync.nCarrierRbt_Dvc_Req[THD_UNPRESS_RBT][1] == CTL_NO)
+			{
+				mn_InitStep = 800;
+			}
+			break;
+
+		case 800:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nPressAxisX, st_motor[m_nPressAxisX].md_pos[P_CARRIER_X_UNPRESS_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_InitStep = 810;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_InitStep = 800;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, alarm.mstr_code);
+				mn_InitStep = 900;
+			}
+			break;
+
+		case 810:
+			Set_UnPress_PushClamp_OnOff(0, IO_OFF);//Z_UPDOWN
+			mn_InitStep = 820;
+			break;
+			
+		case 820:
+			nRet_1 = Chk_UnPress_PushClamp_OnOff(0, IO_OFF );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 830;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				mn_InitStep = 820;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 830:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nPressAxisX, st_motor[m_nPressAxisX].md_pos[P_CARRIER_X_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_InitStep = 1000;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_InitStep = 830;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, alarm.mstr_code);
+				mn_InitStep = 900;
+			}
+			break;
 
 
+		case 900:
+			mn_InitStep = 0;
+			st_handler.mn_initial_error = TRUE;
+			break;
+			
+		case 1000:
+			st_handler.mn_init_state[INIT_UNPRESS_ROBOT] = CTL_YES;
+			mn_InitStep = 0;
+			break;
+		
+		
 	}
 }
 
 void CRun_UnPress_Robot::RunMove()
 {
-	int nRet_1;
+	int nRet_1,nRet_2;
 	int nRet[9] = {0,};
 	long lMotionDone=0;
 	CString strTemp;
@@ -631,10 +788,17 @@ void CRun_UnPress_Robot::RunMove()
 			break;
 
 		case 2620:
-			if( Chk_Device_Carrier_Holder(OFF) == RET_GOOD && Chk_UnPress_PushClamp_OnOff(0, OFF ) == RET_GOOD )
+			nRet_1 = Chk_Device_Carrier_Holder(OFF);
+			nRet_2 =  Chk_UnPress_PushClamp_OnOff(0, OFF );
+			if( nRet_1 == RET_GOOD && nRet_2 == RET_GOOD )
 			{
 				mn_RunStep = 2700;
-			}	
+			}
+			else if( nRet_1 == RET_ERROR || nRet_2 == RET_ERROR )
+			{
+				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, m_strAlarmCode);
+				mn_RunStep = 2700;
+			}
 			break;
 
 		case 2700:
@@ -1128,8 +1292,8 @@ void CRun_UnPress_Robot::Set_Device_Carrier_Holder( int OnOff)
 
 
 	//ON->DOWN OFF->UP
-	g_ioMgr.Set_Out_Bit(st_io.o_Press_Carrier_Holder_Down_Sol, OnOff);
-	g_ioMgr.Set_Out_Bit(st_io.o_Press_Carrier_Holder_Up_Sol, !OnOff);
+	g_ioMgr.set_out_bit(st_io.o_Press_Carrier_Holder_Down_Sol, OnOff);
+	g_ioMgr.set_out_bit(st_io.o_Press_Carrier_Holder_Up_Sol, !OnOff);
 
 
 
@@ -1161,7 +1325,7 @@ int CRun_UnPress_Robot::Chk_Device_Carrier_Holder( int nOnOff )
 
 
 
-	if (nOnOff == IO_OFF)//DOWN BWD
+	if (nOnOff == IO_OFF)//UP
 	{
 		if (m_bCarrierHolder == false && nRet_1 == IO_ON && nRet_2 == IO_OFF )
 		{
@@ -1206,12 +1370,12 @@ int CRun_UnPress_Robot::Chk_Device_Carrier_Holder( int nOnOff )
 	}
 	else
 	{
-		if (m_bCarrierHolder == false && nRet_2 == IO_ON && nRet_1 == IO_OFF )
+		if (m_bCarrierHolder == false && nRet_1 == IO_OFF && nRet_2 == IO_ON )
 		{
 			m_bCarrierHolder = true;
 			m_dwCarrierHolder[0]	= GetCurrentTime();
 		}
-		else if (m_bCarrierHolder == true && nRet_2 == IO_ON && nRet_1 == IO_OFF )
+		else if (m_bCarrierHolder == true && nRet_1 == IO_OFF && nRet_2 == IO_ON )
 		{
 			m_dwCarrierHolder[1]	= GetCurrentTime();
 			m_dwCarrierHolder[2]	= m_dwCarrierHolder[1] - m_dwCarrierHolder[0];
@@ -1266,8 +1430,8 @@ void CRun_UnPress_Robot::Set_UnPress_PushClamp_OnOff( int nMode, int OnOff)
 
 	if( nMode == 0 )//미는 실린더
 	{
-		g_ioMgr.set_out_bit( st_io.o_Slide_Guide_X2_Forward_Sol, OnOff);
-		g_ioMgr.set_out_bit( st_io.o_Slide_Guide_X2_Backward_Sol, !OnOff);
+		g_ioMgr.set_out_bit( st_io.o_Slide_Guide_X2_Backward_Sol, OnOff);
+		g_ioMgr.set_out_bit( st_io.o_Slide_Guide_X2_Forward_Sol, !OnOff);
 	}
 	else//unpress 실린더
 	{
@@ -1300,23 +1464,23 @@ int CRun_UnPress_Robot::Chk_UnPress_PushClamp_OnOff( int nMode, int OnOff )
 
 	if( nMode == 0 )
 	{
-		nRet1 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, OnOff);
-		nRet2 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, !OnOff);
+		nRet1 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Down_Check, OnOff);
+		nRet2 = g_ioMgr.get_in_bit(st_io.i_Slide_Guide_X2_Up_Check, !OnOff);
 	}
 	else
 	{
-		nRet1 = g_ioMgr.get_in_bit(st_io.i_Press_Up_Check, OnOff);
-		nRet2 = g_ioMgr.get_in_bit(st_io.i_Press_Down_Check, !OnOff);
+		nRet1 = g_ioMgr.get_in_bit(st_io.i_Press_Down_Check, OnOff);
+		nRet2 = g_ioMgr.get_in_bit(st_io.i_Press_Up_Check, !OnOff);
 	}
 
 	if (OnOff == IO_OFF)
 	{
-		if (m_bPressUpDnFlag == false && nRet1 ==  IO_ON && nRet2 == IO_OFF )
+		if (m_bPressUpDnFlag[nMode] == false && nRet1 == IO_OFF && nRet2 == IO_ON )
 		{
 			m_bPressUpDnFlag[nMode]		= true;
 			m_dwPressUpDn[nMode][0]	= GetCurrentTime();
 		}
-		else if (m_bPressUpDnFlag[nMode] == true && nRet1 ==  IO_ON && nRet2 == IO_OFF  )
+		else if (m_bPressUpDnFlag[nMode] == true && nRet1 == IO_OFF && nRet2 == IO_ON  )
 		{
 			m_dwPressUpDn[nMode][1] = GetCurrentTime();
 			m_dwPressUpDn[nMode][2] = m_dwPressUpDn[nMode][1] - m_dwPressUpDn[nMode][0];
@@ -1354,12 +1518,12 @@ int CRun_UnPress_Robot::Chk_UnPress_PushClamp_OnOff( int nMode, int OnOff )
 	}
 	else
 	{
-		if (m_bPressUpDnFlag[nMode] == false && nRet1 ==  IO_OFF && nRet2 == IO_ON  )
+		if (m_bPressUpDnFlag[nMode] == false && nRet1 ==  IO_ON && nRet2 == IO_OFF  )
 		{
 			m_bPressUpDnFlag[nMode]			= true;
 			m_dwPressUpDn[nMode][0]	= GetCurrentTime();
 		}
-		else if (m_bPressUpDnFlag[nMode] == true && nRet1 ==  IO_OFF && nRet2 == IO_ON )
+		else if (m_bPressUpDnFlag[nMode] == true && nRet1 ==  IO_ON && nRet2 == IO_OFF )
 		{
 			m_dwPressUpDn[nMode][1]	= GetCurrentTime();
 			m_dwPressUpDn[nMode][2]	= m_dwPressUpDn[nMode][1] - m_dwPressUpDn[nMode][0];

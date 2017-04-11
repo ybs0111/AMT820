@@ -128,7 +128,8 @@ public:
 	int m_nContinusVError;
 	int m_nTotalVError;
 	bool	m_bVisionFwdBwdFlag;
-	DWORD	m_dwVisionwdBwd[3];
+	DWORD	m_dwVisionwdFwdBwd[3];
+
 
 // Operations
 public:
@@ -144,6 +145,10 @@ public:
 	int Process_Dvc_Place(int nMode, int nWork_Site, int nPos);
 	int Robot_AutoMove_Safety_Zone( int nMode, int n_pos);
 	
+
+	void Set_Vision_Y_Clamp_ForeardBackward(int OnOff);
+	int Chk_Vision_Y_Clamp_ForeardBackward(int OnOff);
+
 	void Set_HeatSink_Reverse_Turn(int OnOff);
 	int Chk_HeatSink_Reverse_Turn(int OnOff);
 

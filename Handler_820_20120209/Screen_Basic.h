@@ -113,6 +113,7 @@ public:
 	int				m_nmode_7387[2];
 	int             m_nmode_tray_type[2]; //Type1, Type2
 	int				m_n7387InspectAlarmSkipMode[2];
+	int				m_n3874InspectAlarmSkipMode[2]; //kwlee 2017.0411
 	int				m_n3874InspectMode[2];
 	int				n_Light_Curtain_Mode[2];
 	int				n_mode_case_assembly[2];
@@ -193,12 +194,15 @@ public:
 	BOOL AddItem(int nIndex, WIN32_FIND_DATA *pfd);
 	int OnBasic_Init_List(LPCTSTR pszPath);
 	void OnBasic_Device_Display(CString str_dvc);
-	void Data_Recovery();
-	int Data_Comparison();
-	void OnBasic_Data_Apply();
+
+	
 	void OnBasic_Data_Backup();
 	void OnBasic_Data_Label();
-    void OnBasic_Device_Focus_Set(); //kwlee 2017.0403
+    void OnBasic_Device_Focus_Set(); 
+	//kwlee 2017.0403
+	void Data_Recovery();
+	void OnBasic_Data_Apply();
+	int Data_Comparison();
 	void OnBasic_Data_Set();
 	void OnBasic_Digital();
 	void OnBasic_Data_Group();

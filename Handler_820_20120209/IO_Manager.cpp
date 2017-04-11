@@ -271,7 +271,7 @@ st_io_param::st_io_param()
 	st_io.i_Tray_Remover_Z_Down_Check				=	109;					///PS0109
 	st_io.i_Tray_Vacuum_On_Check                    =   110;//i_Tray_Clamp_Forward_Check				=	110;					///PS0110
 	st_io.i_Tray_Vacuum_Off_Check                   =   111;//i_Tray_Clamp_Backward_Check				=	111;					///PS0111
-	st_io.i_Loading_Tr_Jig_Detect_Check				=	112;					///PS0114
+// 	st_io.i_Loading_Tr_Jig_Detect_Check				=	112;					///PS0114
 	st_io.i_Loader_Transfer_Clamp_On_Check			=	113;					///PS0115
 	st_io.i_Loader_Transfer_Clamp_Off_Check			=	113;					///PS0115
 	st_io.i_Loader_Align_Forward_Check				=	114;					///PS0114
@@ -345,7 +345,7 @@ st_io_param::st_io_param()
 	st_io.i_Epoxy_Level_Bottom						=	510;
 	st_io.i_Epoxy_Reserve_4							=	511;
 
-	st_io.i_EopxyGarbageContainerDetect				=	512;
+// 	st_io.i_EopxyGarbageContainerDetect				=	512;
 	st_io.i_LoadCellContainerDetect					=	513;
 
 	st_io.i_Main_Air1_Check							=	514;					///PS0514
@@ -358,7 +358,7 @@ st_io_param::st_io_param()
 //	st_io_def.i_Press_Backward_Check					=	313;				///PS0313
 
 
-	st_io.i_Device_Reverse_Input_Check				=	512;
+	st_io.i_Loading_Tr_Jig_Detect_Check				=	512;//2017.0405 st_io.i_Device_Reverse_Input_Check				=	512;
 	
 	st_io.o_Loading_Stacker_Tray_Lock_Sol			=	600;					///S0600
 	st_io.o_Loading_Stacker_Tray_Unlock_Sol			=	601;					///S0601

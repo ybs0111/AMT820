@@ -13,8 +13,9 @@ enum
 	THREAD_IO,
 	THREAD_MOTORS,
 
-
 	THREAD_LDSTACKER_ELIVATOR,
+	THREAD_EMPTYSTACKER_ELIVATOR,
+	THREAD_EMPTYTRAY_TRANSFER,
 	THREAD_LDOAD_PLATE,
 	THREAD_TRAY_TRANSFER,
 	THREAD_LOAD_PICKER,
@@ -53,6 +54,7 @@ extern UINT	OnThread_UnPress_Robot(LPVOID lParam);				// m_thread[11]
 extern UINT	OnThread_Epoxy_Robot(LPVOID lParam);				// m_thread[12]
 extern UINT	OnThread_Carrier_Robot(LPVOID lParam);				// m_thread[13]
 extern UINT	OnThread_HeatSink_Robot(LPVOID lParam);				// m_thread[14]
+extern UINT	OnThread_EmptyStacker_Elivator(LPVOID lParam);	    // m_thread[15]
 
 
 

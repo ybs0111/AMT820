@@ -33,6 +33,12 @@ CRun_HeatSinkVision_Transfer_Robot::CRun_HeatSinkVision_Transfer_Robot()
 	m_nRobot_Y = M_HEATSINK_TRANSFER_Y;
 	m_nRobot_Z = M_HEATSINK_TRANSFER_Z;
 	m_nRobot_P = M_HEATSINK_PICKER_PITCH;
+
+	COMI.ml_axiscnt[m_nLinearMove_Index] = 2;
+	COMI.mp_axisnum[m_nLinearMove_Index][0] = M_HEATSINK_TRANSFER_X;
+	COMI.mp_axisnum[m_nLinearMove_Index][1] = M_HEATSINK_TRANSFER_Y;
+	COMI.mp_axisnum[m_nLinearMove_Index][2] = M_HEATSINK_TRANSFER_Z;
+
 	m_nRobot_DisY = M_DISPENSER_Y;
 	m_nRobot_VisY = M_HEATSINK_INSPECT_Y;
 	m_nRobot_VisZ = M_HEATSINK_INSPECT_Z;
@@ -47,14 +53,16 @@ CRun_HeatSinkVision_Transfer_Robot::CRun_HeatSinkVision_Transfer_Robot()
 	{
 		st_picker[THD_HEATSINK_RBT].st_pcb_info[i].nYesNo = CTL_NO;
 		st_picker[THD_HEATSINK_RBT].st_pcb_info[i].nBin = CTL_NO;
+		st_picker[THD_HEATSINK_PRBT].st_pcb_info[i].nYesNo = CTL_NO;
+		st_picker[THD_HEATSINK_PRBT].st_pcb_info[i].nBin = CTL_NO;		
 		st_picker[THD_LD_HEATSINK_BUFF].st_pcb_info[i].nYesNo = CTL_NO;
 		st_picker[THD_LD_HEATSINK_BUFF].st_pcb_info[i].nBin = CTL_NO;
 		st_picker[THD_PICK_HEATSINK_DVC].st_pcb_info[i].nYesNo = CTL_NO;
 		st_picker[THD_PICK_HEATSINK_DVC].st_pcb_info[i].nBin = CTL_NO;
 		st_picker[THD_PLACE_HEATSINK_DVC].st_pcb_info[i].nYesNo = CTL_NO;
 		st_picker[THD_PLACE_HEATSINK_DVC].st_pcb_info[i].nBin = CTL_NO;
-		st_picker[THD_PACLE_CARRIER_DVC].st_pcb_info[i].nYesNo = CTL_NO;
-		st_picker[THD_PACLE_CARRIER_DVC].st_pcb_info[i].nBin = CTL_NO;
+		st_picker[THD_PLACE_CARRIER_DVC].st_pcb_info[i].nYesNo = CTL_NO;
+		st_picker[THD_PLACE_CARRIER_DVC].st_pcb_info[i].nBin = CTL_NO;
 	}
 
 	for(m = 0; m < 2/*st_recipe.nTrayNum*/; m++)
@@ -82,6 +90,7 @@ void CRun_HeatSinkVision_Transfer_Robot::Thread_Run()
 	switch( st_work.mn_run_status)
 	{
 		case dINIT:
+			RunInit();
 			break;
 			
 		case dRUN:
@@ -103,7 +112,339 @@ void CRun_HeatSinkVision_Transfer_Robot::Thread_Run()
 
 void CRun_HeatSinkVision_Transfer_Robot::RunInit()
 {
+	int nRet_1 = 0, nRet_2 = 0;
+	if( st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
+ 	if( st_handler.mn_init_state[INIT_ULD_ROBOT] == CTL_NO ) return;
+	if( st_handler.mn_init_state[INIT_EPOXY_ROBOT] == CTL_NO ) return;
+	if( st_handler.mn_init_state[INIT_HEAT_SINK_ROBOT] != CTL_NO ) return;
+	st_handler.mn_init_state[INIT_HEAT_SINK_ROBOT] = CTL_YES;
+	st_handler.mn_init_state[INIT_DISPENSOR_ROBOT] = CTL_YES;
+	st_handler.mn_init_state[INIT_VISION_ROBOT] = CTL_YES;
+	
+	switch( mn_InitStep )
+	{
+		case 0:
+			Set_Dispenser_Air_Blow(IO_OFF);
+			mn_InitStep = 100;
+			break;
 
+		case 100:
+			nRet_1 = COMI.HomeCheck_Mot(m_nRobot_Z, st_motor[m_nRobot_Z].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				Set_HeatSink_Vacuum_OnOff(IO_ON);
+				mn_InitStep = 200;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
+
+		case 200:
+			Set_HeatSink_Transfer_Pad_UpDown(IO_OFF);
+			mn_InitStep = 210;
+			break;
+
+		case 210:
+			nRet_1 = Chk_HeatSink_Transfer_Pad_UpDown(IO_OFF);
+			if( nRet_1 == RET_GOOD)
+			{
+				mn_InitStep = 220;
+			}
+			else if(nRet_1 == RET_ERROR )
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 220:
+			nRet_1 = Chk_HeatSink_Vacuum_OnOff(IO_OFF);
+			if( nRet_1 == RET_GOOD)
+			{
+				Set_HeatSink_Vacuum_OnOff(IO_OFF);
+				mn_InitStep = 300;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 300:
+			nRet_1 = COMI.HomeCheck_Mot(m_nRobot_P, st_motor[m_nRobot_P].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 310;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
+
+		case 310:
+			nRet_1 = COMI.HomeCheck_Mot(m_nRobot_X, st_motor[m_nRobot_X].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 320;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
+
+		case 320:
+			nRet_1 = COMI.HomeCheck_Mot(m_nRobot_Y, st_motor[m_nRobot_Y].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 330;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
+
+		case 330:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_HEATSINK_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_InitStep = 400;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_InitStep = 330;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				mn_InitStep = 900;
+			}
+			break;
+
+		case 400:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRANSFER_X_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_InitStep = 500;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_InitStep = 400;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				mn_InitStep = 900;
+			}
+			break;
+
+		case 500:
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][0] == CTL_REQ && 
+				st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][1] == WORK_PICK)
+			{
+				mn_InitStep = 510;
+			}
+			break;
+
+		case 510:
+			nRet_1 = COMI.HomeCheck_Mot(m_nRobot_VisZ, st_motor[m_nRobot_VisZ].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 520;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
+
+		case 520:
+			Set_Device_CameraY_Jig_Press_ForwardBackward(IO_OFF);
+			mn_InitStep = 530;
+			break;
+
+		case 530:
+			nRet_1 = Chk_Device_CameraY_Jig_Press_ForwardBackward(IO_OFF);
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 600;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2005, dWARNING, IO_OFF);
+			}
+			break;
+
+			
+		case 600:
+			nRet_1 = COMI.HomeCheck_Mot(m_nRobot_VisY, st_motor[m_nRobot_VisY].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 610;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
+
+		case 610:
+			Set_Vision_Y_Clamp_ForeardBackward(IO_OFF);
+			mn_InitStep = 620;
+			break;
+
+		case 620:
+			nRet_1 = Chk_Vision_Y_Clamp_ForeardBackward(IO_OFF);
+			if( nRet_1 == RET_GOOD)
+			{
+				mn_InitStep = 700;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2005, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 700:
+			nRet_1 = g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_0_Check, IO_ON);
+			nRet_2 = g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_180_Check, IO_OFF);
+			if( nRet_1 == IO_ON && nRet_2 == IO_OFF)
+			{
+				mn_InitStep = 710;
+			}
+			else
+			{
+				mn_InitStep = 710;
+			}
+			break;
+
+		case 710:
+			Set_HeatSink_Reverse_Clamp_ForwardBackward(IO_OFF);
+			mn_InitStep = 720;
+			break;
+
+		case 720:
+			nRet_1 = Chk_HeatSink_Reverse_Clamp_ForwardBackward(IO_OFF);
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 730;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2005, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 730:
+			Set_HeatSink_Reverse_UpDown(IO_ON);
+			mn_InitStep = 740;
+			break;
+
+		case 740:
+			nRet_1 = Chk_HeatSink_Reverse_UpDown(IO_ON);
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 750;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2005, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 750:
+			Set_HeatSink_Reverse_Turn(IO_OFF);
+			mn_InitStep = 760;
+			break;
+
+		case 760:
+			nRet_1 = Chk_HeatSink_Reverse_Turn(IO_OFF);
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 770;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2005, dWARNING, IO_OFF);
+			}
+			break;
+
+		case 770:
+			Set_HeatSink_Reverse_UpDown(IO_OFF);
+			mn_InitStep = 780;
+			break;
+			
+		case 780:
+			nRet_1 = Chk_HeatSink_Reverse_UpDown(IO_OFF);
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 800;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2005, dWARNING, IO_OFF);
+			}
+			break;
+
+		case 800:
+			nRet_1 = COMI.HomeCheck_Mot(m_nRobot_DisY, st_motor[m_nRobot_DisY].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 810;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
+
+		case 810:
+			nRet_1 = g_ioMgr.get_in_bit(st_io.i_Dispenser_Device_Check, IO_ON);//B접점
+			if( nRet_1 == IO_OFF)
+			{
+				m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_Dispenser_Device_Check);
+				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, m_strAlarmCode);
+				mn_InitStep = 900;
+			}
+			else
+			{
+				mn_InitStep = 1000;
+			}
+			break;
+			
+
+		case 900:
+			mn_InitStep = 0;
+			st_handler.mn_initial_error = TRUE;
+			break;
+			
+		case 1000:
+			st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][0] = CTL_READY;
+			st_handler.mn_init_state[INIT_DISPENSOR_ROBOT] = CTL_YES;
+			st_handler.mn_init_state[INIT_VISION_ROBOT] = CTL_YES;
+			st_handler.mn_init_state[INIT_HEAT_SINK_ROBOT] = CTL_YES;
+			mn_InitStep = 0;
+			break;
+
+	}
 }
 
 void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
@@ -121,7 +462,7 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
 			break;
 
 		case 0:
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisZ, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS], COMI.mn_runspeed_rate);
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisZ, st_motor[m_nRobot_VisZ].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS], COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
 				mn_RunVisStep = 100;
@@ -191,7 +532,7 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
 			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_VISION_RBT][0] == CTL_REQ && st_sync.nHeatSinkRbt_Dvc_Req[THD_VISION_RBT][1] == WORK_PLACE )
 			{
 				st_sync.nHeatSinkRbt_Dvc_Req[THD_VISION_RBT][0] = CTL_READY;
-				mn_RunHsStep = 1200;
+				mn_RunVisStep = 1200;
 			}
 			break;
 
@@ -200,12 +541,12 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
 			{
 				m_nVisCarriorPos = 0;
 				m_nVisTeachPos = 0;
-				mn_RunHsStep = 2000;
+				mn_RunVisStep = 2000;
 			}
 			break;
 
 		case 1800:
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisZ, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS], COMI.mn_runspeed_rate);
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisZ, st_motor[m_nRobot_VisZ].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS], COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
 				mn_RunVisStep = 2000;
@@ -240,12 +581,12 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
 
 
 		case 2000:
-			if( COMI.Get_MotCurrentPos(m_nRobot_Z) > (st_motor[m_nRobot_Z].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) )
+			if( COMI.Get_MotCurrentPos(m_nRobot_VisZ) > (st_motor[m_nRobot_VisZ].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_VisZ]) )
 			{
 				mn_RunVisStep = 1800;
 				break;
 			}
-			if( COMI.Get_MotCurrentPos(m_nRobot_VisY) > (st_motor[m_nRobot_Z].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) )
+			if( COMI.Get_MotCurrentPos(m_nRobot_VisY) > (st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_VisY]) )
 			{
 				mn_RunVisStep = 1900;
 				break;
@@ -256,7 +597,7 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
 				Set_Device_Carrier_Camera_LED_LAMP_OnOff(IO_ON);
 				Set_Device_Carrier_Camera_Y_Press_UpDown(IO_ON);
 			}
-			mn_RunHsStep = 2100;
+			mn_RunVisStep = 2100;
 			break;
 
 		case 2100:			
@@ -276,7 +617,7 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveVision()
 					break;
 				}				
 			}
-			mn_RunHsStep = 2110;
+			mn_RunVisStep = 2110;
 			break;
 
 		case 2110:
@@ -506,7 +847,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Measure_Vision()
 			m_dwMCameraResWaitTime[2] = m_dwMCameraResWaitTime[1] - m_dwMCameraResWaitTime[0];
 			if( m_dwMCameraResWaitTime[2] <= 0 ) m_dwMCameraResWaitTime[0] = GetCurrentTime();
 
-			if( st_vision.b7387MeasureCmp == true )
+			if( st_vision.b7387MeasureCmp == TRUE )
 			{
 				mn_MoveMeasureStep = 2200;
 			}
@@ -642,14 +983,14 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Measure_Vision()
 			}
 			else
 			{
-				mn_RunHsStep = 3010;
+				mn_MoveMeasureStep = 3010;
 			}
 			break;
 
 		case 3300:
 			//COMM
 			//피치를 벌린다
-			mn_RunHsStep = 3400;
+			mn_MoveMeasureStep = 3400;
 			break;
 
 		case 3400:
@@ -994,13 +1335,15 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 			break;
 			
 		case 4100:
-			if( st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] == CTL_REQ && st_sync.nHeatSinkRbt_Dvc_Req[THD_HEATSINK_RBT][1] == WORK_PLACE)
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_PRBT][0] == CTL_REQ && 
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_HEATSINK_PRBT][1] == WORK_PLACE)
 			{
 				m_nCarriorPos = 0;
-				st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] = CTL_READY;
+				st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_PRBT][0] = CTL_READY;
 				mn_RunHsStep = 4200;
 			}
-			else if( m_nCarriorPos> 0 && st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] == CTL_CHANGE && st_sync.nHeatSinkRbt_Dvc_Req[THD_HEATSINK_RBT][1] == WORK_PLACE)
+			else if( m_nCarriorPos> 0 && st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_PRBT][0] == CTL_CHANGE && 
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_HEATSINK_PRBT][1] == WORK_PLACE)
 			{
 				mn_RunHsStep = 4210;
 			}
@@ -1015,7 +1358,8 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 			break;
 
 		case 4200:
-			if( st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] == CTL_CHANGE && st_sync.nHeatSinkRbt_Dvc_Req[THD_HEATSINK_RBT][1] == WORK_PLACE)
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_PRBT][0] == CTL_CHANGE && 
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_HEATSINK_PRBT][1] == WORK_PLACE)
 			{
 				mn_RunHsStep = 4210;
 			}
@@ -1025,7 +1369,7 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 			if( ( COMI.Get_MotCurrentPos(m_nRobot_X) <= ( st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRASNFER_X_TURN_READY_POS] + st_motor[m_nRobot_X].mn_allow ) ) &&
 				( COMI.Get_MotCurrentPos(m_nRobot_Y) > ( st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS] - st_motor[m_nRobot_X].mn_allow ) ) )
 			{
-				nRet_1 = Process_Dvc_Place(0, THD_PACLE_CARRIER_DVC, m_nCarriorPos);
+				nRet_1 = Process_Dvc_Place(0, THD_PLACE_CARRIER_DVC, m_nCarriorPos);
 				if( nRet_1 == RET_GOOD )
 				{
 					mn_RunHsStep = 4300;
@@ -1068,7 +1412,8 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveHeatSink()
 		case 5000:
 			if( COMI.Get_MotCurrentPos(m_nRobot_Y) < ( st_motor[m_nRobot_X].md_pos[P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS] + st_motor[m_nRobot_X].mn_allow ) )
 			{
-				st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_RBT][0] = CTL_NO;
+				st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_PRBT][0] = CTL_NO;
+				st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_PRBT][1] = CTL_NO;
 				
 				st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][0] = CTL_REQ;
 				st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][1] = WORK_PLACE;
@@ -1536,22 +1881,56 @@ void CRun_HeatSinkVision_Transfer_Robot::RunMoveDispensor()
 			break;
 
 		case 4400:			
-			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_CHANGE && st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == WORK_PLACE )
+			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_CHANGE && 
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == WORK_PLACE )
 			{
 				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] = CTL_SORT;
-				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] = WORK_PICK;
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] = WORK_PLACE;
 				mn_RunDispensorStep = 4500;
 			}
 			break;
 
 		case 4500://HEATSINK ROBOT pick dvc in reverse site
-			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_FREE && st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == WORK_PICK )
+			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_FREE && 
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == WORK_PLACE )
 			{
-				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] = CTL_NO;
-				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] = CTL_NO;
+// 				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] = CTL_NO;
+// 				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] = CTL_NO;
+				mn_RunDispensorStep = 4600;
+			}
+			break;
+
+		case 4600:
+			Set_HeatSink_Reverse_Clamp_ForwardBackward(IO_OFF);
+			mn_RunDispensorStep = 4610;
+			break;
+			
+		case 4610:
+			nRet_1 = Chk_HeatSink_Reverse_Clamp_ForwardBackward(IO_OFF);
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_RunDispensorStep = 4700;
+			}
+			break;
+
+		case 4700:
+			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_FREE && 
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == WORK_PLACE )
+			{
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] = CTL_FINAL;
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] = WORK_PLACE;
+				mn_RunDispensorStep = 4800;
+			}
+			break;
+
+		case 4800:
+			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_NO && 
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == CTL_NO )
+			{
 				mn_RunDispensorStep = 5000;
 			}
 			break;
+
 
 		case 5000:
 			mn_RunDispensorStep = 10;
@@ -1568,6 +1947,14 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 
 	dCurrentPosX = COMI.Get_MotCurrentPos( m_nRobot_X );
 	dCurrentPosY = COMI.Get_MotCurrentPos( m_nRobot_Y );
+
+	int m_nSitePicker=-1;
+	if	   ( nWork_Site == THD_PLACE_HEATSINK_DVC ) m_nSitePicker = THD_HEATSINK_RBT;
+	else if( nWork_Site == THD_PLACE_CARRIER_DVC )  m_nSitePicker = THD_HEATSINK_PRBT;
+	else
+	{
+		return nFuncRet;
+	}
 
 	Func.ThreadFunctionStepTrace(32, mn_PlaceStep);
 	switch(mn_PlaceStep)
@@ -1636,13 +2023,14 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 
 	case 1000:
 		m_dCurrentPos[m_nRobot_Z] = COMI.Get_MotCurrentPos(m_nRobot_Z); 
-		if(m_dCurrentPos[m_nRobot_Z] > st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow)
+		if(m_dCurrentPos[m_nRobot_Z] > st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z])
 		{
 			mn_PlaceStep = 900;
 			break;
 		}
 
-		nRet_1 = Func.Check_PickerStatus(0, nWork_Site, CTL_YES, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
+		nRet_1 = Func.Check_PickerStatus(0, m_nSitePicker, CTL_YES, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
+
 		if(nRet_1 == RET_GOOD)
 		{
 			m_bDvcWaitChk_Falg = false;
@@ -1676,11 +2064,11 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 		m_n_TrayNum = -1; m_n_FirstTray_Y_Num = -1; m_n_FirstTray_Y_Num = -1; m_n_FirstPicker_Num = -1; //flag clear
 		for(i = 0; i < m_nPickerPara; i++)
 		{
-			if(st_picker[nWork_Site].st_pcb_info[i].nYesNo == CTL_YES)//피커에 자재가 들고 있다는 정보가 유
+			if(st_picker[m_nSitePicker].st_pcb_info[i].nYesNo == CTL_YES)//피커에 자재가 들고 있다는 정보가 유
 			{
 				m_n_FirstPicker_Num = i;
 				i = m_nPickerPara;
-			}
+			}			
 		}
 
 		if(m_n_FirstPicker_Num == -1)
@@ -1691,7 +2079,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 			break;
 		}
 
-		nRet_1 = Func.Find_TrayWork_Pos(WORK_PLACE, nWork_Site, CTL_NO, m_npFindWorkPosYXCPB, THD_HEATSINK_RBT, _T("0")); //놓을때버퍼에서으 ㅣ작업순서는 뒤부터 놓는다 (4 -> 1 순서) 
+		nRet_1 = Func.Find_TrayWork_Pos(WORK_PLACE, nWork_Site, CTL_NO, m_npFindWorkPosYXCPB, m_nSitePicker, _T("0")); //놓을때버퍼에서으 ㅣ작업순서는 뒤부터 놓는다 (4 -> 1 순서) 
 		if(nRet_1 == RET_GOOD) //작업 가능한 자재가 있다
 		{
 			 m_n_FirstTray_X_Num = m_npFindWorkPosYXCPB[0]; m_n_FirstTray_Y_Num = m_npFindWorkPosYXCPB[1];
@@ -1711,34 +2099,17 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 				m_npPicker_YesNo[i] = CTL_NO; //작업할 피커정보 clear
 				if(i < m_n_FirstPicker_Num) continue;
 
-				if(nWork_Site == THD_PLACE_HEATSINK_DVC )
+				if(st_picker[m_nSitePicker].st_pcb_info[i].nYesNo == CTL_YES)// && st_picker[m_nRobotSite].st_pcb_info[i].nEnable == CTL_YES)
 				{
-					if(st_picker[nWork_Site].st_pcb_info[i].nYesNo == CTL_YES)// && st_picker[m_nRobotSite].st_pcb_info[i].nEnable == CTL_YES)
+					if(i >= 0 && m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num) < st_recipe.nLdBuffer_Num)
 					{
-						if(i >= 0 && m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num) < st_recipe.nLdBuffer_Num)
+						if(st_buffer_info[nWork_Site].st_pcb_info[m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num)].nYesNo == CTL_NO)
 						{
-							if(st_buffer_info[nWork_Site].st_pcb_info[m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num)].nYesNo == CTL_NO)
-							{
-								m_npPicker_YesNo[i] = CTL_YES;
-								nFlag++;
-							}
-						}
-					} 
-				}
-				else if(nWork_Site == THD_PACLE_CARRIER_DVC)
-				{
-					if(st_picker[nWork_Site].st_pcb_info[i].nYesNo == CTL_YES)
-					{
-						if(i >= 0 && m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num) < 3 )//site 3ea
-						{
-							if(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].n_exist[m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num)] == CTL_NO ) // 
-							{//버퍼에 자재가 없고, 사용 가능한 위치일때만  자재를 놓을수 있게 한다.
-								m_npPicker_YesNo[i] = CTL_YES;
-								nFlag++;
-							}
+							m_npPicker_YesNo[i] = CTL_YES;
+							nFlag++;
 						}
 					}
-				}
+				}				
 			}
 			if(nFlag == 0) //작업할 피커가 하나도 준비되 않았다.
 			{
@@ -1798,6 +2169,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 		if (nRet_1 == BD_GOOD) //좌측으로 이동
 		{
 			m_bDvcWaitChk_Falg =  false;
+			//Z축을 내리기전에 Pitch를 오므린다.
 			mn_PlaceStep = 3000;
 		}
 		else if (nRet_1 == BD_RETRY)
@@ -1811,7 +2183,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 		}
 		break; 
 
-	case 2900: //james 2016.0922 
+	case 2900:
 		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
 		if (nRet_1 == BD_GOOD) //좌측으로 이동
 		{
@@ -1847,7 +2219,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 // 		{//serial comm
 // 			mn_PickStep = 2960;
 // 		}
-// 		else//THD_PACLE_CARRIER_DVC//glipper
+// 		else//THD_PLACE_CARRIER_DVC//glipper
 // 		{
 // 			mn_PickStep = 3000;
 // 		}
@@ -1869,8 +2241,8 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 			mn_PlaceStep = 2900;
 			break;
 		}
+		nRet_1 = Func.Check_PickerStatus(0, m_nSitePicker, CTL_YES, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
 
-		nRet_1 = Func.Check_PickerStatus(0, nWork_Site, CTL_YES, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
 		if(nRet_1 == RET_GOOD)
 		{
 			m_bDvcWaitChk_Falg = false; //피커 정보와 현재 상태가 정상이다
@@ -1893,8 +2265,8 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 			}
 		}
 
-		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], st_motor[m_nRobot_X].mn_allow);
-		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor[m_nRobot_Y].mn_allow);
+		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], COMI.md_allow_value[m_nRobot_X]);
+		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], COMI.md_allow_value[m_nRobot_Y]);
 		if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
 		{
 			mn_PlaceStep = 2000;
@@ -1921,20 +2293,9 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 				break;
 			}  
 
-			nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_HeatSink_Reverse_0_Check, IO_ON, IO_STABLE_WAIT, IO_STABLE_LIMIT);
-			if(nRet_1 == RET_PROCEED)
-			{
-				break; 
-			} 
-			else if(nRet_1 == RET_ERROR)
-			{
-				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_HeatSink_Reverse_0_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(1240, dWARNING, m_strAlarmCode);
-				break;
-			} 
-			m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_TURN_PICK_POS];
-		}
-		else if(nWork_Site == THD_PACLE_CARRIER_DVC)
+			m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_TURN_PLACE_POS];
+		} 
+		else if(nWork_Site == THD_PLACE_CARRIER_DVC)
 		{
 			dCurrInspectY = COMI.Get_MotCurrentPos(M_HEATSINK_INSPECT_Y);
 			if( dCurrInspectY > ( st_motor[M_HEATSINK_INSPECT_Y].md_pos[P_HEATSINK_INSPECT_Y_INIT_POS] + st_motor[M_HEATSINK_INSPECT_Y].mn_allow ) )
@@ -1949,7 +2310,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 
 			if(st_basic.n_mode_7387 != CTL_YES)//not use
 			{
-				m_dpTargetPosList[2] = m_dpTargetPosList[2] / 2;
+				m_dpTargetPosList[2] = m_dpTargetPosList[2];// / 2;
 			}
 		}
 		else 
@@ -2004,6 +2365,19 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 		if( nWork_Site == THD_PLACE_HEATSINK_DVC ) nRet_1 = Chk_HeatSink_Transfer_Pad_UpDown(IO_ON);
 		if(nRet_1 == RET_GOOD)
 		{
+			Set_HeatSink_Vacuum_OnOff(IO_OFF);
+			mn_PlaceStep = 3120;
+		}
+		else if(nRet_1 == RET_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1247, dWARNING, m_strAlarmCode);
+		}
+		break;
+
+	case 3120:
+		nRet_1 = Chk_HeatSink_Vacuum_OnOff( IO_OFF );
+		if( nRet_1 == RET_GOOD )
+		{
 			mn_PlaceStep = 3200;
 		}
 		else if(nRet_1 == RET_ERROR)
@@ -2015,12 +2389,19 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 	case 3200:
 		if(nWork_Site == THD_PLACE_HEATSINK_DVC)
 		{
+			if( st_basic.n_mode_device == WITHOUT_DVC)
+				nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.o_HeatSink_Vacuum_On_Sol, IO_OFF, IO_STABLE_WAIT, 1000);
+			else
+				nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Dispenser_Device_Check, IO_OFF, IO_STABLE_WAIT, 1000);
+			if( nRet_1 == RET_PROCEED)
+				break;
+
 			mn_PlaceStep = 4000;
 		}
-		else// if( nWork_Site == THD_PACLE_CARRIER_DVC )
+		else// if( nWork_Site == THD_PLACE_CARRIER_DVC )
 		{
 			m_nRubbRetry_Cnt = 0;
-			mn_PlaceStep = 3300;//트레이에 놓는 영역
+			mn_PlaceStep = 3300;
 		} 
 		break;
 
@@ -2102,9 +2483,9 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 
 	case 3300://rubs on each heatsink
 		//carrier 사이트 위치별로 받아온다
-		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], st_motor[m_nRobot_X].mn_allow + st_basic.dHSCarrierSpreadMoveOffset);
-		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor[m_nRobot_Y].mn_allow);
-		nRet_3 = COMI.Check_MotPosRange(m_nRobot_Z, m_dpTargetPosList[2], st_motor[m_nRobot_Z].mn_allow);
+		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], COMI.md_allow_value[m_nRobot_X] + st_basic.dHSCarrierSpreadMoveOffset);
+		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], COMI.md_allow_value[m_nRobot_Y]);
+		nRet_3 = COMI.Check_MotPosRange(m_nRobot_Z, m_dpTargetPosList[2], COMI.md_allow_value[m_nRobot_Z]);
 		if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD || nRet_3 != BD_GOOD)
 		{
 			if( nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
@@ -2118,10 +2499,10 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 			}
 			break;
 		}
-		if( st_basic.n_rubb_count >= m_nRubbRetry_Cnt )
+		if( st_basic.n_rubb_count <= m_nRubbRetry_Cnt )
 		{
 			m_nRubbRetry_Cnt = 0;
-			mn_PlaceStep = 3400;
+			mn_PlaceStep = 3500;
 			break;
 		}
 		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, m_dpTargetPosList[0]+ st_basic.dHSCarrierSpreadMoveOffset , st_recipe.nRubHSRunSpeed);
@@ -2220,9 +2601,9 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 
 
 	case 3400:		
-		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], st_motor[m_nRobot_X].mn_allow + st_basic.dHSCarrierSpreadMoveOffset);
-		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor[m_nRobot_Y].mn_allow);
-		nRet_3 = COMI.Check_MotPosRange(m_nRobot_Z, m_dpTargetPosList[2], st_motor[m_nRobot_Z].mn_allow);
+		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], COMI.md_allow_value[m_nRobot_X] + st_basic.dHSCarrierSpreadMoveOffset);
+		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], COMI.md_allow_value[m_nRobot_Y]);
+		nRet_3 = COMI.Check_MotPosRange(m_nRobot_Z, m_dpTargetPosList[2], COMI.md_allow_value[m_nRobot_Z]);
 		if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD || nRet_3 != BD_GOOD)
 		{
 			if( nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
@@ -2403,25 +2784,10 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 		break;
 
 	case 4010:
-		nRet_1 = Chk_HeatSink_Transfer_Pad_UpDown(IO_OFF);  
-		if(nRet_1 == RET_GOOD)
-		{
-			m_bDvcWaitChk_Falg = false;
-			mn_PlaceStep = 4020;
-		}
-		else if(nRet_1 == RET_ERROR)
-		{
-			CTL_Lib.Alarm_Error_Occurrence(1252, dWARNING, m_strAlarmCode);
-			mn_PlaceStep = 4000;
-		} 
-		break;
-
-	case 4020:
 		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_CHECK, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
 		if (nRet_1 == BD_GOOD) //좌측으로 이동
 		{
-			m_bDvcWaitChk_Falg =  false;
-			mn_PlaceStep = 4100;
+			mn_PlaceStep = 4020;
 		}
 		else if (nRet_1 == BD_RETRY)
 		{
@@ -2432,7 +2798,22 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 			CTL_Lib.Alarm_Error_Occurrence(1253, dWARNING, alarm.mstr_code);
 			mn_PlaceStep = 4000;
 		}
-		break;		
+		break;
+		
+	case 4020:
+		nRet_1 = Chk_HeatSink_Transfer_Pad_UpDown(IO_OFF);  
+		if(nRet_1 == RET_GOOD)
+		{
+			m_bDvcWaitChk_Falg = false;
+			mn_PlaceStep = 4100;
+		}
+		else if(nRet_1 == RET_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1252, dWARNING, m_strAlarmCode);
+			mn_PlaceStep = 4000;
+		} 
+		break;
+
 
 	case 4100:
 		mn_PlaceStep = 5000; 
@@ -2465,40 +2846,51 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 
 		for (i = m_n_FirstPicker_Num; i < m_nPickerPara; i++)
 		{
-			if(st_picker[nWork_Site].st_pcb_info[i].nYesNo == CTL_YES && m_npPicker_YesNo[i] == CTL_YES
-				&& (m_npPicker_Vacuum_Status[i] == IO_ON && m_npPicker_OutputStatus[i] == IO_ON))
+			if(st_picker[m_nSitePicker].st_pcb_info[i].nYesNo == CTL_YES && m_npPicker_YesNo[i] == CTL_YES )
 			{
-				if (m_strLotNo[1] == _T(""))
+				if( nWork_Site == THD_PLACE_HEATSINK_DVC )
 				{
-					m_strLotNo[1]	= st_picker[nWork_Site].st_pcb_info[i].strLotNo;
-					m_strPartNo[1] = st_picker[nWork_Site].st_pcb_info[i].strPartNo;
+					if( m_npPicker_Vacuum_Status[i] == IO_OFF /*B접점*/ && m_npPicker_OutputStatus[i] == IO_OFF )
+					{
+						if (m_strLotNo[1] == _T(""))
+						{
+							m_strLotNo[1]  = st_picker[m_nSitePicker].st_pcb_info[i].strLotNo;
+							m_strPartNo[1] = st_picker[m_nSitePicker].st_pcb_info[i].strPartNo;
+						}
+						
+						if(i >= 0 && m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num) < st_recipe.nLdBuffer_Num)
+						{
+							m_npPicker_YesNo[i] = CTL_NO;	
+							m_npSet_WorkPosYXCPB[0] = m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num);
+							m_npSet_WorkPosYXCPB[1] = m_npFindWorkPosYXCPB[1];
+							m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
+							
+							Func.Data_Exchange_PickPlace(PICKER_PLACE_MODE, 1, m_nSitePicker, nWork_Site, m_npSet_WorkPosYXCPB);
+						}
+					}
 				}
-
-				if(nWork_Site == THD_PLACE_HEATSINK_DVC)
+				else if( nWork_Site == THD_PLACE_CARRIER_DVC )
 				{
-					if(i >= 0 && m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num) < st_recipe.nLdBuffer_Num)
+					if( m_npPicker_Vacuum_Status[i] == IO_OFF && m_npPicker_OutputStatus[i] == IO_OFF )
 					{
-						m_npPicker_YesNo[i] = CTL_NO;	
-						m_npSet_WorkPosYXCPB[0] = m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num);
-						m_npSet_WorkPosYXCPB[1] = m_npFindWorkPosYXCPB[1];
-						m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
-
-						Func.Data_Exchange_PickPlace(PICKER_PLACE_MODE, 1, THD_HEATSINK_RBT, nWork_Site, m_npSet_WorkPosYXCPB);
+						if (m_strLotNo[1] == _T(""))
+						{
+							m_strLotNo[1]  = st_picker[m_nSitePicker].st_pcb_info[i].strLotNo;
+							m_strPartNo[1] = st_picker[m_nSitePicker].st_pcb_info[i].strPartNo;
+						}
+						
+						if(i >= 0 && m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num) < st_recipe.nLdBuffer_Num)
+						{
+							m_npPicker_YesNo[i] = CTL_NO;	
+							m_npSet_WorkPosYXCPB[0] = m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num);
+							m_npSet_WorkPosYXCPB[1] = m_npFindWorkPosYXCPB[1];
+							m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
+							
+							Func.Data_Exchange_PickPlace(PICKER_PLACE_MODE, 1, m_nSitePicker, nWork_Site, m_npSet_WorkPosYXCPB);
+						}
 					}
-				}					 
-				else if(nWork_Site = THD_PACLE_CARRIER_DVC)
-				{
-					if(i >= 0 && m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num) < 3/*st_recipe.nLdBuffer_Num*/)
-					{
-						m_npPicker_YesNo[i] = CTL_NO;
-						//아래 함수에서 사용위해 위치 정보를 셋팅한다
-						m_npSet_WorkPosYXCPB[0] = m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num);
-						m_npSet_WorkPosYXCPB[1] = nPos;//m_npFindWorkPosYXCPB[1] + (i - m_n_FirstPicker_Num);
-						m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
 
-						Func.Data_Exchange_PickPlace(PICKER_PLACE_MODE, 1, THD_HEATSINK_RBT, nWork_Site, m_npSet_WorkPosYXCPB);
-					}
-				}				
+				}
 			}
 		}
 
@@ -2559,7 +2951,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Place(int nMode, int nWork_S
 int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_Site)
 {
 	int nFuncRet = RET_PROCEED;
-	int i, nRet_1, nRet_2, nFlag=0;
+	int i, nRet_1, nRet_2, nRet_3, nFlag=0;
 	double dCurrentPosX =0, dCurrentPosY=0;
 	CString strAlarm;
 
@@ -2567,6 +2959,14 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 
 	dCurrentPosX = COMI.Get_MotCurrentPos( m_nRobot_X );
 	dCurrentPosY = COMI.Get_MotCurrentPos( m_nRobot_Y );
+
+	int m_nSitePicker=-1;
+	if	   ( nWork_Site == THD_LD_HEATSINK_BUFF ) m_nSitePicker = THD_HEATSINK_RBT;
+	else if( nWork_Site == THD_DISPENSOR_PRBT )	  m_nSitePicker = THD_HEATSINK_PRBT;
+	else
+	{
+		return nFuncRet;
+	}
 
 	Func.ThreadFunctionStepTrace(33, mn_PickStep);
 	switch(mn_PickStep)
@@ -2641,7 +3041,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 				break;
 			}
 			//THD_LD_HEATSINK_BUFF
-			nRet_1 = Func.Check_PickerStatus(0, nWork_Site, CTL_YES, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
+			nRet_1 = Func.Check_PickerStatus(0, m_nSitePicker, CTL_YES, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
 			if(nRet_1 == RET_GOOD) //전역 변수에 따른 피커 상태를 체크 
 			{			//피커 정보와 현재 상태가 정상이다
 			}
@@ -2669,7 +3069,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			m_n_TrayNum = -1; m_n_FirstTray_X_Num = -1; m_n_FirstTray_Y_Num = -1; m_n_FirstPicker_Num = -1; //flag clear
 			for(i = 0; i < m_nPickerPara; i++)
 			{
-				if(st_picker[nWork_Site].st_pcb_info[i].nYesNo == CTL_NO)//피커에 자재가 들고 있다는 정보가 무
+				if(st_picker[m_nSitePicker].st_pcb_info[i].nYesNo == CTL_NO)//피커에 자재가 들고 있다는 정보가 무
 				{
 					m_n_FirstPicker_Num = i;
 					i = m_nPickerPara;
@@ -2684,7 +3084,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 				break;
 			}
 
-			nRet_1 = Func.Find_TrayWork_Pos(WORK_PICK, nWork_Site, CTL_YES, m_npFindWorkPosYXCPB, THD_HEATSINK_RBT, _T("0"));
+			nRet_1 = Func.Find_TrayWork_Pos(WORK_PICK, nWork_Site, CTL_YES, m_npFindWorkPosYXCPB, m_nSitePicker, _T("0"));
 			if(nRet_1 == RET_GOOD) //작업 가능한 자재가 있다
 			{
 				m_n_FirstTray_X_Num = m_npFindWorkPosYXCPB[0]; m_n_FirstTray_Y_Num = m_npFindWorkPosYXCPB[1];
@@ -2698,42 +3098,38 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			}
 
 			nFlag = 0;
-			if(m_n_TrayNum == -1 && m_n_FirstPicker_Num != -1 && m_n_FirstTray_Y_Num != -1 && m_n_FirstTray_X_Num != -1) //작업할 공간이 다 있을때 다음 작업을 진행한다
+			if(m_n_TrayNum != -1 && m_n_FirstPicker_Num != -1 && m_n_FirstTray_Y_Num != -1 && m_n_FirstTray_X_Num != -1) //작업할 공간이 다 있을때 다음 작업을 진행한다
 			{
 				for(i = 0; i < m_nPickerPara; i++)  //m_nPickerPara == 1
 				{
 					m_npPicker_YesNo[i] = CTL_NO; //작업할 피커정보 clear
 					if(i < m_n_FirstPicker_Num) continue;
 
-					if(nWork_Site == THD_LD_HEATSINK_BUFF)
+					if(st_picker[m_nSitePicker].st_pcb_info[i].nYesNo == CTL_NO)
 					{
-						if(st_picker[nWork_Site].st_pcb_info[i].nYesNo == CTL_NO)
+						//st_recipe.nHsTrayY는 m_nSitePicker에 따라 달라진다. check!!!
+						if(i >= 0 && m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num) < st_recipe.nHsTrayY)
 						{
-							if(i >= 0 && m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num) < st_recipe.nHsTrayY)
+							if( nWork_Site == THD_LD_HEATSINK_BUFF )
 							{
 								if(st_tray_info[nWork_Site].st_dvc_info[m_n_TrayNum][ m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num)][m_n_FirstTray_X_Num].nYesNo == CTL_YES) //트레이에 자재가  있으면 집기 가능하게 셋
 								{
 									m_npPicker_YesNo[i] = CTL_YES;
 									nFlag++;
-									st_picker[nWork_Site].st_pcb_info[i].nStatusChang = NO;
+									st_picker[m_nSitePicker].st_pcb_info[i].nStatusChang = NO;
 								}
 							}
-						}
-					}
-					else if(nWork_Site == THD_PLACE_HEATSINK_DVC) //작업 순서는 반대로 3,2,1,0  이다.
-					{
-						if(st_picker[nWork_Site].st_pcb_info[i].nYesNo == CTL_NO)
-						{
-							if(i >= 0 && m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num) < st_recipe.nLdBuffer_Num)
+							else if( nWork_Site == THD_DISPENSOR_PRBT )
 							{
-								if(st_buffer_info[nWork_Site].st_pcb_info[m_n_FirstTray_Y_Num - (i - m_n_FirstPicker_Num)].nYesNo == CTL_YES) //트레이에 자재가  있으면 집기 가능하게 셋
+								if(st_buffer_info[nWork_Site].st_pcb_info[m_n_FirstTray_Y_Num + (i - m_n_FirstPicker_Num)].nYesNo == CTL_YES) //트레이에 자재가  있으면 집기 가능하게 셋
 								{
 									m_npPicker_YesNo[i] = CTL_YES;
-									st_picker[nWork_Site].st_pcb_info[i].nStatusChang = NO;
+									nFlag++;
+									st_picker[m_nSitePicker].st_pcb_info[i].nStatusChang = NO;
 								}
 							}
 						}
-					}
+					}					
 				}
 
 				if(nFlag == 0) //작업할 피커가 하나도 준비되 않았다.
@@ -2779,8 +3175,8 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 
 			if(nRet_1 == RET_GOOD && nRet_2 == RET_GOOD)
 			{//ok
-				m_dpTargetPosList[0] = m_dTemp_CalTargetPos_Y;
-				m_dpTargetPosList[1] = m_dTemp_CalTargetPos_X;
+				m_dpTargetPosList[0] = m_dTemp_CalTargetPos_X;
+				m_dpTargetPosList[1] = m_dTemp_CalTargetPos_Y;
 			}
 			else
 			{
@@ -2813,8 +3209,17 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 		//  디바이스를 실제 집는 위치 
 		///////////////////////////////////////////////
 		case 2900:
-			Set_HeatSink_Transfer_Pad_UpDown(IO_OFF);
-			mn_PickStep = 2910;
+			if( g_ioMgr.get_out_bit( st_io.o_HeatSink_Trasnfer_Pad_Up_Sol, IO_ON) == IO_ON &&
+				g_ioMgr.get_in_bit(st_io.i_HeatSink_Transfer_Pad_Up_Check, IO_ON) == IO_ON &&
+				g_ioMgr.get_in_bit(st_io.i_HeatSink_Transfer_Pad_Down_Check, IO_OFF) == IO_OFF )
+			{
+				mn_PickStep = 3000;
+			}
+			else
+			{
+				Set_HeatSink_Transfer_Pad_UpDown(IO_OFF);
+				mn_PickStep = 2910;
+			}
 			break;
 
 		case 2910:
@@ -2844,15 +3249,16 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 		case 3000: 
 			nRet_1 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Transfer_Pad_Up_Check,	 IO_ON);
 			nRet_2 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Transfer_Pad_Down_Check,	 IO_OFF); 
-			if( nRet_1 != IO_ON || nRet_2 != IO_OFF ) 
+			nRet_3 = g_ioMgr.get_out_bit( st_io.o_HeatSink_Trasnfer_Pad_Up_Sol, IO_OFF);
+			if( nRet_1 != IO_ON || nRet_2 != IO_OFF || nRet_3 != IO_ON) 
 			{
 				mn_PickStep = 2900;
 				break;
 			}
 
-			nRet_1 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[0], st_motor[m_nRobot_Y].mn_allow);
-			nRet_2 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[1], st_motor[m_nRobot_X].mn_allow);
-				if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
+			nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, m_dpTargetPosList[0], COMI.md_allow_value[m_nRobot_X]);
+			nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], COMI.md_allow_value[m_nRobot_Y]);
+			if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
 			{
 				mn_PickStep = 2000;
 				break;
@@ -2862,7 +3268,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			{
 				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_BOX_DOWN_POS];
 			}
-			else if(nWork_Site == THD_PICK_REVERSE_DVC)
+			else if(nWork_Site == THD_DISPENSOR_PRBT)
 			{
 				nRet_1 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_0_Check, IO_ON);
 				nRet_2 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_180_Check, IO_OFF);
@@ -2873,7 +3279,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 					CTL_Lib.Alarm_Error_Occurrence(1108, dWARNING, strAlarm);
 					break;
 				}
-				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_TURN_PLACE_POS];
+				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_TURN_PICK_POS];
 			}
 			else
 			{
@@ -2951,7 +3357,8 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			break;
 
 		case 3210:
-			nRet_1 = Chk_HeatSink_Vacuum_OnOff(IO_OFF);  
+			nRet_1 = Chk_HeatSink_Vacuum_OnOff(IO_ON); 
+			if( st_basic.n_mode_device == WITHOUT_DVC ) nRet_1 = RET_GOOD;
 			if(nRet_1 == RET_GOOD)
 			{
 				m_bDvcWaitChk_Falg = false;
@@ -2968,9 +3375,13 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 		case 3300:	
 			if(nWork_Site == THD_LD_HEATSINK_BUFF)
 			{
+				nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.o_HeatSink_Vacuum_On_Sol, IO_ON, IO_STABLE_WAIT, 1000);
+				if( nRet_1 == RET_PROCEED)
+					break;
+
 				mn_PickStep = 4000;
 			}
-			else// THD_PICK_HEATSINK_DVC
+			else// THD_DISPENSOR_PRBT
 			{
 				mn_PickStep = 3400;// 
 			} 
@@ -2988,6 +3399,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 
 		case 3500:
 			nRet_1 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Transfer_CellIn_Check, IO_ON);
+			if( st_basic.n_mode_device == WITHOUT_DVC ) nRet_1 = IO_ON;
 			if( nRet_1 == IO_OFF )
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_HeatSink_Transfer_CellIn_Check);
@@ -2997,17 +3409,58 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			break;
 
 		case 3600:
-			st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] = CTL_FREE;
-			st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] = WORK_PICK;
+			st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_PRBT][0] = CTL_SORT;
+			st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_PRBT][1] = WORK_PLACE;
 			mn_PickStep = 3700;
 			break;
 
 		case 3700:
-			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][0] == CTL_NO && st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_RBT][1] == CTL_NO)//wait until cylinder is opened
+			if( st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_PRBT][0] == CTL_FREE && 
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_PRBT][1] == WORK_PLACE)//wait until cylinder is opened
 			{
+				mn_PickStep = 3800;
+			}
+			break;
+
+		case 3800:
+			m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, m_dpTargetPosList[2], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{ 
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_PRBT][0] = CTL_FINAL;
+				st_sync.nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_PRBT][1] = WORK_PLACE;
+				mn_PickStep = 3900; //시간 단추을 위헤 체크는 다음으로 
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_PickStep = 3800;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1217, dWARNING, alarm.mstr_code);
+				mn_PickStep = 3800;
+			}		
+			break;
+
+		case 3900:
+			if( st_basic.n_mode_device == WITHOUT_DVC )
+				nRet_1 = IO_ON;
+			else
+				nRet_1 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Transfer_CellIn_Check, IO_ON);
+			if(nRet_1 == IO_ON)
+			{
+				m_bDvcWaitChk_Falg = false;
+				mn_PickStep = 5000;
+			}
+			else if(nRet_1 != IO_ON)
+			{
+				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_HeatSink_Transfer_CellIn_Check);
+				CTL_Lib.Alarm_Error_Occurrence(1219, dWARNING, m_strAlarmCode);
 				mn_PickStep = 4000;
 			}
 			break;
+
+
 
 		///////////////////////////////////////////
 		//로보트 up 
@@ -3017,7 +3470,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_START, m_nRobot_Z, m_dpTargetPosList[2], COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{ 
-				Set_HeatSink_Vacuum_OnOff(IO_OFF); //동작한 피커를 올린다  
+				Set_HeatSink_Transfer_Pad_UpDown(IO_OFF); //동작한 피커를 올린다  
 				mn_PickStep = 4100 ; //시간 단추을 위헤 체크는 다음으로 
 			}
 			else if (nRet_1 == BD_RETRY)
@@ -3049,8 +3502,14 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			break;
 
 		case 4110:
-			nRet_1 = Chk_HeatSink_Vacuum_OnOff(IO_OFF); //동작할 피커를 미리 내리면서 이동한다
-			if( nWork_Site == THD_PICK_REVERSE_DVC ) 	nRet_2 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Transfer_CellIn_Check, IO_ON);
+			nRet_1 = Chk_HeatSink_Transfer_Pad_UpDown(IO_OFF); //동작할 피커를 미리 내리면서 이동한다
+			if( nWork_Site == THD_DISPENSOR_PRBT )
+			{
+				if( st_basic.n_mode_device == WITHOUT_DVC )
+					nRet_2 = IO_ON;
+				else
+					nRet_2 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Transfer_CellIn_Check, IO_ON);
+			}
 			else										nRet_2 = IO_ON;
 			if(nRet_1 == RET_GOOD && nRet_2 == IO_ON )
 			{
@@ -3093,43 +3552,27 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 
 			for (i = m_n_FirstPicker_Num; i < m_nPickerPara; i++)
 			{		
-				if( st_picker[nWork_Site].st_pcb_info[i].nYesNo == CTL_NO && m_npPicker_YesNo[i] == CTL_YES &&
-					(m_npPicker_Vacuum_Status[i] == IO_ON && m_npPicker_OutputStatus[i] == IO_OFF) )
+				if( st_picker[m_nSitePicker].st_pcb_info[i].nYesNo == CTL_NO && m_npPicker_YesNo[i] == CTL_YES &&
+					m_npPicker_Vacuum_Status[i] == IO_ON && m_npPicker_OutputStatus[i] == IO_ON/*IO_OFF*/ )
 				{
-					if(nWork_Site == THD_LD_HEATSINK_BUFF)
+					//아래 st_recipe.nHsTrayX 체크 할것
+// 					if(nWork_Site == THD_LD_HEATSINK_BUFF) st_recipe.nHsTrayX;
+// 					else								   st_recipe.nLdBuffer_Num
+					if(i >= 0 && m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num) < st_recipe.nHsTrayX)
 					{
-						if(i >= 0 && m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num) < st_recipe.nHsTrayX)
+						m_npPicker_YesNo[i] = CTL_NO; 
+
+						m_npSet_WorkPosYXCPB[0]  = m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num); //tray X Pos 위치
+						m_npSet_WorkPosYXCPB[1]  = m_npFindWorkPosYXCPB[1]; //tray Y Pos 위치
+						m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
+
+						Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, m_nSitePicker, nWork_Site, m_npSet_WorkPosYXCPB);		
+						if (m_strLotNo[1] == _T(""))
 						{
-							m_npPicker_YesNo[i] = CTL_NO; 
-
-							m_npSet_WorkPosYXCPB[0]  = m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num); //tray X Pos 위치
-							m_npSet_WorkPosYXCPB[1]  = m_npFindWorkPosYXCPB[1]; //tray Y Pos 위치
-							m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
-
-							Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, THD_HEATSINK_RBT, nWork_Site, m_npSet_WorkPosYXCPB);		
-							
+							m_strLotNo[1]	= st_picker[m_nSitePicker].st_pcb_info[i].strLotNo;
+							m_strPartNo[1] = st_picker[m_nSitePicker].st_pcb_info[i].strPartNo;
 						}
-					}
-					else if(nWork_Site == THD_PICK_REVERSE_DVC)
-					{
-						if(i >= 0 && m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num) < st_recipe.nLdBuffer_Num)
-						{
-							m_npPicker_YesNo[i] = CTL_NO; //작업한 피커 정보 클리어
-
-							//아래 함수에서 사용위해 위치 정보를 셋팅한다
-							m_npSet_WorkPosYXCPB[0]  = m_npFindWorkPosYXCPB[0] + (i - m_n_FirstPicker_Num); //tray Y Pos 위치
-							m_npSet_WorkPosYXCPB[1]  = m_npFindWorkPosYXCPB[1]; //tray X Pos 위치
-							m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
-
-							Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, THD_HEATSINK_RBT, nWork_Site, m_npSet_WorkPosYXCPB); //피커 및 트레이 정보 셋팅 함수		
-
-							if (m_strLotNo[1] == _T(""))
-							{
-								m_strLotNo[1]	= st_picker[nWork_Site].st_pcb_info[i].strLotNo;
-								m_strPartNo[1] = st_picker[nWork_Site].st_pcb_info[i].strPartNo;
-							}
-						}
-					}
+					}					
 				}
 			}
 
@@ -3151,7 +3594,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			break;
 
 		case 6000:
-			nRet_1 = Func.Check_PickerStatus(0, nWork_Site, CTL_YES, m_npPicker_YesNo, m_npPicker_Data_Status, m_npPicker_OutputStatus);
+			nRet_1 = Func.Check_PickerStatus(0, m_nSitePicker, CTL_YES, m_npPicker_YesNo, m_npPicker_Data_Status, m_npPicker_OutputStatus);
 			if (nRet_1 == RET_GOOD) //
 			{
 				nFuncRet = RET_GOOD;
@@ -3296,7 +3739,11 @@ int CRun_HeatSinkVision_Transfer_Robot::Robot_AutoMove_Safety_Zone( int nMode, i
 				//nMode == 4 => Carrier위치로 이동가능한 위치로 이동
 				if( dCurrentPosY >=  ( st_motor[m_nRobot_Y].md_pos[P_HEATSINK_TRANSFER_Y_DISPENSOR_SAFETY_POS] - st_motor[m_nRobot_Y].mn_allow ) )
 				{
-					if(nMode == 0 ||nMode == 3)
+					if(nMode == 0 )
+					{
+						mn_SafetyStep = 1100;
+					}
+					else if(nMode == 3)
 					{
 						FuncRet = RET_GOOD;
 						mn_SafetyStep = 0;
@@ -3451,6 +3898,135 @@ int CRun_HeatSinkVision_Transfer_Robot::Robot_AutoMove_Safety_Zone( int nMode, i
 	return FuncRet;
 }
 
+void CRun_HeatSinkVision_Transfer_Robot::Set_Vision_Y_Clamp_ForeardBackward(int OnOff)
+{
+	CString strLogKey[10];
+	CString	strLogData[10];
+	
+	strLogKey[0] = _T("Mode Start");
+	strLogData[0].Format(_T("%d"),0);
+	
+	m_bVisionFwdBwdFlag	= false;
+	m_dwVisionwdFwdBwd[0] = GetCurrentTime();
+	
+	g_ioMgr.set_out_bit(st_io.o_camera_y_clamp_sol, OnOff);
+	g_ioMgr.set_out_bit(st_io.o_camera_y_unclamp_sol, !OnOff);
+	
+	if (OnOff == IO_OFF)
+	{
+		clsLog.LogFunction(_T("VISION_ROBOT"),_T("BACKWARD"),0,_T("CLAMP"),_T("CYLINDER"),1,strLogKey,strLogData);
+	}
+	else
+	{
+		clsLog.LogFunction(_T("VISION_ROBOT"),_T("FORWARD"),0,_T("CLAMP"),_T("CYLINDER"),1,strLogKey,strLogData);
+	}
+}
+
+int CRun_HeatSinkVision_Transfer_Robot::Chk_Vision_Y_Clamp_ForeardBackward(int OnOff)
+{
+
+	CString strLogKey[10];
+	CString	strLogData[10];
+
+	strLogKey[0] = _T("Mode End");
+	strLogData[0].Format(_T("%d"),0);
+
+	int nWaitTime = WAIT_CAMERA_CLAMP_FWDBWD;
+
+	if (OnOff == IO_OFF)
+	{
+		if (m_bVisionFwdBwdFlag == false && g_ioMgr.get_in_bit(st_io.i_camera_unclamp_chk, IO_ON) == IO_ON &&
+			g_ioMgr.get_in_bit(st_io.i_camera_clamp_chk, IO_OFF) == IO_OFF )
+		{
+			m_bVisionFwdBwdFlag		= true;
+			m_dwVisionwdFwdBwd[0]	= GetCurrentTime();
+		}
+		else if (m_bVisionFwdBwdFlag == true && g_ioMgr.get_in_bit(st_io.i_camera_unclamp_chk, IO_ON) == IO_ON &&
+			g_ioMgr.get_in_bit(st_io.i_camera_clamp_chk, IO_OFF) == IO_OFF )
+		{
+			m_dwVisionwdFwdBwd[1] = GetCurrentTime();
+			m_dwVisionwdFwdBwd[2] = m_dwVisionwdFwdBwd[1] - m_dwVisionwdFwdBwd[0];
+
+			if (m_dwVisionwdFwdBwd[2] <= 0)
+			{
+				m_dwVisionwdFwdBwd[0] = GetCurrentTime();
+				return RET_PROCEED;
+			}
+
+			if (m_dwVisionwdFwdBwd[2] > (DWORD)st_wait.nOffWaitTime[nWaitTime])
+			{
+				clsLog.LogFunction(_T("VISION_ROBOT"),_T("BACKWARD"),1,_T("CLAMP"),_T("CYLINDER"),1,strLogKey,strLogData);
+				return RET_GOOD;
+			}
+		}
+		else
+		{
+			m_dwVisionwdFwdBwd[1] = GetCurrentTime();
+			m_dwVisionwdFwdBwd[2] = m_dwVisionwdFwdBwd[1] - m_dwVisionwdFwdBwd[0];
+
+			if (m_dwVisionwdFwdBwd[2] <= 0)
+			{
+				m_dwVisionwdFwdBwd[0] = GetCurrentTime();
+				return RET_PROCEED;
+			}
+
+			if (m_dwVisionwdFwdBwd[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
+			{
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_camera_unclamp_chk); 
+		clsLog.LogFunction(_T("VISION_ROBOT"),_T("BACKWARD"),0,_T("CLAMP"),_T("CYLINDER"),1,strLogKey,strLogData);
+				return RET_ERROR;
+			}
+		}
+	}
+	else
+	{
+		if (m_bVisionFwdBwdFlag == false && g_ioMgr.get_in_bit(st_io.i_camera_unclamp_chk, IO_OFF) == IO_OFF &&
+			g_ioMgr.get_in_bit(st_io.i_camera_clamp_chk, IO_ON) == IO_ON )
+		{
+			m_bVisionFwdBwdFlag			= true;
+			m_dwVisionwdFwdBwd[0]	= GetCurrentTime();
+		}
+		else if (m_bVisionFwdBwdFlag == true && g_ioMgr.get_in_bit(st_io.i_camera_unclamp_chk, IO_OFF) == IO_OFF &&
+			g_ioMgr.get_in_bit(st_io.i_camera_clamp_chk, IO_ON) == IO_ON )
+		{
+			m_dwVisionwdFwdBwd[1]	= GetCurrentTime();
+			m_dwVisionwdFwdBwd[2]	= m_dwVisionwdFwdBwd[1] - m_dwVisionwdFwdBwd[0];
+
+			if (m_dwVisionwdFwdBwd[2] <= 0)
+			{
+				m_dwVisionwdFwdBwd[0]	= GetCurrentTime();
+				return RET_PROCEED;
+			}
+
+			if(m_dwVisionwdFwdBwd[2] > (DWORD)st_wait.nOnWaitTime[nWaitTime])
+			{
+				clsLog.LogFunction(_T("VISION_ROBOT"),_T("FORWARD"),1,_T("CLAMP"),_T("CYLINDER"),1,strLogKey,strLogData);
+				return RET_GOOD;
+			}
+		}
+		else
+		{
+			m_dwVisionwdFwdBwd[1]	= GetCurrentTime();
+			m_dwVisionwdFwdBwd[2]	= m_dwVisionwdFwdBwd[1] - m_dwVisionwdFwdBwd[0];
+
+			if (m_dwVisionwdFwdBwd[2] <= 0)
+			{
+				m_dwVisionwdFwdBwd[0]	= GetCurrentTime();
+				return RET_PROCEED;
+			}
+
+			if (m_dwVisionwdFwdBwd[2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
+			{
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_camera_unclamp_chk); 
+				clsLog.LogFunction(_T("VISION_ROBOT"),_T("FORWARD"),1,_T("CLAMP"),_T("CYLINDER"),1,strLogKey,strLogData);
+				return RET_ERROR;
+			}
+		}
+	}
+
+	return RET_PROCEED;
+}
+
 void CRun_HeatSinkVision_Transfer_Robot::Set_HeatSink_Reverse_Turn(int OnOff)
 {
 	CString strLogKey[10];
@@ -3462,8 +4038,8 @@ void CRun_HeatSinkVision_Transfer_Robot::Set_HeatSink_Reverse_Turn(int OnOff)
 	m_bReverseFlag	= false;
 	m_dwReverse[0]	= GetCurrentTime();
 
-	g_ioMgr.Set_Out_Bit(st_io.o_HeatSink_Reverse_0_Sol, OnOff);
-	g_ioMgr.Set_Out_Bit(st_io.o_HeatSink_Reverse_180_Sol, !OnOff);
+	g_ioMgr.set_out_bit(st_io.o_HeatSink_Reverse_0_Sol, OnOff);
+	g_ioMgr.set_out_bit(st_io.o_HeatSink_Reverse_180_Sol, !OnOff);
 
 	if (OnOff == IO_OFF)
 	{
@@ -3590,8 +4166,8 @@ void CRun_HeatSinkVision_Transfer_Robot::Set_HeatSink_Reverse_UpDown(int OnOff)
 	m_bReverseUpDnFlag	= false;
 	m_dwReverseUpDn[0]	= GetCurrentTime();
 
-	g_ioMgr.Set_Out_Bit(st_io.o_HeatSink_Reverse_Up_Sol, OnOff);
-	g_ioMgr.Set_Out_Bit(st_io.o_HeatSink_Reverse_Down_Sol, !OnOff);
+	g_ioMgr.set_out_bit(st_io.o_HeatSink_Reverse_Up_Sol, OnOff);
+	g_ioMgr.set_out_bit(st_io.o_HeatSink_Reverse_Down_Sol, !OnOff);
 
 	if (OnOff == IO_OFF)
 	{
@@ -3718,8 +4294,8 @@ void CRun_HeatSinkVision_Transfer_Robot::Set_HeatSink_Reverse_Clamp_ForwardBackw
 	m_bReverseFwdBwdFlag	= false;
 	m_dwReverseFwdBwd[0]	= GetCurrentTime();
 
-	g_ioMgr.Set_Out_Bit(st_io.o_HeatSink_Reverse_Clamp_On_Sol, OnOff);
-	g_ioMgr.Set_Out_Bit(st_io.o_HeatSink_Reverse_Clamp_Off_Sol, !OnOff);
+	g_ioMgr.set_out_bit(st_io.o_HeatSink_Reverse_Clamp_On_Sol, OnOff);
+	g_ioMgr.set_out_bit(st_io.o_HeatSink_Reverse_Clamp_Off_Sol, !OnOff);
 
 	if (OnOff == IO_OFF)
 	{
@@ -3843,15 +4419,15 @@ void CRun_HeatSinkVision_Transfer_Robot::Set_Dispenser_Air_Blow(int OnOff)
 	{
 		if(st_basic.n_mode_7387 == CTL_YES)
 		{
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_1_Liquide_On_Sol, IO_OFF);	
-			g_ioMgr.Set_Out_Bit(st_io.o_DisPenser_1_AirBlow_On_Sol, IO_OFF);	
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_1_Liquide_On_Sol, IO_OFF);	
+			g_ioMgr.set_out_bit(st_io.o_DisPenser_1_AirBlow_On_Sol, IO_OFF);	
 
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_1_Liquide_On_Sol, IO_OFF);
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_1_Liquide_Off_Sol, IO_ON);
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_Air_Timer_Start, IO_OFF);	
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_Air_Timer_Reset, IO_ON);
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_1_Liquide_On_Sol, IO_OFF);
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_1_Liquide_Off_Sol, IO_ON);
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_Air_Timer_Start, IO_OFF);	
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_Air_Timer_Reset, IO_ON);
 
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_Air_Timer_Reset, IO_OFF);
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_Air_Timer_Reset, IO_OFF);
 			st_work.n7387BlowCheck = 0;
 		}
 	}
@@ -3859,13 +4435,13 @@ void CRun_HeatSinkVision_Transfer_Robot::Set_Dispenser_Air_Blow(int OnOff)
 	{
 		if(st_basic.n_mode_7387 == CTL_YES)
 		{
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_Air_Timer_Reset, IO_ON);
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_Air_Timer_Reset, IO_ON);
 			Sleep(1);
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_Air_Timer_Reset, IO_OFF);
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_1_Liquide_On_Sol, IO_ON);
-			g_ioMgr.Set_Out_Bit(st_io.o_DisPenser_1_AirBlow_On_Sol, IO_ON);		
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_1_Liquide_Off_Sol, IO_OFF);	
-			g_ioMgr.Set_Out_Bit(st_io.o_Dispenser_Air_Timer_Start, IO_ON);
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_Air_Timer_Reset, IO_OFF);
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_1_Liquide_On_Sol, IO_ON);
+			g_ioMgr.set_out_bit(st_io.o_DisPenser_1_AirBlow_On_Sol, IO_ON);		
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_1_Liquide_Off_Sol, IO_OFF);	
+			g_ioMgr.set_out_bit(st_io.o_Dispenser_Air_Timer_Start, IO_ON);
 			st_work.n7387BlowCheck = 1;
 		}
 	}

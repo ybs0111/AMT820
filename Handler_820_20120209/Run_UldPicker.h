@@ -39,6 +39,13 @@ public:
 	int m_nRobot_Y;
 	int m_nRobot_Z;
 
+	int		m_nLinearMove_Index; 
+	long	m_lAxisCnt;
+	long	m_lpAxisNum[4];
+	double	m_dpTargetPosList[4];
+	double	m_dpSpdRatio[3];
+
+
 	int m_nPickerPara;
 	int m_nRobotSite;
 	int m_nRobot_Z_Stop_Flag;
@@ -59,7 +66,6 @@ public:
 	int m_nPickRetry_Cnt;
 	long m_motPickFlag[3];
 	long m_motPlaceFlag[3];
-	double m_dpTargetPosList[3];
 	double m_dTemp_CalTargetPos_X;
 	double m_dTemp_CalTargetPos_Y;
 

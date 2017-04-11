@@ -11,8 +11,6 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CRun_Device_Carrier_Robot command target
-#define CARRIER_LEFT	0
-#define CARRIER_RIGHT	1
 
 class CRun_Device_Carrier_Robot : public CObject
 {
@@ -132,7 +130,7 @@ public:
 	//PRESS
 // 	void Set_Device_Press_UpDn_Cylinder(int OnOff);
 // 	int Chk_Device_Press_UpDn_Cylinder( int nOnOff );
-
+// 
 	//TOP fwd bwd를 위한 up down 실린더(모터가  실린더를 다운시키고 난뒤에 민다.
 // 	void Set_Device_Carrier_Slide_Top_X_UpDown(int OnOff);
 // 	int Chk_Device_Carrier_Slide_Top_X_UpDown( int OnOff );

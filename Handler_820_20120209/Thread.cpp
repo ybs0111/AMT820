@@ -67,6 +67,7 @@ UINT	OnThread_UnPress_Robot(LPVOID lParam);			// m_thread[11]
 UINT	OnThread_Epoxy_Robot(LPVOID lParam);			// m_thread[12]
 UINT	OnThread_Carrier_Robot(LPVOID lParam);			// m_thread[13]
 UINT	OnThread_HeatSink_Robot(LPVOID lParam);			// m_thread[14]
+UINT    OnThread_EmptyStacker_Elivator(LPVOID lParam);	// m_thread[15]
 
 
 
@@ -238,7 +239,7 @@ UINT	OnThread_Load_Plate(LPVOID lParam)			// m_thread[6]
 	return TRUE;
 }
 
-UINT	OnThread_Tray_Transfer(LPVOID lParam)			// m_thread[6]
+UINT	OnThread_Tray_Transfer(LPVOID lParam)			// m_thread[7]
 {
 	CSingleLock sing(&mutex);
 	
@@ -384,4 +385,22 @@ UINT	OnThread_HeatSink_Robot(LPVOID lParam)			// m_thread[11]
 	hThrHandle[14] = NULL;
 	return TRUE;
 		
+}
+
+UINT	OnThread_EmptyStacker_Elivator(LPVOID lParam)			// m_thread[15]
+{
+	CSingleLock sing(&mutex);
+	
+	while(!All_Stop)
+	{
+		sing.Lock() ;
+		
+		Run_EmptyStacker_Elvator.Thread_Run();
+		
+		Sleep(0) ;
+		sing.Unlock() ;
+	}
+	
+	hThrHandle[15] = NULL;
+	return TRUE;
 }

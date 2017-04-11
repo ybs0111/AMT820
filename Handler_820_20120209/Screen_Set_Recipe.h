@@ -37,6 +37,8 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Set_Recipe)
 	enum { IDD = IDD_SCREEN_SET_RECIPE };
+	CXPGroupBox	m_group_DispenserVppmA;
+	CEXDigitST	m_dgt_DispenserVppmA;
 	CMacButton	m_btn_recipe_cancel;
 	CMacButton	m_btn_recipe_apply;
 	CXPGroupBox	m_group_size_setting;
@@ -90,7 +92,30 @@ public:
 	CString m_strToolID[2];
 	CString m_strVisionLightValue[2];
 	int m_iSSDSize[2];
+
+	//kwlee 2017.0410
+	double	m_dLoaderTransferTrayDeviceGap[2];
+	DWORD m_dSatbleTime[2];
+	double m_nEpoxyRunSpeed[2];
+	double m_nEpoxyXYRunSpeed[2][3];//[0]//vel [1]:acc [2] dec
 	
+	double m_dEpoxyXOffSet[2];
+	double m_dEpoxyYOffSet[2];
+	double m_nRubHSRunSpeed[2];
+	
+	double m_dTrayPitch_Y[2];			//트레이 피치간격 
+	double m_dTrayPitch_X[2];			//트레이 피치간격 	
+	
+	int m_nfDispenserVppmA[2];
+	int m_nEpoxyDotScrewCount[2];
+	int m_nHsTrayY[2];						// HeatSink tray Y 정보.......
+	int m_nHsTrayX[2];						// HeatSink tray X 정보.......
+	
+	int m_nTrayY[2];						// tray Y 정보.......
+	int m_nTrayX[2];	
+	
+	GridControlAlg	m_p_grid;
+	TSpread			*m_grid_operate;
 // Operations
 public:
 	void OnSetRecipe_EditBox_Set();
@@ -105,12 +130,7 @@ public:
 	int ScrewOrderCheck();
 	void OnSetRecipe_Init_Pitch_Data();
 	void OnSetRecipe_Init_Size_Data();
-	void OnSetRecipe_Data_Recovery();
-	void OnSetRecipe_Data_Apply();
-	void OnSetRecipe_LogFile_Create();
 	void OnSetRecipe_Data_Change();
-	void OnSetRecipe_Data_BackUp();
-	void OnSetRecipe_Data_Set();
 	void OnSetRecipe_Digital_Count_Set();
 	void OnSetRecipe_GroupBox_Set();
 	void GridMerge(UINT nID, int srow, int scol, int nrow, int ncol);
@@ -118,6 +138,15 @@ public:
 	void GridData(UINT nID, int row, int col, CString data);
 	void GridControl(UINT nID, int type, int row, int col, int pos);
 	void GridColor(UINT nID, int row, int col, COLORREF bk, COLORREF tk);
+	
+	//kwlee 2017.0410
+	int  Data_Comparison();
+	void OnSetRecipe_Data_Set();
+	void OnInitGrid();
+	void OnSetRecipe_LogFile_Create();
+	void OnSetRecipe_Data_BackUp();
+	void OnSetRecipe_Data_Recovery();
+	void OnSetRecipe_Data_Apply();
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CScreen_Set_Recipe)
@@ -142,6 +171,7 @@ protected:
 	afx_msg void OnBtnRecipeApply();
 	afx_msg void OnBtnRecipeCancle();
 	afx_msg void OnUserControl();
+	afx_msg void OnDgtDispenservppma();
 	//}}AFX_MSG
 	afx_msg void OnCellClick(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnSetRecipe_Work_Info_Display(WPARAM wParam,LPARAM lParam);
