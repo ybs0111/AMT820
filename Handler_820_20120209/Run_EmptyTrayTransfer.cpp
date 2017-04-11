@@ -39,6 +39,7 @@ void CRun_EmptyTrayTransfer::Thread_Run()
 	switch( st_work.mn_run_status)
 	{
 	case dINIT:
+		RunInit();
 		break;
 
 	case dRUN:
@@ -60,6 +61,96 @@ void CRun_EmptyTrayTransfer::Thread_Run()
 
 void CRun_EmptyTrayTransfer::RunInit()
 {
+	int nRet_1 = 0;
+	
+	if( st_handler.mn_init_state[INIT_LDSTACKER_ELV] == CTL_NO ) return;
+	if( st_handler.mn_init_state[INIT_EMPTYSTACKER_ELV] == CTL_NO ) return;
+	if( st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
+	if( st_handler.mn_init_state[INIT_EMPTYTRAY_TRANSFER] != CTL_NO ) return;
+	st_handler.mn_init_state[INIT_EMPTYTRAY_TRANSFER] = CTL_YES;
+	switch(mn_InitStep)
+	{
+		case 0:		
+			mn_InitStep = 100;
+			break;
+
+		case 100://실린더 업
+			Set_Tray_Remover_Z_UpDown( IO_OFF );
+			mn_InitStep = 110;
+			break;
+
+		case 110:
+			nRet_1 = Chk_Tray_Remover_Z_UpDown( IO_OFF );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 200;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				CTL_Lib.Alarm_Error_Occurrence( 4001, dWARNING, m_strAlarmCode);
+				mn_InitStep = 900;
+			}
+			break;
+
+		case 200:
+			Set_Tray_Grip_Vacuum_OnOff(IO_ON);
+			mn_InitStep = 210;
+			break;
+
+		case 210:
+			nRet_1 = Chk_Tray_Grip_Vacuum_OnOff(IO_ON);
+			if( nRet_1 == RET_GOOD )
+			{
+				CTL_Lib.Alarm_Error_Occurrence( 4002, dWARNING, m_strAlarmCode);
+			}
+			else if( nRet_1 == RET_ERROR)
+			{
+				Set_Tray_Grip_Vacuum_OnOff( IO_OFF);
+				mn_InitStep = 300;
+			}
+			break;
+
+		case 300:
+			nRet_1 = COMI.HomeCheck_Mot( m_nAxisNum, st_motor[m_nAxisNum].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 400;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 3003, dWARNING, COMI.mc_alarmcode);
+			}
+			break;
+
+		case 400:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nAxisNum, st_motor[m_nAxisNum].md_pos[P_TRAY_REMOVE_X_INIT_POS], COMI.mn_runspeed_rate);  //left로 미리 이동해 있는다 
+			if (nRet_1 == BD_GOOD) //좌측으로 이동  
+			{			
+				mn_InitStep = 1000;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_InitStep = 400;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence(3004, dWARNING, alarm.mstr_code);
+			}
+			break;
+
+		case 900:
+			mn_InitStep = 0;
+			st_handler.mn_initial_error = TRUE;
+			break;
+
+		case 1000:
+			st_handler.mn_init_state[INIT_EMPTYTRAY_TRANSFER] = CTL_YES;
+			mn_InitStep = 0;
+			break;
+
+		}
 
 }
 
@@ -714,16 +805,16 @@ void CRun_EmptyTrayTransfer::Set_Tray_Remover_Z_UpDown(int OnOff)
 	m_bClampOnOffFlag[1] = false;
 	m_dwClampOnOff[1][0] = GetCurrentTime();
 
-	g_ioMgr.set_out_bit( st_io.o_Tray_Remover_Z_Up_Sol, OnOff);
-	g_ioMgr.set_out_bit( st_io.o_Tray_Remover_Z_Down_Sol, !OnOff);
+	g_ioMgr.set_out_bit( st_io.o_Tray_Remover_Z_Up_Sol, !OnOff);
+	g_ioMgr.set_out_bit( st_io.o_Tray_Remover_Z_Down_Sol, OnOff);
 
-	if (OnOff == IO_ON)
-	{
-		clsLog.LogFunction(_T("EMPRT_TRAY_TRANSFER"),_T("ZDOWN"),0,_T("TRAY"),_T("CYLINDER"),1,strLogKey,strLogData);
-	}
-	else
+	if (OnOff == IO_OFF)//down
 	{
 		clsLog.LogFunction(_T("EMPRT_TRAY_TRANSFER"),_T("ZUP"),0,_T("TRAY"),_T("CYLINDER"),1,strLogKey,strLogData);
+	}
+	else//up
+	{
+		clsLog.LogFunction(_T("EMPRT_TRAY_TRANSFER"),_T("ZDOWN"),0,_T("TRAY"),_T("CYLINDER"),1,strLogKey,strLogData);
 	}
 }
 
@@ -738,14 +829,16 @@ int CRun_EmptyTrayTransfer::Chk_Tray_Remover_Z_UpDown(int OnOff)
 
 	int nWaitTime = WAIT_TRAY_ALIGN_CLAMP;
 
-	if (OnOff == IO_OFF)
+	if (OnOff == IO_OFF)//up
 	{
-		if (m_bClampOnOffFlag[1] == false && g_ioMgr.set_out_bit( st_io.i_Tray_Remover_Z_Down_Check, IO_ON ) == IO_ON )
+		if (m_bClampOnOffFlag[1] == false && g_ioMgr.get_in_bit( st_io.i_Tray_Remover_Z_Up_Check, IO_ON ) == IO_ON &&
+			g_ioMgr.get_in_bit( st_io.i_Tray_Remover_Z_Down_Check, IO_OFF ) == IO_OFF)
 		{
-			m_bClampOnOffFlag[1]		= true;
-			m_dwClampOnOff[1][0]	= GetCurrentTime();
+			m_bClampOnOffFlag[1] = true;
+			m_dwClampOnOff[1][0] = GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag[1] == true && g_ioMgr.set_out_bit( st_io.i_Tray_Remover_Z_Down_Check, IO_ON ) == IO_ON )
+		else if (m_bClampOnOffFlag[1] == true && g_ioMgr.get_in_bit( st_io.i_Tray_Remover_Z_Up_Check, IO_ON ) == IO_ON &&
+			g_ioMgr.get_in_bit( st_io.i_Tray_Remover_Z_Down_Check, IO_OFF ) == IO_OFF )
 		{
 			m_dwClampOnOff[1][1] = GetCurrentTime();
 			m_dwClampOnOff[1][2] = m_dwClampOnOff[1][1] - m_dwClampOnOff[1][0];
@@ -775,7 +868,7 @@ int CRun_EmptyTrayTransfer::Chk_Tray_Remover_Z_UpDown(int OnOff)
 
 			if (m_dwClampOnOff[1][2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.o_Tray_Guide_Clamp_Forward_Sol); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Tray_Remover_Z_Up_Check); 
 				clsLog.LogFunction(_T("EMPRT_TRAY_TRANSFER"),_T("VACUUMOFF"),1,_T("TRAY"),_T("VACUUM"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}
@@ -783,12 +876,14 @@ int CRun_EmptyTrayTransfer::Chk_Tray_Remover_Z_UpDown(int OnOff)
 	}
 	else
 	{
-		if (m_bClampOnOffFlag[1] == false && g_ioMgr.set_out_bit( st_io.i_Tray_Remover_Z_Up_Check, IO_ON ) == IO_ON )
+		if (m_bClampOnOffFlag[1] == false && g_ioMgr.get_in_bit( st_io.i_Tray_Remover_Z_Up_Check, IO_OFF ) == IO_OFF &&
+			g_ioMgr.get_in_bit( st_io.i_Tray_Remover_Z_Down_Check, IO_ON ) == IO_ON )
 		{
 			m_bClampOnOffFlag[1]			= true;
 			m_dwClampOnOff[1][0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag[1] == true && g_ioMgr.set_out_bit( st_io.i_Tray_Remover_Z_Up_Check, IO_ON ) == IO_ON )
+		else if (m_bClampOnOffFlag[1] == true && g_ioMgr.get_in_bit( st_io.i_Tray_Remover_Z_Up_Check, IO_OFF ) == IO_OFF &&
+			g_ioMgr.get_in_bit( st_io.i_Tray_Remover_Z_Down_Check, IO_ON ) == IO_ON )
 		{
 			m_dwClampOnOff[1][1]	= GetCurrentTime();
 			m_dwClampOnOff[1][2]	= m_dwClampOnOff[1][1] - m_dwClampOnOff[1][0];
@@ -818,7 +913,7 @@ int CRun_EmptyTrayTransfer::Chk_Tray_Remover_Z_UpDown(int OnOff)
 
 			if (m_dwClampOnOff[1][2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.o_Tray_Guide_Clamp_Forward_Sol); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Tray_Remover_Z_Up_Check); 
 				clsLog.LogFunction(_T("EMPRT_TRAY_TRANSFER"),_T("VACUUMON"),1,_T("TRAY"),_T("VACUUM"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}

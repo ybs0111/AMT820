@@ -36,6 +36,7 @@ void CRun_LdTrayPlate::Thread_Run()
 	switch( st_work.mn_run_status)
 	{
 	case dINIT:
+		RunInit();
 		break;
 
 	case dRUN:
@@ -55,6 +56,45 @@ void CRun_LdTrayPlate::Thread_Run()
 
 void CRun_LdTrayPlate::RunInit()
 {
+	int nRet_1=0;
+	
+	if( st_handler.mn_init_state[INIT_LD_PLATE] != CTL_NO ) return;
+	switch(mn_InitStep)
+	{
+		case 0:
+			mn_InitStep = 100;
+			break;
+
+		case 100:
+			Set_Tray_Guide_Clamp_ForBackward(IO_OFF);
+			mn_InitStep = 200;
+			break;
+
+		case 200:
+			nRet_1 = Chk_Tray_Guide_Clamp_ForBackward(IO_OFF); 
+			if(nRet_1 == RET_GOOD)
+			{
+				mn_InitStep = 1000;
+			}
+			else if(nRet_1 == RET_ERROR)
+			{
+				CTL_Lib.Alarm_Error_Occurrence(4000, dWARNING, m_strAlarmCode);
+				mn_InitStep = 900;
+			}
+			break;
+
+		case 900:
+			mn_InitStep = 0;
+			st_handler.mn_initial_error = TRUE;
+			break;
+
+		case 1000:
+			st_handler.mn_init_state[INIT_LD_PLATE] = CTL_YES;
+			mn_InitStep = 0;
+			break;
+
+	}
+
 }
 
 void CRun_LdTrayPlate::RunMove()

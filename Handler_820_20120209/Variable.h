@@ -21,13 +21,12 @@
 
 enum ENUM_INIT_SITE
 {
-	INIT_LD_ROBOT,
+	INIT_LD_ROBOT = 0,
 	INIT_ULD_ROBOT,
 	INIT_LD_PLATE,
-	INIT_DVC_BUFFER,
-	INIT_TRAY_TRANSFER,
-	INIT_TRAY_ELIVATOR_LEFT,
-	INIT_TRAY_ELIVATOR_RIGHT,
+	INIT_LDSTACKER_ELV,
+	INIT_EMPTYSTACKER_ELV,
+	INIT_EMPTYTRAY_TRANSFER,
 	INIT_HEAT_SINK_ROBOT,
 	INIT_CARRIER_ROBOT,
 	INIT_UNPRESS_ROBOT,
@@ -378,7 +377,7 @@ enum ENUM_WM_MESSAGE
 // RS-232C 시리얼 통신 시 사용되는 메시지 정의                                   
 // -> MAX_PORT : 기본 포트 2개로 구성되어 있다						             
 // *************************************************************************
-#define MAX_PORT				2	// 생성할 시리얼 포트 갯수
+#define MAX_PORT				10	// 생성할 시리얼 포트 갯수
 #define COM_ERROR				-1	// 에러 메시지
 #define LOT_BARCODE_PORT		1		// 현재 BCR READ 포트 번호
 #define DEVICE_BARCODE_PORT		2		// 현재 BCR READ 포트 번호
@@ -784,6 +783,23 @@ enum ENUM_WM_MESSAGE
 #define ULD_MOVING_SAFETY				2
 #define MOVING_NOT_SAFETY				3
 
+//kwlee 2017.0411
+// 0 : 제어->검사 , 1 : 경화액 도포 불량 , 2: 점 불량 , 3: 선 두께 불량, 4: 중심점 편심 
+// 5: 삐침 불량 , 6 : 모양 불량 7, 선 짧음 , 8:  heatSink MisAlign
+#define  ERROR_7387_NOT_DISPENSING			1
+#define  ERROR_EPOXY_DOT_DEFECT				2
+#define  ERROR_EPOXY_LINE_THICK1_DEFECT		3
+#define  ERROR_EPOXY_CENTER_DEFECT			4
+#define  ERROR_EPOXY_LINE_THICK2_DEFECT		5
+#define  ERROR_EPOXY_LINE_THICK3_DEFECT		6
+#define  ERROR_EPOXY_LINE_THICK4_DEFECT		7
+#define  ERROR_HEATSINK_MISALIGN_DEFECT		8
+#define  ERROR_RESERVE_DEFECT				9
+#define  ERROR_DEVICE_MARK_DEFECT			10
+
+#define	 ERROR_PASS							1
+#define  ERROR_DEFECT						2
+
 enum PICKER_PICKPLACE_INFO
 {
 	PICKER_PICK_MODE	= 0,
@@ -837,13 +853,15 @@ enum THREAD_SYNC_VARIBLE_SITE_INFO  //위치별 트레이 존재 유무를 위치별로 정의해 
 	THD_UNPRESS_RBT,
 	THD_EPOXY_RBT,//	THD_BILLIARD,RBT,
 	THD_HEATSINK_RBT,
+	THD_HEATSINK_PRBT,
 	THD_VISION_RBT,
 	THD_DISPENSOR_RBT,//경화제
+	THD_DISPENSOR_PRBT,//경화제
 	THD_LD_HEATSINK_BUFF,
 	THD_PLACE_HEATSINK_DVC,
 	THD_PICK_REVERSE_DVC,
 	THD_PICK_HEATSINK_DVC,
-	THD_PACLE_CARRIER_DVC,
+	THD_PLACE_CARRIER_DVC,
 	THD_LD_HSALIGN_BUFF,
 	THD_LD_HSPICK_BUFF,
 	THD_ULD_STACKER,
@@ -1091,6 +1109,7 @@ struct st_handler_param
 	CWnd *cwnd_lot_info;
 	CWnd *cwnd_recipe;
 	CWnd *cwnd_lotstart;
+	CWnd *cwnd_manualmove;
 	// *************************************************************************
 
 	// *************************************************************************
@@ -1253,6 +1272,7 @@ struct st_handler_param
 	int	nStackerLightCurtainFlag;
 	int	nHeatSinkLightCurtainFlag;
 	int n_HeatSinkMutingOn;
+
 };
 extern  st_handler_param  st_handler;
 // *****************************************************************************
@@ -1535,6 +1555,7 @@ struct st_basic_param
 
 	int n_mode_7387;
 	int n_7387InspectAlarmSkipMode;
+	int n_3874InspectAlarmSkipMode; //kwlee 2017.0411
 	int n7387AlarmCount;
 	int n_3874InspectMode;
 };
@@ -2088,7 +2109,8 @@ struct st_sync_param
 	//if Epoxy is going to safety, it may be conflict with Hearsink.
 	//so Heatsink transfer robot have to check where is it(heatsinkrobot may be able to work in turn position )
 	int nHeatsinkEpoxySateyflag;
-	
+
+	int nDisPensorFlag;
 	int n_barcode_read_serial_num[2][2]; //kwlee 2017.0406
 
 };
@@ -2800,6 +2822,7 @@ struct tag_BUFFER_INFO
 	tagPCB_INFO st_pcb_info[MAX_BUF_SIZE]; // pcb 구조체 변수.....
 };
 extern tag_BUFFER_INFO st_buffer_info[THREAD_MAX_SITE];
+extern tag_BUFFER_INFO st_manaualbuffer_info[THREAD_MAX_SITE];
 //////  2016.0806 
 
 
@@ -2887,7 +2910,9 @@ enum UNLOADER_TRANSFER_Z
 enum CARRIER_X
 {
 	P_CARRIER_X_INIT_POS = 0,
+	P_CARRIER_X_PUSHER_DOWN,
 	P_CARRIER_X_PUSH_POS,//한번 민 거리
+	P_CARRIER_X_BACK_PUSH_POS,
 	P_CARRIER_X_PRESS_POS,//잠깐 뒤로 뺸 거리
 	P_CARRIER_X_UNPRESS_POS,//밀거나, UNPRESS 하는 위치가 같다.밀기위해 Loaer위치로 이동한 거리
 };
@@ -2954,7 +2979,7 @@ enum HEATSINK_TRANSFER_X
 	P_HEATSINK_TRASNFER_X_TURN_PLACE_POS,
 	P_HEATSINK_TRASNFER_X_TURN_PICK_POS,
 	P_HEATSINK_TRASNFER_X_TURN_READY_POS,
-//	P_HEATSINK_TRASNFER_X_DISPENSER_POS,
+	P_HEATSINK_TRASNFER_X_DISPENSER_POS,
 	P_HEATSINK_TRANSFER_X_PLACE_TOPPOS,
 	P_HEATSINK_TRANSFER_X_PLACE_MIDPOS,
 	P_HEATSINK_TRANSFER_X_PLACE_BOTPOS,
@@ -2979,7 +3004,7 @@ enum HEATSINK_TRANSFER_Y
 	P_HEATSINK_TRASNFER_Y_TURN_PLACE_POS,
 	P_HEATSINK_TRASNFER_Y_TURN_PICK_POS,
 	P_HEATSINK_TRASNFER_Y_TURN_READY_POS,
-//	P_HEATSINK_TRASNFER_Y_DISPENSER_POS,
+	P_HEATSINK_TRASNFER_Y_DISPENSER_POS,
 	P_HEATSINK_TRANSFER_Y_PLACE_TOPPOS,
 	P_HEATSINK_TRANSFER_Y_PLACE_MIDPOS,
 	P_HEATSINK_TRANSFER_Y_PLACE_BOTPOS,

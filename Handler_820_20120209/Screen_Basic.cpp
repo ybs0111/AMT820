@@ -209,7 +209,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 	nCnt = lpcc->Row;
 
 	//kwlee 2017.0403
-	if (nCnt <= 0 || g_lotMgr.GetLotCount() > 0)
+	if (nCnt <= 0 || g_lotMgr.GetLotCount() > 0 )
 	{
 		return;
 	}
@@ -465,6 +465,12 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 	//kwlee 2017.0405
 	else if(wParam == IDC_CUSTOM_OPERATE2)
 	{
+
+// 		if (nCnt >= 10)
+// 		{
+// 			return;
+// 		}
+
 		m_grid_operate = (TSpread*) GetDlgItem(IDC_CUSTOM_OPERATE2);
 		
 		switch(lpcc->Row)
@@ -527,193 +533,194 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			m_p_grid.GridCellColor(m_grid_operate, 9, lpcc->Col, GREEN_C, BLACK_C);
 			n_mode_case_assembly[1] = 1;
 			break;
-		//kwlee 2017.0406
+		//kwlee 2017.0411
 		case 11:
-			md_Temp = m_dLoaderTransferTrayDeviceGap[1];
-
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("DVC Gap");
+			if(m_n3874InspectAlarmSkipMode[1] == 0) return;
 			
-			st_msg.mstr_keypad_val = mstr_temp;
+			m_p_grid.GridCellColor(m_grid_operate, 11, lpcc->Col, GREEN_C, BLACK_C);
+			m_p_grid.GridCellColor(m_grid_operate, 12, lpcc->Col, GREEN_D, BLACK_C);
+			m_n3874InspectAlarmSkipMode[1] = 0;
+			break;
+	
+		case 12:
+			if(m_n3874InspectAlarmSkipMode[1] == 1) return;
 			
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_dLoaderTransferTrayDeviceGap[1] = atof(mstr_temp);
-			//int iTemp = atoi(mstr_temp);
-			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",m_dLoaderTransferTrayDeviceGap[1]);
-			m_p_grid.GridCellText(m_grid_operate, 11, 1, mstr_temp);
+			m_p_grid.GridCellColor(m_grid_operate, 11, lpcc->Col, GREEN_D, BLACK_C);
+			m_p_grid.GridCellColor(m_grid_operate, 12, lpcc->Col, GREEN_C, BLACK_C);
+			m_n3874InspectAlarmSkipMode[1] = 1;
 			break;
 
-		case 13:
-			md_Temp = m_dSatbleTime[1];
-			
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("Satble Time");
-			
-			st_msg.mstr_keypad_val = mstr_temp;
-			
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_dSatbleTime[1] = atol(mstr_temp);
-			//int iTemp = atoi(mstr_temp);
-			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",(double)m_dSatbleTime[1]);
-			m_p_grid.GridCellText(m_grid_operate, 13, 1, mstr_temp);
-			break;
+// 		case 13:
+// 			md_Temp = m_dSatbleTime[1];
+// 			
+// 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+// 			mstr_temp.Format("%0.2f",md_Temp);
+// 			st_msg.mstr_keypad_msg = _T("Satble Time");
+// 			
+// 			st_msg.mstr_keypad_val = mstr_temp;
+// 			
+// 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+// 			m_dSatbleTime[1] = atol(mstr_temp);
+// 			//int iTemp = atoi(mstr_temp);
+// 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+// 			mstr_temp.Format("%0.2f",(double)m_dSatbleTime[1]);
+// 			m_p_grid.GridCellText(m_grid_operate, 13, 1, mstr_temp);
+// 			break;
 		
-		case 15:
-			md_Temp = m_nEpoxyRunSpeed[1];
-			
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed");
-			
-			st_msg.mstr_keypad_val = mstr_temp;
-			
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_nEpoxyRunSpeed[1] = atof(mstr_temp);
-			//int iTemp = atoi(mstr_temp);
-			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",m_nEpoxyRunSpeed[1]);
-			m_p_grid.GridCellText(m_grid_operate, 15, 1, mstr_temp);
-			break;
+// 		case 15:
+// 			md_Temp = m_nEpoxyRunSpeed[1];
+// 			
+// 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+// 			mstr_temp.Format("%0.2f",md_Temp);
+// 			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed");
+// 			
+// 			st_msg.mstr_keypad_val = mstr_temp;
+// 			
+// 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+// 			m_nEpoxyRunSpeed[1] = atof(mstr_temp);
+// 			//int iTemp = atoi(mstr_temp);
+// 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+// 			mstr_temp.Format("%0.2f",m_nEpoxyRunSpeed[1]);
+// 			m_p_grid.GridCellText(m_grid_operate, 15, 1, mstr_temp);
+// 			break;
 
 			////
-		case 17:
-			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_VEL];
-			
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Vel");
-			
-			st_msg.mstr_keypad_val = mstr_temp;
-			
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_nEpoxyXYRunSpeed[1][EPOXY_VEL] = atof(mstr_temp);
-			//int iTemp = atoi(mstr_temp);
-			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("Vel  :  %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
-			m_p_grid.GridCellText(m_grid_operate, 17, 1, mstr_temp);
-			break;
+// 		case 17:
+// 			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_VEL];
+// 			
+// 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+// 			mstr_temp.Format("%0.2f",md_Temp);
+// 			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Vel");
+// 			
+// 			st_msg.mstr_keypad_val = mstr_temp;
+// 			
+// 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+// 			m_nEpoxyXYRunSpeed[1][EPOXY_VEL] = atof(mstr_temp);
+// 			//int iTemp = atoi(mstr_temp);
+// 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+// 			mstr_temp.Format("Vel  :  %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
+// 			m_p_grid.GridCellText(m_grid_operate, 17, 1, mstr_temp);
+// 			break;
 
-		case 18:
-			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_ACC];
-			
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Acc");
-			
-			st_msg.mstr_keypad_val = mstr_temp;
-			
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_nEpoxyXYRunSpeed[1][EPOXY_ACC] = atof(mstr_temp);
-			//int iTemp = atoi(mstr_temp);
-			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("Acc  :  %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
-			m_p_grid.GridCellText(m_grid_operate, 18, 1, mstr_temp);
-			break;
+// 		case 18:
+// 			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_ACC];
+// 			
+// 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+// 			mstr_temp.Format("%0.2f",md_Temp);
+// 			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Acc");
+// 			
+// 			st_msg.mstr_keypad_val = mstr_temp;
+// 			
+// 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+// 			m_nEpoxyXYRunSpeed[1][EPOXY_ACC] = atof(mstr_temp);
+// 			//int iTemp = atoi(mstr_temp);
+// 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+// 			mstr_temp.Format("Acc  :  %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
+// 			m_p_grid.GridCellText(m_grid_operate, 18, 1, mstr_temp);
+// 			break;
 
-		case 19:
-			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_DEC];
-			
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Dec");
-			
-			st_msg.mstr_keypad_val = mstr_temp;
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_nEpoxyXYRunSpeed[1][EPOXY_DEC] = atof(mstr_temp);
-			mstr_temp.Format("Dec  :  %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
-			m_p_grid.GridCellText(m_grid_operate, 19, 1, mstr_temp);
-			break;
+// 		case 19:
+// 			md_Temp = m_nEpoxyXYRunSpeed[1][EPOXY_DEC];
+// 			
+// 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+// 			mstr_temp.Format("%0.2f",md_Temp);
+// 			st_msg.mstr_keypad_msg = _T("Epoxy Run Speed_Dec");
+// 			
+// 			st_msg.mstr_keypad_val = mstr_temp;
+// 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+// 			m_nEpoxyXYRunSpeed[1][EPOXY_DEC] = atof(mstr_temp);
+// 			mstr_temp.Format("Dec  :  %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
+// 			m_p_grid.GridCellText(m_grid_operate, 19, 1, mstr_temp);
+// 			break;
 
 			//////
-		case 21:
-			md_Temp = m_dEpoxyXOffSet[1];
-			
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("Epoxy X Offset");
-			
-			st_msg.mstr_keypad_val = mstr_temp;
-			
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_dEpoxyXOffSet[1] = atof(mstr_temp);
-			//int iTemp = atoi(mstr_temp);
-			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",m_dEpoxyXOffSet[1]);
-			m_p_grid.GridCellText(m_grid_operate, 21, 1, mstr_temp);
-			break;
+// 		case 21:
+// 			md_Temp = m_dEpoxyXOffSet[1];
+// 			
+// 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+// 			mstr_temp.Format("%0.2f",md_Temp);
+// 			st_msg.mstr_keypad_msg = _T("Epoxy X Offset");
+// 			
+// 			st_msg.mstr_keypad_val = mstr_temp;
+// 			
+// 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+// 			m_dEpoxyXOffSet[1] = atof(mstr_temp);
+// 			//int iTemp = atoi(mstr_temp);
+// 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+// 			mstr_temp.Format("%0.2f",m_dEpoxyXOffSet[1]);
+// 			m_p_grid.GridCellText(m_grid_operate, 21, 1, mstr_temp);
+// 			break;
 
-		case 23:
-			md_Temp = m_dEpoxyYOffSet[1];
-			
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("Epoxy Y Offset");
-			
-			st_msg.mstr_keypad_val = mstr_temp;
-			
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_dEpoxyYOffSet[1] = atof(mstr_temp);
-			//int iTemp = atoi(mstr_temp);
-			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",m_dEpoxyYOffSet[1]);
-			m_p_grid.GridCellText(m_grid_operate, 23, 1, mstr_temp);
-			break;
+// 		case 23:
+// 			md_Temp = m_dEpoxyYOffSet[1];
+// 			
+// 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+// 			mstr_temp.Format("%0.2f",md_Temp);
+// 			st_msg.mstr_keypad_msg = _T("Epoxy Y Offset");
+// 			
+// 			st_msg.mstr_keypad_val = mstr_temp;
+// 			
+// 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+// 			m_dEpoxyYOffSet[1] = atof(mstr_temp);
+// 			//int iTemp = atoi(mstr_temp);
+// 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+// 			mstr_temp.Format("%0.2f",m_dEpoxyYOffSet[1]);
+// 			m_p_grid.GridCellText(m_grid_operate, 23, 1, mstr_temp);
+// 			break;
 
-		case 25:
-			md_Temp = m_nRubHSRunSpeed[1];
-			
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("Rub Hs RunSpeed");
-			
-			st_msg.mstr_keypad_val = mstr_temp;
-			
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_nRubHSRunSpeed[1] = atof(mstr_temp);
-			//int iTemp = atoi(mstr_temp);
-			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("%0.2f",m_nRubHSRunSpeed[1]);
-			m_p_grid.GridCellText(m_grid_operate, 25, 1, mstr_temp);
-			break;
+// 		case 25:
+// 			md_Temp = m_nRubHSRunSpeed[1];
+// 			
+// 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+// 			mstr_temp.Format("%0.2f",md_Temp);
+// 			st_msg.mstr_keypad_msg = _T("Rub Hs RunSpeed");
+// 			
+// 			st_msg.mstr_keypad_val = mstr_temp;
+// 			
+// 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+// 			m_nRubHSRunSpeed[1] = atof(mstr_temp);
+// 			//int iTemp = atoi(mstr_temp);
+// 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+// 			mstr_temp.Format("%0.2f",m_nRubHSRunSpeed[1]);
+// 			m_p_grid.GridCellText(m_grid_operate, 25, 1, mstr_temp);
+// 			break;
 
 			////
-		case 27:
-			md_Temp = m_dTrayPitch_Y[1];
-			
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("Pitch_Y");
-			
-			st_msg.mstr_keypad_val = mstr_temp;
-			
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_dTrayPitch_Y[1] = atof(mstr_temp);
-			//int iTemp = atoi(mstr_temp);
-			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("Pitch_Y :  %0.2f",m_dTrayPitch_Y[1]);
-			m_p_grid.GridCellText(m_grid_operate, 27, 1, mstr_temp);
-			break;
+// 		case 27:
+// 			md_Temp = m_dTrayPitch_Y[1];
+// 			
+// 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+// 			mstr_temp.Format("%0.2f",md_Temp);
+// 			st_msg.mstr_keypad_msg = _T("Pitch_Y");
+// 			
+// 			st_msg.mstr_keypad_val = mstr_temp;
+// 			
+// 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+// 			m_dTrayPitch_Y[1] = atof(mstr_temp);
+// 			//int iTemp = atoi(mstr_temp);
+// 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+// 			mstr_temp.Format("Pitch_Y :  %0.2f",m_dTrayPitch_Y[1]);
+// 			m_p_grid.GridCellText(m_grid_operate, 27, 1, mstr_temp);
+// 			break;
 
-
-		case 28:
-			md_Temp = m_dTrayPitch_X[1];
-			
-			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%0.2f",md_Temp);
-			st_msg.mstr_keypad_msg = _T("Pitch_Y");
-			
-			st_msg.mstr_keypad_val = mstr_temp;
-			
-			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-			m_dTrayPitch_X[1] = atof(mstr_temp);
-			//int iTemp = atoi(mstr_temp);
-			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-			mstr_temp.Format("Pitch_X :  %0.2f",m_dTrayPitch_X[1]);
-			m_p_grid.GridCellText(m_grid_operate, 28, 1, mstr_temp);
+// 
+// 		case 28:
+// 			md_Temp = m_dTrayPitch_X[1];
+// 			
+// 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
+// 			mstr_temp.Format("%0.2f",md_Temp);
+// 			st_msg.mstr_keypad_msg = _T("Pitch_Y");
+// 			
+// 			st_msg.mstr_keypad_val = mstr_temp;
+// 			
+// 			mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
+// 			m_dTrayPitch_X[1] = atof(mstr_temp);
+// 			//int iTemp = atoi(mstr_temp);
+// 			//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
+// 			mstr_temp.Format("Pitch_X :  %0.2f",m_dTrayPitch_X[1]);
+// 			m_p_grid.GridCellText(m_grid_operate, 28, 1, mstr_temp);
+// 			break;
+		default:
 			break;
 			//////
 		}
@@ -1008,6 +1015,7 @@ void CScreen_Basic::OnBasic_Data_Set()
 	m_nmode_7387[1]									= 	st_basic.n_mode_7387;						
 	m_nmode_tray_type[1]							= 	st_basic.n_mode_tray_type;					
 	m_n7387InspectAlarmSkipMode[1]					= 	st_basic.n_7387InspectAlarmSkipMode;			
+	m_n3874InspectAlarmSkipMode[1]					= 	st_basic.n_3874InspectAlarmSkipMode; //kwlee 2017.0411
 	m_n3874InspectMode[1]							= 	st_basic.n_3874InspectMode;					
 	n_Light_Curtain_Mode[1]							= 	st_basic.n_Light_Curtain_Mode;				
 	n_mode_case_assembly[1]							= 	st_basic.n_mode_case_assembly;				
@@ -1027,23 +1035,23 @@ void CScreen_Basic::OnBasic_Data_Set()
 	m_n_count_retry[1]								= 	st_basic.n_count_retry;
 
 	//kwlee 2017.0406
-	m_dLoaderTransferTrayDeviceGap[1]             =  st_recipe.dLoaderTransferTrayDeviceGap;
-	m_dSatbleTime[1]							  =  st_recipe.dSatbleTime;
-	m_nEpoxyRunSpeed[1]							  =  st_recipe.nEpoxyRunSpeed;
-	m_nEpoxyXYRunSpeed[1][EPOXY_VEL]               =  st_recipe.nEpoxyXYRunSpeed[EPOXY_VEL];
-	m_nEpoxyXYRunSpeed[1][EPOXY_ACC]               =  st_recipe.nEpoxyXYRunSpeed[EPOXY_ACC];
-	m_nEpoxyXYRunSpeed[1][EPOXY_DEC]               =  st_recipe.nEpoxyXYRunSpeed[EPOXY_DEC];
-	m_dEpoxyXOffSet[1]                            =  st_recipe.dEpoxyXOffSet;
-	m_dEpoxyYOffSet[1]                            =  st_recipe.dEpoxyYOffSet;
-	m_nRubHSRunSpeed[1]                           = st_recipe.nRubHSRunSpeed;
-	m_dTrayPitch_Y[1]			                  = st_recipe.dTrayPitch_Y;
-	m_dTrayPitch_X[1]			                  = st_recipe.dTrayPitch_X;
-	m_nfDispenserVppmA[1]                         = st_recipe.fDispenserVppmA;
-	m_nEpoxyDotScrewCount[1]                      = st_recipe.nEpoxyDotScrewCount; 
-	m_nHsTrayY[1]						          = st_recipe.nHsTrayY;
-	m_nHsTrayX[1]						          = st_recipe.nHsTrayX;
-	m_nTrayY[1]						              = st_recipe.nTrayY;
-    m_nTrayX[1]                                   = st_recipe.nTrayX;
+// 	m_dLoaderTransferTrayDeviceGap[1]             =  st_recipe.dLoaderTransferTrayDeviceGap;
+// 	m_dSatbleTime[1]							  =  st_recipe.dSatbleTime;
+// 	m_nEpoxyRunSpeed[1]							  =  st_recipe.nEpoxyRunSpeed;
+// 	m_nEpoxyXYRunSpeed[1][EPOXY_VEL]               =  st_recipe.nEpoxyXYRunSpeed[EPOXY_VEL];
+// 	m_nEpoxyXYRunSpeed[1][EPOXY_ACC]               =  st_recipe.nEpoxyXYRunSpeed[EPOXY_ACC];
+// 	m_nEpoxyXYRunSpeed[1][EPOXY_DEC]               =  st_recipe.nEpoxyXYRunSpeed[EPOXY_DEC];
+// 	m_dEpoxyXOffSet[1]                            =  st_recipe.dEpoxyXOffSet;
+// 	m_dEpoxyYOffSet[1]                            =  st_recipe.dEpoxyYOffSet;
+// 	m_nRubHSRunSpeed[1]                           = st_recipe.nRubHSRunSpeed;
+// 	m_dTrayPitch_Y[1]			                  = st_recipe.dTrayPitch_Y;
+// 	m_dTrayPitch_X[1]			                  = st_recipe.dTrayPitch_X;
+// 	m_nfDispenserVppmA[1]                         = st_recipe.fDispenserVppmA;
+// 	m_nEpoxyDotScrewCount[1]                      = st_recipe.nEpoxyDotScrewCount; 
+// 	m_nHsTrayY[1]						          = st_recipe.nHsTrayY;
+// 	m_nHsTrayX[1]						          = st_recipe.nHsTrayX;
+// 	m_nTrayY[1]						              = st_recipe.nTrayY;
+//     m_nTrayX[1]                                   = st_recipe.nTrayX;
 
 	OnBasic_Data_Backup();
 	
@@ -1146,6 +1154,7 @@ void CScreen_Basic::OnBasic_Data_Backup()
 	m_nmode_7387[0]							= m_nmode_7387[1];
 	m_nmode_tray_type[0]					= m_nmode_tray_type[1];
 	m_n7387InspectAlarmSkipMode[0]			= m_n7387InspectAlarmSkipMode[1];
+	m_n3874InspectAlarmSkipMode[0]			= m_n3874InspectAlarmSkipMode[1];
 	m_n3874InspectMode[0]					= m_n3874InspectMode[1];
 	n_Light_Curtain_Mode[0]					= n_Light_Curtain_Mode[1];
 	n_mode_case_assembly[0]					= n_mode_case_assembly[1];
@@ -1165,23 +1174,23 @@ void CScreen_Basic::OnBasic_Data_Backup()
 	m_n_count_retry[0]						= m_n_count_retry[1];
 
 	//kwlee 2017.0406
-	m_dLoaderTransferTrayDeviceGap[0]  = m_dLoaderTransferTrayDeviceGap[1];  
-	m_dSatbleTime[0]				   = m_dSatbleTime[1];					
-	m_nEpoxyRunSpeed[0]				   = m_nEpoxyRunSpeed[1];					
-	m_nEpoxyXYRunSpeed[0][EPOXY_VEL]   = m_nEpoxyXYRunSpeed[1][EPOXY_VEL];
-	m_nEpoxyXYRunSpeed[0][EPOXY_ACC]   = m_nEpoxyXYRunSpeed[1][EPOXY_ACC];
-	m_nEpoxyXYRunSpeed[0][EPOXY_DEC]   = m_nEpoxyXYRunSpeed[1][EPOXY_DEC];
-	m_dEpoxyXOffSet[0]                 = m_dEpoxyXOffSet[1];                 
-	m_dEpoxyYOffSet[0]                 = m_dEpoxyYOffSet[1];                 
-	m_nRubHSRunSpeed[0]                = m_nRubHSRunSpeed[1];                
-	m_dTrayPitch_Y[0]			       = m_dTrayPitch_Y[1];			       
-	m_dTrayPitch_X[0]			       = m_dTrayPitch_X[1];			       
-	m_nfDispenserVppmA[0]              =  m_nfDispenserVppmA[1];              
-	m_nEpoxyDotScrewCount[0]           =  m_nEpoxyDotScrewCount[1];           
-	m_nHsTrayY[0]						= m_nHsTrayY[1];						
-	m_nHsTrayX[0]						= m_nHsTrayX[1];						
-	m_nTrayY[0]						   =  m_nTrayY[1];						   
-	m_nTrayX[0]                        =  m_nTrayX[1];  
+// 	m_dLoaderTransferTrayDeviceGap[0]  = m_dLoaderTransferTrayDeviceGap[1];  
+// 	m_dSatbleTime[0]				   = m_dSatbleTime[1];					
+// 	m_nEpoxyRunSpeed[0]				   = m_nEpoxyRunSpeed[1];					
+// 	m_nEpoxyXYRunSpeed[0][EPOXY_VEL]   = m_nEpoxyXYRunSpeed[1][EPOXY_VEL];
+// 	m_nEpoxyXYRunSpeed[0][EPOXY_ACC]   = m_nEpoxyXYRunSpeed[1][EPOXY_ACC];
+// 	m_nEpoxyXYRunSpeed[0][EPOXY_DEC]   = m_nEpoxyXYRunSpeed[1][EPOXY_DEC];
+// 	m_dEpoxyXOffSet[0]                 = m_dEpoxyXOffSet[1];                 
+// 	m_dEpoxyYOffSet[0]                 = m_dEpoxyYOffSet[1];                 
+// 	m_nRubHSRunSpeed[0]                = m_nRubHSRunSpeed[1];                
+// 	m_dTrayPitch_Y[0]			       = m_dTrayPitch_Y[1];			       
+// 	m_dTrayPitch_X[0]			       = m_dTrayPitch_X[1];			       
+// 	m_nfDispenserVppmA[0]              =  m_nfDispenserVppmA[1];              
+// 	m_nEpoxyDotScrewCount[0]           =  m_nEpoxyDotScrewCount[1];           
+// 	m_nHsTrayY[0]						= m_nHsTrayY[1];						
+// 	m_nHsTrayX[0]						= m_nHsTrayX[1];						
+// 	m_nTrayY[0]						   =  m_nTrayY[1];						   
+// 	m_nTrayX[0]                        =  m_nTrayX[1];  
 }
 
 void CScreen_Basic::OnBasic_Data_Apply()
@@ -1205,6 +1214,7 @@ void CScreen_Basic::OnBasic_Data_Apply()
 	st_basic.n_mode_7387						= m_nmode_7387[1];
 	st_basic.n_mode_tray_type					= m_nmode_tray_type[1];
 	st_basic.n_7387InspectAlarmSkipMode			= m_n7387InspectAlarmSkipMode[1];
+	st_basic.n_3874InspectAlarmSkipMode			= m_n3874InspectAlarmSkipMode[1]; //kwlee 2017.0411
 	st_basic.n_3874InspectMode					= m_n3874InspectMode[1];
 	st_basic.n_Light_Curtain_Mode				= n_Light_Curtain_Mode[1];
 	st_basic.n_mode_case_assembly				= n_mode_case_assembly[1];
@@ -1224,27 +1234,27 @@ void CScreen_Basic::OnBasic_Data_Apply()
 	st_basic.n_count_retry						= m_n_count_retry[1];
 
 	//kwlee 2017.0406
-	st_recipe.dLoaderTransferTrayDeviceGap   = m_dLoaderTransferTrayDeviceGap[1];
-	st_recipe.dSatbleTime                    = m_dSatbleTime[1];
-	st_recipe.nEpoxyRunSpeed                 = m_nEpoxyRunSpeed[1];             
-	st_recipe.nEpoxyXYRunSpeed[EPOXY_VEL]    = m_nEpoxyXYRunSpeed[1][EPOXY_VEL];           ;//[0]//vel [1]:acc [2] dec
-	st_recipe.nEpoxyXYRunSpeed[EPOXY_ACC]    = m_nEpoxyXYRunSpeed[1][EPOXY_ACC];
-	st_recipe.nEpoxyXYRunSpeed[EPOXY_DEC]    = m_nEpoxyXYRunSpeed[1][EPOXY_DEC];
-	
-	st_recipe.dEpoxyXOffSet                  = m_dEpoxyXOffSet[1];
-	st_recipe.dEpoxyYOffSet                  = m_dEpoxyYOffSet[1];
-	st_recipe.nRubHSRunSpeed                 = m_nRubHSRunSpeed[1];
-	
-	st_recipe.dTrayPitch_Y                   = m_dTrayPitch_Y[1];			//트레이 피치간격 
-	st_recipe.dTrayPitch_X                   = m_dTrayPitch_X[1];			//트레이 피치간격 	
-	
-	st_recipe.fDispenserVppmA                = m_nfDispenserVppmA[1];
-	st_recipe.nEpoxyDotScrewCount            = m_nEpoxyDotScrewCount[1];
-	st_recipe.nHsTrayY                       = m_nHsTrayY[1];						// HeatSink tray Y 정보.......
-	st_recipe.nHsTrayX                       = m_nHsTrayX[1];						// HeatSink tray X 정보.......
-	
-	st_recipe.nTrayY                         = m_nTrayY[1];						// tray Y 정보.......
-	st_recipe.nTrayX						 = m_nTrayX[1];	
+// 	st_recipe.dLoaderTransferTrayDeviceGap   = m_dLoaderTransferTrayDeviceGap[1];
+// 	st_recipe.dSatbleTime                    = m_dSatbleTime[1];
+// 	st_recipe.nEpoxyRunSpeed                 = m_nEpoxyRunSpeed[1];             
+// 	st_recipe.nEpoxyXYRunSpeed[EPOXY_VEL]    = m_nEpoxyXYRunSpeed[1][EPOXY_VEL];           ;//[0]//vel [1]:acc [2] dec
+// 	st_recipe.nEpoxyXYRunSpeed[EPOXY_ACC]    = m_nEpoxyXYRunSpeed[1][EPOXY_ACC];
+// 	st_recipe.nEpoxyXYRunSpeed[EPOXY_DEC]    = m_nEpoxyXYRunSpeed[1][EPOXY_DEC];
+// 	
+// 	st_recipe.dEpoxyXOffSet                  = m_dEpoxyXOffSet[1];
+// 	st_recipe.dEpoxyYOffSet                  = m_dEpoxyYOffSet[1];
+// 	st_recipe.nRubHSRunSpeed                 = m_nRubHSRunSpeed[1];
+// 	
+// 	st_recipe.dTrayPitch_Y                   = m_dTrayPitch_Y[1];			//트레이 피치간격 
+// 	st_recipe.dTrayPitch_X                   = m_dTrayPitch_X[1];			//트레이 피치간격 	
+// 	
+// 	st_recipe.fDispenserVppmA                = m_nfDispenserVppmA[1];
+// 	st_recipe.nEpoxyDotScrewCount            = m_nEpoxyDotScrewCount[1];
+// 	st_recipe.nHsTrayY                       = m_nHsTrayY[1];						// HeatSink tray Y 정보.......
+// 	st_recipe.nHsTrayX                       = m_nHsTrayX[1];						// HeatSink tray X 정보.......
+// 	
+// 	st_recipe.nTrayY                         = m_nTrayY[1];						// tray Y 정보.......
+// 	st_recipe.nTrayX						 = m_nTrayX[1];	
 }
 
 int CScreen_Basic::Data_Comparison()
@@ -1263,6 +1273,7 @@ int CScreen_Basic::Data_Comparison()
 	if(m_nmode_7387[0]						!= m_nmode_7387[1])					return RET_ERROR;
 	if(m_nmode_tray_type[0]					!= m_nmode_tray_type[1])			return RET_ERROR;
 	if(m_n7387InspectAlarmSkipMode[0]		!= m_n7387InspectAlarmSkipMode[1])	return RET_ERROR;
+	if(m_n3874InspectAlarmSkipMode[0]		!= m_n3874InspectAlarmSkipMode[1])	return RET_ERROR;//kwlee 2017.0411
 	if(m_n3874InspectMode[0]				!= m_n3874InspectMode[1])			return RET_ERROR;
 	if(n_Light_Curtain_Mode[0]				!= n_Light_Curtain_Mode[1])			return RET_ERROR;
 	if(n_mode_case_assembly[0]				!= n_mode_case_assembly[1])			return RET_ERROR;
@@ -1318,6 +1329,7 @@ void CScreen_Basic::Data_Recovery()
 	m_nmode_7387[1]							= m_nmode_7387[0];
 	m_nmode_tray_type[1]					= m_nmode_tray_type[0];
 	m_n7387InspectAlarmSkipMode[1]			= m_n7387InspectAlarmSkipMode[0];
+	m_n3874InspectAlarmSkipMode[1]			= m_n3874InspectAlarmSkipMode[0]; //kwlee 2017.0411
 	m_n3874InspectMode[1]					= m_n3874InspectMode[0];
 	n_Light_Curtain_Mode[1]					= n_Light_Curtain_Mode[0];
 	n_mode_case_assembly[1]					= n_mode_case_assembly[0];
@@ -1338,23 +1350,23 @@ void CScreen_Basic::Data_Recovery()
 	m_n_count_retry[1]						= m_n_count_retry[0];
 
 	//kwlee 2017.0406
-	m_dLoaderTransferTrayDeviceGap[1]   =   m_dLoaderTransferTrayDeviceGap[0];
-	m_dSatbleTime[1]				    =	 m_dSatbleTime[0];
-	m_nEpoxyRunSpeed[1]			 	    =	 m_nEpoxyRunSpeed[0];	
-	m_nEpoxyXYRunSpeed[1][EPOXY_VEL]    =   m_nEpoxyXYRunSpeed[0][EPOXY_VEL];
-	m_nEpoxyXYRunSpeed[1][EPOXY_ACC]    =   m_nEpoxyXYRunSpeed[0][EPOXY_ACC];
-	m_nEpoxyXYRunSpeed[1][EPOXY_DEC]    =   m_nEpoxyXYRunSpeed[0][EPOXY_DEC];
-	m_dEpoxyXOffSet[1]                  =   m_dEpoxyXOffSet[0];
-	m_dEpoxyYOffSet[1]                  =   m_dEpoxyYOffSet[0];
-	m_nRubHSRunSpeed[1]                 =   m_nRubHSRunSpeed[0];
-	m_dTrayPitch_Y[1]			        =  	 m_dTrayPitch_Y[0];   
-	m_dTrayPitch_X[1]			        =  	 m_dTrayPitch_X[0];   
-	m_nfDispenserVppmA[1]               =    m_nfDispenserVppmA[0];
-	m_nEpoxyDotScrewCount[1]            =    m_nEpoxyDotScrewCount[0];
-	m_nHsTrayY[1]				 	    =	 m_nHsTrayY[0];
-	m_nHsTrayX[1]					    =	 m_nHsTrayX[0];
-	m_nTrayY[1]					        =	 m_nTrayY[0];   
-    m_nTrayX[1]                         =    m_nTrayX[0];  
+// 	m_dLoaderTransferTrayDeviceGap[1]   =   m_dLoaderTransferTrayDeviceGap[0];
+// 	m_dSatbleTime[1]				    =	 m_dSatbleTime[0];
+// 	m_nEpoxyRunSpeed[1]			 	    =	 m_nEpoxyRunSpeed[0];	
+// 	m_nEpoxyXYRunSpeed[1][EPOXY_VEL]    =   m_nEpoxyXYRunSpeed[0][EPOXY_VEL];
+// 	m_nEpoxyXYRunSpeed[1][EPOXY_ACC]    =   m_nEpoxyXYRunSpeed[0][EPOXY_ACC];
+// 	m_nEpoxyXYRunSpeed[1][EPOXY_DEC]    =   m_nEpoxyXYRunSpeed[0][EPOXY_DEC];
+// 	m_dEpoxyXOffSet[1]                  =   m_dEpoxyXOffSet[0];
+// 	m_dEpoxyYOffSet[1]                  =   m_dEpoxyYOffSet[0];
+// 	m_nRubHSRunSpeed[1]                 =   m_nRubHSRunSpeed[0];
+// 	m_dTrayPitch_Y[1]			        =  	 m_dTrayPitch_Y[0];   
+// 	m_dTrayPitch_X[1]			        =  	 m_dTrayPitch_X[0];   
+// 	m_nfDispenserVppmA[1]               =    m_nfDispenserVppmA[0];
+// 	m_nEpoxyDotScrewCount[1]            =    m_nEpoxyDotScrewCount[0];
+// 	m_nHsTrayY[1]				 	    =	 m_nHsTrayY[0];
+// 	m_nHsTrayX[1]					    =	 m_nHsTrayX[0];
+// 	m_nTrayY[1]					        =	 m_nTrayY[0];   
+//     m_nTrayX[1]                         =    m_nTrayX[0];  
 }
 
 BOOL CScreen_Basic::DestroyWindow() 
@@ -1664,6 +1676,14 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
+	//kwlee 2017.0411
+	if(m_n3874InspectAlarmSkipMode[0] != m_n3874InspectAlarmSkipMode[1])
+	{
+		str_msg.Format( "[BASIC] 3874InspectAlarmSkip Mode Change %d -> %d", m_n3874InspectAlarmSkipMode[0], m_n3874InspectAlarmSkipMode[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	//
+
 	if(m_n3874InspectMode[0] != m_n3874InspectMode[1])
 	{
 		str_msg.Format( "[BASIC] 3874Inspect Mode Change %d -> %d", m_n3874InspectMode[0], m_n3874InspectMode[1]);
@@ -1752,107 +1772,107 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	}
 	
 	//kwlee 2017.0406
-	if(m_dLoaderTransferTrayDeviceGap[0]	!=  m_dLoaderTransferTrayDeviceGap[1])
-	{
-		str_msg.Format( "[RECIPE] LoaderTransferTrayDeviceGap Change %0.2f -> 0.2f", m_dLoaderTransferTrayDeviceGap[0], m_dLoaderTransferTrayDeviceGap[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_dSatbleTime[0]	!=  m_dSatbleTime[1])
-	{
-		str_msg.Format( "[RECIPE] SatbleTime Change %0.2f -> 0.2f", m_dSatbleTime[0], m_dSatbleTime[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_nEpoxyRunSpeed[0]	!=  m_nEpoxyRunSpeed[1])
-	{
-		str_msg.Format( "[RECIPE] EpoxyRunSpeed Change %d -> %d", m_nEpoxyRunSpeed[0], m_nEpoxyRunSpeed[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_nEpoxyXYRunSpeed[0][EPOXY_VEL]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_VEL])
-	{
-		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_vel Change %d -> %d", m_nEpoxyXYRunSpeed[0][EPOXY_VEL], m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-
-	if(m_nEpoxyXYRunSpeed[0][EPOXY_ACC]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_ACC])
-	{
-		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_Acc Change %d -> %d", m_nEpoxyXYRunSpeed[0][EPOXY_ACC], m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_nEpoxyXYRunSpeed[0][EPOXY_DEC]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_DEC])
-	{
-		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_Dec Change %d -> %d", m_nEpoxyXYRunSpeed[0][EPOXY_DEC], m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_dEpoxyXOffSet[0]	!=  m_dEpoxyXOffSet[1])
-	{
-		str_msg.Format( "[RECIPE] EpoxyXOffSet Change %0.2f -> 0.2f", m_dEpoxyXOffSet[0], m_dEpoxyXOffSet[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_dEpoxyYOffSet[0]	!=  m_dEpoxyYOffSet[1])
-	{
-		str_msg.Format( "[RECIPE] EpoxyYOffSet Change %0.2f -> 0.2f", m_dEpoxyYOffSet[0], m_dEpoxyYOffSet[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_nRubHSRunSpeed[0]	!=  m_nRubHSRunSpeed[1])
-	{
-		str_msg.Format( "[RECIPE] RubHSRunSpeed Change %d -> %d", m_nRubHSRunSpeed[0], m_nRubHSRunSpeed[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-
-	if(m_dTrayPitch_Y[0]	!=  m_dTrayPitch_Y[1])
-	{
-		str_msg.Format( "[RECIPE] TrayPitch_YLoaderTransferTrayDeviceGap Change %0.2f -> 0.2f", m_dTrayPitch_Y[0], m_dTrayPitch_Y[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_dTrayPitch_X[0]	!=  m_dTrayPitch_X[1])
-	{
-		str_msg.Format( "[RECIPE] TrayPitch_X Change %0.2f -> 0.2f", m_dTrayPitch_X[0], m_dTrayPitch_X[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_nfDispenserVppmA[0]	!=  m_nfDispenserVppmA[1])
-	{
-		str_msg.Format( "[RECIPE] fDispenserVppmA Change %d -> %d", m_nfDispenserVppmA[0], m_nfDispenserVppmA[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_nEpoxyDotScrewCount[0]	!=  m_nEpoxyDotScrewCount[1])
-	{
-		str_msg.Format( "[RECIPE] EpoxyDotScrewCount Change %d -> %d", m_nEpoxyDotScrewCount[0], m_nEpoxyDotScrewCount[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-
-	if(m_nHsTrayY[0]	!=  m_nHsTrayY[1])
-	{
-		str_msg.Format( "[RECIPE] HsTrayY Change %d -> %d", m_nHsTrayY[0], m_nHsTrayY[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_nHsTrayX[0]	!=  m_nHsTrayX[1])
-	{
-		str_msg.Format( "[RECIPE] HsTrayX Change %d -> %d", m_nHsTrayX[0], m_nHsTrayX[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_nTrayY[0]	!=  m_nTrayY[1])
-	{
-		str_msg.Format( "[RECIPE] TrayY Change %d -> %d", m_nTrayY[0], m_nTrayY[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(m_nTrayX[0]	!=  m_nTrayX[1])
-	{
-		str_msg.Format( "[RECIPE] TrayX Change %d -> %d", m_nTrayX[0], m_nTrayX[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
+// 	if(m_dLoaderTransferTrayDeviceGap[0]	!=  m_dLoaderTransferTrayDeviceGap[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] LoaderTransferTrayDeviceGap Change %0.2f -> 0.2f", m_dLoaderTransferTrayDeviceGap[0], m_dLoaderTransferTrayDeviceGap[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_dSatbleTime[0]	!=  m_dSatbleTime[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] SatbleTime Change %0.2f -> 0.2f", m_dSatbleTime[0], m_dSatbleTime[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_nEpoxyRunSpeed[0]	!=  m_nEpoxyRunSpeed[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] EpoxyRunSpeed Change %d -> %d", m_nEpoxyRunSpeed[0], m_nEpoxyRunSpeed[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_nEpoxyXYRunSpeed[0][EPOXY_VEL]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_VEL])
+// 	{
+// 		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_vel Change %d -> %d", m_nEpoxyXYRunSpeed[0][EPOXY_VEL], m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 
+// 	if(m_nEpoxyXYRunSpeed[0][EPOXY_ACC]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_ACC])
+// 	{
+// 		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_Acc Change %d -> %d", m_nEpoxyXYRunSpeed[0][EPOXY_ACC], m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_nEpoxyXYRunSpeed[0][EPOXY_DEC]	!=  m_nEpoxyXYRunSpeed[1][EPOXY_DEC])
+// 	{
+// 		str_msg.Format( "[RECIPE] EpoxyXYRunSpeed_Dec Change %d -> %d", m_nEpoxyXYRunSpeed[0][EPOXY_DEC], m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_dEpoxyXOffSet[0]	!=  m_dEpoxyXOffSet[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] EpoxyXOffSet Change %0.2f -> 0.2f", m_dEpoxyXOffSet[0], m_dEpoxyXOffSet[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_dEpoxyYOffSet[0]	!=  m_dEpoxyYOffSet[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] EpoxyYOffSet Change %0.2f -> 0.2f", m_dEpoxyYOffSet[0], m_dEpoxyYOffSet[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_nRubHSRunSpeed[0]	!=  m_nRubHSRunSpeed[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] RubHSRunSpeed Change %d -> %d", m_nRubHSRunSpeed[0], m_nRubHSRunSpeed[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 
+// 	if(m_dTrayPitch_Y[0]	!=  m_dTrayPitch_Y[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] TrayPitch_YLoaderTransferTrayDeviceGap Change %0.2f -> 0.2f", m_dTrayPitch_Y[0], m_dTrayPitch_Y[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_dTrayPitch_X[0]	!=  m_dTrayPitch_X[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] TrayPitch_X Change %0.2f -> 0.2f", m_dTrayPitch_X[0], m_dTrayPitch_X[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_nfDispenserVppmA[0]	!=  m_nfDispenserVppmA[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] fDispenserVppmA Change %d -> %d", m_nfDispenserVppmA[0], m_nfDispenserVppmA[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_nEpoxyDotScrewCount[0]	!=  m_nEpoxyDotScrewCount[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] EpoxyDotScrewCount Change %d -> %d", m_nEpoxyDotScrewCount[0], m_nEpoxyDotScrewCount[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 
+// 	if(m_nHsTrayY[0]	!=  m_nHsTrayY[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] HsTrayY Change %d -> %d", m_nHsTrayY[0], m_nHsTrayY[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_nHsTrayX[0]	!=  m_nHsTrayX[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] HsTrayX Change %d -> %d", m_nHsTrayX[0], m_nHsTrayX[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_nTrayY[0]	!=  m_nTrayY[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] TrayY Change %d -> %d", m_nTrayY[0], m_nTrayY[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
+// 	
+// 	if(m_nTrayX[0]	!=  m_nTrayX[1])
+// 	{
+// 		str_msg.Format( "[RECIPE] TrayX Change %d -> %d", m_nTrayX[0], m_nTrayX[1]);
+// 		Func.On_LogFile_Add(0, str_msg);
+// 	}
 }
 
 void CScreen_Basic::Init_Pass()
@@ -1947,7 +1967,7 @@ void CScreen_Basic::Init_Grid_File()
 	m_p_grid.GridCellCols(m_grid_file, max_col);
 	
 	m_p_grid.GridCellHeight_L(m_grid_file, 0, 20);
-	m_p_grid.GridCellWidth_L(m_grid_file, 1, 10);
+	m_p_grid.GridCellWidth_L(m_grid_file, 1, 18);
 	m_p_grid.GridCellControlStatic(m_grid_file, 0, 1);
 	m_p_grid.GridCellWidth_L(m_grid_file, 2, 32);
 	m_p_grid.GridCellControlStatic(m_grid_file, 0, 2);
@@ -2568,308 +2588,116 @@ void CScreen_Basic::Init_Grid_Operate_1()
 	}
 
 
-	//kwlee 2017.0404
+	//kwlee 2017.0411
 	m_p_grid.GridCellFont(m_grid_operate, 10, 1, "MS Sans Serif", 18);
 	m_p_grid.GridCellColor(m_grid_operate, 10, 1, BLACK_L, YELLOW_C);
-	m_p_grid.GridCellText(m_grid_operate, 10, 1, "DVC Gap");
+	m_p_grid.GridCellText(m_grid_operate, 10, 1, "3874 Alarm Skip");
 	
-	str_tmp.Format("%0.2f",m_dLoaderTransferTrayDeviceGap[1]);
-	m_p_grid.GridCellColor(m_grid_operate, 11, 1, GREEN_C, BLACK_C);
 	m_p_grid.GridCellFont(m_grid_operate, 11, 1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 11, 1, str_tmp);
+	m_p_grid.GridCellText(m_grid_operate, 11, 1, "Alarm Skip");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 12, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 12, 1, "Alarm Use");
 	
 	
-	m_p_grid.GridCellFont(m_grid_operate, 12, 1, "MS Sans Serif", 18);
-	m_p_grid.GridCellColor(m_grid_operate, 12, 1, BLACK_L, YELLOW_C);
-	m_p_grid.GridCellText(m_grid_operate, 12, 1, "SatbleTime");
-	
-	str_tmp.Format("%0.2f",(double)m_dSatbleTime[1]);
-	m_p_grid.GridCellColor(m_grid_operate, 13, 1, GREEN_C, BLACK_C);
-	m_p_grid.GridCellFont(m_grid_operate, 13, 1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 13, 1, str_tmp);
-
-	
-	m_p_grid.GridCellFont(m_grid_operate, 14, 1, "MS Sans Serif", 18);
-	m_p_grid.GridCellColor(m_grid_operate, 14, 1, BLACK_L, YELLOW_C);
-	m_p_grid.GridCellText(m_grid_operate, 14, 1, "EpoxyRunSpeed");
-	
-	str_tmp.Format("%0.2f",m_nEpoxyRunSpeed[1]);
-	m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_C, BLACK_C);
-	m_p_grid.GridCellFont(m_grid_operate, 15, 1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 15, 1, str_tmp);
-	
-
-	m_p_grid.GridCellFont(m_grid_operate, 16, 1, "MS Sans Serif", 18);
-	m_p_grid.GridCellColor(m_grid_operate, 16, 1, BLACK_L, YELLOW_C);
-	m_p_grid.GridCellText(m_grid_operate, 16, 1, "EpoxyRunSpeed");
-	
-	str_tmp.Format("Vel  :   %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
-	m_p_grid.GridCellColor(m_grid_operate, 17, 1, GREEN_C, BLACK_C);
-	m_p_grid.GridCellFont(m_grid_operate, 17, 1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 17, 1, str_tmp);
-	
-
-// 	m_p_grid.GridCellFont(m_grid_operate, 18, 1, "MS Sans Serif", 18);
-// 	m_p_grid.GridCellColor(m_grid_operate, 18, 1, BLACK_L, YELLOW_C);
-// 	m_p_grid.GridCellText(m_grid_operate, 18, 1, "EpoxyRunSpeed_Acc");
-	
-	str_tmp.Format("Acc  :   %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
-	m_p_grid.GridCellColor(m_grid_operate, 18,1, GREEN_C, BLACK_C);
-	m_p_grid.GridCellFont(m_grid_operate, 18 ,1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 18 ,1, str_tmp);
-
-// 	m_p_grid.GridCellFont(m_grid_operate, 20, 1, "MS Sans Serif", 18);
-// 	m_p_grid.GridCellColor(m_grid_operate, 20, 1, BLACK_L, YELLOW_C);
-// 	m_p_grid.GridCellText(m_grid_operate, 20 ,1, "EpoxyRunSpeed_Dec");
-	
-	str_tmp.Format("Dec   :   %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
-	m_p_grid.GridCellColor(m_grid_operate, 19,1, GREEN_C, BLACK_C);
-	m_p_grid.GridCellFont(m_grid_operate, 19,1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 19,1, str_tmp);
-
-
-	m_p_grid.GridCellFont(m_grid_operate, 20, 1, "MS Sans Serif", 18);
-	m_p_grid.GridCellColor(m_grid_operate, 20, 1, BLACK_L, YELLOW_C);
-	m_p_grid.GridCellText(m_grid_operate, 20, 1, "EpoxyXOffSet");
-	
-	str_tmp.Format("%0.2f",m_dEpoxyXOffSet[1]);
-	m_p_grid.GridCellColor(m_grid_operate, 21, 1, GREEN_C, BLACK_C);
-	m_p_grid.GridCellFont(m_grid_operate, 21, 1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 21, 1, str_tmp);
-
-	m_p_grid.GridCellFont(m_grid_operate, 22, 1, "MS Sans Serif", 18);
-	m_p_grid.GridCellColor(m_grid_operate, 22, 1, BLACK_L, YELLOW_C);
-	m_p_grid.GridCellText(m_grid_operate, 22, 1, "EpoxyYOffSet");
-	
-	str_tmp.Format("%0.2f",m_dEpoxyYOffSet[1]);
-	m_p_grid.GridCellColor(m_grid_operate, 23, 1, GREEN_C, BLACK_C);
-	m_p_grid.GridCellFont(m_grid_operate, 23, 1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 23, 1, str_tmp);
-
-	m_p_grid.GridCellFont(m_grid_operate, 24, 1, "MS Sans Serif", 18);
-	m_p_grid.GridCellColor(m_grid_operate, 24, 1, BLACK_L, YELLOW_C);
-	m_p_grid.GridCellText(m_grid_operate, 24, 1, "RubHSRunSpeed");
-	
-	str_tmp.Format("%0.2f",m_nRubHSRunSpeed[1]);
-	m_p_grid.GridCellColor(m_grid_operate, 25, 1, GREEN_C, BLACK_C);
-	m_p_grid.GridCellFont(m_grid_operate, 25, 1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 25, 1, str_tmp);
-
-	m_p_grid.GridCellFont(m_grid_operate, 26, 1, "MS Sans Serif", 18);
-	m_p_grid.GridCellColor(m_grid_operate, 26, 1, BLACK_L, YELLOW_C);
-	m_p_grid.GridCellText(m_grid_operate, 26, 1, "TrayPitch");
-	
-	str_tmp.Format("Pitch_Y : %0.2f",m_dTrayPitch_Y[1]);
-	m_p_grid.GridCellColor(m_grid_operate, 27, 1, GREEN_C, BLACK_C);
-	m_p_grid.GridCellFont(m_grid_operate, 27, 1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 27, 1, str_tmp);
-
-	str_tmp.Format("Pitch_X : %0.2f",m_dTrayPitch_X[1]);
-	m_p_grid.GridCellColor(m_grid_operate, 28, 1, GREEN_C, BLACK_C);
-	m_p_grid.GridCellFont(m_grid_operate, 28, 1, "MS Sans Serif", 12);
-	m_p_grid.GridCellText(m_grid_operate, 28, 1, str_tmp);
-
-// 	if(m_nModeTester[1] == NOT_USE)
-// 	{
- 		
- 	///	m_p_grid.GridCellColor(m_grid_operate, 12, 1, GREEN_D, BLACK_C);
-// 	}
-// 	else
-// 	{
-// 		m_p_grid.GridCellColor(m_grid_operate, 11, 1, GREEN_D, BLACK_C);
-// 		m_p_grid.GridCellColor(m_grid_operate, 12, 1, GREEN_C, BLACK_C);
-// 	}
-
-
-	//kwlee 2017.0404
-//  	m_p_grid.GridCellFont(m_grid_operate, 13, 1, "MS Sans Serif", 18);
-//  	m_p_grid.GridCellColor(m_grid_operate, 13, 1, BLACK_L, YELLOW_C);
-// 	//m_p_grid.GridCellText(m_grid_operate, 13, 1, "바코드 사용");
+	if(m_n3874InspectAlarmSkipMode[1] == NOT_USE)
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 11, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 12, 1, GREEN_D, BLACK_C);
+	}
+	else
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 11, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 12, 1, GREEN_C, BLACK_C);
+	}
 // 	
-// 	m_p_grid.GridCellFont(m_grid_operate, 14, 1, "MS Sans Serif", 12);
-// 	//m_p_grid.GridCellText(m_grid_operate, 14, 1, "Barcode Off");
+// 	str_tmp.Format("%0.2f",(double)m_dSatbleTime[1]);
+ 	m_p_grid.GridCellColor(m_grid_operate, 13, 1, BLACK_L, YELLOW_C);
+// 	m_p_grid.GridCellFont(m_grid_operate, 13, 1, "MS Sans Serif", 12);
+// 	m_p_grid.GridCellText(m_grid_operate, 13, 1, str_tmp);
+// 
 // 	
+// 	m_p_grid.GridCellFont(m_grid_operate, 14, 1, "MS Sans Serif", 18);
+ 	m_p_grid.GridCellColor(m_grid_operate, 14, 1, GREEN_C, BLACK_C);
+// 	m_p_grid.GridCellText(m_grid_operate, 14, 1, "EpoxyRunSpeed");
+// 	
+// 	str_tmp.Format("%0.2f",m_nEpoxyRunSpeed[1]);
+ 	m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_C, BLACK_C);
 // 	m_p_grid.GridCellFont(m_grid_operate, 15, 1, "MS Sans Serif", 12);
-	//m_p_grid.GridCellText(m_grid_operate, 15, 1, "Barcode On");
-	
-	
-// 	if(m_nModeBcr[1] == NOT_USE)
-// 	{
- 	//	m_p_grid.GridCellColor(m_grid_operate, 14, 1, GREEN_C, BLACK_C);
- 	//	m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_D, BLACK_C);
-// 	}
-// 	else
-// 	{
-// 		m_p_grid.GridCellColor(m_grid_operate, 14, 1, GREEN_D, BLACK_C);
-// 		m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_C, BLACK_C);
-// 	}
-	
-	
-//	m_p_grid.GridCellFont(m_grid_operate, 16, 1, "MS Sans Serif", 18);
-//	m_p_grid.GridCellColor(m_grid_operate, 16, 1, BLACK_L, YELLOW_C);
-//	m_p_grid.GridCellText(m_grid_operate, 16, 1, "Module 방법");
-	
-//	m_p_grid.GridCellFont(m_grid_operate, 17, 1, "MS Sans Serif", 12);
-//	m_p_grid.GridCellText(m_grid_operate, 17, 1, "Module Mode Off");
-	
-//	m_p_grid.GridCellFont(m_grid_operate, 18, 1, "MS Sans Serif", 12);
-//	m_p_grid.GridCellText(m_grid_operate, 18, 1, "Module Mode On");
-	
-	
-// 	if(m_nModeTester[1] == NOT_USE)
-// 	{
- 	//	m_p_grid.GridCellColor(m_grid_operate, 17, 1, GREEN_C, BLACK_C);
- 	//	m_p_grid.GridCellColor(m_grid_operate, 18, 1, GREEN_D, BLACK_C);
-// 	}
-// 	else
-// 	{
-	//	m_p_grid.GridCellColor(m_grid_operate, 17, 1, GREEN_D, BLACK_C);
- 	//	m_p_grid.GridCellColor(m_grid_operate, 18, 1, GREEN_C, BLACK_C);
-// 	}
-
-
-//	m_p_grid.GridCellFont(m_grid_operate, 19, 1, "MS Sans Serif", 18);
-//	m_p_grid.GridCellColor(m_grid_operate, 19, 1, BLACK_L, YELLOW_C);
-	//m_p_grid.GridCellText(m_grid_operate, 19, 1, "7387 방법");
-	
-//	m_p_grid.GridCellFont(m_grid_operate, 20, 1, "MS Sans Serif", 12);
-//	m_p_grid.GridCellText(m_grid_operate, 20, 1, "7387 Mode Off");
-	
-//	m_p_grid.GridCellFont(m_grid_operate, 21, 1, "MS Sans Serif", 12);
-//	m_p_grid.GridCellText(m_grid_operate, 21, 1, "7387 Mode On");
-	
-	
-// 	if(m_nmode_7387[1] == NOT_USE)
-// 	{
- 	//	m_p_grid.GridCellColor(m_grid_operate, 20, 1, GREEN_C, BLACK_C);
- 	//	m_p_grid.GridCellColor(m_grid_operate, 21, 1, GREEN_D, BLACK_C);
-// 	}
-// 	else
-// 	{
-// 		m_p_grid.GridCellColor(m_grid_operate, 20, 1, GREEN_D, BLACK_C);
-// 		m_p_grid.GridCellColor(m_grid_operate, 21, 1, GREEN_C, BLACK_C);
-// 	}
-
-//  	m_p_grid.GridCellFont(m_grid_operate, 22, 1, "MS Sans Serif", 18);
-//  	m_p_grid.GridCellColor(m_grid_operate, 22, 1, BLACK_L, YELLOW_C);
-// 	m_p_grid.GridCellText(m_grid_operate, 23, 1, "Tray Type");
+// 	m_p_grid.GridCellText(m_grid_operate, 15, 1, str_tmp);
 // 	
-// 	m_p_grid.GridCellFont(m_grid_operate, 24, 1, "MS Sans Serif", 12);
-// 	m_p_grid.GridCellText(m_grid_operate, 24, 1, "Type1");
+// 
+// 	m_p_grid.GridCellFont(m_grid_operate, 16, 1, "MS Sans Serif", 18);
+ 	m_p_grid.GridCellColor(m_grid_operate, 16, 1, BLACK_L, YELLOW_C);
+// 	m_p_grid.GridCellText(m_grid_operate, 16, 1, "EpoxyRunSpeed");
 // 	
+// 	str_tmp.Format("Vel  :   %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_VEL]);
+ 	m_p_grid.GridCellColor(m_grid_operate, 17, 1, GREEN_C, BLACK_C);
+// 	m_p_grid.GridCellFont(m_grid_operate, 17, 1, "MS Sans Serif", 12);
+// 	m_p_grid.GridCellText(m_grid_operate, 17, 1, str_tmp);
+// 	
+// 
+// // 	m_p_grid.GridCellFont(m_grid_operate, 18, 1, "MS Sans Serif", 18);
+// // 	m_p_grid.GridCellColor(m_grid_operate, 18, 1, BLACK_L, YELLOW_C);
+// // 	m_p_grid.GridCellText(m_grid_operate, 18, 1, "EpoxyRunSpeed_Acc");
+// 	
+// 	str_tmp.Format("Acc  :   %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_ACC]);
+ 	m_p_grid.GridCellColor(m_grid_operate, 18,1, GREEN_C, BLACK_C);
+// 	m_p_grid.GridCellFont(m_grid_operate, 18 ,1, "MS Sans Serif", 12);
+// 	m_p_grid.GridCellText(m_grid_operate, 18 ,1, str_tmp);
+// 
+// // 	m_p_grid.GridCellFont(m_grid_operate, 20, 1, "MS Sans Serif", 18);
+// // 	m_p_grid.GridCellColor(m_grid_operate, 20, 1, BLACK_L, YELLOW_C);
+// // 	m_p_grid.GridCellText(m_grid_operate, 20 ,1, "EpoxyRunSpeed_Dec");
+// 	
+// 	str_tmp.Format("Dec   :   %0.2f",m_nEpoxyXYRunSpeed[1][EPOXY_DEC]);
+ 	m_p_grid.GridCellColor(m_grid_operate, 19,1, GREEN_C, BLACK_C);
+// 	m_p_grid.GridCellFont(m_grid_operate, 19,1, "MS Sans Serif", 12);
+// 	m_p_grid.GridCellText(m_grid_operate, 19,1, str_tmp);
+// 
+// 
+// 	m_p_grid.GridCellFont(m_grid_operate, 20, 1, "MS Sans Serif", 18);
+ 	m_p_grid.GridCellColor(m_grid_operate, 20, 1, BLACK_L, YELLOW_C);
+// 	m_p_grid.GridCellText(m_grid_operate, 20, 1, "EpoxyXOffSet");
+// 	
+// 	str_tmp.Format("%0.2f",m_dEpoxyXOffSet[1]);
+ 	m_p_grid.GridCellColor(m_grid_operate, 21, 1, GREEN_C, BLACK_C);
+// 	m_p_grid.GridCellFont(m_grid_operate, 21, 1, "MS Sans Serif", 12);
+// 	m_p_grid.GridCellText(m_grid_operate, 21, 1, str_tmp);
+// 
+// 	m_p_grid.GridCellFont(m_grid_operate, 22, 1, "MS Sans Serif", 18);
+ 	m_p_grid.GridCellColor(m_grid_operate, 22, 1, BLACK_L, YELLOW_C);
+// 	m_p_grid.GridCellText(m_grid_operate, 22, 1, "EpoxyYOffSet");
+// 	
+// 	str_tmp.Format("%0.2f",m_dEpoxyYOffSet[1]);
+ 	m_p_grid.GridCellColor(m_grid_operate, 23, 1, GREEN_C, BLACK_C);
+// 	m_p_grid.GridCellFont(m_grid_operate, 23, 1, "MS Sans Serif", 12);
+// 	m_p_grid.GridCellText(m_grid_operate, 23, 1, str_tmp);
+// 
+// 	m_p_grid.GridCellFont(m_grid_operate, 24, 1, "MS Sans Serif", 18);
+ 	m_p_grid.GridCellColor(m_grid_operate, 24, 1, BLACK_L, YELLOW_C);
+// 	m_p_grid.GridCellText(m_grid_operate, 24, 1, "RubHSRunSpeed");
+// 	
+// 	str_tmp.Format("%0.2f",m_nRubHSRunSpeed[1]);
+ 	m_p_grid.GridCellColor(m_grid_operate, 25, 1, GREEN_C, BLACK_C);
 // 	m_p_grid.GridCellFont(m_grid_operate, 25, 1, "MS Sans Serif", 12);
-// 	m_p_grid.GridCellText(m_grid_operate, 25, 1, "Type2");
-	
-	
-// 	if(m_nmode_tray_type[1] == NOT_USE)
-// 	{
-//  		m_p_grid.GridCellColor(m_grid_operate, 23, 1, GREEN_C, BLACK_C);
-//  		m_p_grid.GridCellColor(m_grid_operate, 24, 1, GREEN_D, BLACK_C);
-// 	}
-// 	else
-// 	{
-// 		m_p_grid.GridCellColor(m_grid_operate, 24, 1, GREEN_D, BLACK_C);
-// 		m_p_grid.GridCellColor(m_grid_operate, 25, 1, GREEN_C, BLACK_C);
-// 	}
+// 	m_p_grid.GridCellText(m_grid_operate, 25, 1, str_tmp);
 // 
-//  	m_p_grid.GridCellFont(m_grid_operate, 25, 1, "MS Sans Serif", 18);
-//  	m_p_grid.GridCellColor(m_grid_operate, 25, 1, BLACK_L, YELLOW_C);
-// 	m_p_grid.GridCellText(m_grid_operate, 26, 1, "7387 Alarm Skip");
+// 	m_p_grid.GridCellFont(m_grid_operate, 26, 1, "MS Sans Serif", 18);
+ 	m_p_grid.GridCellColor(m_grid_operate, 26, 1, BLACK_L, YELLOW_C);
+// 	m_p_grid.GridCellText(m_grid_operate, 26, 1, "TrayPitch");
 // 	
+// 	str_tmp.Format("Pitch_Y : %0.2f",m_dTrayPitch_Y[1]);
+ 	m_p_grid.GridCellColor(m_grid_operate, 27, 1, GREEN_C, BLACK_C);
 // 	m_p_grid.GridCellFont(m_grid_operate, 27, 1, "MS Sans Serif", 12);
-// 	m_p_grid.GridCellText(m_grid_operate, 27, 1, "Alarm Skip");
-// 	
+// 	m_p_grid.GridCellText(m_grid_operate, 27, 1, str_tmp);
+// 
+// 	str_tmp.Format("Pitch_X : %0.2f",m_dTrayPitch_X[1]);
+ 	m_p_grid.GridCellColor(m_grid_operate, 28, 1, GREEN_C, BLACK_C);
 // 	m_p_grid.GridCellFont(m_grid_operate, 28, 1, "MS Sans Serif", 12);
-// 	m_p_grid.GridCellText(m_grid_operate, 28, 1, "Alarm Use");
-// 	
-// 	
-// 	if(m_n7387InspectAlarmSkipMode[1] == NOT_USE)
-// 	{
-//  		m_p_grid.GridCellColor(m_grid_operate, 26, 1, GREEN_C, BLACK_C);
-//  		m_p_grid.GridCellColor(m_grid_operate, 27, 1, GREEN_D, BLACK_C);
-// 	}
-// 	else
-// 	{
-// 		m_p_grid.GridCellColor(m_grid_operate, 27, 1, GREEN_D, BLACK_C);
-// 		m_p_grid.GridCellColor(m_grid_operate, 28, 1, GREEN_C, BLACK_C);
-// 	}
-	///
+// 	m_p_grid.GridCellText(m_grid_operate, 28, 1, str_tmp);
 
 
-				//kwlee 2017.0404
-// 				m_p_grid.GridCellFont(m_grid_operate, 11, 1, "MS Sans Serif", 20);
-// 				m_p_grid.GridCellColor(m_grid_operate, 11, 1, WHITE_C, BLACK_C);
-// 				str_tmp.Format("%d", m_n_count_retry[1]);
-// 				m_p_grid.GridCellText(m_grid_operate, 11, 1, str_tmp);
-			//}
-		//}
-	//}
-// 	else
-// 	{
-// 		if(m_n_operate_used[1] == YES)
-// 		{
-// 			m_p_grid.GridCellFont(m_grid_operate, 1, 1, "MS Sans Serif", 18);
-// 			m_p_grid.GridCellColor(m_grid_operate, 1, 1, BLACK_L, YELLOW_C);
-// 			m_p_grid.GridCellText(m_grid_operate, 1, 1, "Device 방법");
-// 		
-// 			m_p_grid.GridCellFont(m_grid_operate, 2, 1, "MS Sans Serif", 12);
-// 			m_p_grid.GridCellText(m_grid_operate, 2, 1, "With");
-// 
-// 			m_p_grid.GridCellFont(m_grid_operate, 3, 1, "MS Sans Serif", 12);
-// 			m_p_grid.GridCellText(m_grid_operate, 3, 1, "WithOut");
-// 
-// 			m_p_grid.GridCellFont(m_grid_operate, 4, 1, "MS Sans Serif", 12);
-// 			m_p_grid.GridCellText(m_grid_operate, 4, 1, "No Tray");
-// 
-// 			if(m_n_mode_device[1] == 0)
-// 			{
-// 				m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_C, BLACK_C);
-// 				m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_D, BLACK_C);
-// 				m_p_grid.GridCellColor(m_grid_operate, 4, 1, GREEN_D, BLACK_C);
-// 			}
-// 			else if(m_n_mode_device[1] == 1)
-// 			{
-// 				m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_D, BLACK_C);
-// 				m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_C, BLACK_C);
-// 				m_p_grid.GridCellColor(m_grid_operate, 4, 1, GREEN_D, BLACK_C);
-// 			}
-// 			else if(m_n_mode_device[1] == 2)
-// 			{
-// 				m_p_grid.GridCellColor(m_grid_operate, 2, 1, GREEN_D, BLACK_C);
-// 				m_p_grid.GridCellColor(m_grid_operate, 3, 1, GREEN_D, BLACK_C);
-// 				m_p_grid.GridCellColor(m_grid_operate, 4, 1, GREEN_C, BLACK_C);
-// 			}
-// 			
-// 			if(m_n_operate_used[2] == YES)
-// 			{
-// 				m_p_grid.GridCellFont(m_grid_operate, 5, 1, "MS Sans Serif", 18);
-// 				m_p_grid.GridCellColor(m_grid_operate, 5, 1, BLACK_L, YELLOW_C);
-// 				m_p_grid.GridCellText(m_grid_operate, 5, 1, "Retest 방법");
-// 				
-// 				m_p_grid.GridCellFont(m_grid_operate, 6, 1, "MS Sans Serif", 12);
-// 				m_p_grid.GridCellText(m_grid_operate, 6, 1, "Retest Off");
-// 
-// 				m_p_grid.GridCellFont(m_grid_operate, 7, 1, "MS Sans Serif", 12);
-// 				m_p_grid.GridCellText(m_grid_operate, 7, 1, "Retest On");
-// 
-// 				if(m_n_mode_retest[1]== 0)
-// 				{
-// 					m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_C, BLACK_C);
-// 					m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_D, BLACK_C);
-// 				}
-// 				else
-// 				{
-// 					m_p_grid.GridCellColor(m_grid_operate, 6, 1, GREEN_D, BLACK_C);
-// 					m_p_grid.GridCellColor(m_grid_operate, 7, 1, GREEN_C, BLACK_C);
-// 				}
-// 				
-// 				m_p_grid.GridCellFont(m_grid_operate, 8, 1, "MS Sans Serif", 20);
-// 				m_p_grid.GridCellColor(m_grid_operate, 8, 1, WHITE_C, BLACK_C);
-// 				str_tmp.Format("%d", m_n_count_retry[1]);
-// 				m_p_grid.GridCellText(m_grid_operate, 8, 1, str_tmp);
-// 			}
-// 		}
-// 	}
 	Invalidate(FALSE);
 }
 

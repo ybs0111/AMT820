@@ -1109,6 +1109,16 @@ void CMyBasicData::OnBasic_Data_Load()
 		}
 	}
 	/* ************************************************************************** */
+	:: GetPrivateProfileString("BASIC", "INTERFACE_MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 2)
+	{
+		st_basic.n_mode_interface = 0;
+		mstr_temp.Format("%d", st_basic.n_mode_interface);
+		:: WritePrivateProfileString("BASIC", "INTERFACE_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_mode_interface = mn_chk;
+	
 
 	:: GetPrivateProfileString("BASIC", "DEVICE_MODE", "0", chr_data, 10, str_load_file);
 	mn_chk = atoi(chr_data);
@@ -1187,6 +1197,17 @@ void CMyBasicData::OnBasic_Data_Load()
 	}
 	else  st_basic.n_mode_tray_type = mn_chk;
 
+	//kwlee 2017.0411
+	:: GetPrivateProfileString("BASIC", "3874_ALARMSKIP_MODE", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0 || mn_chk > 1)
+	{
+		st_basic.n_3874InspectAlarmSkipMode = 0;
+		mstr_temp.Format("%d", st_basic.n_3874InspectAlarmSkipMode);
+		:: WritePrivateProfileString("BASIC", "3874_ALARMSKIP_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_3874InspectAlarmSkipMode = mn_chk;
+	
 	
 	:: GetPrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", "0", chr_data, 10, str_load_file);
 	mn_chk = atoi(chr_data);
@@ -1197,6 +1218,7 @@ void CMyBasicData::OnBasic_Data_Load()
 		:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	}
 	else  st_basic.n_7387InspectAlarmSkipMode = mn_chk;
+
 
 
 	:: GetPrivateProfileString("BASIC", "3874 MODE", "0", chr_data, 10, str_load_file);
@@ -1613,9 +1635,13 @@ void CMyBasicData::OnBasic_Data_Save()
 	mstr_temp.Format("%d", st_basic.n_mode_tray_type);
 	:: WritePrivateProfileString("BASIC", "TRAY TYPE", LPCTSTR(mstr_temp), str_save_file);
 	
+	//kwlee 2017.0411
+	mstr_temp.Format("%d", st_basic.n_3874InspectAlarmSkipMode);
+	:: WritePrivateProfileString("BASIC", "3874_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);
+
 	mstr_temp.Format("%d", st_basic.n_7387InspectAlarmSkipMode);
-	:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);
-	
+	:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);	
+
 	mstr_temp.Format("%d", st_basic.n_3874InspectMode);
 	:: WritePrivateProfileString("BASIC", "3874 MODE", LPCTSTR(mstr_temp), str_save_file);
 	
@@ -2039,6 +2065,10 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
 	
 	mstr_temp.Format("%d", st_basic.n_7387InspectAlarmSkipMode);
 	:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);
+	
+	//kwlee 2017.0411
+	mstr_temp.Format("%d", st_basic.n_3874InspectAlarmSkipMode);
+	:: WritePrivateProfileString("BASIC", "3874_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);
 	
 	mstr_temp.Format("%d", st_basic.n_3874InspectMode);
 	:: WritePrivateProfileString("BASIC", "3874 MODE", LPCTSTR(mstr_temp), str_save_file);

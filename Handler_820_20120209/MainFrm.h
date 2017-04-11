@@ -146,6 +146,7 @@ protected:
 	afx_msg void OnNcRButtonDown(UINT nHitTest, CPoint point);
 	afx_msg void OnPgmInfo();
 	afx_msg void OnMotorSpeed();
+	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct); //kwlee 2017.0411
 	//}}AFX_MSG
 	afx_msg LRESULT OnViewChangeMode(WPARAM wParam,LPARAM lParam) ;		// Post Message에 대한 화면 전환 사용자 사용자 정의 메시지 선언 
 	afx_msg void OnToolbarDropDown(NMTOOLBAR* pnmtb, LRESULT* plRes);	// 텍스트 툴바 드롭다운 메시지 선언 

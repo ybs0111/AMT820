@@ -8,7 +8,12 @@
 //
 
 
-
+enum PICKER_MODEL
+{
+	MODEL_INIT = 0,
+	MODEL_SFF,
+	MODEL_TFF,
+};
 /////////////////////////////////////////////////////////////////////////////
 // CRun_LdPicker command target
 
@@ -103,6 +108,8 @@ public:
 
 	int mn_override_flag;
 	long lp_OvrrideFlag;
+
+	char mc_alarmcode[10];
 public:
 	
 	int Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotNo);
@@ -114,6 +121,9 @@ public:
 	//picker clamp
 	void Set_Loader_Transfer_Clamp_OnOff(int OnOff);
 	int Chk_Loader_Transfer_Clamp_OnOff( int OnOff );
+
+
+	int Check_DVC_Model(int nModel, int nYESNO, int* nSNum);
 
 
 // Implementation

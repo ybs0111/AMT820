@@ -9,6 +9,7 @@
 #include "FastechPublic_IO.h"
 #include "IO_Manager.h"
 #include "CmmsdkDef.h"
+#include "Run_EmptyTrayTransfer.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -49,6 +50,7 @@ void CRun_LdPicker::Thread_Run()
 	switch( st_work.mn_run_status)
 	{
 	case dINIT:
+		RunInit();
 		break;
 
 	case dRUN:
@@ -91,19 +93,135 @@ void CRun_LdPicker::Thread_Run()
 
 void CRun_LdPicker::RunInit()
 {
-	if (st_handler.mn_init_state[INIT_LD_ROBOT] != CTL_NO)		return;		// No 일때만 초기화 작업을 한다. 초기화가 끝나면 YES->READY가 되기 떄문에...
-	
+	int i = 0,nRet_1=0, nSNum = 0;
+		
+	if( st_handler.mn_init_state[INIT_LD_ROBOT] != CTL_NO ) return;
+	st_handler.mn_init_state[INIT_LD_ROBOT] = CTL_YES;
 	switch(mn_InitStep)
 	{
 		case 0:
-			mn_InitStep = 100;
+			mn_InitStep = 10;
 			break;
+
+		case 10:
+			Run_EmptyTrayTransfer.Set_Tray_Remover_Z_UpDown( IO_ON );
+			mn_InitStep = 20;
+			break;
+			
+		case 20:
+			nRet_1 = Run_EmptyTrayTransfer.Chk_Tray_Remover_Z_UpDown( IO_ON );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 100;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				CTL_Lib.Alarm_Error_Occurrence( 4001, dWARNING, Run_EmptyTrayTransfer.m_strAlarmCode);
+				mn_InitStep = 900;
+			}
+			break;	
 
 		case 100:
+			nRet_1 = COMI.HomeCheck_Mot( m_nRobot_Z, st_motor[m_nRobot_Z].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 200;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence( 1001, dWARNING, COMI.mc_alarmcode);
+			}
 			break;
 
+		case 200:
+			if( Check_DVC_Model( MODEL_INIT, CTL_YES, &nSNum) == CTL_GOOD )
+			{//error
+				mn_InitStep = 900;
+				mn_InitStep = 300;
+// 				sprintf(mc_alarmcode,"8%d%04d", CTL_YES, st_io.i_loading_rbt_glipper_sff_missalign_chk_1 + nSNum);
+// 				CTL_Lib.Alarm_Error_Occurrence( 1002, dWARNING, mc_alarmcode);				
+			}
+			else
+			{
+				mn_InitStep = 300;
+			}
+			break;
+
+		case 300:
+			Set_Loader_Transfer_Clamp_OnOff( IO_OFF );
+			mn_InitStep = 400;
+			break;
+
+		case 400:
+			nRet_1 = Chk_Loader_Transfer_Clamp_OnOff( IO_OFF );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 500;
+			}
+			else if(nRet_1 == RET_ERROR)
+			{
+				mn_InitStep = 900;
+				CTL_Lib.Alarm_Error_Occurrence(1003, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 500:
+			nRet_1 = COMI.HomeCheck_Mot( m_nRobot_Y, st_motor[m_nRobot_Y].mn_homecheck_method, MOTTIMEOUT);
+			if( nRet_1 == BD_GOOD)
+			{
+				mn_InitStep = 600;
+			}
+			else if( nRet_1 == BD_ERROR)
+			{
+				CTL_Lib.Alarm_Error_Occurrence( 1004, dWARNING, COMI.mc_alarmcode);
+				mn_InitStep = 900;
+			}
+			break;
+
+		case 600:
+			if( g_ioMgr.get_in_bit( st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF) == IO_ON )
+			{
+				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
+				CTL_Lib.Alarm_Error_Occurrence(1005, dWARNING, m_strAlarmCode);
+				mn_InitStep = 900;
+			}
+			else
+			{
+				mn_InitStep = 700;
+			}
+			break;
+
+		case 700:
+			Set_Loader_Buffer_Align_OnOff(IO_OFF);
+			mn_InitStep = 800;
+			break;
+
+		case 800:
+			nRet_1 = Chk_Loader_Buffer_Align_OnOff(IO_OFF);
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_InitStep = 1000;
+			}
+			else if ( nRet_1 == RET_ERROR)
+			{
+				CTL_Lib.Alarm_Error_Occurrence( 1006, dWARNING, COMI.mc_alarmcode);
+				mn_InitStep = 900;
+			}
+			break;
+
+		case 900:
+			mn_InitStep = 0;
+			st_handler.mn_initial_error = TRUE;
+			break;
+
+		case 1000:
+			st_handler.mn_init_state[INIT_LD_ROBOT] = CTL_YES;
+			mn_InitStep = 0;
+			break;
+
+
 	}
-	
 }
 
 void CRun_LdPicker::RunMove()
@@ -1295,7 +1413,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			break;
 
 		case 3420:
-			nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_OFF, st_wait.nOnWaitTime[WAIT_PICKER_CLAMP_ON_OFF], st_wait.nLimitWaitTime[WAIT_PICKER_CLAMP_ON_OFF]); 
+			nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_ON, st_wait.nOnWaitTime[WAIT_PICKER_CLAMP_ON_OFF], st_wait.nLimitWaitTime[WAIT_PICKER_CLAMP_ON_OFF]); 
 			if(nRet_1 == RET_GOOD) //감지가 안되도 안전화 시간까지는 기다리자 
 			{
 				mn_Place_Step = 4000;
@@ -1443,12 +1561,12 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			for (i = m_n_FirstPicker_Num; i < m_nPickerPara; i++)
 			{
 				if(st_picker[m_nRobotSite].st_pcb_info[i].nYesNo == CTL_YES && m_npPicker_YesNo[i] == CTL_YES
-					&& (m_npPicker_Vacuum_Status[i] == IO_ON && m_npPicker_OutputStatus[i] == IO_ON))
+					&& m_npPicker_Vacuum_Status[i] == IO_OFF/*IO_ON*/ && m_npPicker_OutputStatus[i] == IO_OFF/*IO_ON*/)
 				{
 					if (m_strLotNo[1] == _T(""))
 					{
-						m_strLotNo[1]	= st_picker[m_nRobotSite].st_pcb_info[i].strLotNo;
-						m_strPartNo[1] = st_picker[m_nRobotSite].st_pcb_info[i].strPartNo;
+// 						m_strLotNo[1]	= st_picker[m_nRobotSite].st_pcb_info[i].strLotNo;
+// 						m_strPartNo[1] = st_picker[m_nRobotSite].st_pcb_info[i].strPartNo;
 					}				 
 					
 					if(nWork_Site = THD_LD_ALIGN_BUFF)
@@ -1686,7 +1804,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			if( nRet_1 == RET_GOOD )
 			{
 				m_n_FirstTray_X_Num = m_npFindWorkPosYXCPB[0];
-				m_n_FirstTray_X_Num = m_npFindWorkPosYXCPB[1];
+				m_n_FirstTray_Y_Num = m_npFindWorkPosYXCPB[1];
 			}
 			else if( nRet_1 == RET_SKIP )//no device
 			{
@@ -1759,7 +1877,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else
 			{
-				mn_Pick_Step = 1200;
+				mn_Pick_Step = 1500;
 			}	
 			break;
 
@@ -1847,13 +1965,13 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			nRet_1 = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_On_Sol,	IO_OFF); 
 			nRet_2 = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_Off_Sol,	IO_ON);
 			nRet_3 = g_ioMgr.get_in_bit( st_io.i_Loader_Transfer_Clamp_Off_Check, IO_ON );
-			if(nRet_1 == IO_OFF && nRet_2 == IO_ON && nRet_3 == IO_ON) 
+			if(nRet_1 == IO_ON || nRet_2 == IO_OFF || nRet_3 == IO_OFF) 
 			{  //그리퍼가 벌리고 있지 않으면 자재에 데미지를 주기때문에 미리 벌리고 내려야 한다 
 				mn_Pick_Step = 2200;
 				break;
 			}
 
-			nRet_1 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor[m_nRobot_Y].mn_allow);
+			nRet_1 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], COMI.md_allow_value[m_nRobot_Y]);
 			if(nRet_1 != BD_GOOD)
 			{
 				mn_Pick_Step = 2000;
@@ -2141,7 +2259,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 						}
 					}
 					else if(st_picker[m_nRobotSite].st_pcb_info[i].nYesNo == CTL_NO && m_npPicker_YesNo[i] == CTL_YES
-						&& (m_npPicker_Vacuum_Status[i] == IO_ON && m_npPicker_OutputStatus[i] == IO_OFF))
+						&& (m_npPicker_Vacuum_Status[i] == IO_ON && m_npPicker_OutputStatus[i] == IO_ON/*IO_OFF*/))
 					{
 						if(nWorkSite == THD_LD_TRAY_PLATE)
 						{
@@ -2222,8 +2340,8 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			nRet_1 = Func.Check_PickerStatus(0, THD_LOAD_WORK_RBT, CTL_YES, m_npPicker_YesNo, m_npPicker_Data_Status, m_npPicker_OutputStatus);
 			if (nRet_1 == RET_GOOD) //
 			{
-				nFuncRet = RET_GOOD;
-				mn_Pick_Step = 0;
+// 				nFuncRet = RET_GOOD;
+				mn_Pick_Step = 6100;
 			}
 			else //if(nRet_1 == RET_ERROR)
 			{
@@ -2242,6 +2360,37 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 				}
 			}
 			break;
+
+		case 6100:
+			if( nWorkSite == THD_LD_TRAY_PLATE)
+			{
+				mn_Pick_Step = 6200;
+			}
+			else
+			{
+				nFuncRet = RET_GOOD;
+				mn_Pick_Step = 0;
+			}
+			break;
+
+		case 6200:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				nFuncRet = RET_GOOD;
+				mn_Pick_Step = 0;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_Pick_Step = 1500;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1201, dWARNING, alarm.mstr_code);
+				mn_Pick_Step = 1500;
+			}
+			break;
+
 
 		default :
 			if (st_handler.cwnd_list != NULL)	// 리스트 바 화면 존재
@@ -2503,4 +2652,69 @@ int CRun_LdPicker::Chk_Loader_Transfer_Clamp_OnOff( int OnOff )
 	}
 
 	return RET_PROCEED;
+}
+
+//nModel : 0 initial
+//nMode1 : 1 SFF
+//nModel : 2 TFF
+int CRun_LdPicker::Check_DVC_Model(int nModel, int nYESNO, int* nSNum)
+{
+	int nFuncRet = RET_ERROR;
+
+	int i = 0, nRet[8] = {0,};
+
+	nRet[0] = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_1, IO_ON);
+	nRet[1] = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_2, IO_ON);
+	nRet[2] = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_3, IO_ON);
+	nRet[3] = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_4, IO_ON);
+
+	nRet[4] = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
+	nRet[5] = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_2, IO_ON);
+	nRet[6] = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_3, IO_ON);
+	nRet[7] = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_4, IO_ON);
+
+	if( st_handler.mn_virtual_mode == CTL_YES || st_basic.n_mode_device == WITHOUT_DVC)
+	{
+		if( nModel == MODEL_INIT)		nFuncRet = RET_ERROR;
+		else if( nModel == MODEL_SFF )  nFuncRet = RET_GOOD;
+		else if( nModel == MODEL_TFF )  nFuncRet = RET_GOOD;
+	}
+	else if( nModel == MODEL_INIT)
+	{
+		for( i = 0; i < 8; i++ )
+		{
+			if( nRet[i] == nYESNO ) 
+			{
+				nSNum[0] = i;
+				nFuncRet = RET_GOOD;
+				break;
+			}
+		}
+	}
+	else if( nModel == MODEL_SFF)
+	{
+		for( i = 0; i < 4; i++ )
+		{
+			if( nRet[i] == nYESNO ) 
+			{
+				nSNum[0] = i;
+				nFuncRet = RET_GOOD;
+				break;
+			}
+		}
+	}
+	else if( nModel == MODEL_TFF)
+	{
+		for( i = 4; i < 84; i++ )
+		{
+			if( nRet[i] == nYESNO ) 
+			{
+				nSNum[0] = i;
+				nFuncRet = RET_GOOD;
+				break;
+			}
+		}
+	}
+
+	return nFuncRet;
 }

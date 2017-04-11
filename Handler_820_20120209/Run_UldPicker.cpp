@@ -26,9 +26,21 @@ CRun_UldPicker::CRun_UldPicker()
 	m_nPickerPara = PICKER_PARA;//1
 	m_nRobotSite  = THD_UNLOAD_WORK_RBT;
 
+	m_nLinearMove_Index	= 0 ;	//현재 map index
+	m_lAxisCnt	= 2;				 //현재의 IndexNum에서 사용 가능한 모터 수량 최대 4개
+	m_lpAxisNum[0] = M_UNLOADER_TRANSFER_X; //m_lpAxisNum[4];        //현재의 IndexNum에서 사용하는 모터 실재 번호를 가진다
+	m_lpAxisNum[1] = M_UNLOADER_TRANSFER_Y;
+	m_lpAxisNum[2] = M_UNLOADER_TRANSFER_Z;
+	
 	m_nRobot_X = M_UNLOADER_TRANSFER_X;
 	m_nRobot_Y = M_UNLOADER_TRANSFER_Y;
 	m_nRobot_Z = M_UNLOADER_TRANSFER_Z; 
+
+	COMI.ml_axiscnt[m_nLinearMove_Index] = 2;
+	COMI.mp_axisnum[m_nLinearMove_Index][0] = M_UNLOADER_TRANSFER_X;
+	COMI.mp_axisnum[m_nLinearMove_Index][1] = M_UNLOADER_TRANSFER_Y;
+	COMI.mp_axisnum[m_nLinearMove_Index][2] = M_UNLOADER_TRANSFER_Z;
+
 
 	m_dwCycleTime[0][0] = 0;
 	m_dwCycleTime[1][0] = 0;
@@ -56,6 +68,7 @@ void CRun_UldPicker::Thread_Run()
 	switch( st_work.mn_run_status)
 	{
 		case dINIT:
+			RunInit();
 			break;
 
 		case dRUN:
@@ -97,6 +110,147 @@ void CRun_UldPicker::Thread_Run()
 
 void CRun_UldPicker::RunInit()
 {
+	int i = 0,nRet_1=0, nSNum = 0;
+	
+// 	if( st_handler.mn_init_state[INIT_UNPRESS_ROBOT] == CTL_NO ) return;
+	if( st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
+	if( st_handler.mn_init_state[INIT_ULD_ROBOT] != CTL_NO ) return;
+	st_handler.mn_init_state[INIT_ULD_ROBOT] = CTL_YES;
+	switch(mn_InitStep)
+	{
+	case 0:
+		mn_InitStep = 100;
+		break;
+
+	case 100:
+		nRet_1 = COMI.HomeCheck_Mot( m_nRobot_Z, st_motor[m_nRobot_Z].mn_homecheck_method, MOTTIMEOUT);
+		if( nRet_1 == BD_GOOD)
+		{
+			mn_InitStep = 200;
+		}
+		else if( nRet_1 == BD_ERROR)
+		{
+			mn_InitStep = 900;
+			CTL_Lib.Alarm_Error_Occurrence( 2001, dWARNING, COMI.mc_alarmcode);
+		}
+		break;
+
+	case 200:
+		nRet_1 = g_ioMgr.get_in_bit( st_io.i_Unloader_Transfer_Device_Check, IO_OFF);
+		if( nRet_1 == IO_ON )
+		{
+			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Unloader_Transfer_Device_Check);
+			CTL_Lib.Alarm_Error_Occurrence(2002, dWARNING, m_strAlarmCode);
+		}
+		else
+		{
+			mn_InitStep = 300;
+		}
+		break;
+
+	case 300:
+		Set_UnLoader_Transfer_Clamp_OnOff( IO_OFF );
+		mn_InitStep = 400;
+		break;
+
+	case 400:
+		nRet_1 = Chk_UnLoader_Transfer_Clamp_OnOff( IO_OFF );
+		if( nRet_1 == RET_GOOD )
+		{
+			mn_InitStep = 500;
+		}
+		else if(nRet_1 == RET_ERROR)
+		{
+			mn_InitStep = 900;
+			CTL_Lib.Alarm_Error_Occurrence(2003, dWARNING, m_strAlarmCode);
+		}
+		break;
+
+	case 500:
+		nRet_1 = COMI.HomeCheck_Mot( m_nRobot_X, st_motor[m_nRobot_X].mn_homecheck_method, MOTTIMEOUT);
+		if( nRet_1 == BD_GOOD)
+		{
+			mn_InitStep = 600;
+		}
+		else if( nRet_1 == BD_ERROR)
+		{
+			mn_InitStep = 900;
+			CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+		}
+		break;
+
+	case 600:
+		nRet_1 = COMI.HomeCheck_Mot( m_nRobot_X, st_motor[m_nRobot_X].mn_homecheck_method, MOTTIMEOUT);
+		if( nRet_1 == BD_GOOD)
+		{
+			mn_InitStep = 700;
+		}
+		else if( nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence( 2005, dWARNING, COMI.mc_alarmcode);
+			mn_InitStep = 900;
+		}
+		break;
+
+	case 700:
+		nRet_1 = COMI.HomeCheck_Mot( m_nRobot_Y, st_motor[m_nRobot_Y].mn_homecheck_method, MOTTIMEOUT);
+		if( nRet_1 == BD_GOOD)
+		{
+			mn_InitStep = 800;
+		}
+		else if( nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence( 2006, dWARNING, COMI.mc_alarmcode);
+			mn_InitStep = 900;
+		}
+		break;
+
+	case 800:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_UNLOADER_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{
+			mn_InitStep = 810;
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_InitStep = 800;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(2007, dWARNING, alarm.mstr_code);
+			mn_InitStep = 900;
+		}
+		break;
+
+	case 810:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_UNLOADER_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{
+			mn_InitStep = 1000;
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			mn_InitStep = 810;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(2007, dWARNING, alarm.mstr_code);
+			mn_InitStep = 900;
+		}
+		break;
+
+
+	case 900:
+		mn_InitStep = 0;
+		st_handler.mn_initial_error = TRUE;
+		break;
+
+	case 1000:
+		st_handler.mn_init_state[INIT_ULD_ROBOT] = CTL_YES;
+		mn_InitStep = 0;
+		break;
+
+	}
 }
 
 void CRun_UldPicker::RunMove()
@@ -1158,7 +1312,7 @@ int CRun_UldPicker::Process_DVC_Place( int nMode, int nWorkSite, CString strLotN
 			} 
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
+				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Unloader_Transfer_Device_Check);
 				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
 				break;
 			} 

@@ -381,12 +381,12 @@ void CDialog_Title::OnTitle_7387_Mode_Display(int n_device)
 	{
 	case NOT_USE:
 		m_msg_7387_mode_info.SetColor(RGB(255,0,0));
-		str_device = _T("7387비사용");
+		str_device = _T("7387 NOT USE");
 		break;
 		
 	case USE:
 		m_msg_7387_mode_info.SetColor(RGB(0,0,255));
-		str_device = _T("7387사용");
+		str_device = _T("7387 USE");
 		break;
 		
 
@@ -407,12 +407,12 @@ void CDialog_Title::OnTitle_3874_Mode_Display(int n_device)
 	{
 	case NOT_USE:
 		m_msg_3874_mode_info.SetColor(RGB(255,0,0));
-		str_device = _T("3874비사용");
+		str_device = _T("3874 NOT USE");
 		break;
 		
 	case USE:
 		m_msg_3874_mode_info.SetColor(RGB(0,0,255));
-		str_device = _T("3874사용");
+		str_device = _T("3874 USE");
 		break;
 		
 
@@ -434,12 +434,12 @@ void CDialog_Title::OnTitle_Barcode_Mode_Display(int n_device)
 	{
 	case NOT_USE:
 		m_msg_Barcode_mode_info.SetColor(RGB(255,0,0));
-		str_device = _T("BCR비사용");
+		str_device = _T("BCR NOT USE");
 		break;
 		
 	case USE:
 		m_msg_Barcode_mode_info.SetColor(RGB(0,0,255));
-		str_device = _T("BCR사용");
+		str_device = _T("BCR USE");
 		break;
 		
 	default:

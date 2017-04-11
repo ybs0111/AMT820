@@ -326,12 +326,12 @@ void CScreen_Wait_Time::OnWaitTime_Init_Time()
 {
 	int i, j;
 	CString str_tmp;
-	
+	mn_wait_time_cnt = 0;
 	m_grid_time = (TSpread*)GetDlgItem(IDC_CUSTOM_TIME);
 	
 	mp_grid.GridFileOpen(m_grid_time, st_path.mstr_wait_time_map, "sheet1");
 	
-	mn_wait_time_cnt = 0;
+	
 	mn_wait_time_cnt = atoi(mp_grid.GridCellText(m_grid_time, 1, 3));
 	
 	if(mn_wait_time_cnt == 0) return;

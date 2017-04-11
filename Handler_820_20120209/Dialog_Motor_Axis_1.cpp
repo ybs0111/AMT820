@@ -154,7 +154,8 @@ void CDialog_Motor_Axis_1::Init_Button()
 		m_str_axis_name == "Epoxy Transfrer Y" ||
 		m_str_axis_name == "HeatSink Transfer Y" ||
 		m_str_axis_name == "Unloader Transfer Y" ||
-		m_str_axis_name == "Dispenser Y")
+		m_str_axis_name == "Dispenser Y" ||
+		m_str_axis_name == "HeatSink Picker Pitch")
 	{
 		m_btn_left.SetIcon(IDI_DN_E);
 	}
@@ -195,7 +196,8 @@ void CDialog_Motor_Axis_1::Init_Button()
 		m_str_axis_name == "Epoxy Transfrer Y" ||
 		m_str_axis_name == "HeatSink Transfer Y" ||
 		m_str_axis_name == "Unloader Transfer Y" ||
-		m_str_axis_name == "Dispenser Y" )
+		m_str_axis_name == "Dispenser Y" ||
+		m_str_axis_name == "HeatSink Picker Pitch")
 	{
 		m_btn_right.SetIcon(IDI_UP_E);
 	}
@@ -1073,8 +1075,15 @@ void CDialog_Motor_Axis_1::OnDestroy()
 
 void CDialog_Motor_Axis_1::OnBtnEmg() 
 {
+	int i = 0;
+
 	//m_b_stop_req = TRUE;	// ESTOP 요청 플래그
 	GETMOTOR( (ENUM_MOTOR)m_n_axis ).SetStopReq( true );
+
+	for ( i = 0; i < M_MOTOR_COUNT; i++ )
+	{
+		COMI.Set_MotStop( 0, i );
+	}
 
 	st_handler.mn_menu_lock = false;
 }

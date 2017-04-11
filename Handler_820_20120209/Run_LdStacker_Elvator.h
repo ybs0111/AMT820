@@ -65,8 +65,8 @@ public:
 	void RunInit();
 
 	int Ready_Stacker_Move_Check( int mode );
-	void Set_Tray_Guide_Clamp_ForBackward(int OnOff);
-	int Chk_Tray_Guide_Clamp_ForBackward(int OnOff);
+	void Set_Tray_Fix_Clamp_ForBackward(int OnOff);
+	int Chk_Tray_Fix_Clamp_ForBackward(int OnOff);
 
 
 

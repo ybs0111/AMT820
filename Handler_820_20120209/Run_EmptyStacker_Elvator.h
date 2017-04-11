@@ -14,9 +14,9 @@
 
 class CRun_EmptyStacker_Elvator : public CObject
 {
+
 public:
 	DECLARE_SERIAL(CRun_EmptyStacker_Elvator)
-
 	CRun_EmptyStacker_Elvator();           // protected constructor used by dynamic creation
 	virtual ~CRun_EmptyStacker_Elvator();
 
@@ -31,8 +31,8 @@ public:
 	long ml_retry_wait[3];
 	
 
-	bool m_bClampOnOffFlag[2];
-	DWORD m_dwClampOnOff[2][3];
+	bool m_bClampOnOffFlag;
+	DWORD m_dwClampOnOff[3];
 	int 	m_nTransferJobFlag[2];
 	//work 트랜스퍼에 동작을 요청한다 , [0]:요청정보, [1]:1:트레이를 집기, 2:트레이를 놓기	
 	char cJamcode[10];
@@ -56,6 +56,10 @@ public:
 	void Thread_Run();
 	void RunMove();
 	void RunInit();
+
+	void Set_Tray_Fix_Clamp_ForBackward(int OnOff);
+	int Chk_Tray_Fix_Clamp_ForBackward(int OnOff);
+
 	int Ready_Stacker_Move_Check(int mode);
 
 };

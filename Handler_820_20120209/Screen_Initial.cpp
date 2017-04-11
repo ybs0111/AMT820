@@ -196,18 +196,18 @@ void CScreen_Initial::OnTimer(UINT nIDEvent)
 			{
 				alarm.mn_reset_status = NO;
 				
-				g_ioMgr.Set_Out_Bit(st_io.o_Start_SwitchLamp, IO_OFF);
-				g_ioMgr.Set_Out_Bit(st_io.o_Stop_SwitchLamp, IO_OFF);
-				g_ioMgr.Set_Out_Bit(st_io.o_AlarmClear_SwitchLamp, IO_OFF);
-				g_ioMgr.Set_Out_Bit(st_io.o_Buzzer1, IO_OFF);
-				g_ioMgr.Set_Out_Bit(st_io.o_Buzzer2, IO_OFF);
-				g_ioMgr.Set_Out_Bit(st_io.o_Buzzer3, IO_OFF);
-				g_ioMgr.Set_Out_Bit(st_io.o_Buzzer4, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_Start_SwitchLamp, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_Stop_SwitchLamp, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_AlarmClear_SwitchLamp, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_Buzzer1, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_Buzzer2, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_Buzzer3, IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_Buzzer4, IO_OFF);
 
-				g_ioMgr.Set_Out_Bit(st_io.o_tower_lamp[0], IO_OFF);
-				g_ioMgr.Set_Out_Bit(st_io.o_tower_lamp[1], IO_OFF);
-				g_ioMgr.Set_Out_Bit(st_io.o_tower_lamp[2], IO_OFF);
-				g_ioMgr.Set_Out_Bit(st_io.o_tower_lamp[3], IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_tower_lamp[0], IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_tower_lamp[1], IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_tower_lamp[2], IO_OFF);
+				g_ioMgr.set_out_bit(st_io.o_tower_lamp[3], IO_OFF);
 //				Func.OnSet_IO_Port_Stop(); // 장비 상태 : 정지 상태인 경우 I/O 출력 내보내는 함수
 
 				if(st_handler.cwnd_title != NULL)   st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, 2, dSTOP);
@@ -240,7 +240,7 @@ void CScreen_Initial::OnTimer(UINT nIDEvent)
 			
 			st_handler.n_mode_manual = YES;			// 시작은 메뉴얼 모드이다.
 
-//			g_ioMgr.Set_Out_Bit(st_io_def.o_manual_mode, IO_ON);
+//			g_ioMgr.set_out_bit(st_io_def.o_manual_mode, IO_ON);
 			// ******************************************************************
 			// 현재 장비 상태 (STOP) 타이틀 바에 출력한다.                       
 			// -> 초기화 후에 장비를 정지시킬 경우 이 부분 주석 해제             
@@ -248,20 +248,21 @@ void CScreen_Initial::OnTimer(UINT nIDEvent)
 /* //jong 1215
 			if (st_work.mn_run_status != dSTOP)
 			{
-				// 				g_ioMgr.Set_Out_Bit(st_io_def.o_reset, IO_OFF);
-				// 				g_ioMgr.Set_Out_Bit(st_io_def.o_clear, IO_OFF);
+				// 				g_ioMgr.set_out_bit(st_io_def.o_reset, IO_OFF);
+				// 				g_ioMgr.set_out_bit(st_io_def.o_clear, IO_OFF);
 				
 				Func.OnSet_IO_Port_Stop(); // 장비 상태 : 정지 상태인 경우 I/O 출력 내보내는 함수
 				if(st_handler.cwnd_title != NULL)   st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, 2, dSTOP);
 			}
 */
 			// ******************************************************************
+			Func.OnSet_IO_Port_Stop(); 
 			
 			OnInitial_Controls_Enable(TRUE); // 초기화 화면에 대한 버튼 컨트롤 Enabled/Disabled 설정 함수
 			
 			// 초기화가 정상적으로 끝났슴을 알려준다.
-			// 			g_ioMgr.Set_Out_Bit(st_io_def.o_reset, IO_ON);
-			// 			g_ioMgr.Set_Out_Bit(st_io_def.o_buzzer, IO_ON);
+			// 			g_ioMgr.set_out_bit(st_io_def.o_reset, IO_ON);
+			// 			g_ioMgr.set_out_bit(st_io_def.o_buzzer, IO_ON);
 			
 			if (st_handler.n_initial != FALSE)		st_handler.n_initial = FALSE;	// 초기화 작업 완료 여부 초기화 
 			if (st_handler.n_menu_lock != FALSE)	st_handler.n_menu_lock = FALSE; // 메뉴 사용 가능 상태 플래그 설정 
@@ -352,35 +353,38 @@ void CScreen_Initial::OnInitial_Change_Status(int n_status)
 			m_radio_io_bd.Depress(TRUE);
 			break;
 		case 3:
-			m_radio_main_xyz.Depress(TRUE);
-			break;
-		case 4:
-			m_radio_elevator_left.Depress(TRUE);
-			break;
-		case 5:
-			m_radio_elevator_right.Depress(TRUE);
-			break;
-		case 6:
-			m_radio_transfer_left.Depress(TRUE);
-			break;
-		case 7:
 			m_radio_transfer_right.Depress(TRUE);
 			break;
-		case 8:
-			m_radio_test_site.Depress(TRUE);
-			break;
-		case 9:
-			m_radio_test_dump.Depress(TRUE);
-			break;
-		case 10:
-			m_radio_rotator_dump.Depress(TRUE);
-			break;
-		case 11:
-			m_radio_rotator_table.Depress(TRUE);
-			break;
-		case 12:
+		case 4:
 			m_radio_conveyor.Depress(TRUE);
 			break;
+		case 5:
+			break;
+		case 6:
+			m_radio_elevator_right.Depress(TRUE);
+			break;
+		case 7:
+			m_radio_elevator_left.Depress(TRUE);
+			break;
+		case 8:
+			m_radio_transfer_left.Depress(TRUE);
+			break;
+		case 9:
+			m_radio_main_xyz.Depress(TRUE);
+			break;
+		case 10:
+			m_radio_test_site.Depress(TRUE);
+			break;
+		case 11:
+			m_radio_test_dump.Depress(TRUE);
+			break;
+		case 12:
+			m_radio_rotator_table.Depress(TRUE);
+			break;
+		case 14:
+			m_radio_rotator_dump.Depress(TRUE);
+			break;
+
 	}
 }
 
@@ -479,6 +483,8 @@ void CScreen_Initial::OnInitial_Initial_Ready()
 // 		}
 // 		else
 // 		{
+			COMI.mn_run_status = dINIT;
+			bRecoveryInit = false;
 			st_other.str_confirm_msg = _T("장비 초기화를 진행하시겠습니까?");
 			n_response = select_dlg.DoModal();
 // 		}
@@ -656,7 +662,7 @@ void CScreen_Initial::EIS_InitIO()
 		mn_pos_step += 8;
 		
 		OnInitial_Change_Status(0);				// I/O보드 초기화 완료.
-		
+		OnInitial_Change_Status(1);
 		ml_init_step = 300;
 	}
 }
@@ -682,7 +688,7 @@ void CScreen_Initial::EIS_Motor()
 		
 		mn_pos_step += 8;
 		
-		OnInitial_Change_Status(1);					// MOTOR 보드 초기화 완료.
+		OnInitial_Change_Status(2);					// MOTOR 보드 초기화 완료.
 		
 		ml_init_step = 400;
 	}
@@ -743,6 +749,10 @@ void CScreen_Initial::EIS_Create_Thread()
 	if (m_thread[THREAD_LDSTACKER_ELIVATOR] != NULL) 	
 		hThrHandle[THREAD_LDSTACKER_ELIVATOR] = m_thread[THREAD_LDSTACKER_ELIVATOR]->m_hThread;
 	
+	m_thread[THREAD_EMPTYSTACKER_ELIVATOR]=AfxBeginThread(OnThread_EmptyStacker_Elivator, this);
+	if (m_thread[THREAD_EMPTYSTACKER_ELIVATOR] != NULL) 	
+		hThrHandle[THREAD_EMPTYSTACKER_ELIVATOR] = m_thread[THREAD_EMPTYSTACKER_ELIVATOR]->m_hThread;
+
 	m_thread[THREAD_LDOAD_PLATE] = AfxBeginThread(OnThread_Load_Plate, this);
 	if (m_thread[THREAD_LDOAD_PLATE] != NULL) 	
 		hThrHandle[THREAD_LDOAD_PLATE] = m_thread[THREAD_LDOAD_PLATE]->m_hThread;
@@ -807,7 +817,7 @@ void CScreen_Initial::EIS_Chk_All_Finish()
 		{
 			mn_pos_step += 10;
 			
-			//OnInitial_Change_Status(i + 3);
+			OnInitial_Change_Status(i+3);
 			
 			st_handler.mn_init_state[i] = CTL_READY;
 		}
@@ -822,7 +832,7 @@ void CScreen_Initial::EIS_Chk_All_Finish()
 	}
 	
 	// 전부 홈체크가 끝났으면 초기화 끝~~~~ ^_^
-	if (j == MAXSITE)
+	if ( j == MAXSITE)
 	{
 		for (i = 0; i < MAXSITE; i++)
 		{

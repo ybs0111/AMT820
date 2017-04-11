@@ -747,7 +747,6 @@
 #define IDC_BUTTON2                     1029
 #define IDC_BTN_LOT_START               1029
 #define IDC_BTN_MM_GO                   1029
-#define IDC_BTN_MOTOR_STOP              1029
 #define IDC_BTN_PASS_CHK_5              1030
 #define IDC_BUTTON3                     1030
 #define IDC_DGT_ML_RETRY_CNT            1030
@@ -2284,6 +2283,7 @@
 #define IDC_GROUP_SIZE_SETTING          1757
 #define IDC_DGT_MROBOTY_8               1758
 #define IDC_RADIO_HY_HOME               1758
+#define IDC_GROUP_DATA_SETTING          1758
 #define IDC_BTN_GO_MROBOTY_8            1759
 #define IDC_RADIO_HY_PL                 1759
 #define IDC_BTN_READ_MROBOTY_8          1760
@@ -5139,7 +5139,19 @@
 #define IDC_LOT_OPEN                    3780
 #define IDC_BTN_NET_LOT                 3781
 #define IDC_STATIC_TRAY_TYPE            3782
-#define IDC_BTN_CARRIER_LOOP            3785
+#define IDC_ELEVATOR_GO1                3785
+#define IDC_COMBO_TRAY1                 3786
+#define IDC_GROUP_TRAY1_ELV             3787
+#define IDC_ELEVATOR_GO2                3788
+#define IDC_COMBO_TRAY2                 3789
+#define IDC_GROUP_TRAY2_ELV             3790
+#define IDC_ELEVATOR_GO3                3791
+#define IDC_COMBO_TRAY_TRANSFER         3792
+#define IDC_GROUP_TRAY_TRANSFER         3793
+#define IDC_REQ_TRAY_CHANGE             3794
+#define IDC_GROUP_CARRIER               3795
+#define IDC_BTN_ENDLESS_LOOP            3796
+#define IDC_COMBO_MOVE_CARRIER          3797
 #define ID_EMPTY                        32771
 #define ID_MAIN                         32772
 #define ID_BASIC                        32773
@@ -5195,7 +5207,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        548
 #define _APS_NEXT_COMMAND_VALUE         32818
-#define _APS_NEXT_CONTROL_VALUE         3786
+#define _APS_NEXT_CONTROL_VALUE         3797
 #define _APS_NEXT_SYMED_VALUE           117
 #endif
 #endif
