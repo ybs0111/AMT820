@@ -1856,6 +1856,7 @@ void CMainFrame::OnMain_Port_Create(int n_port)
 	char parity;
 	DWORD dwCommEvents;
 	//kwlee 20170412
+<<<<<<< HEAD:Handler_820_20120109/MainFrm.cpp
 
 	for (int i = 0;i < MAX_PORT; i++)
 	{
@@ -1866,6 +1867,18 @@ void CMainFrame::OnMain_Port_Create(int n_port)
 		rs_232.n_serial_stop[i] = 1; 
 	}
 
+=======
+
+	for (int i = 0;i < MAX_PORT; i++)
+	{
+		rs_232.n_serial_parity[i] = 2;
+		rs_232.n_serial_port[i]= i; 
+		rs_232.n_serial_baudrate[i] = 9600; 
+		rs_232.n_serial_data[i] = 8; 
+		rs_232.n_serial_stop[i] = 1; 
+	}
+
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/MainFrm.cpp
 // 	clsBarcode.OnOpen(rs_232.n_serial_port[n_port], 9600, NOPARITY, 8, ONESTOPBIT, 0x03);
 //  	return;
 	
@@ -2027,6 +2040,10 @@ LONG CMainFrame::OnCommunication(WPARAM port, LPARAM ch)
 	if (port == LOT_BARCODE_PORT)
 	{
 // 		OnMain_Lot_Barcode(port, ch);     // 수신된 바코드 리더기 데이터 처리 함수
+<<<<<<< HEAD:Handler_820_20120109/MainFrm.cpp
+=======
+		//kwlee 2017.0412
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/MainFrm.cpp
 		OnMain_Device_Barcode(ch);
 	}
 	else
@@ -2040,6 +2057,11 @@ LONG CMainFrame::OnCommunication(WPARAM port, LPARAM ch)
 // ******************************************************************************
 void CMainFrame::OnMain_Device_Barcode(CString strData)
 {
+<<<<<<< HEAD:Handler_820_20120109/MainFrm.cpp
+=======
+	CString strTemp;
+	int nTmp;
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/MainFrm.cpp
 	if (strData == _T(""))
 	{
 // 		m_strBarcode[m_nBarcodeCount] = _T("BARCODE ERROR");
@@ -2051,7 +2073,18 @@ void CMainFrame::OnMain_Device_Barcode(CString strData)
 	//	if (m_nBarcodeCount >= 100) return;
 		//kwlee 2017.0412
 		st_sync.nCarrierBcr_Req = CTL_READY; 
+<<<<<<< HEAD:Handler_820_20120109/MainFrm.cpp
 		st_msg.mstr_barcode += strData; 
+=======
+		//kwlee 2017.0413
+		//st_msg.mstr_barcode += strData; 
+		strTemp += strData; 
+		if (strTemp.Find("-") != -1)
+		{		
+			nTmp = strTemp.Find("-");
+			st_msg.mstr_barcode = strTemp.Mid(nTmp+1,2);
+		}
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/MainFrm.cpp
 		///
 		//m_strBarcode[m_nBarcodeCount]	= strData;
 	//	m_nBarcodeCount++;
@@ -2065,6 +2098,13 @@ void CMainFrame::OnMain_Device_Barcode(CString strData)
 	}
 }
 
+<<<<<<< HEAD:Handler_820_20120109/MainFrm.cpp
+=======
+
+
+
+
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/MainFrm.cpp
 
 // ******************************************************************************
 // RS-232C 시리얼 포트 이벤트 설정 함수                                          

@@ -55,6 +55,16 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Set_Maintenance)
 	enum { IDD = IDD_SCREEN_SET_MAINTENANCE };
+	CGradientStatic	m_msg_stop_2;
+	CGradientStatic	m_msg_rate_2;
+	CGradientStatic	m_msg_port_2;
+	CGradientStatic	m_msg_parity_2;
+	CGradientStatic	m_msg_data_2;
+	CComboBox	m_cb_stop_2;
+	CComboBox	m_cb_rate_2;
+	CComboBox	m_cb_port_2;
+	CComboBox	m_cb_data_2;
+	CComboBox	m_cb_parity_2;
 	CGradientStatic	m_msg_stop_1;
 	CGradientStatic	m_msg_rate_1;
 	CGradientStatic	m_msg_port_1;
@@ -97,6 +107,7 @@ public:
 	CXPGroupBox	m_group_buzzer;
 	CButtonST	m_chk_buzzer;
 	CXPButton	m_btn_maintenance_apply;
+	
 	//}}AFX_DATA
 
 // Attributes
@@ -259,6 +270,11 @@ protected:
 	afx_msg void OnBtnEpoxy();
 	afx_msg void OnBtn7387();
 	afx_msg void OnBtnHeatsink();
+<<<<<<< HEAD:Handler_820_20120109/Screen_Set_Maintenance.h
+=======
+	afx_msg void OnBtnPitchApply();
+	afx_msg void OnBtnPitchConnect();
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/Screen_Set_Maintenance.h
 	//}}AFX_MSG
 	afx_msg void OnRLampClick(UINT);
 	afx_msg void OnYLampClick(UINT);

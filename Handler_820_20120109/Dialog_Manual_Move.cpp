@@ -772,7 +772,11 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{ 
 				CTL_Lib.Alarm_Error_Occurrence(6160, dWARNING, alarm.mstr_code);
+<<<<<<< HEAD:Handler_820_20120109/Dialog_Manual_Move.cpp
 				m_move_step[m_nAxisNum] = 5010;
+=======
+				m_move_step[m_nAxisNum] = 2010;
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/Dialog_Manual_Move.cpp
 			}
 			break;
 			
@@ -8241,6 +8245,7 @@ void CDialog_Manual_Move::OnBtnHeatSinkGo()
 	st_recipe.nTrayNum = 2;
 	st_recipe.nHsTrayY = 5;
 	st_recipe.nHsTrayX = 9;
+<<<<<<< HEAD:Handler_820_20120109/Dialog_Manual_Move.cpp
 	
 	for(m = 0; m<st_recipe.nTrayNum; m++)
 	{
@@ -8301,9 +8306,74 @@ void CDialog_Manual_Move::OnBtnVisionGo()
 		//SetTimer( TM_HSVISION_MOVE, 100, NULL );
 
 	}
+=======
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/Dialog_Manual_Move.cpp
+	
+	for(m = 0; m<st_recipe.nTrayNum; m++)
+	{
+		for(y = 0; y < st_recipe.nHsTrayY; y++) //Y 방향 정보
+		{
+			for(x = 0; x < st_recipe.nHsTrayX; x++) //X 방향 정보 
+			{ 
+				st_tray_info[THD_LD_HEATSINK_BUFF].st_pcb_info[y][x].nYesNo = DVC_YES;
+			}
+		}
+	}
+
+	Init_Timer();
+
+    m_hs_rub = m_cbo_hs_rub.GetCurSel();
+	if( m_hs_rub <= 0)  m_hs_rub = 0;
+
+	
+	if( m_hs_rub == 0)//hs pick and dispensor place
+	{
+		SetTimer( TM_ONLYHSPICKPLACE, 100, NULL );
+	}
+	else if(m_hs_rub == 1)//dispensor and reverse
+	{
+		SetTimer( TM_ONLYDISPENSOR, 100, NULL);
+	}
+	else if(m_hs_rub == 2)//reverse
+	{
+		SetTimer( TM_ONLYREVERSE, 100, NULL);
+	}
+	else if(m_hs_rub == 3)//reverse pick and mve safety
+	{
+		SetTimer( TM_ONLYHSPICKPLACE, 100, NULL );
+	}
+	else if(m_hs_rub == 4 || m_hs_rub == 5 || m_hs_rub == 6 )//carrier 1,2,3 rubbing
+	{
+		SetTimer( TM_ONLYHSPICKPLACE, 100, NULL );
+
+	}
+
+}
+
+<<<<<<< HEAD:Handler_820_20120109/Dialog_Manual_Move.cpp
+=======
+void CDialog_Manual_Move::OnButton1() 
+{
+	m_nhsexystop = 0;	
+}
+
+void CDialog_Manual_Move::OnBtnVisionGo() 
+{
+	Init_Timer();
+
+	m_hs_vision = m_cbo_vision.GetCurSel();
+	if( m_hs_vision <= 0 ) m_hs_vision = 0;
+
+	if( m_hs_vision >= 0 && m_hs_vision < 3)
+	{
+		SetTimer( TM_VISIONCHK, 100, NULL );
+		//SetTimer( TM_HSVISION_MOVE, 100, NULL );
+
+	}
 	
 }
 
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/Dialog_Manual_Move.cpp
 void CDialog_Manual_Move::OnButton15() 
 {
 	m_nvisionstop = 0;	

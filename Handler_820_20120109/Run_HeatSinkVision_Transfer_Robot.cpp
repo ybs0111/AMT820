@@ -3678,7 +3678,26 @@ int CRun_HeatSinkVision_Transfer_Robot::Process_Dvc_Pickup(int nMode, int nWork_
 			}
 			mn_PickStep = 3600;
 			mn_PickStep = 3510;
+<<<<<<< HEAD:Handler_820_20120109/Run_HeatSinkVision_Transfer_Robot.cpp
+=======
 			break;
+
+		//////////////////////////////////////////////////////////////////////////
+		//ex)
+		case 3510:
+			Set_HeatSink_Reverse_Clamp_ForwardBackward(IO_OFF);
+			mn_PickStep = 3520;
+			break;
+			
+		case 3520:
+			nRet_1 = Chk_HeatSink_Reverse_Clamp_ForwardBackward(IO_OFF);
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_PickStep = 3800;
+			}
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/Run_HeatSinkVision_Transfer_Robot.cpp
+			break;
+		//////////////////////////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////////////////////////
 		//ex)

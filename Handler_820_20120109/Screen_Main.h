@@ -39,8 +39,6 @@
 #include "ssdllmfc.h"
 /* ****************************************************************************** */
 
-
-
 class AModule;
 /////////////////////////////////////////////////////////////////////////////
 // CScreen_Main form view
@@ -79,11 +77,15 @@ public:
 	/* ************************************************************************** */
 	int mn_alarm_cnt;				// 알람 발생 횟수 저장 변수
 	int mn_alarm_day_cnt;			// Day 알람 발생 횟수 저장 변수
-
 	CString mstr_lot_total_cnt;
-
 	int mn_discharge_step;
 	int mn_time_select;
+
+	//kwlee 2017.0413
+	TSpread			*m_grid_Top;
+	TSpread			*m_grid_Btm;
+	TSpread			*m_grid_Ref;
+	GridControlAlg   m_pGrid;
 // Operations
 public:
 	void OnMain_Display_Lot_Info();
@@ -101,11 +103,19 @@ public:
 	void OnMain_Loader_Set();
 	void OnMain_Picture_Set();
 	void OnMain_GroupBox_Set();
+	
 	void GridMerge(UINT nID, int srow, int scol, int nrow, int ncol);
 	void GridFont(UINT nID, int row, int col, int size);
 	void GridData(UINT nID, int row, int col, CString data);
 	void GridControl(UINT nID, int type, int row, int col, int pos);
 	void GridColor(UINT nID, int row, int col, COLORREF bk, COLORREF tk);
+
+	//kwlee 2017.0412
+	void OnInitTopGrid();
+	void OnInitBTMGrid();
+	void OnMainTopGrid_Info();
+	void OnMainBtmGrid_Info();
+	void OnInitGridRef();
 
 // Overrides
 	// ClassWizard generated virtual function overrides

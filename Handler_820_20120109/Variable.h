@@ -259,6 +259,9 @@ enum ENUM_WM_MESSAGE
 #define MAIN_LOTINFO		21
 #define MAIN_CYCLETIME		22
 #define MAIN_FTPDOWN        23
+//kwlee 2017.0413
+#define MAIN_TOP_INFO       24
+#define MAIN_BTM_INFO       25
 // *****************************************************************************
 
 
@@ -2163,7 +2166,7 @@ extern st_sync_param	st_sync;
 #define YELLOW_GC				0xFFFF
 #define TEST_BC					RGB(194, 231, 150)
 #define IN_BC					RGB(204, 153, 255)
-
+#define GRAY					RGB(90, 80, 80)
 #define DVC_READY_C				RGB(153, 153, 255)
 #define DVC_LOAD_C				RGB(239, 214, 198)
 #define DVC_NOVIDEO_C			RGB(0,100,20)

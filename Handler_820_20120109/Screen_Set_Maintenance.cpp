@@ -38,6 +38,7 @@ CScreen_Set_Maintenance::CScreen_Set_Maintenance()
 	: CFormView(CScreen_Set_Maintenance::IDD)
 {
 	//{{AFX_DATA_INIT(CScreen_Set_Maintenance)
+//	m_cb_parity_2 = -1;
 	//}}AFX_DATA_INIT
 	m_nPos = 0;
 }
@@ -50,6 +51,15 @@ void CScreen_Set_Maintenance::DoDataExchange(CDataExchange* pDX)
 {
 	CFormView::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CScreen_Set_Maintenance)
+	DDX_Control(pDX, IDC_MSG_STOP_2, m_msg_stop_2);
+	DDX_Control(pDX, IDC_MSG_RATE_2, m_msg_rate_2);
+	DDX_Control(pDX, IDC_MSG_PORT_2, m_msg_port_2);
+	DDX_Control(pDX, IDC_MSG_PARITY_2, m_msg_parity_2);
+	DDX_Control(pDX, IDC_MSG_DATA_2, m_msg_data_2);
+	DDX_Control(pDX, IDC_COMBO_STOP_4, m_cb_stop_2);
+	DDX_Control(pDX, IDC_COMBO_RATE_4, m_cb_rate_2);
+	DDX_Control(pDX, IDC_COMBO_PORT_2, m_cb_port_2);
+	DDX_Control(pDX, IDC_COMBO_DATA_2, m_cb_data_2);
 	DDX_Control(pDX, IDC_MSG_STOP_1, m_msg_stop_1);
 	DDX_Control(pDX, IDC_MSG_RATE_1, m_msg_rate_1);
 	DDX_Control(pDX, IDC_MSG_PORT_1, m_msg_port_1);
@@ -92,6 +102,7 @@ void CScreen_Set_Maintenance::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_GROUP_BUZZER, m_group_buzzer);
 	DDX_Control(pDX, IDC_CHK_BUZZER, m_chk_buzzer);
 	DDX_Control(pDX, IDC_BTN_MAINTENANCE_APPLY, m_btn_maintenance_apply);
+	DDX_Control(pDX, IDC_COMBO_PARITY_4, m_cb_parity_2);
 	//}}AFX_DATA_MAP
 }
 
@@ -110,7 +121,7 @@ BEGIN_MESSAGE_MAP(CScreen_Set_Maintenance, CFormView)
 	ON_EN_SETFOCUS(IDC_EDIT_EQUIP_ID, OnSetfocusEditEquipId)
 	ON_BN_CLICKED(IDC_DGT_CHANGE_TIME, OnDgtChangeTime)
 	ON_BN_CLICKED(IDC_BTN_STEP_SAVE, OnBtnStepSave)
-	ON_BN_CLICKED(IDC_BTN_SERIAL_CONNECT_2, OnBtnSerialConnect2)
+//	ON_BN_CLICKED(IDC_BTN_SERIAL_CONNECT_2, OnBtnSerialConnect2)
 	ON_BN_CLICKED(IDC_BTN_SERIAL_APPLY_1, OnBtnSerialApply1)
 	ON_BN_CLICKED(IDC_BTN_SERIAL_CONNECT_1, OnBtnSerialConnect1)
 	ON_BN_CLICKED(IDC_BTN_BCR1, OnBtnBcr1)
@@ -118,6 +129,11 @@ BEGIN_MESSAGE_MAP(CScreen_Set_Maintenance, CFormView)
 	ON_BN_CLICKED(IDC_BTN_EPOXY, OnBtnEpoxy)
 	ON_BN_CLICKED(IDC_BTN_7387, OnBtn7387)
 	ON_BN_CLICKED(IDC_BTN_HEATSINK, OnBtnHeatsink)
+<<<<<<< HEAD:Handler_820_20120109/Screen_Set_Maintenance.cpp
+=======
+	ON_BN_CLICKED(IDC_BTN_PITCH_APPLY, OnBtnPitchApply)
+	ON_BN_CLICKED(IDC_BTN_PITCH_CONNECT, OnBtnPitchConnect)
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/Screen_Set_Maintenance.cpp
 	//}}AFX_MSG_MAP
 	ON_COMMAND_RANGE(ID_LAMP_RLAMP, ID_LAMP_RLAMP+SELFCHECK, OnRLampClick)
 	ON_COMMAND_RANGE(ID_LAMP_YLAMP, ID_LAMP_YLAMP+SELFCHECK, OnYLampClick)
@@ -980,6 +996,43 @@ void CScreen_Set_Maintenance::OnMaintenance_Label_Set()
 	m_msg_stop_1.SetColor(WHITE_C);
 	m_msg_stop_1.SetGradientColor(ORANGE_C);
 	m_msg_stop_1.SetTextColor(BLACK_C);
+
+
+	//kwlee 2017.0412
+	m_msg_port_2.SetFont(mp_maintenance_font);
+	m_msg_port_2.SetWindowText(_T("Port"));
+	m_msg_port_2.SetCenterText();
+	m_msg_port_2.SetColor(WHITE_C);
+	m_msg_port_2.SetGradientColor(ORANGE_C);
+	m_msg_port_2.SetTextColor(BLACK_C);
+	
+	m_msg_data_2.SetFont(mp_maintenance_font);
+	m_msg_data_2.SetWindowText(_T("Data"));
+	m_msg_data_2.SetCenterText();
+	m_msg_data_2.SetColor(WHITE_C);
+	m_msg_data_2.SetGradientColor(ORANGE_C);
+	m_msg_data_2.SetTextColor(BLACK_C);
+	
+	m_msg_parity_2.SetFont(mp_maintenance_font);
+	m_msg_parity_2.SetWindowText(_T("Parity"));
+	m_msg_parity_2.SetCenterText();
+	m_msg_parity_2.SetColor(WHITE_C);
+	m_msg_parity_2.SetGradientColor(ORANGE_C);
+	m_msg_parity_2.SetTextColor(BLACK_C);
+	
+	m_msg_rate_2.SetFont(mp_maintenance_font);
+	m_msg_rate_2.SetWindowText(_T("BaudRate"));
+	m_msg_rate_2.SetCenterText();
+	m_msg_rate_2.SetColor(WHITE_C);
+	m_msg_rate_2.SetGradientColor(ORANGE_C);
+	m_msg_rate_2.SetTextColor(BLACK_C);
+	
+	m_msg_stop_2.SetFont(mp_maintenance_font);
+	m_msg_stop_2.SetWindowText(_T("Stop"));
+	m_msg_stop_2.SetCenterText();
+	m_msg_stop_2.SetColor(WHITE_C);
+	m_msg_stop_2.SetGradientColor(ORANGE_C);
+	m_msg_stop_2.SetTextColor(BLACK_C);
 }
 
 void CScreen_Set_Maintenance::OnMaintenance_Digital_Count_Set()
@@ -2182,4 +2235,37 @@ void CScreen_Set_Maintenance::OnBtnHeatsink()
 
 	Func.SendHeatsinkMeasureStart(m_nPos);
 	
+<<<<<<< HEAD:Handler_820_20120109/Screen_Set_Maintenance.cpp
+=======
+}
+
+void CScreen_Set_Maintenance::OnBtnPitchApply() 
+{
+	UpdateData(TRUE);
+	int i = 1;
+	
+	m_n_port[i][1]			= m_cb_port_2.GetCurSel();
+	m_n_rate[i][1]			= m_cb_rate_2.GetCurSel();
+	m_n_data[i][1]			= m_cb_data_2.GetCurSel();
+	m_n_stop[i][1]			= m_cb_stop_2.GetCurSel();
+	m_n_parity[i][1]	    = m_cb_parity_2.GetCurSel();
+	
+	rs_232.n_serial_port[i]		= ConverterToData(COM_PORT, m_n_port[i][1]);
+	rs_232.n_serial_baudrate[i] = ConverterToData(COM_BAUDRATE, m_n_rate[i][1]);
+	rs_232.n_serial_data[i]     = ConverterToData(COM_DATA, m_n_data[i][1]);
+	rs_232.n_serial_stop[i]     = ConverterToData(COM_STOP, m_n_stop[i][1]);
+	rs_232.n_serial_parity[i]   = ConverterToData(COM_PARITY, m_n_parity[i][1]);
+	
+}
+
+void CScreen_Set_Maintenance::OnBtnPitchConnect() 
+{
+	int i = 1;
+	
+	st_serial.str_port_chk[i] = "NOT FOUND";
+	st_handler.mnSerial_Port_Creating[i] = CTL_NO;
+
+	::PostMessage(st_handler.hWnd, WM_SERIAL_PORT, CTL_YES, rs_232.n_serial_port[i]);
+	
+>>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/Screen_Set_Maintenance.cpp
 }

@@ -145,6 +145,11 @@ void CScreen_Main::OnInitialUpdate()
 	OnMain_Timeinfo_Display();
 	OnMain_Workinfo_Display();			// Work 정보도 Lot별, Day별로 보여준다.
 	OnMain_Status_Display();
+	
+	//kwlee 2017.0412
+	OnInitTopGrid();
+	OnInitBTMGrid();
+	OnInitGridRef();
 
 	SetTimer(100, 50, NULL);
 	SetTimer(200, 1, NULL);
@@ -556,6 +561,16 @@ LRESULT CScreen_Main::OnMain_Work_Info_Display(WPARAM wParam,LPARAM lParam)
 		case MAIN_LOTINFO:
 			OnMain_Display_Lot_Info();
 			break;
+		
+		//kwlee 2017.0412
+// 		case MAIN_TOP_INFO:
+// 			OnMainTopGrid_Info();
+// 			break;
+// 
+// 		case MAIN_BTM_INFO:
+// 			OnMainBtmGrid_Info();
+			break;
+			////
 	}
 
 
@@ -725,16 +740,16 @@ void CScreen_Main::OnMain_Display_Lot_Info()
 
 	if( g_lotMgr.GetLotCount() > 0 )
 	{
-		GridData(IDC_CUSTOM_LOT_INFO, 1, 2, g_lotMgr.GetLotIDAt( 0 ) );
-		GridData(IDC_CUSTOM_LOT_INFO, 2, 2, g_lotMgr.GetLotAt(0).GetPartID() );
+		GridData(IDC_CUSTOM_LOT_INFO, 1, 2, g_lotMgr.GetLotIDAt( 0 ));
+		GridData(IDC_CUSTOM_LOT_INFO, 2, 2, g_lotMgr.GetLotAt(0).GetPartID());
 		GridData(IDC_CUSTOM_LOT_INFO, 3, 2, g_lotMgr.GetLotAt(0).GetStrLastModule());
 		GridData(IDC_CUSTOM_LOT_INFO, 4, 2, g_lotMgr.GetLotAt(0).GetStrRProtyModule());
 		GridData(IDC_CUSTOM_LOT_INFO, 5, 2, g_lotMgr.GetLotAt(0).GetStrBypass());
 	}
 	else
 	{
-		GridData(IDC_CUSTOM_LOT_INFO, 1, 2, "" );
-		GridData(IDC_CUSTOM_LOT_INFO, 2, 2, "" );
+		GridData(IDC_CUSTOM_LOT_INFO, 1, 2, "");
+		GridData(IDC_CUSTOM_LOT_INFO, 2, 2, "");
 		GridData(IDC_CUSTOM_LOT_INFO, 3, 2, "");
 		GridData(IDC_CUSTOM_LOT_INFO, 4, 2, "");
 		GridData(IDC_CUSTOM_LOT_INFO, 5, 2, "");
@@ -750,8 +765,204 @@ void CScreen_Main::OnMain_Display_Lot_Info()
 		GridData( IDC_CUSTOM_B_LOT_INFO, 1, 2, "" );
 		GridData( IDC_CUSTOM_B_LOT_INFO, 2, 2, "" );
 	}
-
 }
+
+void CScreen_Main::OnInitTopGrid()
+{
+	int   i, j;
+	int	  max_row, max_col;
+	CString str_tmp;
+	
+	max_row = 3;
+	max_col = 6;
+	
+	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+	
+	m_pGrid.GridReset(m_grid_Top);
+	// 대문자 
+//	m_pGrid.GridCellSelectDisplay(m_grid_Top, TRUE);
+	m_pGrid.GridRowHeader(m_grid_Top, FALSE);
+	m_pGrid.GridColHeader(m_grid_Top, FALSE);
+	m_pGrid.GridHorizontal(m_grid_Top, FALSE);
+	m_pGrid.GridVertical(m_grid_Top, FALSE);
+	m_pGrid.GridAutoSize(m_grid_Top, FALSE);
+	m_pGrid.GridAutoSize(m_grid_Top, FALSE);
+	m_pGrid.GridCellRows(m_grid_Top, max_row);
+	m_pGrid.GridCellCols(m_grid_Top, max_col);
+	
+	for(i=0; i<max_row+1; i++)
+	{
+		
+		m_pGrid.GridCellHeight_L(m_grid_Top, i, 50);
+		 
+		
+		for(j=0; j<max_col+1; j++)
+		{
+		
+			m_pGrid.GridCellWidth_L(m_grid_Top, j, 20);
+			m_pGrid.GridCellFont(m_grid_Top, i, j, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Top, i, j, GRAY, YELLOW_C);
+			
+		}
+	}
+	
+// 	m_pGrid.GridCellMerge(m_grid_Top, 1, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_Top, 1, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Top, 1, 1, BLACK_L, YELLOW_C);
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Top, 2, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_Top, 2, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Top, 2, 1, BLUE, YELLOW_C);
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Top, 3, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_Top, 3, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Top, 3, 1, BLACK_L, YELLOW_C);
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Top, 4, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_Top, 4, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Top, 4, 1, BLUE, YELLOW_C);
+	Invalidate(FALSE);
+}
+
+void CScreen_Main::OnInitGridRef()
+{
+	int   i, j;
+	int	  max_row, max_col;
+	CString str_tmp;
+	
+	max_row = 1;
+	max_col = 10;
+	
+	m_grid_Ref = (TSpread*)GetDlgItem(IDC_CUSTOM_BIN_REFERNCE);
+	
+	m_pGrid.GridReset(m_grid_Ref);
+	// 대문자 
+	//m_pGrid.GridCellSelectDisplay(m_grid_Ref, TRUE);
+	m_pGrid.GridRowHeader(m_grid_Ref, FALSE);
+	m_pGrid.GridColHeader(m_grid_Ref, FALSE);
+	m_pGrid.GridHorizontal(m_grid_Ref, FALSE);
+	m_pGrid.GridVertical(m_grid_Ref, FALSE);
+	m_pGrid.GridAutoSize(m_grid_Ref, FALSE);
+	m_pGrid.GridAutoSize(m_grid_Ref, FALSE);
+	m_pGrid.GridCellRows(m_grid_Ref, max_row);
+	m_pGrid.GridCellCols(m_grid_Ref, max_col);
+	
+	for(i=0; i<max_row+1; i++)
+	{
+		
+		m_pGrid.GridCellHeight_L(m_grid_Ref, i, 25);
+		
+		
+		for(j=0; j<max_col+1; j++)
+		{
+			m_pGrid.GridCellWidth_L(m_grid_Ref, j, 12);
+			/*m_pGrid.GridCellMerge(m_grid_Top, i, j, 1, 2);*/
+			m_pGrid.GridCellFont(m_grid_Ref, i, j, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Ref, i, j, YELLOW_L, BLACK_L);	
+		}
+	}
+	
+	//m_pGrid.GridCellMerge(m_grid_Btm, 1, 1, 1, 2);
+	m_pGrid.GridCellFont(m_grid_Ref, 1, 1, "MS Sans Serif", 10);
+	m_pGrid.GridCellColor(m_grid_Ref, 1, 1, SKY_C, BLACK);
+	m_pGrid.GridCellText(m_grid_Ref, 1, 1, "READY");//! khj[20101012]
+
+	m_pGrid.GridCellFont(m_grid_Ref, 1, 2, "MS Sans Serif", 10);
+	m_pGrid.GridCellColor(m_grid_Ref, 1, 2, BLUE, WHITE_C);
+	m_pGrid.GridCellText(m_grid_Ref, 1, 2, "LOAD");
+	
+	m_pGrid.GridCellFont(m_grid_Ref, 1, 3, "MS Sans Serif", 10);
+	m_pGrid.GridCellColor(m_grid_Ref, 1,3, NOR_L, WHITE_C);
+	m_pGrid.GridCellText(m_grid_Ref, 1, 3, "EPOXY");
+	
+	m_pGrid.GridCellFont(m_grid_Ref, 1, 4, "MS Sans Serif", 10);
+	m_pGrid.GridCellColor(m_grid_Ref, 1,4, ORANGE_C, WHITE_C);
+	m_pGrid.GridCellText(m_grid_Ref, 1, 4, "EPOXY INSP");
+	
+	m_pGrid.GridCellFont(m_grid_Ref, 1, 5, "MS Sans Serif", 10);
+	m_pGrid.GridCellColor(m_grid_Ref, 1,5, BLUE, WHITE_C);
+	m_pGrid.GridCellText(m_grid_Ref, 1, 5, "HEAT SINK");
+
+	m_pGrid.GridCellFont(m_grid_Ref, 1, 6, "MS Sans Serif", 10);
+	m_pGrid.GridCellColor(m_grid_Ref, 1,6, GREEN_D, WHITE_C);
+	m_pGrid.GridCellText(m_grid_Ref, 1, 6, "HS INSP");
+
+	m_pGrid.GridCellFont(m_grid_Ref, 1, 7, "MS Sans Serif", 10);
+	m_pGrid.GridCellColor(m_grid_Ref, 1,7, DVC_UNLOAD_C, BLACK);
+	m_pGrid.GridCellText(m_grid_Ref, 1, 7, "UNLOAD");
+
+	m_pGrid.GridCellFont(m_grid_Ref, 1, 8, "MS Sans Serif", 10);
+	m_pGrid.GridCellColor(m_grid_Ref, 1, 8, GRAY, WHITE_C);
+	m_pGrid.GridCellText(m_grid_Ref, 1, 8, "DVC_NO");
+	
+
+	m_pGrid.GridCellFont(m_grid_Ref, 1, 9, "MS Sans Serif", 10);
+	m_pGrid.GridCellColor(m_grid_Ref, 1, 9, OK_C, BLACK);
+	m_pGrid.GridCellText(m_grid_Ref, 1, 9, "PASS");
+
+	m_pGrid.GridCellFont(m_grid_Ref, 1, 10, "MS Sans Serif", 10);
+	m_pGrid.GridCellColor(m_grid_Ref, 1, 10, NG_C, WHITE_C);
+	m_pGrid.GridCellText(m_grid_Ref, 1, 10, "FAIL");
+	Invalidate(FALSE);
+}
+void CScreen_Main::OnInitBTMGrid()
+{
+	int   i, j;
+	int	  max_row, max_col;
+	CString str_tmp;
+	
+	max_row = 3;
+	max_col = 6;
+	
+	m_grid_Btm = (TSpread*)GetDlgItem(IDC_CUSTOM_BTM_INFO);
+	
+	m_pGrid.GridReset(m_grid_Btm);
+	// 대문자 
+//	m_pGrid.GridCellSelectDisplay(m_grid_Btm, TRUE);
+	m_pGrid.GridRowHeader(m_grid_Btm, FALSE);
+	m_pGrid.GridColHeader(m_grid_Btm, FALSE);
+	m_pGrid.GridHorizontal(m_grid_Btm, FALSE);
+	m_pGrid.GridVertical(m_grid_Btm, FALSE);
+	m_pGrid.GridAutoSize(m_grid_Btm, FALSE);
+	m_pGrid.GridAutoSize(m_grid_Btm, FALSE);
+	m_pGrid.GridCellRows(m_grid_Btm, max_row);
+	m_pGrid.GridCellCols(m_grid_Btm, max_col);
+		
+	for(i=0; i<max_row+1; i++)
+	{
+			
+		m_pGrid.GridCellHeight_L(m_grid_Btm, i, 50);
+		 
+
+		for(j=0; j<max_col+1; j++)
+		{
+			m_pGrid.GridCellWidth_L(m_grid_Btm, j, 20);
+			/*m_pGrid.GridCellMerge(m_grid_Top, i, j, 1, 2);*/
+			m_pGrid.GridCellFont(m_grid_Btm, i, j, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Btm, i, j, GRAY, YELLOW_C);	
+		}
+	}
+	
+// 	m_pGrid.GridCellMerge(m_grid_Btm, 1, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_Btm, 1, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Btm, 1, 1, BLACK_L, YELLOW_C);
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Btm, 2, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_Btm, 2, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Btm, 2, 1, BLUE, YELLOW_C);
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Btm, 3, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_Btm, 3, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Btm, 3, 1, BLACK_L, YELLOW_C);
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Btm, 4, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_Btm, 4, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Btm, 4, 1, BLUE, YELLOW_C);
+
+	Invalidate(FALSE);
+}
+
+
 
 void CScreen_Main::GridColor(UINT nID, int row, int col, COLORREF bk, COLORREF tk)
 {
