@@ -1,0 +1,2522 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Korean resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+#ifdef _WIN32
+LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
+#pragma code_page(949)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 18, 1\r\n"
+    "#pragma code_page(949)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\HANDLER.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.kor\\afxres.rc""          // Standard components\r\n"
+    "#include ""l.kor\\afxprint.rc""        // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\HANDLER.ico"
+IDR_HANDLETYPE          ICON    DISCARDABLE     "res\\HANDLERDoc.ico"
+IDI_TT_MAIN             ICON    DISCARDABLE     "res\\tt_main.ico"
+IDI_MAINTENANCE         ICON    DISCARDABLE     "res\\maintena.ico"
+IDI_MODULE              ICON    DISCARDABLE     "res\\module.ico"
+IDI_MOT_POS             ICON    DISCARDABLE     "res\\mot_pos.ico"
+IDI_MOT_SPD             ICON    DISCARDABLE     "res\\mot_spd.ico"
+IDI_LIST_ARM            ICON    DISCARDABLE     "res\\list_arm.ico"
+IDI_LIST_WORK           ICON    DISCARDABLE     "res\\list_wor.ico"
+IDI_ONLINE              ICON    DISCARDABLE     "res\\online.ico"
+IDI_OPEN_FOLDER         ICON    DISCARDABLE     "res\\open_fol.ico"
+IDI_SOUND_ON            ICON    DISCARDABLE     "res\\Sound On.ico"
+IDI_SOUND_OFF           ICON    DISCARDABLE     "res\\Sound Off.ico"
+IDI_KEYBOARD            ICON    DISCARDABLE     "res\\Keyboard.ico"
+IDI_GREEN_LED_ICON      ICON    DISCARDABLE     "res\\LedGreen.ico"
+IDI_GRAY_LED_ICON       ICON    DISCARDABLE     "res\\LedNone.ico"
+IDI_RED_LED_ICON        ICON    DISCARDABLE     "res\\LedRed.ico"
+IDI_SAFETY              ICON    DISCARDABLE     "res\\Safety.ico"
+IDI_NONSAFETY           ICON    DISCARDABLE     "res\\Non Safety.ico"
+IDI_DEVICE              ICON    DISCARDABLE     "res\\device.ico"
+IDI_ENABLE              ICON    DISCARDABLE     "res\\08-HiTech World My Documents.ico"
+IDI_DISABLE             ICON    DISCARDABLE     "res\\enable1.ico"
+IDI_BUZZER_ON           ICON    DISCARDABLE     "res\\ico00006.ico"
+IDI_BUZZER_OFF          ICON    DISCARDABLE     "res\\buzzer_o.ico"
+IDI_EMG                 ICON    DISCARDABLE     "res\\emg.ico"
+IDI_LED_ICON_RED        ICON    DISCARDABLE     "res\\led_icon.ico"
+IDI_LED_ICON_GREEN      ICON    DISCARDABLE     "res\\ico00007.ico"
+IDI_LED_ICON_GRAY       ICON    DISCARDABLE     "res\\ico00008.ico"
+IDI_IO_ON               ICON    DISCARDABLE     "res\\on.ico"
+IDI_IO_OFF              ICON    DISCARDABLE     "res\\off.ico"
+IDI_SAFETY1             ICON    DISCARDABLE     "res\\safety1.ico"
+IDI_EXIT                ICON    DISCARDABLE     "res\\exit.ico"
+IDI_RESET               ICON    DISCARDABLE     "res\\reset.ico"
+IDI_SEARCH              ICON    DISCARDABLE     "res\\delete.ico"
+IDI_ALL                 ICON    DISCARDABLE     "res\\all_apply.ico"
+IDI_LOT_START           ICON    DISCARDABLE     "res\\lot start.ico"
+IDI_LOT_CANCEL          ICON    DISCARDABLE     "res\\lot cancel.ico"
+IDI_ALARM_RESET         ICON    DISCARDABLE     "res\\alarm_reset.ico"
+IDI_EMG_STOP            ICON    DISCARDABLE     "res\\emg_stop.ico"
+IDI_MOTOR               ICON    DISCARDABLE     "res\\motor.ico"
+IDI_IO                  ICON    DISCARDABLE     "res\\io.ico"
+IDI_MAINTENANCE_1       ICON    DISCARDABLE     "res\\Open-Folder-Full128.ico"
+IDI_UP_D                ICON    DISCARDABLE     "res\\up_d1.ico"
+IDI_UP_E                ICON    DISCARDABLE     "res\\up_e1.ico"
+IDI_DN_D                ICON    DISCARDABLE     "res\\dn_d1.ico"
+IDI_DN_E                ICON    DISCARDABLE     "res\\dn_e1.ico"
+IDI_HOME_D              ICON    DISCARDABLE     "res\\home_d1.ico"
+IDI_HOME_E              ICON    DISCARDABLE     "res\\home_e1.ico"
+IDI_LEFT_D              ICON    DISCARDABLE     "res\\left_d1.ico"
+IDI_LEFT_E              ICON    DISCARDABLE     "res\\left_e1.ico"
+IDI_RIGHT_E             ICON    DISCARDABLE     "res\\right_e1.ico"
+IDI_RIGHT_D             ICON    DISCARDABLE     "res\\rigth_d1.ico"
+IDI_OPEN                ICON    DISCARDABLE     "res\\Upload.ico"
+IDI_SAVE                ICON    DISCARDABLE     "res\\download.ico"
+IDI_MOTOR_APPLY         ICON    DISCARDABLE     "res\\apply.ico"
+IDI_DELETE_2            ICON    DISCARDABLE     "res\\ico00002.ico"
+IDI_CREATE              ICON    DISCARDABLE     "res\\create.ico"
+IDI_PASSWORD            ICON    DISCARDABLE     "res\\password.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+IDB_CLOCKST_BIG         BITMAP  DISCARDABLE     "res\\ClockST_big.bmp"
+IDB_CLOCKST_PANE        BITMAP  DISCARDABLE     "res\\ClockST_pane.bmp"
+IDB_CLOCKST_SMALL       BITMAP  DISCARDABLE     "res\\ClockST_small.bmp"
+IDB_REDBUTTON           BITMAP  DISCARDABLE     "res\\redButton.bmp"
+IDB_GREENBUTTON         BITMAP  DISCARDABLE     "res\\greenButton.bmp"
+IDB_INITIAL_STR_1       BITMAP  DISCARDABLE     "res\\initial-1.bmp"
+IDB_INITIAL_STR_2       BITMAP  DISCARDABLE     "res\\initial-2.bmp"
+IDB_TREE_CTRL_OPTIONS   BITMAP  DISCARDABLE     "res\\tree_ctrl.bmp"
+IDB_SMALL_1             BITMAP  DISCARDABLE     "res\\Small_1.bmp"
+IDB_BIG2                BITMAP  DISCARDABLE     "res\\Big_2.bmp"
+IDB_BIG3                BITMAP  DISCARDABLE     "res\\Big_3.bmp"
+IDB_DIGITSTEX_BLACK     BITMAP  DISCARDABLE     "res\\digit_b.bmp"
+IDB_DIGITSTEX_BBDISABLE BITMAP  DISCARDABLE     "res\\digitB_bd.bmp"
+IDB_DIGITSTEX_BBLACK    BITMAP  DISCARDABLE     "res\\digitB_b.bmp"
+IDB_DIGITSTEX_BBLUE     BITMAP  DISCARDABLE     "res\\digitB_bl.bmp"
+IDB_DIGITSTEX_BCYAN     BITMAP  DISCARDABLE     "res\\digitB_c.bmp"
+IDB_DIGITSTEX_BDISABLE  BITMAP  DISCARDABLE     "res\\digitB_d.bmp"
+IDB_DIGITSTEX_BGREEN    BITMAP  DISCARDABLE     "res\\digitB_g.bmp"
+IDB_DIGITSTEX_RED       BITMAP  DISCARDABLE     "res\\digit_r.bmp"
+IDB_DIGITSTEX_BRED      BITMAP  DISCARDABLE     "res\\digitB_r.bmp"
+IDB_DIGITSTEX_BYELLOW   BITMAP  DISCARDABLE     "res\\digitB_y.bmp"
+IDB_DIGITSTEX_CYAN      BITMAP  DISCARDABLE     "res\\digit_c.bmp"
+IDB_DIGITSTEX_DISABLE   BITMAP  DISCARDABLE     "res\\digit_d.bmp"
+IDB_DIGITSTEX_GREEN     BITMAP  DISCARDABLE     "res\\digit_g.bmp"
+IDB_DIGITSTEX_SBDISABLE BITMAP  DISCARDABLE     "res\\digit_bd.bmp"
+IDB_DIGITSTEX_YELLOW    BITMAP  DISCARDABLE     "res\\digit_y.bmp"
+IDB_TOOLBAR_DRAW        BITMAP  DISCARDABLE     "res\\ToolbarDraw.bmp"
+IDB_TOOLBAR_DRAW_HOT    BITMAP  DISCARDABLE     "res\\ToolbarDrawHot.bmp"
+IDB_TOOLBAR_DRAW_DISABLED BITMAP  DISCARDABLE     "res\\ToolbarDrawDisabled.bmp"
+IDB_MATRIXLARGE         BITMAP  DISCARDABLE     "res\\matrixsetblue.bmp"
+IDB_MATRIXSMALL         BITMAP  DISCARDABLE     "res\\matrixsetsmallblue.bmp"
+IDB_MATRIXTINY          BITMAP  DISCARDABLE     "res\\matrixsettinyblue.bmp"
+IDB_BIG4                BITMAP  DISCARDABLE     "res\\Big_4.bmp"
+IDB_TOOLBAR_DRAW_DISABLED1 BITMAP  DISCARDABLE     "res\\bmp00007.bmp"
+IDB_TOOLBAR_DRAW1       BITMAP  DISCARDABLE     "res\\bmp00019.bmp"
+CHECKUP                 BITMAP  MOVEABLE PURE   "res\\\\chckup.bmp"
+CHECKFOCUSUP            BITMAP  MOVEABLE PURE   "res\\\\chckfup.bmp"
+CHECKFOCUSDOWN          BITMAP  MOVEABLE PURE   "res\\\\chckfdwn.bmp"
+CHECKDOWN               BITMAP  MOVEABLE PURE   "res\\\\chckdwn.bmp"
+CHECKDISABLEDUP         BITMAP  MOVEABLE PURE   "res\\\\chckdup.bmp"
+CHECKDISABLEDDOWN       BITMAP  MOVEABLE PURE   "res\\\\chckddwn.bmp"
+IDB_PICKER_ON           BITMAP  DISCARDABLE     "res\\PickerOn.bmp"
+IDB_PICKER_OFF          BITMAP  DISCARDABLE     "res\\PickerOff.bmp"
+IDB_BIG5                BITMAP  DISCARDABLE     "res\\big5.bmp"
+IDB_SMALL_2             BITMAP  DISCARDABLE     "res\\small_2.bmp"
+IDB_BITMAP9             BITMAP  DISCARDABLE     "res\\2.bmp"
+IDB_BITMAP10            BITMAP  DISCARDABLE     "res\\1.bmp"
+IDB_BITMAP_HEAD         BITMAP  DISCARDABLE     "res\\bitmap_z.bmp"
+IDB_BITMAP_CUT          BITMAP  DISCARDABLE     "res\\3.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR DISCARDABLE  32, 32
+BEGIN
+    BUTTON      ID_MAIN
+    BUTTON      ID_BASIC
+    BUTTON      ID_SETTING
+    BUTTON      ID_MOTOR
+    BUTTON      ID_IO
+    BUTTON      ID_LIST
+    BUTTON      ID_LEVEL
+    BUTTON      ID_SAVE
+    SEPARATOR
+    BUTTON      ID_PGM_INFO
+    SEPARATOR
+    BUTTON      ID_ALARM
+    SEPARATOR
+    BUTTON      ID_ABOUT
+    SEPARATOR
+    BUTTON      ID_RESET
+    SEPARATOR
+    BUTTON      ID_LOCK
+    SEPARATOR
+    BUTTON      ID_EXIT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "Handler Menu"
+    BEGIN
+        MENUITEM "Main",                        ID_MAIN
+        MENUITEM "Basic",                       ID_BASIC
+        MENUITEM "Setting",                     ID_SETTING
+        MENUITEM "Wait",                        ID_WAIT
+        MENUITEM "Motor",                       ID_MOTOR
+        MENUITEM "List",                        ID_LIST
+        MENUITEM "I/O",                         ID_IO
+        MENUITEM "Level",                       ID_LEVEL
+        MENUITEM "Save",                        ID_SAVE
+        MENUITEM "Alarm",                       ID_ALARM
+        MENUITEM "About",                       ID_ABOUT
+        MENUITEM "Admin",                       ID_ADMIN
+        MENUITEM "Reset",                       ID_RESET
+        MENUITEM "Lock",                        ID_LOCK
+        MENUITEM "Exit",                        ID_EXIT
+    END
+    POPUP "Setting"
+    BEGIN
+        MENUITEM "Maintenance",                 ID_SET_MAINTENANCE
+    END
+    POPUP "Motor"
+    BEGIN
+        MENUITEM "Main Robot",                  ID_MAIN_ROBOT
+        MENUITEM "Left Robot",                  ID_LEFT_ROBOT
+        MENUITEM "Right Robot",                 ID_RIGHT_ROBOT
+        MENUITEM "Loader Site",                 ID_MOT_LOADER
+        MENUITEM "Unloader Site",               ID_MOT_UNLOADER
+        MENUITEM "Motor Speed",                 ID_MOTOR_SPEED
+    END
+    POPUP "List"
+    BEGIN
+        MENUITEM "Operation",                   ID_LIST_OPERATION
+        MENUITEM "Work",                        ID_LIST_WORK
+        MENUITEM "Alarm",                       ID_LIST_ALARM
+        MENUITEM "Socket",                      ID_LIST_SOCKET
+        MENUITEM "Step",                        ID_LIST_STEP
+    END
+END
+
+IDR_EMPTY MENU DISCARDABLE 
+BEGIN
+    MENUITEM "",                            ID_EMPTY
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041204b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "HANDLER MFC 응용 프로그램\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "HANDLER\0"
+            VALUE "LegalCopyright", "Copyright (C) 2004\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "HANDLER.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "HANDLER 응용 프로그램\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x412, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIALOG_TITLE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 630
+        TOPMARGIN, 7
+    END
+
+    IDD_DIALOG_LIST, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 632
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 43
+    END
+
+    IDD_DIALOG_EXIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 237
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 104
+    END
+
+    IDD_SCREEN_INITIAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 630
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 488
+    END
+
+    IDD_SCREEN_LOCK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 502
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 335
+    END
+
+    IDD_DIALOG_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 197
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 197
+    END
+
+    IDD_DIALOG_INFOR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 280
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 126
+    END
+
+    IDD_DIALOG_KEYBOARD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 208
+    END
+
+    IDD_DIALOG_MENU, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 178
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 288
+    END
+
+    IDD_DIALOG_PASS_CHECK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 209
+    END
+
+    IDD_DIALOG_PASS_CHANGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 311
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 248
+    END
+
+    IDD_SCREEN_LIST_ALARM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 630
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 488
+    END
+
+    IDD_SCREEN_LIST_OPERATION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 630
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 488
+    END
+
+    IDD_SCREEN_LIST_STEP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 502
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 335
+    END
+
+    IDD_SCREEN_LIST_WORK, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 630
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 488
+    END
+
+    IDD_SCREEN_ADMINISTRATOR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 502
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 335
+    END
+
+    IDD_DIALOG_MESSAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 293
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 108
+    END
+
+    IDD_DIALOG_SELECT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 272
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 126
+    END
+
+    IDD_DIALOG_ALARM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 633
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 550
+    END
+
+    IDD_SCREEN_WAITTIME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 630
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 488
+    END
+
+    IDD_SCREEN_LIST_ERROR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 630
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 488
+    END
+
+    IDD_SCREEN_MOTOR_SPEED, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 950
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 520
+    END
+
+    IDD_SCREEN_WAIT_TIME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 635
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 477
+    END
+
+    IDD_SCREEN_SET_RECIPE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 630
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 488
+    END
+
+    IDD_SCREEN_SET_MAINTENANCE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 580
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 472
+    END
+
+    IDD_DIALOG_KEYPAD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 184
+        VERTGUIDE, 15
+        VERTGUIDE, 177
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 323
+        HORZGUIDE, 142
+        HORZGUIDE, 291
+    END
+
+    IDD_DIALOG_DATA_LOT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 247
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 203
+    END
+
+    IDD_DIALOG_EVENT_MSG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 470
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 140
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_TITLE DIALOGEX 0, 0, 637, 26
+STYLE WS_CHILD
+EXSTYLE WS_EX_STATICEDGE
+FONT 10, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CTEXT           "form name",IDC_MSG_FORM_NAME,3,3,92,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "status",IDC_MSG_STATUS_INFO,98,3,45,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "device mode",IDC_MSG_DEVICE_MODE_INFO,198,3,65,20,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Press mode",IDC_MSG_PRESS_MODE_INFO,565,7,65,20,
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+    CONTROL         "",IDC_GIF_TITLE_LOGO,"Static",SS_BLACKRECT,146,3,49,20
+    CTEXT           "Interface mode",IDC_MSG_INTERFACE_MODE_INFO,475,3,65,20,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Model",IDC_MSG_MODEL_INFO,407,41,93,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_VISIBLE | WS_DISABLED
+    CTEXT           "File",IDC_MSG_FILE_INFO,303,41,93,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_VISIBLE | WS_DISABLED
+    CTEXT           "7387 mode",IDC_MSG_7387_MODE_INFO,267,3,65,20,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "3847 mode",IDC_MSG_3874_MODE_INFO,336,3,65,20,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Barcode mode",IDC_MSG_BARCODE_MODE_INFO,405,3,65,20,
+                    SS_CENTERIMAGE | SS_SUNKEN
+END
+
+IDD_DIALOG_LIST DIALOGEX 0, 0, 639, 50
+STYLE WS_CHILD
+FONT 10, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    LISTBOX         IDC_LIST_DATA,2,2,554,45,LBS_OWNERDRAWVARIABLE | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | 
+                    WS_VSCROLL | WS_HSCROLL | WS_TABSTOP,WS_EX_STATICEDGE
+    CTEXT           "digital clock",IDC_LIST_CLOCK,560,2,77,45,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "machine msg",IDC_MSG_MACHINE,433,2,50,19,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_VISIBLE | WS_DISABLED
+    CTEXT           "device name",IDC_MSG_DEVICE_NAME,433,28,50,19,
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+    CTEXT           "machine info",IDC_DATA_MACHINE,479,24,75,19,
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+    CTEXT           "device info",IDC_DATA_DEVICE,484,28,75,19,
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+    EDITTEXT        IDC_EDIT_LIST_MSG,498,25,22,18,ES_AUTOHSCROLL | NOT 
+                    WS_VISIBLE
+    PUSHBUTTON      "Button1",IDC_BUTTON1,523,1,31,22,NOT WS_VISIBLE | 
+                    WS_DISABLED
+END
+
+IDD_DIALOG_EXIT DIALOGEX 0, 0, 244, 111
+STYLE WS_POPUP
+EXSTYLE WS_EX_RIGHT | WS_EX_LEFTSCROLLBAR
+FONT 10, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CTEXT           "",IDC_MSG_EXIT,62,36,162,30,SS_CENTERIMAGE | SS_SUNKEN
+    PUSHBUTTON      "Exit",IDOK,62,73,50,25,BS_FLAT
+    PUSHBUTTON      "Cancel",IDCANCEL,174,73,50,25,BS_FLAT
+    CONTROL         "",IDC_GIF_EXIT,"Static",SS_BLACKRECT,21,36,37,63
+END
+
+IDD_SCREEN_INITIAL DIALOG DISCARDABLE  0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif"
+BEGIN
+    CONTROL         "",IDC_GIF_INITIALIZING,"Static",SS_BLACKRECT,72,7,226,
+                    40
+    CTEXT           "initial",IDC_MSG_INITIAL,7,64,380,27,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    PUSHBUTTON      "Initial Retry",IDC_BTN_INIT_RETRY,550,7,80,47,BS_FLAT | 
+                    NOT WS_VISIBLE | WS_DISABLED
+    CONTROL         "I/O Board",IDC_RADIO_IO_BD,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_GROUP,550,82,80,20
+    CONTROL         "Motor Board",IDC_RADIO_MOT_BD,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,111,80,
+                    20
+    PUSHBUTTON      "Initial Skip",IDC_BTN_INIT_SKIP,455,7,80,47,BS_FLAT
+    CONTROL         "HeatSink Rbt",IDC_RADIO_MAIN_XYZ,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,140,80,
+                    20
+    CONTROL         "Elevator Left",IDC_RADIO_ELEVATOR_LEFT,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,169,80,
+                    20
+    CONTROL         "Transfer tray",IDC_RADIO_TRANSFER_LEFT,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,198,80,
+                    20
+    CONTROL         "Elevator Right",IDC_RADIO_ELEVATOR_RIGHT,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,227,80,
+                    20
+    CONTROL         "Load Rbt",IDC_RADIO_TRANSFER_RIGHT,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,256,80,
+                    20
+    CONTROL         "Carrier Rbt",IDC_RADIO_TEST_SITE,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,285,80,
+                    20
+    CONTROL         "UnPress Rbt",IDC_RADIO_TEST_DUMP,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,314,80,
+                    20
+    CONTROL         "Epoxy Rbt",IDC_RADIO_ROTATOR_TABLE,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,343,80,
+                    20
+    CONTROL         "Vision Rbt",IDC_RADIO_ROTATOR_DUMP,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,371,80,
+                    20
+    CONTROL         "Unload Rbt",IDC_RADIO_CONVEYOR,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,401,80,
+                    20
+END
+
+IDD_SCREEN_LOCK DIALOG DISCARDABLE  0, 0, 509, 342
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif"
+BEGIN
+    CTEXT           "msg lock",IDC_MSG_LOCK,63,19,383,50,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CONTROL         "",IDC_GIF_LOCK,"Static",SS_BLACKRECT,184,105,145,134
+    PUSHBUTTON      "System Unlock",IDC_BTN_UNLOCK,184,278,145,40,BS_FLAT
+END
+
+IDD_DIALOG_ABOUT DIALOG DISCARDABLE  0, 0, 204, 204
+STYLE WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    CONTROL         "",IDC_PICTURE_ABOUT,"Static",SS_BLACKFRAME,7,42,190,124
+    PUSHBUTTON      "O K",IDOK,147,170,50,27,BS_FLAT
+END
+
+IDD_DIALOG_INFOR DIALOG DISCARDABLE  0, 0, 287, 133
+STYLE WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    CTEXT           "message",IDC_INFO_MESSAGE,62,36,204,30,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    PUSHBUTTON      "O K",IDOK,62,83,50,33,BS_FLAT
+    PUSHBUTTON      "Cancel",IDCANCEL,216,83,50,33,BS_FLAT
+    CONTROL         "",IDC_GIF_INFO,"Static",SS_BLACKRECT,21,36,37,80
+END
+
+IDD_DIALOG_KEYBOARD DIALOG DISCARDABLE  0, 0, 320, 215
+STYLE WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    CTEXT           "msg board",IDC_MSG_BOARD,21,36,88,17,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    EDITTEXT        IDC_EDIT_BOARD_DATA,21,56,88,24,ES_AUTOHSCROLL
+    PUSHBUTTON      "Back Space",IDC_BTN_BOARD_BACK,115,36,42,45,BS_FLAT
+    PUSHBUTTON      "Delete",IDC_BTN_BOARD_DEL,159,36,42,45,BS_FLAT
+    PUSHBUTTON      "O K",IDOK,212,36,40,45
+    PUSHBUTTON      "Cancel",IDCANCEL,255,36,40,45
+    GROUPBOX        "Keyboard Input",IDC_GROUP_BOARD,21,87,274,112
+    PUSHBUTTON      "1",IDC_BTN_BOARD_1,49,99,20,20,BS_FLAT
+    PUSHBUTTON      "2",IDC_BTN_BOARD_2,71,99,20,20,BS_FLAT
+    PUSHBUTTON      "3",IDC_BTN_BOARD_3,93,99,20,20,BS_FLAT
+    PUSHBUTTON      "4",IDC_BTN_BOARD_4,115,99,20,20,BS_FLAT
+    PUSHBUTTON      "5",IDC_BTN_BOARD_5,137,99,20,20,BS_FLAT
+    PUSHBUTTON      "6",IDC_BTN_BOARD_6,159,99,20,20,BS_FLAT
+    PUSHBUTTON      "7",IDC_BTN_BOARD_7,181,99,20,20,BS_FLAT
+    PUSHBUTTON      "8",IDC_BTN_BOARD_8,203,99,20,20,BS_FLAT
+    PUSHBUTTON      "9",IDC_BTN_BOARD_9,225,99,20,20,BS_FLAT
+    PUSHBUTTON      "0",IDC_BTN_BOARD_0,247,99,20,20,BS_FLAT
+    PUSHBUTTON      "W",IDC_BTN_BOARD_W,49,123,20,20,BS_FLAT
+    PUSHBUTTON      "E",IDC_BTN_BOARD_E,71,123,20,20,BS_FLAT
+    PUSHBUTTON      "R",IDC_BTN_BOARD_R,93,123,20,20,BS_FLAT
+    PUSHBUTTON      "T",IDC_BTN_BOARD_T,115,123,20,20,BS_FLAT
+    PUSHBUTTON      "Y",IDC_BTN_BOARD_Y,137,123,20,20,BS_FLAT
+    PUSHBUTTON      "U",IDC_BTN_BOARD_U,159,123,20,20,BS_FLAT
+    PUSHBUTTON      "I",IDC_BTN_BOARD_I,181,123,20,20,BS_FLAT
+    PUSHBUTTON      "O",IDC_BTN_BOARD_O,203,123,20,20,BS_FLAT
+    PUSHBUTTON      "P",IDC_BTN_BOARD_P,225,123,20,20,BS_FLAT
+    PUSHBUTTON      "(",IDC_BTN_BOARD_LBRACE_S,247,123,20,20,BS_FLAT
+    PUSHBUTTON      "S",IDC_BTN_BOARD_S,49,147,20,20,BS_FLAT
+    PUSHBUTTON      "D",IDC_BTN_BOARD_D,71,147,20,20,BS_FLAT
+    PUSHBUTTON      "F",IDC_BTN_BOARD_F,93,147,20,20,BS_FLAT
+    PUSHBUTTON      "G",IDC_BTN_BOARD_G,115,147,20,20,BS_FLAT
+    PUSHBUTTON      "H",IDC_BTN_BOARD_H,137,147,20,20,BS_FLAT
+    PUSHBUTTON      "J",IDC_BTN_BOARD_J,159,147,20,20,BS_FLAT
+    PUSHBUTTON      "K",IDC_BTN_BOARD_K,181,147,20,20,BS_FLAT
+    PUSHBUTTON      "L",IDC_BTN_BOARD_L,203,147,20,20,BS_FLAT
+    PUSHBUTTON      "/",IDC_BTN_BOARD_DIV,225,147,20,20,BS_FLAT
+    PUSHBUTTON      "[",IDC_BTN_BOARD_LBRACE_B,247,147,20,20,BS_FLAT
+    PUSHBUTTON      "X",IDC_BTN_BOARD_X,49,171,20,20,BS_FLAT
+    PUSHBUTTON      "C",IDC_BTN_BOARD_C,71,171,20,20,BS_FLAT
+    PUSHBUTTON      "V",IDC_BTN_BOARD_V,93,171,20,20,BS_FLAT
+    PUSHBUTTON      "B",IDC_BTN_BOARD_B,115,171,20,20,BS_FLAT
+    PUSHBUTTON      "N",IDC_BTN_BOARD_N,137,171,20,20,BS_FLAT
+    PUSHBUTTON      "M",IDC_BTN_BOARD_M,159,171,20,20,BS_FLAT
+    PUSHBUTTON      ".",IDC_BTN_BOARD_DOT,181,171,20,20,BS_FLAT
+    PUSHBUTTON      "+",IDC_BTN_BOARD_ADD,203,171,20,20,BS_FLAT
+    PUSHBUTTON      "-",IDC_BTN_BOARD_LINE,225,171,20,20,BS_FLAT
+    PUSHBUTTON      "$",IDC_BTN_BOARD_DOLLAR,247,171,20,20,BS_FLAT
+    PUSHBUTTON      "Q",IDC_BTN_BOARD_Q,27,123,20,20,BS_FLAT
+    PUSHBUTTON      "A",IDC_BTN_BOARD_A,27,147,20,20,BS_FLAT
+    PUSHBUTTON      "Z",IDC_BTN_BOARD_Z,27,171,20,20,BS_FLAT
+    PUSHBUTTON      ")",IDC_BTN_BOARD_RBRACE_S,269,123,20,20,BS_FLAT
+    PUSHBUTTON      "]",IDC_BTN_BOARD_RBRACE_B,269,147,20,20,BS_FLAT
+    PUSHBUTTON      "#",IDC_BTN_BOARD_SHARP,269,171,20,20,BS_FLAT
+END
+
+IDD_DIALOG_MENU DIALOG DISCARDABLE  0, 0, 185, 295
+STYLE WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    CTEXT           "menu",IDC_MSG_MENU,69,36,90,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    LISTBOX         IDC_LIST_MENU,69,63,90,217,LBS_OWNERDRAWVARIABLE | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "Exit",IDOK,21,240,39,40,BS_FLAT
+    CONTROL         "",IDC_GIF_MENU,"Static",SS_BLACKRECT,21,36,39,92
+END
+
+IDD_DIALOG_PASS_CHECK DIALOG DISCARDABLE  0, 0, 320, 216
+STYLE WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    CTEXT           "msg pass check",IDC_MSG_PASS_CHK,21,36,92,17,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "title",IDC_TITLE_PASS_CHK,21,56,26,24,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    EDITTEXT        IDC_EDIT_PASS_CHK_DATA,49,56,64,24,ES_PASSWORD | 
+                    ES_AUTOHSCROLL
+    PUSHBUTTON      "Back Space",IDC_BTN_PASS_CHK_BACK,115,36,42,44,BS_FLAT
+    PUSHBUTTON      "Delete",IDC_BTN_PASS_CHK_DEL,159,36,42,44,BS_FLAT
+    PUSHBUTTON      "O K",IDOK,208,36,37,44
+    PUSHBUTTON      "Cancel",IDCANCEL,247,36,48,44
+    GROUPBOX        "Keyboard Input",IDC_GROUP_PASS_CHK,21,87,274,112
+    PUSHBUTTON      "1",IDC_BTN_PASS_CHK_1,49,99,20,20,BS_FLAT
+    PUSHBUTTON      "2",IDC_BTN_PASS_CHK_2,71,99,20,20,BS_FLAT
+    PUSHBUTTON      "3",IDC_BTN_PASS_CHK_3,93,99,20,20,BS_FLAT
+    PUSHBUTTON      "4",IDC_BTN_PASS_CHK_4,115,99,20,20,BS_FLAT
+    PUSHBUTTON      "5",IDC_BTN_PASS_CHK_5,137,99,20,20,BS_FLAT
+    PUSHBUTTON      "6",IDC_BTN_PASS_CHK_6,159,99,20,20,BS_FLAT
+    PUSHBUTTON      "7",IDC_BTN_PASS_CHK_7,181,99,20,20,BS_FLAT
+    PUSHBUTTON      "8",IDC_BTN_PASS_CHK_8,203,99,20,20,BS_FLAT
+    PUSHBUTTON      "9",IDC_BTN_PASS_CHK_9,225,99,20,20,BS_FLAT
+    PUSHBUTTON      "0",IDC_BTN_PASS_CHK_0,247,99,20,20,BS_FLAT
+    PUSHBUTTON      "W",IDC_BTN_PASS_CHK_W,49,123,20,20,BS_FLAT
+    PUSHBUTTON      "E",IDC_BTN_PASS_CHK_E,71,123,20,20,BS_FLAT
+    PUSHBUTTON      "R",IDC_BTN_PASS_CHK_R,93,123,20,20,BS_FLAT
+    PUSHBUTTON      "T",IDC_BTN_PASS_CHK_T,115,123,20,20,BS_FLAT
+    PUSHBUTTON      "Y",IDC_BTN_PASS_CHK_Y,137,123,20,20,BS_FLAT
+    PUSHBUTTON      "U",IDC_BTN_PASS_CHK_U,159,123,20,20,BS_FLAT
+    PUSHBUTTON      "I",IDC_BTN_PASS_CHK_I,181,123,20,20,BS_FLAT
+    PUSHBUTTON      "O",IDC_BTN_PASS_CHK_O,203,123,20,20,BS_FLAT
+    PUSHBUTTON      "P",IDC_BTN_PASS_CHK_P,225,123,20,20,BS_FLAT
+    PUSHBUTTON      "(",IDC_BTN_PASS_CHK_LBRACE_S,247,123,20,20,BS_FLAT
+    PUSHBUTTON      "S",IDC_BTN_PASS_CHK_S,49,147,20,20,BS_FLAT
+    PUSHBUTTON      "D",IDC_BTN_PASS_CHK_D,71,147,20,20,BS_FLAT
+    PUSHBUTTON      "F",IDC_BTN_PASS_CHK_F,93,147,20,20,BS_FLAT
+    PUSHBUTTON      "G",IDC_BTN_PASS_CHK_G,115,147,20,20,BS_FLAT
+    PUSHBUTTON      "H",IDC_BTN_PASS_CHK_H,137,147,20,20,BS_FLAT
+    PUSHBUTTON      "J",IDC_BTN_PASS_CHK_J,159,147,20,20,BS_FLAT
+    PUSHBUTTON      "K",IDC_BTN_PASS_CHK_K,181,147,20,20,BS_FLAT
+    PUSHBUTTON      "L",IDC_BTN_PASS_CHK_L,203,147,20,20,BS_FLAT
+    PUSHBUTTON      "/",IDC_BTN_PASS_CHK_DIV,225,147,20,20,BS_FLAT
+    PUSHBUTTON      "[",IDC_BTN_PASS_CHK_LBRACE_B,247,147,20,20,BS_FLAT
+    PUSHBUTTON      "X",IDC_BTN_PASS_CHK_X,49,171,20,20,BS_FLAT
+    PUSHBUTTON      "C",IDC_BTN_PASS_CHK_C,71,171,20,20,BS_FLAT
+    PUSHBUTTON      "V",IDC_BTN_PASS_CHK_V,93,171,20,20,BS_FLAT
+    PUSHBUTTON      "B",IDC_BTN_PASS_CHK_B,115,171,20,20,BS_FLAT
+    PUSHBUTTON      "N",IDC_BTN_PASS_CHK_N,137,171,20,20,BS_FLAT
+    PUSHBUTTON      "M",IDC_BTN_PASS_CHK_M,159,171,20,20,BS_FLAT
+    PUSHBUTTON      ".",IDC_BTN_PASS_CHK_DOT,181,171,20,20,BS_FLAT
+    PUSHBUTTON      "+",IDC_BTN_PASS_CHK_ADD,203,171,20,20,BS_FLAT
+    PUSHBUTTON      "-",IDC_BTN_PASS_CHK_LINE,225,171,20,20,BS_FLAT
+    PUSHBUTTON      "$",IDC_BTN_PASS_CHK_DOLLAR,247,171,20,20,BS_FLAT
+    PUSHBUTTON      "Q",IDC_BTN_PASS_CHK_Q,27,123,20,20,BS_FLAT
+    PUSHBUTTON      "A",IDC_BTN_PASS_CHK_A,27,147,20,20,BS_FLAT
+    PUSHBUTTON      "Z",IDC_BTN_PASS_CHK_Z,27,171,20,20,BS_FLAT
+    PUSHBUTTON      ")",IDC_BTN_PASS_CHK_RBRACE_S,269,123,20,20,BS_FLAT
+    PUSHBUTTON      "]",IDC_BTN_PASS_CHK_RBRACE_B,269,147,20,20,BS_FLAT
+    PUSHBUTTON      "#",IDC_BTN_PASS_CHK_SHARP,269,171,20,20,BS_FLAT
+END
+
+IDD_DIALOG_PASS_CHANGE DIALOG DISCARDABLE  0, 0, 318, 255
+STYLE WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    CTEXT           "msg pass change",IDC_MSG_PASS_CHG,21,36,274,18,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    EDITTEXT        IDC_EDIT_PASS_CHG_OLD,71,58,86,19,ES_AUTOHSCROLL
+    PUSHBUTTON      "Back Space",IDC_BTN_PASS_CHG_BACK,159,58,42,30,BS_FLAT
+    PUSHBUTTON      "Delete",IDC_BTN_PASS_CHG_DEL,159,91,42,30,BS_FLAT
+    PUSHBUTTON      "O K",IDOK,206,58,48,63
+    PUSHBUTTON      "Cancel",IDCANCEL,258,58,37,63
+    GROUPBOX        "Keyboard Input",IDC_GROUP_PASS_CHG,21,128,274,112
+    PUSHBUTTON      "1",IDC_BTN_PASS_CHG_1,49,140,20,20,BS_FLAT
+    PUSHBUTTON      "2",IDC_BTN_PASS_CHG_2,71,140,20,20,BS_FLAT
+    PUSHBUTTON      "3",IDC_BTN_PASS_CHG_3,93,140,20,20,BS_FLAT
+    PUSHBUTTON      "4",IDC_BTN_PASS_CHG_4,115,140,20,20,BS_FLAT
+    PUSHBUTTON      "5",IDC_BTN_PASS_CHG_5,137,140,20,20,BS_FLAT
+    PUSHBUTTON      "6",IDC_BTN_PASS_CHG_6,159,140,20,20,BS_FLAT
+    PUSHBUTTON      "7",IDC_BTN_PASS_CHG_7,181,140,20,20,BS_FLAT
+    PUSHBUTTON      "8",IDC_BTN_PASS_CHG_8,203,140,20,20,BS_FLAT
+    PUSHBUTTON      "9",IDC_BTN_PASS_CHG_9,225,140,20,20,BS_FLAT
+    PUSHBUTTON      "0",IDC_BTN_PASS_CHG_0,247,140,20,20,BS_FLAT
+    PUSHBUTTON      "W",IDC_BTN_PASS_CHG_W,49,164,20,20,BS_FLAT
+    PUSHBUTTON      "E",IDC_BTN_PASS_CHG_E,71,164,20,20,BS_FLAT
+    PUSHBUTTON      "R",IDC_BTN_PASS_CHG_R,93,164,20,20,BS_FLAT
+    PUSHBUTTON      "T",IDC_BTN_PASS_CHG_T,115,164,20,20,BS_FLAT
+    PUSHBUTTON      "Y",IDC_BTN_PASS_CHG_Y,137,164,20,20,BS_FLAT
+    PUSHBUTTON      "U",IDC_BTN_PASS_CHG_U,159,164,20,20,BS_FLAT
+    PUSHBUTTON      "I",IDC_BTN_PASS_CHG_I,181,164,20,20,BS_FLAT
+    PUSHBUTTON      "O",IDC_BTN_PASS_CHG_O,203,164,20,20,BS_FLAT
+    PUSHBUTTON      "P",IDC_BTN_PASS_CHG_P,225,164,20,20,BS_FLAT
+    PUSHBUTTON      "(",IDC_BTN_PASS_CHG_LBRACE_S,247,164,20,20,BS_FLAT
+    PUSHBUTTON      "S",IDC_BTN_PASS_CHG_S,49,188,20,20,BS_FLAT
+    PUSHBUTTON      "D",IDC_BTN_PASS_CHG_D,71,188,20,20,BS_FLAT
+    PUSHBUTTON      "F",IDC_BTN_PASS_CHG_F,93,188,20,20,BS_FLAT
+    PUSHBUTTON      "G",IDC_BTN_PASS_CHG_G,115,188,20,20,BS_FLAT
+    PUSHBUTTON      "H",IDC_BTN_PASS_CHG_H,137,188,20,20,BS_FLAT
+    PUSHBUTTON      "J",IDC_BTN_PASS_CHG_J,159,188,20,20,BS_FLAT
+    PUSHBUTTON      "K",IDC_BTN_PASS_CHG_K,181,188,20,20,BS_FLAT
+    PUSHBUTTON      "L",IDC_BTN_PASS_CHG_L,203,188,20,20,BS_FLAT
+    PUSHBUTTON      "/",IDC_BTN_PASS_CHG_DIV,225,188,20,20,BS_FLAT
+    PUSHBUTTON      "[",IDC_BTN_PASS_CHG_LBRACE_B,247,188,20,20,BS_FLAT
+    PUSHBUTTON      "X",IDC_BTN_PASS_CHG_X,49,212,20,20,BS_FLAT
+    PUSHBUTTON      "C",IDC_BTN_PASS_CHG_C,71,212,20,20,BS_FLAT
+    PUSHBUTTON      "V",IDC_BTN_PASS_CHG_V,93,212,20,20,BS_FLAT
+    PUSHBUTTON      "B",IDC_BTN_PASS_CHG_B,115,212,20,20,BS_FLAT
+    PUSHBUTTON      "N",IDC_BTN_PASS_CHG_N,137,212,20,20,BS_FLAT
+    PUSHBUTTON      "M",IDC_BTN_PASS_CHG_M,159,212,20,20,BS_FLAT
+    PUSHBUTTON      ".",IDC_BTN_PASS_CHG_DOT,181,212,20,20,BS_FLAT
+    PUSHBUTTON      "+",IDC_BTN_PASS_CHG_ADD,203,212,20,20,BS_FLAT
+    PUSHBUTTON      "-",IDC_BTN_PASS_CHG_LINE,225,212,20,20,BS_FLAT
+    PUSHBUTTON      "$",IDC_BTN_PASS_CHG_DOLLAR,247,212,20,20,BS_FLAT
+    PUSHBUTTON      "Q",IDC_BTN_PASS_CHG_Q,27,164,20,20,BS_FLAT
+    PUSHBUTTON      "A",IDC_BTN_PASS_CHG_A,27,188,20,20,BS_FLAT
+    PUSHBUTTON      "Z",IDC_BTN_PASS_CHG_Z,27,212,20,20,BS_FLAT
+    PUSHBUTTON      ")",IDC_BTN_PASS_CHG_RBRACE_S,269,164,20,20,BS_FLAT
+    PUSHBUTTON      "]",IDC_BTN_PASS_CHG_RBRACE_B,269,188,20,20,BS_FLAT
+    PUSHBUTTON      "#",IDC_BTN_PASS_CHG_SHARP,269,212,20,20,BS_FLAT
+    EDITTEXT        IDC_EDIT_PASS_CHG_NEW,71,80,86,19,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PASS_CHG_VERIFY,71,102,86,19,ES_AUTOHSCROLL
+    CONTROL         "Old",IDC_RADIO_PASS_OLD,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_GROUP,21,58,48,19
+    CONTROL         "New",IDC_RADIO_PASS_NEW,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_GROUP,21,80,48,19
+    CONTROL         "Verify",IDC_RADIO_PASS_VERIFY,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,21,102,48,19
+END
+
+IDD_SCREEN_LIST_ALARM DIALOGEX 0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CTEXT           "alarm file",IDC_MSG_ALARM_FILE,3,7,361,18,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    EDITTEXT        IDC_EDIT_ALARM_DISPLAY,3,30,362,458,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT 
+                    WS_BORDER | WS_VSCROLL | WS_HSCROLL,WS_EX_STATICEDGE
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKRECT,369,1,2,487
+    GROUPBOX        "Alarm List",IDC_GROUP_ALARM_LIST,374,3,159,296
+    PUSHBUTTON      "Delete",IDC_BTN_ALARM_FILE_DEL,374,303,62,33,BS_FLAT
+    PUSHBUTTON      "Refresh",IDC_BTN_ALARM_FILE_REFRESH,471,303,62,33,
+                    BS_FLAT
+    CONTROL         "MonthCalendar1",IDC_MONTHCAL_ALARM,"SysMonthCal32",
+                    MCS_MULTISELECT | WS_TABSTOP,539,7,90,104,
+                    WS_EX_STATICEDGE
+    LISTBOX         IDC_LIST_ALARM_FILE,378,42,149,252,LBS_OWNERDRAWVARIABLE | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    GROUPBOX        "Select List Type",IDC_GROUP_ALARM_TYPE,539,115,90,184
+    CONTROL         "Lot",IDC_RADIO_ALARM_LOT,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_DISABLED | WS_GROUP,
+                    549,138,70,25,WS_EX_DLGMODALFRAME
+    CONTROL         "Day",IDC_RADIO_ALARM_DAY,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_GROUP,549,138,70,25,WS_EX_DLGMODALFRAME
+    CONTROL         "Month",IDC_RADIO_ALARM_MONTH,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,549,179,70,
+                    25,WS_EX_DLGMODALFRAME
+    CONTROL         "List",IDC_RADIO_ALARM_LIST,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_DISABLED | WS_GROUP,
+                    549,261,70,25,WS_EX_DLGMODALFRAME
+    CTEXT           "Static",IDC_MSG_ALARM_FILE_NAME,378,17,149,21,
+                    SS_CENTERIMAGE | SS_SUNKEN
+END
+
+IDD_SCREEN_LIST_OPERATION DIALOGEX 0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CTEXT           "operation file",IDC_MSG_OPERATION_FILE,3,7,372,18,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    EDITTEXT        IDC_EDIT_OPERATION_DISPLAY,3,29,372,459,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT 
+                    WS_BORDER | WS_VSCROLL | WS_HSCROLL,WS_EX_STATICEDGE
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKRECT,381,1,2,487
+    GROUPBOX        "Operation List",IDC_GROUP_OPERATION_LIST,386,3,149,296
+    PUSHBUTTON      "Delete",IDC_BTN_OPERATION_FILE_DEL,386,303,63,33,
+                    BS_FLAT
+    PUSHBUTTON      "Refresh",IDC_BTN_OPERATION_FILE_REFRESH,472,303,63,33,
+                    BS_FLAT
+    CONTROL         "MonthCalendar1",IDC_MONTHCAL_OPERATION,"SysMonthCal32",
+                    MCS_MULTISELECT | WS_TABSTOP,541,7,90,104,
+                    WS_EX_STATICEDGE
+    LISTBOX         IDC_LIST_OPERATION_FILE,390,42,140,252,
+                    LBS_OWNERDRAWVARIABLE | LBS_HASSTRINGS | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Select List Type",IDC_GROUP_OPERATION_TYPE,541,115,90,
+                    184
+    CONTROL         "Operation",IDC_RADIO_OPERATION,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,551,138,70,
+                    25,WS_EX_DLGMODALFRAME
+    CONTROL         "Interface",IDC_RADIO_INTERFACE,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | NOT WS_VISIBLE | 
+                    WS_GROUP,551,179,70,25,WS_EX_DLGMODALFRAME
+    CONTROL         "Machine",IDC_RADIO_MACHINE,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | WS_GROUP,551,220,70,25,WS_EX_DLGMODALFRAME
+    CONTROL         "Barcode",IDC_RADIO_BARCODE,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_GROUP,551,261,70,25,
+                    WS_EX_DLGMODALFRAME
+    CTEXT           "",IDC_MSG_OPERATION_FILE_NAME,390,17,140,21,
+                    SS_CENTERIMAGE | SS_SUNKEN
+END
+
+IDD_SCREEN_LIST_STEP DIALOG DISCARDABLE  0, 0, 509, 342
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Step List",IDC_GROUP_STEP_LIST,3,3,197,300
+    CTEXT           "thread 1",IDC_MSG_THREAD_1,13,20,108,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "data 1",IDC_DATA_THREAD_1,125,20,65,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "thread 2",IDC_MSG_THREAD_2,13,45,108,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "data 2",IDC_DATA_THREAD_2,125,45,65,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "thread 3",IDC_MSG_THREAD_3,13,70,108,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "data 3",IDC_DATA_THREAD_3,125,70,65,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "thread 4",IDC_MSG_THREAD_4,13,95,108,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "data 4",IDC_DATA_THREAD_4,125,95,65,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "thread 5",IDC_MSG_THREAD_5,13,120,108,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "data 5",IDC_DATA_THREAD_5,125,120,65,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "thread 6",IDC_MSG_THREAD_6,13,145,108,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "data 6",IDC_DATA_THREAD_6,125,145,65,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    PUSHBUTTON      "Save",IDC_BTN_STEP_SAVE,433,281,69,54,BS_FLAT
+    CTEXT           "thread 7",IDC_MSG_THREAD_7,13,172,108,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "data 7",IDC_DATA_THREAD_7,125,172,65,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "thread 8",IDC_MSG_THREAD_8,13,198,108,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "data 8",IDC_DATA_THREAD_8,125,198,65,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "thread 9",IDC_MSG_THREAD_9,13,225,108,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "data 9",IDC_DATA_THREAD_9,125,225,65,22,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "thread 10",IDC_MSG_THREAD_10,13,253,108,22,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "data 10",IDC_DATA_THREAD_10,125,253,65,22,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "thread 11",IDC_MSG_THREAD_11,13,279,108,22,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "data 11",IDC_DATA_THREAD_11,125,279,65,22,
+                    SS_CENTERIMAGE | SS_SUNKEN
+END
+
+IDD_SCREEN_LIST_WORK DIALOGEX 0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CTEXT           "work file",IDC_MSG_WORK_FILE,3,7,373,18,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    EDITTEXT        IDC_EDIT_WORK_DISPLAY,3,29,373,459,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT 
+                    WS_BORDER | WS_VSCROLL | WS_HSCROLL,WS_EX_STATICEDGE
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKRECT,382,1,2,487
+    GROUPBOX        "Work List",IDC_GROUP_WORK_LIST,387,3,145,296
+    PUSHBUTTON      "Delete",IDC_BTN_WORK_FILE_DEL,387,303,63,33,BS_FLAT
+    PUSHBUTTON      "Refresh",IDC_BTN_WORK_FILE_REFRESH,469,303,63,33,
+                    BS_FLAT
+    CONTROL         "MonthCalendar1",IDC_MONTHCAL_WORK,"SysMonthCal32",
+                    MCS_MULTISELECT | WS_TABSTOP,540,7,90,104,
+                    WS_EX_STATICEDGE
+    LISTBOX         IDC_LIST_WORK_FILE,391,42,136,252,LBS_OWNERDRAWVARIABLE | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    GROUPBOX        "Select List Type",IDC_GROUP_WORK_TYPE,540,115,90,184
+    CONTROL         "Lot Info",IDC_RADIO_WORK_LOT,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,138,70,
+                    25,WS_EX_DLGMODALFRAME
+    CONTROL         "Lot Result",IDC_RADIO_WORK_DAY,"Button",
+                    BS_AUTORADIOBUTTON | BS_PUSHLIKE | WS_GROUP,550,179,70,
+                    25,WS_EX_DLGMODALFRAME
+    CONTROL         "Month",IDC_RADIO_WORK_MONTH,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_DISABLED | WS_GROUP,
+                    550,220,70,25,WS_EX_DLGMODALFRAME
+    CONTROL         "List",IDC_RADIO_WORK_LIST,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_DISABLED | WS_GROUP,
+                    550,261,70,25,WS_EX_DLGMODALFRAME
+    CTEXT           "",IDC_MSG_WORK_FILE_NAME,391,17,136,21,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+END
+
+IDD_SCREEN_ADMINISTRATOR DIALOG DISCARDABLE  0, 0, 509, 342
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif"
+BEGIN
+END
+
+IDD_DIALOG_MESSAGE DIALOG DISCARDABLE  0, 0, 300, 115
+STYLE WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    CTEXT           "message",IDC_MSG_MESSAGE,49,36,220,24,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    PUSHBUTTON      "O  K",IDOK,134,71,50,25,BS_FLAT
+    CONTROL         "",IDC_GIF_MESSAGE,"Static",SS_BLACKRECT,21,36,24,60
+END
+
+IDD_DIALOG_SELECT DIALOG DISCARDABLE  0, 0, 279, 133
+STYLE WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    CTEXT           "message",IDC_SELECT_MESSAGE,58,36,212,30,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    PUSHBUTTON      "Yes",IDOK,58,83,60,33,BS_FLAT
+    PUSHBUTTON      "No",IDCANCEL,210,83,60,33,BS_FLAT
+    CONTROL         "",IDC_GIF_SELECT,"Static",SS_BLACKRECT,9,36,44,80
+END
+
+IDD_DIALOG_ALARM DIALOGEX 0, 0, 640, 557
+STYLE WS_POPUP
+FONT 10, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_GIF_ALARM,"Static",SS_BLACKRECT,82,7,143,42
+    CTEXT           "image",IDC_IMAGE_ALARM,3,55,440,430,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    GROUPBOX        "Previous Alarm",IDC_GROUP_PREV_ALARM,3,492,313,60
+    PUSHBUTTON      "prev alarm",IDC_BTN_PREV_ALARM_1,8,504,54,18,BS_FLAT
+    PUSHBUTTON      "prev alarm",IDC_BTN_PREV_ALARM_2,70,504,54,18,BS_FLAT
+    PUSHBUTTON      "prev alarm",IDC_BTN_PREV_ALARM_3,132,504,54,18,BS_FLAT
+    PUSHBUTTON      "prev alarm",IDC_BTN_PREV_ALARM_4,194,504,54,18,BS_FLAT
+    PUSHBUTTON      "prev alarm",IDC_BTN_PREV_ALARM_5,256,504,54,18,BS_FLAT
+    PUSHBUTTON      "prev alarm",IDC_BTN_PREV_ALARM_6,8,530,54,18,BS_FLAT
+    PUSHBUTTON      "prev alarm",IDC_BTN_PREV_ALARM_7,70,530,54,18,BS_FLAT
+    PUSHBUTTON      "prev alarm",IDC_BTN_PREV_ALARM_8,132,530,54,18,BS_FLAT
+    PUSHBUTTON      "prev alarm",IDC_BTN_PREV_ALARM_9,194,530,54,18,BS_FLAT
+    PUSHBUTTON      "prev alarm",IDC_BTN_PREV_ALARM_10,256,530,54,18,BS_FLAT
+    GROUPBOX        "Alarm Information",IDC_GROUP_ALARM_INFO,445,7,189,339
+    PUSHBUTTON      "O    K",IDOK,445,515,189,37,BS_FLAT
+    CTEXT           "Alarm Type",IDC_MSG_ALARM_TYPE,450,21,55,18,
+                    SS_CENTERIMAGE
+    CTEXT           "Alarm Code",IDC_MSG_ALARM_CODE,511,21,55,18,
+                    SS_CENTERIMAGE
+    CTEXT           "data",IDC_DATA_ALARM_TYPE,450,41,55,18,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "Data",IDC_DATA_ALARM_CODE,511,41,55,18,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "Lot End",IDC_MSG_LOT_END,268,82,180,29,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_VISIBLE | WS_DISABLED
+    CTEXT           "Alarm Title",IDC_MSG_ALARM_TITLE,450,105,180,18,
+                    SS_CENTERIMAGE
+    CTEXT           "Alarm Repair",IDC_MSG_ALARM_REPARE,450,206,180,18,
+                    SS_CENTERIMAGE
+    EDITTEXT        IDC_EDIT_ALARM_TITLE,450,126,180,74,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_READONLY | NOT WS_BORDER,
+                    WS_EX_STATICEDGE
+    EDITTEXT        IDC_EDIT_ALARM_REPARE,450,231,180,108,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_READONLY | NOT WS_BORDER,
+                    WS_EX_STATICEDGE
+    PUSHBUTTON      "Buzzer Off",IDC_BTN_BUZZER_OFF,568,21,62,38,BS_FLAT
+    PUSHBUTTON      "Partial",IDC_BTN_PARTIAL_YES,264,15,66,29,BS_FLAT | NOT 
+                    WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "Partial No",IDC_BTN_PARTIAL_NO,378,15,66,29,BS_FLAT | 
+                    NOT WS_VISIBLE | WS_DISABLED
+    CTEXT           "Partial",IDC_MSG_PARTIAL,334,15,40,29,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "Partial Yes",IDC_BTN_PARTIAL_YES1,449,68,66,29,BS_FLAT
+    CTEXT           "partial",IDC_MSG_PARTIAL1,519,68,40,29,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    PUSHBUTTON      "Partial No",IDC_BTN_PARTIAL_NO1,563,68,66,29,BS_FLAT
+    GROUPBOX        "Picker Skip",IDC_GROUP_PICKER_SKIP,445,347,189,165
+    CONTROL         "SKIP #1",IDC_CHK_PICKER_1,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | WS_TABSTOP,452,385,85,23
+    CONTROL         "SKIP #2",IDC_CHK_PICKER_2,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | WS_TABSTOP,542,385,85,23
+    CONTROL         "SKIP #3",IDC_CHK_PICKER_3,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | WS_TABSTOP,452,440,85,23
+    CONTROL         "SKIP #4",IDC_CHK_PICKER_4,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | WS_TABSTOP,542,440,85,23
+    CONTROL         "Picker #1",IDC_CHK_SKIP_PICKER_1,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,452,360,85,23
+    CONTROL         "Picker #2",IDC_CHK_SKIP_PICKER_2,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,542,360,85,23
+    CONTROL         "Picker #3",IDC_CHK_SKIP_PICKER_3,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,452,415,85,23
+    CONTROL         "Picker #4",IDC_CHK_SKIP_PICKER_4,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,542,415,85,23
+    PUSHBUTTON      "SKIP 할 피커 번호를 선택해 주세요",IDC_BTN_SKIP_BUTTON,
+                    452,489,178,17,BS_FLAT
+    CONTROL         "SKIP #5",IDC_CHK_PICKER_5,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | NOT WS_VISIBLE | WS_DISABLED | 
+                    WS_TABSTOP,448,465,44,18
+    CONTROL         "Picker #5",IDC_CHK_SKIP_PICKER_5,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_TABSTOP,448,465,44,18
+    CONTROL         "SKIP #6",IDC_CHK_PICKER_6,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | NOT WS_VISIBLE | WS_DISABLED | 
+                    WS_TABSTOP,494,465,44,18
+    CONTROL         "SKIP #7",IDC_CHK_PICKER_7,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | NOT WS_VISIBLE | WS_DISABLED | 
+                    WS_TABSTOP,540,465,44,18
+    CONTROL         "SKIP #8",IDC_CHK_PICKER_8,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | NOT WS_VISIBLE | WS_DISABLED | 
+                    WS_TABSTOP,586,465,44,18
+    CONTROL         "SKIP #9",IDC_CHK_PICKER_9,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | NOT WS_VISIBLE | WS_DISABLED | 
+                    WS_TABSTOP,448,465,44,18
+    CONTROL         "Picker #6",IDC_CHK_SKIP_PICKER_6,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_TABSTOP,494,465,44,18
+    CONTROL         "Picker #7",IDC_CHK_SKIP_PICKER_7,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_TABSTOP,540,465,44,18
+    CONTROL         "Picker #8",IDC_CHK_SKIP_PICKER_8,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_TABSTOP,586,465,44,18
+    CONTROL         "Picker #9",IDC_CHK_SKIP_PICKER_9,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_TABSTOP,448,465,44,18
+    CONTROL         "SKIP #10",IDC_CHK_PICKER_10,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | NOT WS_VISIBLE | WS_DISABLED | 
+                    WS_TABSTOP,494,465,44,18
+    CONTROL         "Picker #10",IDC_CHK_SKIP_PICKER_10,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_TABSTOP,494,465,44,18
+    CONTROL         "SKIP #11",IDC_CHK_PICKER_11,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | NOT WS_VISIBLE | WS_DISABLED | 
+                    WS_TABSTOP,540,465,44,18
+    CONTROL         "Picker #11",IDC_CHK_SKIP_PICKER_11,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_TABSTOP,540,465,44,18
+    CONTROL         "SKIP #12",IDC_CHK_PICKER_12,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | BS_FLAT | NOT WS_VISIBLE | WS_DISABLED | 
+                    WS_TABSTOP,586,465,44,18
+    CONTROL         "Picker #12",IDC_CHK_SKIP_PICKER_12,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_TABSTOP,586,465,44,18
+END
+
+IDD_SCREEN_MAIN DIALOG DISCARDABLE  0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "time info",IDC_GROUP_TIME_INFO,3,410,85,84
+    CONTROL         "",IDC_CUSTOM_LOT_INFO,"fpSpread70",WS_TABSTOP,7,10,77,
+                    59
+    CONTROL         "",IDC_CUSTOM_DAILY_YIELD_INFO,"fpSpread70",WS_TABSTOP,7,
+                    210,77,62
+    CONTROL         "",IDC_CUSTOM_LOT_YIELD_INFO,"fpSpread70",WS_TABSTOP,7,
+                    132,77,62
+    CTEXT           "",IDC_MSG_RUN,7,422,28,14,SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_RUN,38,422,44,14,SS_CENTERIMAGE | WS_BORDER
+    CTEXT           "",IDC_MSG_STOP,7,440,28,14,SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_STOP,38,440,44,14,SS_CENTERIMAGE | WS_BORDER
+    CTEXT           "",IDC_MSG_ALARM,7,458,28,14,SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_ALARM,38,458,44,14,SS_CENTERIMAGE | WS_BORDER
+    CONTROL         "",IDC_CUSTOM_B_LOT_INFO,"fpSpread70",WS_TABSTOP,7,86,77,
+                    29
+    PUSHBUTTON      "door open",IDC_BTN_DOOR_OPEN,3,369,40,38,BS_FLAT
+    CTEXT           "",IDC_MSG_MTBI,7,475,28,14,SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_MTBI,38,475,44,14,SS_CENTERIMAGE | WS_BORDER
+    GROUPBOX        "current lot info",IDC_GROUP_CURRENTLOT_INFO,3,0,85,73
+    GROUPBOX        "daily yield info",IDC_GROUP_DAILY_YIELD_INFO,3,200,85,
+                    76
+    GROUPBOX        "lot yield info",IDC_GROUP_LOT_YIELD_INFO,3,121,85,77
+    GROUPBOX        "next lot info",IDC_GROUP_NEXTLOT_INFO,3,75,85,44
+    GROUPBOX        "heat sink",IDC_GROUP_HEAT_SINK,91,0,544,489
+    CONTROL         "",IDC_CUSTOM_DOOR,"fpSpread70",WS_BORDER | WS_TABSTOP,7,
+                    288,77,70
+    GROUPBOX        "도어 상태",IDC_GROUP_DOOR_STATE,3,278,85,86
+    PUSHBUTTON      "lot open",IDC_LOT_OPEN,47,369,40,38
+    CONTROL         "",IDC_CUSTOM_TOP_INFO,"fpSpread70",WS_TABSTOP,121,16,
+                    484,135
+    CONTROL         "",IDC_CUSTOM_BTM_INFO,"fpSpread70",WS_TABSTOP,122,157,
+                    484,135
+    CONTROL         "",IDC_CUSTOM_BIN_REFERNCE,"fpSpread70",WS_TABSTOP,121,
+                    298,486,26
+END
+
+IDD_SCREEN_WAITTIME DIALOG DISCARDABLE  0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Apply",IDC_BTN_WAITTIME_APPLY,460,368,80,81,BS_FLAT
+    PUSHBUTTON      "Cancel",IDC_BTN_WAITTIME_CANCEL,543,368,80,81,BS_FLAT
+    CTEXT           "",IDC_DGT_WAIT_OFF_01,184,36,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_01,364,36,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_02,184,59,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_02,364,59,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_03,184,82,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_03,364,82,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_04,184,105,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_04,364,105,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_05,184,129,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_05,364,129,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_06,184,152,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_06,364,152,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_07,184,175,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_07,364,175,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_08,184,198,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_08,364,198,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_09,184,221,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_09,364,221,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_10,184,244,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_10,364,244,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_11,184,267,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_11,364,267,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_12,184,290,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_12,364,290,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_13,184,313,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_13,364,313,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_14,184,336,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_14,364,336,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_15,184,360,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_15,364,360,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_16,184,384,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_16,364,384,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "1",IDC_MSG_WAIT_01,7,36,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "2",IDC_MSG_WAIT_02,7,59,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "3",IDC_MSG_WAIT_03,7,82,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "4",IDC_MSG_WAIT_04,7,105,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "5",IDC_MSG_WAIT_05,7,129,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "6",IDC_MSG_WAIT_06,7,152,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "7",IDC_MSG_WAIT_07,7,175,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "8",IDC_MSG_WAIT_08,7,198,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "9",IDC_MSG_WAIT_09,7,221,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "10",IDC_MSG_WAIT_10,7,244,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "11",IDC_MSG_WAIT_11,7,267,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "12",IDC_MSG_WAIT_12,7,290,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "13",IDC_MSG_WAIT_13,7,313,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "14",IDC_MSG_WAIT_14,7,336,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "15",IDC_MSG_WAIT_15,7,360,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "16",IDC_MSG_WAIT_16,7,384,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "",IDC_MSG_WAITTIME_OFF,184,7,87,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "",IDC_MSG_LIMITTIME,364,7,87,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_17,184,407,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_17,364,407,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "17",IDC_MSG_WAIT_17,7,407,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_18,184,430,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_LIMIT_18,364,430,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "18",IDC_MSG_WAIT_18,7,430,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_01,274,36,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_02,274,59,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_03,274,82,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_04,274,105,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_05,274,129,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_06,274,152,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_07,274,175,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_08,274,198,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_09,274,221,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_10,274,244,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_11,274,267,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_12,274,290,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_13,274,313,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_14,274,336,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_15,274,360,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_16,274,384,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_MSG_WAITTIME_ON,274,7,87,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_OFF_19,184,456,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+    CTEXT           "19",IDC_MSG_WAIT_19,7,456,161,20,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_VISIBLE | WS_DISABLED
+    CTEXT           "",IDC_DGT_WAIT_ON_17,274,407,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_WAIT_ON_18,274,430,87,20,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+END
+
+IDD_SCREEN_LIST_ERROR DIALOGEX 0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    CTEXT           "work file",IDC_MSG_WORK_FILE,3,7,373,18,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    EDITTEXT        IDC_EDIT_WORK_DISPLAY,3,29,373,459,ES_MULTILINE | 
+                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT 
+                    WS_BORDER | WS_VSCROLL | WS_HSCROLL,WS_EX_STATICEDGE
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKRECT,382,1,2,487
+    GROUPBOX        "Work List",IDC_GROUP_WORK_LIST,387,3,145,296
+    PUSHBUTTON      "Delete",IDC_BTN_WORK_FILE_DEL,387,303,63,33,BS_FLAT
+    PUSHBUTTON      "Refresh",IDC_BTN_WORK_FILE_REFRESH,469,303,63,33,
+                    BS_FLAT
+    CONTROL         "MonthCalendar1",IDC_MONTHCAL_WORK,"SysMonthCal32",
+                    MCS_MULTISELECT | WS_TABSTOP,540,7,90,104,
+                    WS_EX_STATICEDGE
+    LISTBOX         IDC_LIST_WORK_FILE,391,42,136,252,LBS_OWNERDRAWVARIABLE | 
+                    LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    GROUPBOX        "Select List Type",IDC_GROUP_WORK_TYPE,540,115,90,184,
+                    NOT WS_VISIBLE | WS_DISABLED
+    CONTROL         "Lot",IDC_RADIO_WORK_LOT,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_DISABLED | WS_GROUP,
+                    550,138,70,25,WS_EX_DLGMODALFRAME
+    CONTROL         "Day",IDC_RADIO_WORK_DAY,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_DISABLED | WS_GROUP,
+                    550,179,70,25,WS_EX_DLGMODALFRAME
+    CONTROL         "Month",IDC_RADIO_WORK_MONTH,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_DISABLED | WS_GROUP,
+                    550,220,70,25,WS_EX_DLGMODALFRAME
+    CONTROL         "List",IDC_RADIO_WORK_LIST,"Button",BS_AUTORADIOBUTTON | 
+                    BS_PUSHLIKE | NOT WS_VISIBLE | WS_DISABLED | WS_GROUP,
+                    550,261,70,25,WS_EX_DLGMODALFRAME
+    CTEXT           "",IDC_MSG_WORK_FILE_NAME,391,17,136,21,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+END
+
+IDD_SCREEN_IO_MAP DIALOG DISCARDABLE  0, 0, 637, 494
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif"
+BEGIN
+    CONTROL         "",IDC_CUSTOM_IO,"fpSpread70",WS_BORDER | WS_TABSTOP,165,
+                    6,466,482
+    GROUPBOX        "continue action",IDC_GROUP_CONTINUE,5,294,94,195
+    CONTROL         "Continue Act",IDC_CHK_CONTINUE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,26,311,50,28
+    CTEXT           "Retry Count",IDC_MSG_RETRY_CNT,26,349,50,17,
+                    SS_CENTERIMAGE
+    CTEXT           "Wait(msec)",IDC_MSG_RETRY_WAIT,26,402,50,17,
+                    SS_CENTERIMAGE
+    CTEXT           "",IDC_DGT_RETRY_CNT,26,370,50,25,SS_NOTIFY | WS_BORDER | 
+                    NOT WS_GROUP
+    CTEXT           "",IDC_DGT_RETRY_WAIT,26,423,50,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | WS_BORDER
+    PUSHBUTTON      "E-Stop",IDC_BTN_IO_E_STOP,26,455,50,30,BS_FLAT
+    PUSHBUTTON      "Enable",IDC_BTN_SLAVE_ENABLE,5,265,154,25,BS_FLAT
+    CONTROL         "",IDC_CUSTOM_LIST,"fpSpread70",WS_BORDER | WS_TABSTOP,5,
+                    4,154,251
+    PUSHBUTTON      "Color",IDC_BTN_COLOR,104,298,55,59,BS_FLAT
+END
+
+IDD_DIALOG_COLOR DIALOG DISCARDABLE  0, 0, 215, 292
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Color Dialog"
+FONT 10, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "On Grid Color",IDC_BTN_I_GRID,20,27,82,39,BS_FLAT
+    GROUPBOX        "Input Color",IDC_GROUP_INPUT,10,9,198,109
+    PUSHBUTTON      "On Text Color",IDC_BTN_I_TEXT,115,27,82,39,BS_FLAT
+    PUSHBUTTON      "On Grid Color",IDC_BTN_O_GRID,19,146,82,39,BS_FLAT
+    GROUPBOX        "Output Color",IDC_GROUP_OUTPUT,9,128,198,110
+    PUSHBUTTON      "On Text Color",IDC_BTN_O_TEXT,114,146,82,39,BS_FLAT
+    PUSHBUTTON      "Apply",IDOK,105,245,100,40,BS_FLAT
+    PUSHBUTTON      "Off Grid Color",IDC_BTN_I_GRID2,20,71,82,39,BS_FLAT
+    PUSHBUTTON      "Off Text Color",IDC_BTN_I_TEXT2,115,71,82,39,BS_FLAT
+    PUSHBUTTON      "Off Grid Color",IDC_BTN_O_GRID2,19,190,82,39,BS_FLAT
+    PUSHBUTTON      "Off Text Color",IDC_BTN_O_TEXT2,114,190,82,39,BS_FLAT
+END
+
+IDD_DIALOG_MEMO DIALOG DISCARDABLE  0, 0, 174, 101
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Board Info Memo"
+FONT 10, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Apply",IDOK,3,61,79,32,BS_FLAT
+    PUSHBUTTON      "Exit",IDCANCEL,90,61,79,32,BS_FLAT
+    GROUPBOX        "Memo",IDC_GROUP_MEMO,4,6,165,48
+    EDITTEXT        IDC_EDIT_MEMO,11,19,151,27,ES_MULTILINE | ES_AUTOHSCROLL
+END
+
+IDD_SCREEN_BASIC DIALOG DISCARDABLE  0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "add model",IDC_BTN_BASIC_CREATE,554,50,73,29
+    PUSHBUTTON      "Apply",IDC_BTN_BASIC_APPLY,470,455,79,33
+    PUSHBUTTON      "Cancle",IDC_BTN_BASIC_CANCEL,552,455,79,33
+    GROUPBOX        "model",IDC_GROUP_MODEL,470,6,161,443
+    CONTROL         "",IDC_CUSTOM_FILE_LIST,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,484,84,132,354
+    GROUPBOX        "운영 정보",IDC_GROUP_OPERATE_METHOD,6,6,185,483
+    CONTROL         "",IDC_CUSTOM_OPERATE,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,9,15,86,463
+    PUSHBUTTON      "delete model",IDC_BTN_DELETE,474,50,73,29
+    GROUPBOX        "tray type",IDC_STATIC_TRAY_TYPE,107,6,58,55,WS_GROUP
+    CONTROL         "type1",IDC_RADIO_TYPE1,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,115,21,33,10
+    CONTROL         "type2",IDC_RADIO_TYPE2,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,115,41,33,10
+    EDITTEXT        IDC_EDIT_DEVICE_TYPE,474,21,153,24,ES_CENTER | 
+                    ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "",IDC_CUSTOM_OPERATE2,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,99,14,86,463
+    GROUPBOX        "Epoxy_Offset",IDC_GROUP_EPOXY_OFFSET,317,7,143,75
+    CTEXT           "",IDC_DGT_EPOXY_X,354,22,97,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_EPOXY_Y,354,51,97,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "X",IDC_MSG_EPOXY_X,323,22,28,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "Y",IDC_MSG_XPOXY_Y,323,51,28,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    GROUPBOX        "Carrier_Move",IDC_GROUP_CARRIER_MOVE,317,89,145,162
+    CTEXT           "",IDC_DGT_OFFSET,362,105,97,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_OFFSET_10,362,135,97,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Offset",IDC_MSG_OFFSET,321,105,38,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "10",IDC_MSG_OFFSET_10,321,135,38,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "",IDC_DGT_OFFSET_20,362,162,97,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "",IDC_DGT_OFFSET_30,362,191,97,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "20",IDC_MSG_OFFSET_20,321,162,38,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "30",IDC_MSG_OFFSET_30,321,191,38,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "",IDC_DGT_OFFSET_DIS,362,218,97,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Dis",IDC_MSG_DISTANCE,321,218,38,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    GROUPBOX        "Screw Cnt",IDC_GROUP_EPOXY_SCREW_CNT,645,86,53,42,NOT 
+                    WS_VISIBLE | WS_DISABLED
+    CTEXT           "",IDC_DGT_EPOXY_SCREW_CNT,654,97,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+    GROUPBOX        "Partial Cnt",IDC_GROUP_PARTIAL_CNT,257,7,56,42
+    CTEXT           "",IDC_DGT_PARTIAL_CNT,268,18,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "Elv Partial Cnt",IDC_GROUP_ELV_PARTIAL_CNT,197,53,53,42
+    CTEXT           "",IDC_DGT_ELV_PARTIAL_CNT,206,63,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "7387 Alarm Cnt",IDC_GROUP_7387_ALARM_CNT,257,53,58,42
+    CTEXT           "",IDC_DGT_7387_ALARM_CNT,268,64,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "Rubb Cnt",IDC_GROUP_RUBB_CNT,257,98,56,42
+    CTEXT           "",IDC_DGT_RUBB,268,109,36,25,SS_NOTIFY | SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    GROUPBOX        "Retry Cnt",IDC_GROUP_RETRY_CNT,197,7,53,42
+    CTEXT           "",IDC_DGT_RETRY_CNT,206,18,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "HsTrayY",IDC_GROUP_HSTRAY_Y,646,132,53,42,NOT 
+                    WS_VISIBLE | WS_DISABLED
+    CTEXT           "",IDC_DGT_HSTRAY_Y,655,143,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+    GROUPBOX        "HsTrayX",IDC_GROUP_HSTRAY_X,679,132,56,42,NOT 
+                    WS_VISIBLE | WS_DISABLED
+    CTEXT           "",IDC_DGT_HSTRAY_X,699,143,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+    GROUPBOX        "TrayY",IDC_GROUP_TRAY_Y,645,178,53,42,NOT WS_VISIBLE | 
+                    WS_DISABLED
+    CTEXT           "",IDC_DGT_TRAY_Y,654,188,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+    GROUPBOX        "TrayX",IDC_GROUP_TRAY_X,677,178,58,42,NOT WS_VISIBLE | 
+                    WS_DISABLED
+    CTEXT           "",IDC_DGT_TRAY_X,699,189,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+    GROUPBOX        "VppmA",IDC_GROUP_DISPENSERVPPMA,678,222,57,42,NOT 
+                    WS_VISIBLE | WS_DISABLED
+    CTEXT           "",IDC_DGT_DISPENSERVPPMA,699,233,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN | NOT WS_VISIBLE | 
+                    WS_DISABLED
+END
+
+IDD_MOTOR_PART DIALOG DISCARDABLE  0, 0, 629, 490
+STYLE DS_MODALFRAME | WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Exit",IDC_BTN_EXIT,13,15,76,41
+    CONTROL         "Tab1",IDC_TAB_MOTOR_PART,"SysTabControl32",0x0,92,15,
+                    526,462
+    GROUPBOX        "",IDC_GROUP_PART,5,4,621,480,WS_GROUP
+    PUSHBUTTON      "Part IO",IDC_BTN_IO,13,62,76,41
+    CONTROL         "Axis 1",IDC_CHK_AXIS_1,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,13,165,76,28
+    CONTROL         "Axis 2",IDC_CHK_AXIS_2,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,13,196,76,28
+    CONTROL         "Axis 3",IDC_CHK_AXIS_3,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,13,227,76,28
+    CONTROL         "Axis 4",IDC_CHK_AXIS_4,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,13,258,76,28
+    CONTROL         "Axis 5",IDC_CHK_AXIS_5,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,13,289,76,28
+    CONTROL         "Axis 6",IDC_CHK_AXIS_6,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,13,320,76,28
+    CONTROL         "Axis 7",IDC_CHK_AXIS_7,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,13,351,76,28
+    CONTROL         "Axis 8",IDC_CHK_AXIS_8,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,13,382,76,28
+    CONTROL         "Axis 9",IDC_CHK_AXIS_9,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,13,413,76,28
+    CONTROL         "Axis 10",IDC_CHK_AXIS_10,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,13,443,76,34
+    PUSHBUTTON      "Manual Move",IDC_BTN_MANUAL_MOVE,13,108,76,41
+END
+
+IDD_SCREEN_WORK_INFO DIALOG DISCARDABLE  0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif"
+BEGIN
+    CONTROL         "Maintenance",IDC_CHK_MAINTENANCE,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,10,15,86,31
+    CONTROL         "Interface",IDC_CHK_INTERFACE,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,10,50,86,31
+    CONTROL         "WaitTime",IDC_CHK_WAIT_TIME,"Button",BS_AUTOCHECKBOX | 
+                    BS_PUSHLIKE | WS_TABSTOP,10,85,86,31
+    CONTROL         "Motor Speed",IDC_CHK_MOTOR_SPEED,"Button",
+                    BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,10,120,86,31
+    CONTROL         "Tab1",IDC_TAB_WORK_INFO,"SysTabControl32",0x0,106,13,
+                    521,471
+END
+
+IDD_SCREEN_PGM_INFO DIALOG DISCARDABLE  0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Program Info",IDC_GROUP_PGM_INFO,6,6,626,483
+    PUSHBUTTON      "File Open",IDC_BTN_OPEN,207,58,18,34,NOT WS_VISIBLE | 
+                    WS_DISABLED
+    PUSHBUTTON      "File Save",IDC_BTN_SAVE,264,58,23,34,NOT WS_VISIBLE | 
+                    WS_DISABLED
+    CONTROL         "",IDC_CUSTOM_PGM_INFO,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,109,21,516,461
+    GROUPBOX        "IO",IDC_GROUP_IO,16,18,85,51
+    PUSHBUTTON      "",IDC_BTN_IO_OPEN,25,32,30,30
+    PUSHBUTTON      "",IDC_BTN_IO_SAVE,63,32,30,30
+    GROUPBOX        "IO Part",IDC_GROUP_IO_PART,16,76,85,51
+    PUSHBUTTON      "",IDC_BTN_IO_PART_OPEN,25,90,30,30
+    PUSHBUTTON      "",IDC_BTN_IO_PART_SAVE,63,90,30,30
+    GROUPBOX        "Motor Part",IDC_GROUP_MOTOR_PART,16,191,85,51
+    PUSHBUTTON      "",IDC_BTN_MOTOR_PART_OPEN,25,205,30,30
+    PUSHBUTTON      "",IDC_BTN_MOTOR_PART_SAVE,63,205,30,30
+    GROUPBOX        "Motor Position",IDC_GROUP_MOTOR_POS,16,254,85,51
+    PUSHBUTTON      "",IDC_BTN_MOTOR_POS_OPEN,25,268,30,30
+    PUSHBUTTON      "",IDC_BTN_MOTOR_POS_SAVE,63,268,30,30
+    GROUPBOX        "Wait Time",IDC_GROUP_TIME,16,355,85,51
+    PUSHBUTTON      "",IDC_BTN_TIME_OPEN,25,369,30,30
+    PUSHBUTTON      "",IDC_BTN_TIME_SAVE,63,369,30,30
+END
+
+IDD_DIALOG_PART_IO DIALOG DISCARDABLE  0, 0, 452, 396
+STYLE DS_MODALFRAME | WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Input",IDC_GROUP_INPUT,4,6,220,341
+    GROUPBOX        "Output",IDC_GROUP_OUTPUT,228,6,220,341
+    CONTROL         "",IDC_CUSTOM_INPUT,"fpSpread70",WS_BORDER | WS_TABSTOP,
+                    8,19,212,319
+    CONTROL         "",IDC_CUSTOM_OUTPUT,"fpSpread70",WS_BORDER | WS_TABSTOP,
+                    232,19,212,319
+    PUSHBUTTON      "Exit",IDC_BTN_EXIT,349,356,99,33
+END
+
+IDD_DIALOG_MANUAL_MOVE DIALOG DISCARDABLE  0, 0, 577, 396
+STYLE DS_MODALFRAME | WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Exit",IDC_BTN_EXIT,512,348,62,44
+    PUSHBUTTON      "Go",IDC_ELEVATOR_GO1,106,25,57,24
+    COMBOBOX        IDC_COMBO_TRAY1,15,27,88,85,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Tray1 Elivator",IDC_GROUP_TRAY1_ELV,10,14,156,47
+    PUSHBUTTON      "Go",IDC_ELEVATOR_GO2,106,75,57,24
+    COMBOBOX        IDC_COMBO_TRAY2,15,77,88,85,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Tray2 Elivator",IDC_GROUP_TRAY2_ELV,10,64,156,47
+    PUSHBUTTON      "Go",IDC_ELEVATOR_GO3,106,122,57,24
+    COMBOBOX        IDC_COMBO_TRAY_TRANSFER,15,124,88,85,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Tray Transfer",IDC_GROUP_TRAY_TRANSFER,10,114,156,47
+    PUSHBUTTON      "교체요청",IDC_REQ_TRAY_CHANGE,20,142,41,15
+    GROUPBOX        "Carrier 이동",IDC_GROUP_CARRIER,10,164,157,47
+    PUSHBUTTON      "Loop",IDC_BTN_ENDLESS_LOOP,106,176,57,24
+    COMBOBOX        IDC_COMBO_MOVE_CARRIER,16,177,88,120,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Stop",IDC_BTN_STOP,342,301,111,93
+    GROUPBOX        "HeatSink 동작",IDC_GROUP_HEATSINK,10,216,157,79
+    PUSHBUTTON      "Go",IDC_BTN_HEAT_SINK_GO,106,228,57,24
+    COMBOBOX        IDC_COMBO_MOVE_HEATSINK,16,229,88,120,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "재시작",IDC_BUTTON1,107,259,55,29
+    GROUPBOX        "Vision 동작",IDC_GROUP_VISION,10,302,157,79
+    PUSHBUTTON      "Go",IDC_BTN_VISION_GO,106,317,57,24
+    COMBOBOX        IDC_COMBO_MOVE_VISION,16,318,88,120,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "재시작",IDC_BUTTON15,107,348,55,29
+END
+
+IDD_SCREEN_MOTOR_SPEED DIALOG DISCARDABLE  0, 0, 957, 527
+STYLE WS_CHILD
+FONT 10, "Courier"
+BEGIN
+    GROUPBOX        "motor speed set up",IDC_GROUP_MOTOR_SPEED_SET,3,3,499,
+                    456
+    PUSHBUTTON      "Apply",IDC_BTN_MS_APPLY,581,455,48,33,BS_FLAT
+    GROUPBOX        "Speed Rate (%)",IDC_GROUP_MOTOR_SPEED_RATE,543,387,86,
+                    58
+    CTEXT           "Run Speed",IDC_MSG_RUN_RATE,548,402,49,15,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Manual Speed",IDC_MSG_MANUAL_RATE,548,424,49,15,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "run",IDC_DGT_RUN_RATE,600,402,23,15,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "manual",IDC_DGT_MANUAL_RATE,600,424,23,15,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CONTROL         "",IDC_CUSTOM_MOTOR_SPEED,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,7,16,490,438
+    CTEXT           "Saving",IDC_MSG_SAVING,96,463,312,29,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+END
+
+IDD_SCREEN_WAIT_TIME DIALOG DISCARDABLE  0, 0, 642, 484
+STYLE WS_CHILD
+FONT 10, "Courier"
+BEGIN
+    PUSHBUTTON      "Apply",IDC_BTN_WAIT_APPLY,511,309,68,48,BS_FLAT
+    CONTROL         "",IDC_CUSTOM_TIME,"fpSpread70",WS_BORDER | WS_TABSTOP,7,
+                    7,488,347
+    CONTROL         "Ta Function Use",IDC_CHK_TA_FUNC_USED,"Button",
+                    BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_DISABLED | 
+                    WS_TABSTOP,7,385,83,15
+    GROUPBOX        "Temp Data",IDC_GROUP_TA_TEMP_DATA,7,408,400,65,NOT 
+                    WS_VISIBLE | WS_DISABLED
+    GROUPBOX        "Station Delta Data",IDC_GROUP_TA_DELTA_DATA,16,543,812,
+                    49,NOT WS_VISIBLE | WS_DISABLED
+    GROUPBOX        "Ta Avg. Board Cnt",IDC_GROUP_TA_AVG_BD,410,372,91,49,
+                    NOT WS_VISIBLE | WS_DISABLED
+    GROUPBOX        "Effective Temp. Upper Bound",IDC_GROUP_TA_ETUB,410,427,
+                    91,49,NOT WS_VISIBLE | WS_DISABLED
+    GROUPBOX        "Effective Temp. Lower Bound",IDC_GROUP_TA_ETLB,506,372,
+                    91,49,NOT WS_VISIBLE | WS_DISABLED
+    GROUPBOX        "Effective Temp. Check",IDC_GROUP_TEMP_CHECK,507,427,91,
+                    49,NOT WS_VISIBLE | WS_DISABLED
+    CTEXT           "ta",IDC_DGT_TA_AVG_BD,428,389,56,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_VISIBLE | WS_DISABLED
+    CTEXT           "ETLB",IDC_DGT_TA_ETLB,523,389,56,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_VISIBLE | WS_DISABLED
+    CTEXT           "ETUB",IDC_DGT_TA_ETUB,428,443,56,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_VISIBLE | WS_DISABLED
+    CTEXT           "TEMP",IDC_DGT_TEMP_CHECK,523,443,56,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN | NOT WS_VISIBLE | WS_DISABLED
+    CONTROL         "",IDC_CUSTOM_TA_TEMP_DATA,"fpSpread70",NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_BORDER | WS_TABSTOP,11,424,390,43
+    CONTROL         "",IDC_CUSTOM_TA_DELTA_DATA,"fpSpread70",NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_BORDER | WS_TABSTOP,26,558,802,29
+END
+
+IDD_SCREEN_SET_RECIPE DIALOG DISCARDABLE  0, 0, 637, 495
+STYLE WS_CHILD
+FONT 10, "Courier"
+BEGIN
+    GROUPBOX        "size setting",IDC_GROUP_SIZE_SETTING,644,2,60,102,NOT 
+                    WS_VISIBLE | WS_DISABLED
+    CONTROL         "",IDC_CUSTOM_SIZE,"fpSpread70",NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_TABSTOP,648,15,43,84
+    CONTROL         "",IDC_CUSTOM_PITCH,"fpSpread70",NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_TABSTOP,648,120,66,85
+    GROUPBOX        "Pitch Data",IDC_GROUP_PITCH_DATA,644,108,74,104,NOT 
+                    WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "apply",IDC_BTN_RECIPE_APPLY,525,445,48,33,BS_FLAT
+    PUSHBUTTON      "cancel",IDC_BTN_RECIPE_CANCLE,576,445,48,33,BS_FLAT
+    GROUPBOX        "Data setting",IDC_GROUP_DATA_SETTING,18,17,96,464
+    CONTROL         "",IDC_CUSTOM_DATA,"fpSpread70",WS_TABSTOP,22,30,86,445
+    GROUPBOX        "VppmA",IDC_GROUP_DISPENSERVPPMA,120,19,57,42
+    CTEXT           "",IDC_DGT_DISPENSERVPPMA,131,30,36,25,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+END
+
+IDD_SCREEN_SET_MAINTENANCE DIALOG DISCARDABLE  0, 0, 587, 479
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "Courier"
+BEGIN
+    PUSHBUTTON      "Apply",IDC_BTN_MAINTENANCE_APPLY,481,7,88,56,BS_FLAT
+    GROUPBOX        "Run",IDC_GROUP_LAMP_RUN,7,16,40,145
+    GROUPBOX        "Stop",IDC_GROUP_LAMP_STOP,52,16,40,145
+    GROUPBOX        "Alarm",IDC_GROUP_LAMP_ALARM,97,16,40,145
+    GROUPBOX        "Warning",IDC_GROUP_LAMP_WARNING,142,16,40,145
+    GROUPBOX        "Lock",IDC_GROUP_LAMP_LOCK,187,16,40,145
+    GROUPBOX        "Lot End",IDC_GROUP_LAMP_LOTEND,232,16,40,145
+    GROUPBOX        "Initial",IDC_GROUP_LAMP_INITIAL,322,17,40,145
+    GROUPBOX        "Idle",IDC_GROUP_LAMP_SELFCHECK,277,16,40,145
+    CTEXT           "run",IDC_LAMP_RUN,14,31,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "stop",IDC_LAMP_STOP,59,31,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "alarm",IDC_LAMP_ALARM,104,31,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "Warning",IDC_LAMP_WARNING,149,31,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "lock",IDC_LAMP_LOCK,194,31,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "lot end",IDC_LAMP_LOTEND,239,31,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "initial",IDC_LAMP_INITIAL,329,32,25,120,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "self check",IDC_LAMP_SELFCHECK,284,31,25,120,
+                    SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "Tower Lamp Set",IDC_GROUP_TOWERLAMP,3,3,445,168
+    GROUPBOX        "Flicker Time (ms)",IDC_GROUP_LAMP_FLICKER_TIME,365,16,
+                    79,58
+    CTEXT           "flicker time",IDC_DGT_FLICKER_TIME,370,37,68,25,
+                    SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
+    GROUPBOX        "Buzzer Set",IDC_GROUP_BUZZER,3,176,98,73
+    CONTROL         "Buzzer On",IDC_CHK_BUZZER,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,16,200,70,32
+    GROUPBOX        "Eqp Set",IDC_GROUP_EQP_SET,3,257,134,48
+    CTEXT           "Eqp ID",IDC_MSG_EQUIP_ID,7,271,41,23,SS_CENTERIMAGE
+    PUSHBUTTON      "",IDC_PAD_EQUIP_ID,50,271,18,23
+    EDITTEXT        IDC_EDIT_EQUIP_ID,70,271,63,23,ES_RIGHT | ES_AUTOHSCROLL | 
+                    ES_READONLY
+    GROUPBOX        "Password Change",IDC_GROUP_PASSWORD_CHANGE,7,307,82,73
+    PUSHBUTTON      "Level 1",IDC_BTN_PASSWORD_CHANGE_LEVLE1,11,321,35,51,
+                    BS_FLAT
+    PUSHBUTTON      "Level 2",IDC_BTN_PASSWORD_CHANGE_LEVLE2,50,321,35,51,
+                    BS_FLAT
+    GROUPBOX        "Data Backup",IDC_GROUP_DATA_BACKUP,104,176,188,73
+    PUSHBUTTON      "Data Backup",IDC_BTN_DATA_BACKUP,118,193,70,43,BS_FLAT
+    GROUPBOX        "Change Time (Sec)",IDC_GROUP_LAMP_CHANGE_TIME,365,103,
+                    79,58
+    CTEXT           "change time",IDC_DGT_CHANGE_TIME,370,124,68,25,
+                    SS_NOTIFY | SS_CENTERIMAGE | SS_SUNKEN
+    PUSHBUTTON      "Step Save",IDC_BTN_STEP_SAVE,207,193,70,43,BS_FLAT
+    GROUPBOX        "BCR",IDC_GROUP_SERIAL_1,299,176,130,84
+    CTEXT           "Port",IDC_MSG_PORT_1,302,186,37,10,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Baud Rate",IDC_MSG_RATE_1,302,200,37,10,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Data Bit",IDC_MSG_DATA_1,302,213,37,10,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Stop Bit",IDC_MSG_STOP_1,302,226,37,10,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Parity",IDC_MSG_PARITY_1,302,239,37,10,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    COMBOBOX        IDC_COMBO_PORT_1,341,186,48,119,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_DATA_1,341,213,48,112,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_STOP_1,341,226,48,96,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_PARITY_1,341,238,48,103,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Apply",IDC_BTN_SERIAL_APPLY_1,391,186,35,29
+    PUSHBUTTON      "Connect",IDC_BTN_SERIAL_CONNECT_1,391,221,35,29
+    COMBOBOX        IDC_COMBO_RATE_1,341,199,48,110,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Read_Bcr",IDC_BTN_BCR1,299,269,58,28
+    PUSHBUTTON      "Bcr_Open",IDC_BTN_OPEN,360,269,58,28
+    GROUPBOX        "Vision Data Set",IDC_GROUP_VISION_SETDATA,142,259,126,
+                    92
+    PUSHBUTTON      "EPOXY",IDC_BTN_EPOXY,145,295,35,51,BS_FLAT
+    PUSHBUTTON      "7387",IDC_BTN_7387,185,295,35,51,BS_FLAT
+    PUSHBUTTON      "HeatSink",IDC_BTN_HEATSINK,225,295,35,51,BS_FLAT
+    EDITTEXT        IDC_EDIT_HEATSINK_POS,200,270,40,23,ES_RIGHT | 
+                    ES_AUTOHSCROLL
+    CTEXT           "HeatSinkPos",IDC_MSG_HEATSINK_POS,148,270,46,23,
+                    SS_CENTERIMAGE
+    GROUPBOX        "PITCH",IDC_GROUP_PITCH,434,175,130,84
+    CTEXT           "Port",IDC_MSG_PORT_2,437,186,37,10,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Baud Rate",IDC_MSG_RATE_2,437,200,37,10,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Data Bit",IDC_MSG_DATA_2,437,213,37,10,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Stop Bit",IDC_MSG_STOP_2,437,226,37,10,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Parity",IDC_MSG_PARITY_2,437,239,37,10,SS_NOTIFY | 
+                    SS_CENTERIMAGE | SS_SUNKEN
+    COMBOBOX        IDC_COMBO_PORT_2,476,186,48,119,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_DATA_2,476,213,48,112,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_STOP_4,476,226,48,96,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_PARITY_4,476,238,48,103,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Apply",IDC_BTN_PITCH_APPLY,526,186,35,29
+    PUSHBUTTON      "Connect",IDC_BTN_PITCH_CONNECT,526,221,35,29
+    COMBOBOX        IDC_COMBO_RATE_4,476,199,48,110,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DIALOG_LOT_START DIALOG DISCARDABLE  0, 0, 508, 314
+STYLE DS_MODALFRAME | WS_POPUP
+FONT 10, "MS Sans Serif"
+BEGIN
+    CONTROL         "",IDC_CUSTOM_LOT_INFO,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,8,19,385,281
+    PUSHBUTTON      "Close",IDOK,402,253,98,47
+    PUSHBUTTON      "lot display",IDC_LOT_DISPLAY,403,26,98,47
+    PUSHBUTTON      "lot start",IDC_LOT_START,403,76,98,47
+    PUSHBUTTON      "lot candel",IDC_LOT_CANCEL,403,127,98,47
+END
+
+IDD_DIALOG_KEYPAD DIALOG DISCARDABLE  0, 0, 191, 330
+STYLE WS_POPUP
+FONT 10, "Courier"
+BEGIN
+    CTEXT           "limit",IDC_MSG_KEYPAD_LIMIT,15,58,162,18,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "value",IDC_DGT_NEW_VALUE,44,110,133,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    PUSHBUTTON      "Back Space",IDC_BTN_PAD_BACK,91,140,46,24,BS_FLAT
+    PUSHBUTTON      "Delete",IDC_BTN_PAD_DEL,140,140,37,24,BS_FLAT
+    GROUPBOX        "Keypad Input",IDC_GROUP_KEYPAD,15,172,163,114
+    PUSHBUTTON      "O K",IDOK,15,291,55,24
+    PUSHBUTTON      "Cancel",IDCANCEL,122,291,55,24
+    PUSHBUTTON      "7",IDC_BTN_PAD_7,21,188,25,22,BS_FLAT
+    PUSHBUTTON      "8",IDC_BTN_PAD_8,52,188,25,22,BS_FLAT
+    PUSHBUTTON      "9",IDC_BTN_PAD_9,83,188,25,22,BS_FLAT
+    PUSHBUTTON      "+100",IDC_BTN_PAD_100,114,260,25,22,BS_FLAT
+    PUSHBUTTON      "4",IDC_BTN_PAD_4,21,212,25,22,BS_FLAT
+    PUSHBUTTON      "5",IDC_BTN_PAD_5,52,212,25,22,BS_FLAT
+    PUSHBUTTON      "6",IDC_BTN_PAD_6,83,212,25,22,BS_FLAT
+    PUSHBUTTON      "-100",IDC_BTN_PAD_101,145,260,25,22,BS_FLAT
+    PUSHBUTTON      "1",IDC_BTN_PAD_1,21,236,25,22,BS_FLAT
+    PUSHBUTTON      "2",IDC_BTN_PAD_2,52,236,25,22,BS_FLAT
+    PUSHBUTTON      "3",IDC_BTN_PAD_3,83,236,25,22,BS_FLAT
+    PUSHBUTTON      "+1",IDC_BTN_PAD_1000,114,212,25,22,BS_FLAT
+    PUSHBUTTON      "0",IDC_BTN_PAD_0,21,260,25,22,BS_FLAT
+    PUSHBUTTON      "+10",IDC_BTN_PAD_10,114,236,25,22,BS_FLAT
+    PUSHBUTTON      "-10",IDC_BTN_PAD_11,145,236,25,22,BS_FLAT
+    PUSHBUTTON      "-1",IDC_BTN_PAD_1001,145,212,25,22,BS_FLAT
+    PUSHBUTTON      ".",IDC_BTN_PAD_DOT,52,260,25,22,BS_FLAT
+    CTEXT           "value",IDC_DGT_OLD_VALUE,44,80,133,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "OLD",IDC_MSG_OLD_VALUE,15,80,25,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    CTEXT           "NEW",IDC_MSG_NEW_VALUE,15,110,25,25,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+    EDITTEXT        IDC_EDIT_KEYPAD_TITLE,15,29,162,25,ES_CENTER | 
+                    ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "Reset",IDC_BTN_PAD_RESET,15,140,37,24,BS_FLAT
+    PUSHBUTTON      "-",IDC_BTN_PAD_MINUS,58,140,25,24,BS_FLAT
+END
+
+IDD_DIALOG_DATA_LOT DIALOG DISCARDABLE  0, 0, 254, 210
+STYLE DS_MODALFRAME | WS_POPUP
+FONT 10, "Courier"
+BEGIN
+    PUSHBUTTON      "Close",IDOK,184,176,63,26
+    GROUPBOX        "",IDC_STATIC,7,26,240,145
+    CONTROL         "",IDC_CUSTOM_LOT_LIST,"fpSpread70",WS_TABSTOP,11,36,67,
+                    74
+    CONTROL         "",IDC_CUSTOM_LOT_INFO,"fpSpread70",WS_TABSTOP,84,36,160,
+                    110
+    PUSHBUTTON      "Create",IDC_BTN_CREATE,11,114,50,14
+    PUSHBUTTON      "Delete",IDC_BTN_DELETE,11,131,50,14
+    PUSHBUTTON      "▲",IDC_BTN_UP,66,114,13,14
+    PUSHBUTTON      "▼",IDC_BTN_DOWN,66,131,13,14
+    PUSHBUTTON      "Update",IDC_BTN_UPDATE,194,153,50,14
+    PUSHBUTTON      "New Lot In to Just Tester",IDC_BTN_NEW_LOT_IN,13,181,
+                    107,14
+    PUSHBUTTON      "New lot",IDC_BTN_NET_LOT,139,176,41,26
+END
+
+IDD_DIALOG_EVENT_MSG DIALOG DISCARDABLE  0, 0, 477, 147
+STYLE WS_POPUP
+FONT 10, "Courier"
+BEGIN
+    PUSHBUTTON      "O  K",IDOK,184,110,108,30,BS_FLAT
+    CTEXT           "msg",IDC_LABEL_EVENT_MSG,7,23,463,80,SS_CENTERIMAGE | 
+                    SS_SUNKEN
+END
+
+IDD_MOTOR_AXIS_1 DIALOG DISCARDABLE  0, 0, 525, 460
+STYLE DS_MODALFRAME | WS_POPUP
+FONT 10, "Courier"
+BEGIN
+    CONTROL         "",IDC_CUSTOM_MOTOR_POS,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,12,22,260,421
+    GROUPBOX        "Motor",IDC_GROUP_MOTOR,8,8,269,442
+    PUSHBUTTON      "",IDC_BTN_LEFT,293,394,36,47,BS_FLAT
+    PUSHBUTTON      "",IDC_BTN_RIGHT,373,394,36,47,BS_FLAT
+    PUSHBUTTON      "",IDC_BTN_HOME,333,394,36,47,BS_FLAT
+    GROUPBOX        "Motor Move",IDC_GROUP_MOVE,283,378,233,70
+    PUSHBUTTON      "",IDC_BTN_EMG,420,394,38,47
+    CONTROL         "",IDC_STATIC,"Static",SS_BLACKFRAME,2,2,522,454
+    GROUPBOX        "Position Information",IDC_GROUP_AXIS_INFO,283,8,233,203
+    CONTROL         "",IDC_BMP_VIEW,"Static",SS_BLACKFRAME,298,24,203,178
+    CONTROL         "",IDC_CUSTOM_MOTOR_INFO,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,283,219,233,150
+    PUSHBUTTON      "Apply",IDC_BTN_APPLY,469,394,36,47,BS_FLAT
+END
+
+IDD_SCREEN_MOTOR DIALOG DISCARDABLE  0, 0, 637, 495
+STYLE WS_CHILD | WS_BORDER
+FONT 10, "Courier"
+BEGIN
+    CONTROL         "",IDC_CUSTOM_MOTOR_PART,"fpSpread70",WS_BORDER | 
+                    WS_TABSTOP,18,26,400,449
+    CONTROL         "",IDC_MOTOR_IMG,"Static",SS_GRAYFRAME,5,0,629,490
+    GROUPBOX        "Motor Part",IDC_GROUP_MOTOR_PART,13,9,411,473
+    CONTROL         "",IDC_BMP_VIEW,"Static",SS_BLACKFRAME,434,23,186,226
+    GROUPBOX        "Part Information",IDC_GROUP_PART_INFORMATION,428,10,200,
+                    249
+    PUSHBUTTON      "Motor Speed",IDC_BTN_MOTOR_SPEED,428,438,97,44,BS_FLAT
+    CONTROL         "",IDC_CUSTOM_MOTOR,"fpSpread70",NOT WS_VISIBLE | 
+                    WS_DISABLED | WS_BORDER | WS_TABSTOP,329,273,32,32
+    PUSHBUTTON      "티칭값 백업",IDC_BTN_TEACH_WRITE,569,428,50,14,NOT 
+                    WS_VISIBLE
+    PUSHBUTTON      "티칭값 복구",IDC_BTN_TEACH_READ,569,444,50,14,NOT 
+                    WS_VISIBLE
+    PUSHBUTTON      "Log Motor Pos",IDC_BTN_LOG_TRAY_MOTOR_POS,560,466,59,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// GIF
+//
+
+IDR_GIF_MENU            GIF     DISCARDABLE     "res\\Menu.gif"
+IDR_GIF_EXIT            GIF     DISCARDABLE     "res\\Exit.gif"
+IDR_GIF_LOCK            GIF     DISCARDABLE     "res\\locking.gif"
+IDR_GIF_MSG             GIF     DISCARDABLE     "res\\MSG.gif"
+IDR_GIF_INITIALIZING    GIF     DISCARDABLE     "res\\Initial.gif"
+IDR_GIF_CHOICE          GIF     DISCARDABLE     "res\\Choice.gif"
+IDR_GIF_ALARM           GIF     DISCARDABLE     "res\\Alarm.gif"
+IDR_GIF_LOGO            GIF     DISCARDABLE     "res\\amt_logo_fast.gif"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_CURSOR_HAND         CURSOR  DISCARDABLE     "res\\Harrow.cur"
+IDC_WORK                CURSOR  DISCARDABLE     "res\\cur00006.cur"
+IDC_ROTATING            CURSOR  DISCARDABLE     "res\\cur00007.cur"
+IDC_ROTATE              CURSOR  DISCARDABLE     "res\\cur00004.cur"
+IDC_NW                  CURSOR  DISCARDABLE     "res\\nw.cur"
+IDC_NSEW                CURSOR  DISCARDABLE     "res\\cur00003.cur"
+IDC_NS                  CURSOR  DISCARDABLE     "res\\ns.cur"
+IDC_NE                  CURSOR  DISCARDABLE     "res\\ne.cur"
+IDC_EW                  CURSOR  DISCARDABLE     "res\\cur00005.cur"
+IDC_CURSOR_ZOOMSELECT   CURSOR  DISCARDABLE     "res\\cursor_z.cur"
+IDC_CURSOR_ZOOM         CURSOR  DISCARDABLE     "res\\cur00001.cur"
+IDC_CURSOR_MOVE         CURSOR  DISCARDABLE     "res\\cursor2.cur"
+IDC_CURSOR_HARROW       CURSOR  DISCARDABLE     "res\\cur00002.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DIALOG_MANUAL_MOVE DLGINIT
+BEGIN
+    IDC_COMBO_TRAY1, 0x403, 9, 0
+0xc031, 0x20e5, 0xf8b0, 0xdeb1, "\000" 
+    IDC_COMBO_TRAY2, 0x403, 9, 0
+0xc031, 0x20e5, 0xf8b0, 0xdeb1, "\000" 
+    IDC_COMBO_TRAY_TRANSFER, 0x403, 15, 0
+0xaec6, 0xb9b7, 0xccc0, 0xdac0, 0xbfb5, 0xa6c1, 0xc5b0, "\000" 
+    IDC_COMBO_MOVE_CARRIER, 0x403, 9, 0
+0xabb9, 0xd1c7, 0xddb9, 0xb9ba, "\000" 
+    IDC_COMBO_MOVE_CARRIER, 0x403, 11, 0
+0x5045, 0x584f, 0x2059, 0xdbc0, 0xf7be, "\000" 
+    IDC_COMBO_MOVE_CARRIER, 0x403, 15, 0
+0x5243, 0x2b52, 0x5045, 0x584f, 0x2059, 0xdbc0, 0xf7be, "\000" 
+    IDC_COMBO_MOVE_CARRIER, 0x403, 12, 0
+0x4f4c, 0x4441, 0x4420, 0x5645, 0x4349, 0x0045, 
+    IDC_COMBO_MOVE_CARRIER, 0x403, 16, 0
+0x5243, 0x2b52, 0x4f4c, 0x4441, 0x4420, 0x5645, 0x4349, 0x0045, 
+    IDC_COMBO_MOVE_CARRIER, 0x403, 18, 0
+0x4548, 0x5441, 0x4953, 0x4b4e, 0x2b20, 0x5620, 0x5349, 0x4f49, 0x004e, 
+
+    IDC_COMBO_MOVE_CARRIER, 0x403, 22, 0
+0x5243, 0x2b52, 0x4548, 0x5441, 0x4953, 0x4b4e, 0x2b20, 0x5620, 0x5349, 
+0x4f49, 0x004e, 
+    IDC_COMBO_MOVE_CARRIER, 0x403, 22, 0
+0x5243, 0x2b52, 0x5045, 0x584f, 0x2b59, 0x4f4c, 0x4441, 0x4420, 0x5645, 
+0x4349, 0x0045, 
+    IDC_COMBO_MOVE_CARRIER, 0x403, 18, 0
+0x5243, 0x2b52, 0x5845, 0x2b59, 0x444c, 0x482b, 0x2b53, 0x4956, 0x0053, 
+
+    IDC_COMBO_MOVE_HEATSINK, 0x403, 30, 0
+0x6548, 0x7461, 0x6973, 0x6b6e, 0xc720, 0xbec8, 0xc8f7, 0x20c4, 0x6944, 
+0x7073, 0x616c, 0x6563, 0xbe20, 0xc2c8, 0x00f8, 
+    IDC_COMBO_MOVE_HEATSINK, 0x403, 15, 0
+0x6944, 0x7073, 0x6e65, 0x6f73, 0x2072, 0xe4c5, 0xe2c3, "\000" 
+    IDC_COMBO_MOVE_HEATSINK, 0x403, 8, 0
+0x6552, 0x6576, 0x7372, 0x0065, 
+    IDC_COMBO_MOVE_HEATSINK, 0x403, 31, 0
+0x6552, 0x6576, 0x7372, 0xc065, 0xc0da, 0x20e7, 0xc8c7, 0xf7be, 0xc820, 
+0x20c4, 0x6153, 0x6566, 0x7974, 0xccc0, 0xbfb5, "\000" 
+    IDC_COMBO_MOVE_HEATSINK, 0x403, 18, 0
+0x6143, 0x7272, 0x6569, 0x2372, 0x2031, 0x7572, 0x6262, 0x6e69, 0x0067, 
+
+    IDC_COMBO_MOVE_HEATSINK, 0x403, 18, 0
+0x6143, 0x7272, 0x6569, 0x2372, 0x2032, 0x7572, 0x6262, 0x6e69, 0x0067, 
+
+    IDC_COMBO_MOVE_HEATSINK, 0x403, 18, 0
+0x6143, 0x7272, 0x6569, 0x2372, 0x2033, 0x7572, 0x6262, 0x6e69, 0x0067, 
+
+    IDC_COMBO_MOVE_VISION, 0x403, 10, 0
+0x6143, 0x7272, 0x6569, 0x2072, 0x0031, 
+    IDC_COMBO_MOVE_VISION, 0x403, 10, 0
+0x6143, 0x7272, 0x6569, 0x2072, 0x0032, 
+    IDC_COMBO_MOVE_VISION, 0x403, 10, 0
+0x6143, 0x7272, 0x6569, 0x2072, 0x0033, 
+    0
+END
+
+IDD_SCREEN_SET_MAINTENANCE DLGINIT
+BEGIN
+    IDC_COMBO_PORT_1, 0x403, 5, 0
+0x4f43, 0x314d, "\000" 
+    IDC_COMBO_PORT_1, 0x403, 5, 0
+0x4f43, 0x324d, "\000" 
+    IDC_COMBO_PORT_1, 0x403, 5, 0
+0x4f43, 0x334d, "\000" 
+    IDC_COMBO_PORT_1, 0x403, 5, 0
+0x4f43, 0x344d, "\000" 
+    IDC_COMBO_PORT_1, 0x403, 5, 0
+0x4f43, 0x354d, "\000" 
+    IDC_COMBO_PORT_1, 0x403, 5, 0
+0x4f43, 0x364d, "\000" 
+    IDC_COMBO_PORT_1, 0x403, 5, 0
+0x4f43, 0x374d, "\000" 
+    IDC_COMBO_PORT_1, 0x403, 5, 0
+0x4f43, 0x384d, "\000" 
+    IDC_COMBO_PORT_1, 0x403, 5, 0
+0x4f43, 0x394d, "\000" 
+    IDC_COMBO_DATA_1, 0x403, 6, 0
+0x2035, 0x6962, 0x0074, 
+    IDC_COMBO_DATA_1, 0x403, 6, 0
+0x2036, 0x6962, 0x0074, 
+    IDC_COMBO_DATA_1, 0x403, 6, 0
+0x2037, 0x6962, 0x0074, 
+    IDC_COMBO_DATA_1, 0x403, 6, 0
+0x2038, 0x6962, 0x0074, 
+    IDC_COMBO_STOP_1, 0x403, 2, 0
+0x0031, 
+    IDC_COMBO_STOP_1, 0x403, 2, 0
+0x0032, 
+    IDC_COMBO_PARITY_1, 0x403, 5, 0
+0x6f6e, 0x656e, "\000" 
+    IDC_COMBO_PARITY_1, 0x403, 4, 0
+0x646f, 0x0064, 
+    IDC_COMBO_PARITY_1, 0x403, 5, 0
+0x7665, 0x6e65, "\000" 
+    IDC_COMBO_RATE_1, 0x403, 5, 0
+0x3432, 0x3030, "\000" 
+    IDC_COMBO_RATE_1, 0x403, 5, 0
+0x3834, 0x3030, "\000" 
+    IDC_COMBO_RATE_1, 0x403, 5, 0
+0x3639, 0x3030, "\000" 
+    IDC_COMBO_RATE_1, 0x403, 6, 0
+0x3431, 0x3034, 0x0030, 
+    IDC_COMBO_RATE_1, 0x403, 6, 0
+0x3931, 0x3032, 0x0030, 
+    IDC_COMBO_RATE_1, 0x403, 6, 0
+0x3833, 0x3034, 0x0030, 
+    IDC_COMBO_RATE_1, 0x403, 6, 0
+0x3735, 0x3036, 0x0030, 
+    IDC_COMBO_RATE_1, 0x403, 7, 0
+0x3131, 0x3235, 0x3030, "\000" 
+    IDC_COMBO_PORT_2, 0x403, 5, 0
+0x4f43, 0x314d, "\000" 
+    IDC_COMBO_PORT_2, 0x403, 5, 0
+0x4f43, 0x324d, "\000" 
+    IDC_COMBO_PORT_2, 0x403, 5, 0
+0x4f43, 0x334d, "\000" 
+    IDC_COMBO_PORT_2, 0x403, 5, 0
+0x4f43, 0x344d, "\000" 
+    IDC_COMBO_PORT_2, 0x403, 5, 0
+0x4f43, 0x354d, "\000" 
+    IDC_COMBO_PORT_2, 0x403, 5, 0
+0x4f43, 0x364d, "\000" 
+    IDC_COMBO_PORT_2, 0x403, 5, 0
+0x4f43, 0x374d, "\000" 
+    IDC_COMBO_PORT_2, 0x403, 5, 0
+0x4f43, 0x384d, "\000" 
+    IDC_COMBO_PORT_2, 0x403, 5, 0
+0x4f43, 0x394d, "\000" 
+    IDC_COMBO_DATA_2, 0x403, 6, 0
+0x2035, 0x6962, 0x0074, 
+    IDC_COMBO_DATA_2, 0x403, 6, 0
+0x2036, 0x6962, 0x0074, 
+    IDC_COMBO_DATA_2, 0x403, 6, 0
+0x2037, 0x6962, 0x0074, 
+    IDC_COMBO_DATA_2, 0x403, 6, 0
+0x2038, 0x6962, 0x0074, 
+    IDC_COMBO_STOP_4, 0x403, 2, 0
+0x0031, 
+    IDC_COMBO_STOP_4, 0x403, 2, 0
+0x0032, 
+    IDC_COMBO_PARITY_4, 0x403, 5, 0
+0x6f6e, 0x656e, "\000" 
+    IDC_COMBO_PARITY_4, 0x403, 4, 0
+0x646f, 0x0064, 
+    IDC_COMBO_PARITY_4, 0x403, 5, 0
+0x7665, 0x6e65, "\000" 
+    IDC_COMBO_RATE_4, 0x403, 5, 0
+0x3432, 0x3030, "\000" 
+    IDC_COMBO_RATE_4, 0x403, 5, 0
+0x3834, 0x3030, "\000" 
+    IDC_COMBO_RATE_4, 0x403, 5, 0
+0x3639, 0x3030, "\000" 
+    IDC_COMBO_RATE_4, 0x403, 6, 0
+0x3431, 0x3034, 0x0030, 
+    IDC_COMBO_RATE_4, 0x403, 6, 0
+0x3931, 0x3032, 0x0030, 
+    IDC_COMBO_RATE_4, 0x403, 6, 0
+0x3833, 0x3034, 0x0030, 
+    IDC_COMBO_RATE_4, 0x403, 6, 0
+0x3735, 0x3036, 0x0030, 
+    IDC_COMBO_RATE_4, 0x403, 7, 0
+0x3131, 0x3235, 0x3030, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDP_SOCKETS_INIT_FAILED "Windows 소켓 초기화에 실패하였습니다."
+END
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    IDR_MAINFRAME           "HANDLER\n\nHANDLE\n\n\nHANDLER.Document\nHANDLE Document"
+END
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "HANDLER"
+    AFX_IDS_IDLEMESSAGE     "준비"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_NEW             "새 문서를 작성합니다\n새 파일"
+    ID_FILE_OPEN            "기존 문서를 엽니다\n열기"
+    ID_FILE_CLOSE           "현재 열린 문서를 닫습니다\n닫기"
+    ID_FILE_SAVE            "현재 열린 문서를 저장합니다\n저장"
+    ID_FILE_SAVE_AS         "현재 열린 문서를 다른 이름으로 저장합니다\n다른 이름으로 저장"
+    ID_FILE_PAGE_SETUP      "인쇄 옵션을 변경합니다\n쪽 설정"
+    ID_FILE_PRINT_SETUP     "프린터와 인쇄 옵션을 변경합니다\n인쇄 설정"
+    ID_FILE_PRINT           "현재 열린 문서를 인쇄합니다\n인쇄"
+    ID_FILE_PRINT_PREVIEW   "쪽 전체를 표시합니다\n인쇄 미리 보기"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_APP_ABOUT            "프로그램 정보와 버전 정보, 저작권 정보를 표시합니다\n정보"
+    ID_APP_EXIT             "응용 프로그램을 종료하기 위해 문서를 저장할 것인지 묻습니다\n종료"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_MRU_FILE1       "이 문서를 엽니다"
+    ID_FILE_MRU_FILE2       "이 문서를 엽니다"
+    ID_FILE_MRU_FILE3       "이 문서를 엽니다"
+    ID_FILE_MRU_FILE4       "이 문서를 엽니다"
+    ID_FILE_MRU_FILE5       "이 문서를 엽니다"
+    ID_FILE_MRU_FILE6       "이 문서를 엽니다"
+    ID_FILE_MRU_FILE7       "이 문서를 엽니다"
+    ID_FILE_MRU_FILE8       "이 문서를 엽니다"
+    ID_FILE_MRU_FILE9       "이 문서를 엽니다"
+    ID_FILE_MRU_FILE10      "이 문서를 엽니다"
+    ID_FILE_MRU_FILE11      "이 문서를 엽니다"
+    ID_FILE_MRU_FILE12      "이 문서를 엽니다"
+    ID_FILE_MRU_FILE13      "이 문서를 엽니다"
+    ID_FILE_MRU_FILE14      "이 문서를 엽니다"
+    ID_FILE_MRU_FILE15      "이 문서를 엽니다"
+    ID_FILE_MRU_FILE16      "이 문서를 엽니다"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_NEXT_PANE            "다음 창으로 전환합니다\n다음 창"
+    ID_PREV_PANE            "이전 창으로 전환합니다\n이전 창"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_WINDOW_SPLIT         "현재 열린 창을 나눕니다\n나누기"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_EDIT_CLEAR           "선택 부분을 지웁니다\n지우기"
+    ID_EDIT_CLEAR_ALL       "모든 것을 지웁니다\n모두 지우기"
+    ID_EDIT_COPY            "선택 부분을 복사하여 클립보드에 넣습니다\n복사"
+    ID_EDIT_CUT             "선택 부분을 잘라내어 클립보드에 넣습니다\n잘라내기"
+    ID_EDIT_FIND            "지정한 문자열을 찾습니다\n찾기"
+    ID_EDIT_PASTE           "클립보드의 내용을 붙여 넣습니다\n붙여넣기"
+    ID_EDIT_REPEAT          "마지막으로 실행한 동작을 반복합니다\n반복"
+    ID_EDIT_REPLACE         "지정한 문자열을 다른 문자열로 바꿉니다\n바꾸기"
+    ID_EDIT_SELECT_ALL      "문서 전체를 선택합니다\n전체 선택"
+    ID_EDIT_UNDO            "마지막으로 한 동작을 취소합니다\n실행 취소"
+    ID_EDIT_REDO            "이전에 취소한 동작을 다시 수행합니다\n다시 실행"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_VIEW_TOOLBAR         "도구 모음을 보이거나 감춥니다\n도구 모음 전환"
+    ID_VIEW_STATUS_BAR      "상태 표시줄을 표시하거나 감춥니다\n상태 표시줄 전환"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "창의 크기를 변경합니다"
+    AFX_IDS_SCMOVE          "창의 위치를 변경합니다"
+    AFX_IDS_SCMINIMIZE      "창을 아이콘으로 줄여서 표시합니다"
+    AFX_IDS_SCMAXIMIZE      "창을 최대 크기로 확장합니다"
+    AFX_IDS_SCNEXTWINDOW    "다음 문서 창으로 전환합니다"
+    AFX_IDS_SCPREVWINDOW    "이전 문서 창으로 전환합니다"
+    AFX_IDS_SCCLOSE         "현재 열린 창을 닫고 문서를 저장할 것인지를 묻습니다"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "창을 원래 크기로 복원합니다"
+    AFX_IDS_SCTASKLIST      "작업 목록을 활성화합니다"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "인쇄 미리 보기 모드를 닫습니다\n미리 보기 취소"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_MAIN                 "Display Main Information\nMain"
+    ID_BASIC                "Display Main Information\nBasic"
+    ID_SETTING              "Display Main Information\nSetting"
+    ID_MOTOR                "Display Main Information\nMotor"
+    ID_LIST                 "Display Main Information\nList"
+    ID_IO                   "Display Main Information\nI/O"
+    ID_LEVEL                "Display Main Information\nLevel"
+    ID_SAVE                 "Display Main Information\nSave"
+    ID_ALARM                "Display Main Information\nAlarm"
+    ID_ABOUT                "Display Main Information\nAbout"
+    ID_ADMIN                "Display Main Information\nAdmin"
+    ID_RESET                "Display Main Information\nReset"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_LOCK                 "Display Main Information\nLock"
+    ID_EXIT                 "Display Main Information\nExit"
+    ID_SET_MAINTENANCE      "Display Tower Lamp Information\nMaintenance"
+    ID_SET_TRAY             "Display Tower Lamp Information\nTray"
+    ID_SET_INTERFACE        "Display Tower Lamp Information\nInterface"
+    ID_SET_TEST_REFERENCE   "Display Tower Lamp Information\nTest Reference"
+    ID_MOTOR_XYZ_ROBOT      "Display Tower Lamp Information\nXYZ Robot"
+    ID_MOTOR_LOADER_SITE    "Display Tower Lamp Information\nLoader Site"
+    ID_MOTOR_UNLOADER_SITE  "Display Tower Lamp Information\nUnloader Site"
+    ID_MOTOR_TEST_SITE      "Display Tower Lamp Information\nTest Site"
+    ID_MOTOR_SPEED          "Display Motor Speed Information\nSpeed"
+    ID_LIST_OPERATION       "Display Tower Lamp Information\nOperation"
+    ID_LIST_WORK            "Display Tower Lamp Information\nWork"
+    ID_LIST_ALARM           "Display Tower Lamp Information\nAlarm"
+    ID_LIST_SOCKET          "Display Tower Lamp Information\nSocket"
+    ID_LIST_STEP            "Display Tower Lamp Information\nStep"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_WAIT                 "Display Main Information\nWait"
+    ID_MOTOR_MODULE_SITE    "Display Module Site Information\nModule Site"
+    ID_MOTOR_HEATSINK_SITE  "Display HeatSink Site Information\nHeatSink Site"
+    ID_MOTOR_MODULE_ROBOT   "Display Module Robot Information\nModule Robot"
+    ID_MOTOR_HEATSINK_ROBOT "Display HeatSink Robot Information\nHeatSink Robot"
+    ID_MOTOR_DISPENSER      "Display Dispenser Information\nDispenser"
+    ID_MOTOR_BASE           "Display Base Control Information\nBase Control"
+    ID_MOTOR_DISPENSER_TEST "Display Dispenser Test\nDispenser Test"
+    ID_SAVE_AS              "Display Main Information\nSave As"
+    ID_BARCODE_ON           "Display Main Information\nOn"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_BARCODE_OFF          "Display Main Information\nOff"
+    ID_PGM_INFO             "Display Main Information\nPgm Info"
+END
+
+#endif    // Korean resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ONLINE              ICON    DISCARDABLE     "res\\ico00003.ico"
+IDI_OFFLINE             ICON    DISCARDABLE     "res\\OffLine.ico"
+IDI_MODULE_B            ICON    DISCARDABLE     "res\\module_b.ico"
+IDI_MODULE              ICON    DISCARDABLE     "res\\ico00004.ico"
+IDI_DOUBLE              ICON    DISCARDABLE     "res\\picker_o.ico"
+IDI_N_WITH              ICON    DISCARDABLE     "res\\n_with.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_DATEPICKER_BUTTON   BITMAP  DISCARDABLE     "res\\datepick.bmp"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
+#ifdef _WIN32
+LANGUAGE 18, 1
+#pragma code_page(949)
+#endif //_WIN32
+#include "res\HANDLER.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.kor\afxres.rc"          // Standard components
+#include "l.kor\afxprint.rc"        // printing/print preview resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
