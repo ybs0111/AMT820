@@ -78,7 +78,7 @@ void CRun_LdTrayPlate::RunInit()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(4000, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8001, dWARNING, m_strAlarmCode);
 				mn_InitStep = 900;
 			}
 			break;
@@ -152,7 +152,7 @@ void CRun_LdTrayPlate::RunMove()
 			{
 				//930001 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR"
 				m_strAlarmCode.Format(_T("930001"));
-				CTL_Lib.Alarm_Error_Occurrence(21001, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8002, dWARNING, m_strAlarmCode);
 				mn_RunStep = 100;
 			}
 			else 
@@ -174,7 +174,7 @@ void CRun_LdTrayPlate::RunMove()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1101, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8003, dWARNING, m_strAlarmCode);
 				mn_RunStep = 300;
 			}
 			break;
@@ -213,7 +213,7 @@ void CRun_LdTrayPlate::RunMove()
 			else 
 			{
 				m_strAlarmCode.Format(_T("910002")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-				CTL_Lib.Alarm_Error_Occurrence(5530, dWARNING, m_strAlarmCode); 
+				CTL_Lib.Alarm_Error_Occurrence(8004, dWARNING, m_strAlarmCode); 
 			}
 			break;
 
@@ -230,7 +230,7 @@ void CRun_LdTrayPlate::RunMove()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1101, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(80051101, dWARNING, m_strAlarmCode);
 				mn_RunStep = 2100;
 			}
 			break;
@@ -245,7 +245,7 @@ void CRun_LdTrayPlate::RunMove()
 			else 
 			{
 				m_strAlarmCode.Format(_T("900001")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-				CTL_Lib.Alarm_Error_Occurrence(5550, dWARNING, m_strAlarmCode);			 
+				CTL_Lib.Alarm_Error_Occurrence(8006, dWARNING, m_strAlarmCode);			 
 			} 
 			break;
 
@@ -262,7 +262,7 @@ void CRun_LdTrayPlate::RunMove()
 					else 
 					{
 						m_strAlarmCode.Format(_T("910002")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-						CTL_Lib.Alarm_Error_Occurrence(5560, dWARNING, m_strAlarmCode);			 
+						CTL_Lib.Alarm_Error_Occurrence(8007, dWARNING, m_strAlarmCode);			 
 					} 					
 				}
 				else //if(st_tray_info[THD_LD_TRAY_PLATE].nTrayExist == CTL_NO)
@@ -271,7 +271,7 @@ void CRun_LdTrayPlate::RunMove()
 					if(nRet_1 == BD_GOOD)
 					{
 						m_strAlarmCode.Format(_T("910002")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-						CTL_Lib.Alarm_Error_Occurrence(5570, dWARNING, m_strAlarmCode); 
+						CTL_Lib.Alarm_Error_Occurrence(8008, dWARNING, m_strAlarmCode); 
 					}
 					else 
 					{
@@ -328,7 +328,7 @@ void CRun_LdTrayPlate::RunMove()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(5580, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8009, dWARNING, m_strAlarmCode);
 				mn_RunStep = 6000;
 			}
 			break; 
@@ -353,7 +353,7 @@ void CRun_LdTrayPlate::RunMove()
 				else 
 				{
 					m_strAlarmCode.Format(_T("910003")); //910003 1 A "LOAD_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-					CTL_Lib.Alarm_Error_Occurrence(5590, dWARNING, m_strAlarmCode);			 
+					CTL_Lib.Alarm_Error_Occurrence(8010, dWARNING, m_strAlarmCode);			 
 				} 
 			}
 			break;
@@ -383,7 +383,7 @@ void CRun_LdTrayPlate::RunMove()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(5580, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8011, dWARNING, m_strAlarmCode);
 				mn_RunStep = 9000;
 			}
 			break; 

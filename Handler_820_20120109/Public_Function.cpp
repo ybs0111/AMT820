@@ -8,6 +8,7 @@
 #include "FastechPublic_IO.h"
 #include "DataAPI.h"
 #include <nb30.h>
+#include "Run_Device_Carrier_Robot.h"
 
 typedef struct _ASTAT_ 
 { 
@@ -4498,6 +4499,7 @@ int CPublic_Function::Check_Carrier_MoveUp_Enable( int nMode)
 //3 .Mode = 2 밀고 복귀상태
 int CPublic_Function::Check_BeforeMoveUnPressRbt( int nMode )
 {
+	return RET_GOOD;
 	int nFuncRet = RET_ERROR;
 	int nRet[40]= {0,};
 
@@ -4644,7 +4646,7 @@ void CPublic_Function::VppmSet()
 
 	double  fTemp ;
 
-	if(st_basic.n_mode_7387 == 0)
+	if(st_basic.n_mode_7387 == CTL_YES)
 		fTemp = (st_recipe.fDispenserVppmA/60);
 	else
 		fTemp = 0;
@@ -4839,7 +4841,8 @@ void CPublic_Function::OnBcrReader() //input bcr reader
 	// 	st_sync.n_barcode_read_serial_num[0][CTL_LEFT] = 0;
 	// 	st_sync.n_barcode_read_serial_num[0][CTL_RIGHT] = 0;
 	st_sync.n_barcode_read_serial_num[0][0] = -1;
-	st_work.strBarcodeRecive = "";//수신 메세지 초기화
+// 	st_work.strBarcodeRecive = "";//수신 메세지 초기화
+	st_msg.mstr_barcode = "";
 	
 	strBcrCommand.Format("%cLON%c", 0x02, 0x03);//바코드 리더기 읽기 시작 명령
 	st_serial.str_snd[BCR_PORT -1] = strBcrCommand;

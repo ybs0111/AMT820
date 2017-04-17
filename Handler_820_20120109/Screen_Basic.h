@@ -61,28 +61,20 @@ public:
 	CEXDigitST	m_dgt_Rubb;
 	CEXDigitST	m_dgt_Pick_Retry_Cnt;
 	CEXDigitST	m_dgt_Partial_Cnt;
-	CEXDigitST	m_dgt_Offset_Dis;
-	CEXDigitST	m_dgt_Offset_30;
-	CEXDigitST	m_dgt_Offset_20;
-	CEXDigitST	m_dgt_Offset_10;
-	CEXDigitST	m_dgt_Offset;
+	
 	CEXDigitST	m_dgt_Epoxy_Y;
 	CEXDigitST	m_dgt_Epoxy_X;
 	CEXDigitST	m_dgt_Elv_Partial_Cnt;
 	CEXDigitST	m_dgt_7387_Alarm_Cnt;
 	CGradientStatic	m_msg_Epoxy_Y;
-	CGradientStatic	m_msg_Offset_30;
-	CGradientStatic	m_msg_Offset_20;
-	CGradientStatic	m_msg_Offset_10;
-	CGradientStatic	m_msg_Offset;
+	
 	CGradientStatic	m_msg_Epoxy_X;
-	CGradientStatic	m_msg_Distance;
 	CXPGroupBox	m_group_Rubb_Cnt;
 	CXPGroupBox	m_group_Pick_Retry_Cnt;
 	CXPGroupBox	m_group_Patial_Cnt;
 	CXPGroupBox	m_group_Epoxy_Offset;
 	CXPGroupBox	m_group_Elv_Partial_Cnt;
-	CXPGroupBox	m_group_Carrier_Move;
+	
 	CXPGroupBox	m_group_7387_Alarm_Cnt;
 	CButtonST	m_btn_delete;
 	CButtonST	m_btn_create;
@@ -127,12 +119,7 @@ public:
 	double			dEpoxyXLineOffSet[2];
 	double			dEpoxyYLineOffSet[2];
 	
-	double			dHSCarrierSpreadMoveOffset[2];
-	double			dHSCarrierSpreadMoveDistance[2];
-	double			dHeatSinkCarrierSpreadMove1Offset[2];
-	double			dHeatSinkCarrierSpreadMove2Offset[2];
-	double			dHeatSinkCarrierSpreadMove3Offset[2];
-
+	
 	//kwlee 2017.0406
 	double	m_dLoaderTransferTrayDeviceGap[2];
 	DWORD m_dSatbleTime[2];
@@ -236,11 +223,6 @@ protected:
 	afx_msg void OnBtnDelete();
 	afx_msg void OnDgtEpoxyX();
 	afx_msg void OnDgtEpoxyY();
-	afx_msg void OnDgtOffset();
-	afx_msg void OnDgtOffset10();
-	afx_msg void OnDgtOffset20();
-	afx_msg void OnDgtOffset30();
-	afx_msg void OnDgtOffsetDis();
 	afx_msg void OnDgtRubb();
 	afx_msg void OnDgt7387AlarmCnt();
 	afx_msg void OnDgtElvPartialCnt();

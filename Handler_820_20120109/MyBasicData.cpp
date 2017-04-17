@@ -1119,6 +1119,8 @@ void CMyBasicData::OnBasic_Data_Load()
 	}
 	else  st_basic.n_mode_interface = mn_chk;
 	
+	
+
 
 	:: GetPrivateProfileString("BASIC", "DEVICE_MODE", "0", chr_data, 10, str_load_file);
 	mn_chk = atoi(chr_data);
@@ -1325,21 +1327,40 @@ void CMyBasicData::OnBasic_Data_Load()
 	:: GetPrivateProfileString("BASIC", "EPOXY_Y_OFFSET", "0", chr_data, 10, str_load_file);
 	st_basic.dEpoxyYLineOffSet = atof(chr_data);
 
-	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", "0", chr_data, 10, str_load_file);
-	st_basic.dHSCarrierSpreadMoveOffset = atof(chr_data);
+	//kwlee 2017.0417
+	:: GetPrivateProfileString("RECIPE", "CARRIER_MOVE_OFFSET", "0", chr_data, 10, str_load_file);
+	st_recipe.dHSCarrierSpreadMoveOffset = atof(chr_data);
 
-	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", "0", chr_data, 10, str_load_file);
-	st_basic.dHSCarrierSpreadMoveDistance = atof(chr_data);
+	:: GetPrivateProfileString("RECIPE", "CARRIER_MOVE_DISTANCE", "0", chr_data, 10, str_load_file);
+	st_recipe.dHSCarrierSpreadMoveDistance = atof(chr_data);
 
-	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", "0", chr_data, 10, str_load_file);
-	st_basic.dHeatSinkCarrierSpreadMove1Offset = atof(chr_data);
+	:: GetPrivateProfileString("RECIPE", "CARRIER_MOVE_10_OFFSET", "0", chr_data, 10, str_load_file);
+	st_recipe.dHeatSinkCarrierSpreadMove1Offset = atof(chr_data);
 
-	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", "0", chr_data, 10, str_load_file);
-	st_basic.dHeatSinkCarrierSpreadMove2Offset = atof(chr_data);
+	:: GetPrivateProfileString("RECIPE", "CARRIER_MOVE_20_OFFSET", "0", chr_data, 10, str_load_file);
+	st_recipe.dHeatSinkCarrierSpreadMove2Offset = atof(chr_data);
 
-	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", "0", chr_data, 10, str_load_file);
-	st_basic.dHeatSinkCarrierSpreadMove3Offset = atof(chr_data);
+	:: GetPrivateProfileString("RECIPE", "CARRIER_MOVE_30_OFFSET", "0", chr_data, 10, str_load_file);
+	st_recipe.dHeatSinkCarrierSpreadMove3Offset = atof(chr_data);
 	
+	//kwlee 2017.0416
+	:: GetPrivateProfileString("RECIPE", "dHeatsinkRubXOffset", "0", chr_data, 10, str_load_file);
+	st_recipe.dHeatsinkRubXOffset = atof(chr_data);
+	
+	:: GetPrivateProfileString("RECIPE", "dHeatsinkRubYOffset", "0", chr_data, 10, str_load_file);
+	st_recipe.dHeatsinkRubYOffset = atof(chr_data);
+	
+
+	:: GetPrivateProfileString("RECIPE", "nEpoxyUseLimitCont", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.nEpoxyUseLimitCont = 0;
+		mstr_temp.Format("%d",st_recipe.nEpoxyUseLimitCont);
+		:: WritePrivateProfileString("RECIPE", "nEpoxyUseLimitCont", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.nEpoxyUseLimitCont = mn_chk;
+
 	//kwlee 2017.0406
 	:: GetPrivateProfileString("RECIPE", "dLoaderTransferTrayDeviceGap", "0", chr_data, 10, str_load_file);
 	st_recipe.dLoaderTransferTrayDeviceGap = atof(chr_data);
@@ -1671,21 +1692,31 @@ void CMyBasicData::OnBasic_Data_Save()
 	mstr_temp.Format("%0.2f", st_basic.dEpoxyYLineOffSet);
 	:: WritePrivateProfileString("BASIC", "EPOXY_Y_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveOffset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHSCarrierSpreadMoveOffset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveDistance);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHSCarrierSpreadMoveDistance);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove1Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove1Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove2Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove2Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove3Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove3Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
+	//kwlee 2017.0416
+	mstr_temp.Format("%0.2f", st_recipe.dHeatsinkRubXOffset);
+	:: WritePrivateProfileString("RECIPE", "dHeatsinkRubXOffset", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dHeatsinkRubYOffset);
+	:: WritePrivateProfileString("RECIPE", "dHeatsinkRubYOffset", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nEpoxyUseLimitCont);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyUseLimitCont", LPCTSTR(mstr_temp), str_save_file);
+
 	mstr_temp.Format("%d", st_basic.n_count_retry);
 	:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
 
@@ -1875,6 +1906,22 @@ void CMyBasicData::OnInterface_Data_Load()
 		:: GetPrivateProfileString("SERIAL", str_name, "0", ch_data, 20, st_path.mstr_file_basic);
 		rs_232.n_serial_parity[i] = atoi(ch_data);	
 	}
+
+	//kwlee 2017.0414
+	:: GetPrivateProfileString("BASIC", "CIP_REAR", "", ch_data, 16, st_path.mstr_basic);
+	str_tmp = ch_data;
+	str_tmp.MakeUpper();     // 문자열 대문자로 변경
+	str_tmp.TrimLeft(' ');   // 좌측 문자열 공백 제거              
+	str_tmp.TrimRight(' ');  // 우측 문자열 공백 제거	
+	st_client[CLS_REAR].str_ip = str_tmp;
+	
+	:: GetPrivateProfileString("BASIC", "CPORT_REAR", "", ch_data, 10, st_path.mstr_basic);
+	str_tmp = ch_data;
+	str_tmp.MakeUpper();     // 문자열 대문자로 변경
+	str_tmp.TrimLeft(' ');   // 좌측 문자열 공백 제거              
+	str_tmp.TrimRight(' ');  // 우측 문자열 공백 제거
+	st_client[CLS_REAR].n_port = atoi(str_tmp);
+	//
 
 	:: GetPrivateProfileString("Interface", "EQUIP_ID", "", ch_data, 20, st_path.mstr_basic);
 	str_tmp = ch_data;
@@ -2099,24 +2146,36 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
 	mstr_temp.Format("%0.2f", st_basic.dEpoxyYLineOffSet);
 	:: WritePrivateProfileString("BASIC", "EPOXY_Y_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 
-	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveOffset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
-	
-	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveDistance);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
-	
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove1Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
-
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove2Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
-	
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove3Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
-	
 	mstr_temp.Format("%d", st_basic.n_count_retry);
 	:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
 
+
+	
+	//kwlee 2017.0417
+	mstr_temp.Format("%0.2f", st_recipe.dHSCarrierSpreadMoveOffset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dHSCarrierSpreadMoveDistance);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove1Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove2Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove3Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	//kwlee 2017.0416
+	mstr_temp.Format("%0.2f", st_recipe.dHeatsinkRubXOffset);
+	:: WritePrivateProfileString("RECIPE", "dHeatsinkRubXOffset", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dHeatsinkRubYOffset);
+	:: WritePrivateProfileString("RECIPE", "dHeatsinkRubYOffset", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nEpoxyUseLimitCont);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyUseLimitCont", LPCTSTR(mstr_temp), str_save_file);
 
 	//kwlee 2017.0406
 	mstr_temp.Format("%0.2f", st_recipe.dLoaderTransferTrayDeviceGap);

@@ -19,6 +19,7 @@
 #include "Run_LdTrayPlate.h"
 #include "Run_LdPicker.h"
 #include "Run_DvcLdBuffer.h"
+#include "Cmmsdk.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -41,6 +42,7 @@ void CDialog_Manual_Move::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDialog_Manual_Move)
+	DDX_Control(pDX, IDC_COMBO_MOVE_EPOXY, m_cbo_epoxy);
 	DDX_Control(pDX, IDC_COMBO_MOVE_VISION, m_cbo_vision);
 	DDX_Control(pDX, IDC_COMBO_MOVE_HEATSINK, m_cbo_hs_rub);
 	DDX_Control(pDX, IDC_COMBO_MOVE_CARRIER, m_cbo_carrier);
@@ -66,6 +68,16 @@ BEGIN_MESSAGE_MAP(CDialog_Manual_Move, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON1, OnButton1)
 	ON_BN_CLICKED(IDC_BTN_VISION_GO, OnBtnVisionGo)
 	ON_BN_CLICKED(IDC_BUTTON15, OnButton15)
+	ON_BN_CLICKED(IDC_BTN_EPOXY_GO, OnBtnEpoxyGo)
+	ON_BN_CLICKED(IDC_BUTTON18, OnButton18)
+	ON_BN_CLICKED(IDC_BTN_CLEAN_EPOXY, OnBtnCleanEpoxy)
+	ON_BN_CLICKED(IDC_BTN_INIT, OnBtnInit)
+	ON_BN_CLICKED(IDC_BTN_CLAMP, OnBtnClamp)
+	ON_BN_CLICKED(IDC_BTN_CLAMP_CO, OnBtnClampCo)
+	ON_BN_CLICKED(IDC_BTN_TORQUE, OnBtnTorque)
+	ON_BN_CLICKED(IDC_BUTTON3, OnButton3)
+	ON_BN_CLICKED(IDC_BUTTON4, OnButton4)
+	ON_BN_CLICKED(IDC_BTN_EPOXY_OUT, OnBtnEpoxyOut)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -390,6 +402,8 @@ void CDialog_Manual_Move::Init_Timer()
 	KillTimer(TM_LOAD_PLATE);
 	KillTimer(TM_LOADER_MOVE);
 	KillTimer(TM_DVCBUFFER);
+	KillTimer(TM_PITCH_CHK_ALARM);
+	KillTimer(TM_EPOXY_OUT);
 
 
 	for ( i = 0; i<100; i++)
@@ -420,6 +434,11 @@ void CDialog_Manual_Move::Init_Timer()
 	m_nhsexystop = 0;
 	m_nvisionstop = 0;
 	m_hs_vision = -1;
+	m_nEpoxyStop = 0;
+	m_hs_epoxy = -1;
+	mn_epoxy_clean = -1;
+	m_pitch_step = 0;
+	m_epoxy_out_step = -1;
 
 	for( i = 0; i < 4; i++ )
 	{
@@ -491,7 +510,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-				CTL_Lib.Alarm_Error_Occurrence(6050, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10001, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 10;
 			}
 			break; 			
@@ -506,7 +525,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			else if( nRet_1 == RET_ERROR )
 			{
 				//동작중에는 자재없음 알람발생.
-				//CTL_Lib.Alarm_Error_Occurrence(2100, dWARNING, Run_LdStacker_Elvator.m_strAlarmCode);
+				//CTL_Lib.Alarm_Error_Occurrence(10002, dWARNING, Run_LdStacker_Elvator.m_strAlarmCode);
 			}
 			break;
 
@@ -515,7 +534,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			if(nRet_1 == BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
 			{
 				m_strAlarmCode.Format(_T("910002")); //910002 1 A "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-				CTL_Lib.Alarm_Error_Occurrence(6060, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10003, dWARNING, m_strAlarmCode);
 			}
 			else if(nRet_1 == BD_ERROR)//로더 플레이드에 트레이가 감지 되지않은 상태 
 			{
@@ -536,7 +555,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-				CTL_Lib.Alarm_Error_Occurrence(6050, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10004, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 210;
 			}
 			break; 
@@ -603,7 +622,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(375, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10005, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 1110;
 			}
 			break;
@@ -621,7 +640,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			{
 				if(nRet_1 == IO_ON) m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Stacker_Tray_Holder2_On_Check); 
 				else m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Stacker_Tray_Holder2_On_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(6120, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10006, dWARNING, m_strAlarmCode);
 			}
 			break;
 
@@ -636,7 +655,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 					mn_retry_cnt = 0;
 
 					m_strAlarmCode.Format(_T("9100%d2"), m_nAxisNum); //910002 1 A "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-					CTL_Lib.Alarm_Error_Occurrence(6110, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10007, dWARNING, m_strAlarmCode);
 				}
 				m_move_step[m_nAxisNum] = 1310;
 				break;
@@ -651,7 +670,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			{
 				if(nRet_1 == IO_ON) m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Stacker_Tray_Holder2_On_Check); 
 				else						 m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Stacker_Tray_Holder2_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(6120, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10008, dWARNING, m_strAlarmCode);
 			}
 			break;
 
@@ -672,7 +691,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 				{
 					mn_retry_cnt = 0;
 					m_strAlarmCode.Format(_T("910002")); //910002 1 A "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-					CTL_Lib.Alarm_Error_Occurrence(6110, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10009, dWARNING, m_strAlarmCode);
 				}
 				m_move_step[m_nAxisNum] = 1310;
 				break;
@@ -689,7 +708,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			{
 				if(nRet_1 == IO_ON) m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Stacker_Tray_Holder2_On_Check); 
 				else						 m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Stacker_Tray_Holder2_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(6120, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10010, dWARNING, m_strAlarmCode);
 			}
 			break;
 
@@ -716,7 +735,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			if(nRet_1 == IO_OFF)//if(nRet_1 == BD_ERROR) //로더 플레이트에 트레이가 감지 된 상태 
 			{
 				m_strAlarmCode.Format(_T("910003")); //910003 1 A "LOAD_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-				CTL_Lib.Alarm_Error_Occurrence(6140, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10011, dWARNING, m_strAlarmCode);
 				break;
 			}
 			nLdPlate_Tray_Supply_Req[THD_LD_STACKER] = CTL_READY;
@@ -733,7 +752,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			if(nRet_1 == IO_OFF)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Stacker_Tray_Exist_Check);
-				CTL_Lib.Alarm_Error_Occurrence(6150, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10012, dWARNING, m_strAlarmCode);
 				break;
 			}
 			
@@ -748,7 +767,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{ 
-				CTL_Lib.Alarm_Error_Occurrence(6150, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10013, dWARNING, alarm.mstr_code);
 				
 				if (st_handler.cwnd_list != NULL)  
 				{
@@ -771,7 +790,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{ 
-				CTL_Lib.Alarm_Error_Occurrence(6160, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10014, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2010;
 			}
 			break;
@@ -788,7 +807,7 @@ int CDialog_Manual_Move::Move_TrayElv1()
 			{//트레이 존재가 존재한다  		
 				
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Stacker_Tray_Exist_Check);
-				CTL_Lib.Alarm_Error_Occurrence(6180, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10015, dWARNING, m_strAlarmCode);
 			}			 
 			break;
 	}
@@ -815,7 +834,7 @@ int CDialog_Manual_Move::Move_TrayElv2()
 			}
 			else if( nRet_1 == RET_ERROR )
 			{
-				CTL_Lib.Alarm_Error_Occurrence(2100, dWARNING, Run_EmptyStacker_Elvator.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10100, dWARNING, Run_EmptyStacker_Elvator.m_strAlarmCode);
 			}
 			break;
 
@@ -824,7 +843,7 @@ int CDialog_Manual_Move::Move_TrayElv2()
 			if(nRet_1 == BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
 			{
 				m_strAlarmCode.Format(_T("910102")); //910102 1 A "EMPTY_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-				CTL_Lib.Alarm_Error_Occurrence(6060, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10101, dWARNING, m_strAlarmCode);
 			}
 			else if(nRet_1 == BD_ERROR)//로더 플레이드에 트레이가 감지 되지않은 상태 
 			{
@@ -844,7 +863,7 @@ int CDialog_Manual_Move::Move_TrayElv2()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-				CTL_Lib.Alarm_Error_Occurrence(6050, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10103, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 300;
 			}
 			break; 
@@ -856,7 +875,7 @@ int CDialog_Manual_Move::Move_TrayElv2()
 				m_move_step[m_nAxisNum] = 500;
 				break;
 				//m_strAlarmCode.Format(_T("910103")); //910103 1 A "EMPTY_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-				//CTL_Lib.Alarm_Error_Occurrence(4100, dWARNING, m_strAlarmCode);
+				//CTL_Lib.Alarm_Error_Occurrence(10104, dWARNING, m_strAlarmCode);
 			}
 			else if(nRet_1 == BD_ERROR)
 			{
@@ -880,7 +899,7 @@ int CDialog_Manual_Move::Move_TrayElv2()
 					m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Unloading_Stacker_Tray_Exist_Check);  
 				else
 					m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Unloading_Stacker_Tray_Ready_Check);  
-				CTL_Lib.Alarm_Error_Occurrence(4110, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10105, dWARNING, m_strAlarmCode);
 			}
 			break;
 
@@ -907,7 +926,7 @@ int CDialog_Manual_Move::Move_TrayElv2()
 			if(nRet_1 == RET_GOOD)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Unloading_Stacker_Tray_Exist_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(4130, dWARNING, m_strAlarmCode); 
+				CTL_Lib.Alarm_Error_Occurrence(10106, dWARNING, m_strAlarmCode); 
 
 				m_move_step[m_nAxisNum] = 1000;
 			}
@@ -968,7 +987,7 @@ int CDialog_Manual_Move::Move_TrayElv2()
 						{
 							m_nRetry = 0;
 							m_strAlarmCode.Format(_T("900004")); //900001 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR" //kwlee 2016.0902 "900000" ->"900004"
-							CTL_Lib.Alarm_Error_Occurrence(4180, dWARNING, m_strAlarmCode);
+							CTL_Lib.Alarm_Error_Occurrence(10107, dWARNING, m_strAlarmCode);
 						}
 						m_move_step[m_nAxisNum] = 3200;
 						
@@ -1014,7 +1033,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1501, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10108, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 100;
 			}
 			break;
@@ -1032,7 +1051,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1501, dWARNING, Run_EmptyTrayTransfer.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10109, dWARNING, Run_EmptyTrayTransfer.m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 100;
 			}
 			break;
@@ -1081,7 +1100,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 				if(nRet_1 == IO_OFF)
 				{	//트레이가 없어서 에러발생  
 					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Tray_Vacuum_On_Check); 
-					CTL_Lib.Alarm_Error_Occurrence(4630, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10110, dWARNING, m_strAlarmCode);
 					break;
 				}	
 
@@ -1101,7 +1120,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 				if(nRet_1 == IO_ON)
 				{//트레이 있으면 알람 
 					m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Tray_Vacuum_On_Check); 
-					CTL_Lib.Alarm_Error_Occurrence(4640, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10111, dWARNING, m_strAlarmCode);
 					break;
 				}
 
@@ -1145,7 +1164,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1501, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10112, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 1110;
 			}
 			break;
@@ -1170,7 +1189,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-				CTL_Lib.Alarm_Error_Occurrence(4660, dWARNING,  alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10113, dWARNING,  alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 1200;
 			}
 			break; 
@@ -1204,7 +1223,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1501, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10114, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 2010;
 			}
 			break;
@@ -1234,7 +1253,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-				CTL_Lib.Alarm_Error_Occurrence(4680, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10115, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2000;
 			}
 			break; 
@@ -1247,7 +1266,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 				if(nRet_1 != IO_ON)//BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
 				{
 					m_strAlarmCode.Format(_T("910003")); //910003 1 A "LOAD_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-					CTL_Lib.Alarm_Error_Occurrence(4690, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10116, dWARNING, m_strAlarmCode);
 					break;
 				}	
 			}
@@ -1294,7 +1313,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(4710, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10117, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 3100;
 			}
 			break;
@@ -1322,7 +1341,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 				else if(nRet_1 == RET_ERROR)
 				{
 					Run_EmptyTrayTransfer.Set_Tray_Remover_Z_UpDown(IO_OFF); 
-					CTL_Lib.Alarm_Error_Occurrence(4720, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10118, dWARNING, m_strAlarmCode);
 					m_move_step[m_nAxisNum] = 2000;
 				}
 			}
@@ -1337,7 +1356,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 				else if(nRet_1 == RET_ERROR)
 				{
 					Run_EmptyTrayTransfer.Set_Tray_Remover_Z_UpDown(IO_OFF); 
-					CTL_Lib.Alarm_Error_Occurrence(4730, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10119, dWARNING, m_strAlarmCode);
 					m_move_step[m_nAxisNum] = 2000;
 				}
 			} 
@@ -1356,7 +1375,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1501, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10120, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 3300;
 			}
 			break;
@@ -1372,7 +1391,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 				else
 				{	//트레이 있어야 한다 
 					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Tray_Vacuum_On_Check); 
-					CTL_Lib.Alarm_Error_Occurrence(4750, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10121, dWARNING, m_strAlarmCode);
 					break;
 				}	
 			}
@@ -1387,7 +1406,7 @@ int CDialog_Manual_Move::Move_TrayTransfer()
 				{
 					//트레이 없어야 한다 
 					m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Tray_Vacuum_On_Check); 
-					CTL_Lib.Alarm_Error_Occurrence(4760, dWARNING, m_strAlarmCode); 
+					CTL_Lib.Alarm_Error_Occurrence(10122, dWARNING, m_strAlarmCode); 
 				}	
 			} 
 			break;
@@ -1489,7 +1508,7 @@ int CDialog_Manual_Move::CarrierTopForward( int nMode )
 		case 0:
 			if( nMode < 0 || nMode > 1 )
 			{//902000 1 A "THERE_IS_NO_MODE_IN_CARRIER_TOP_FORWARD."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "902000");
+				CTL_Lib.Alarm_Error_Occurrence(10301, dWARNING, "902000");
 				//nFuncRet = RET_ERROR;
 				break;
 			}
@@ -1525,7 +1544,7 @@ int CDialog_Manual_Move::CarrierTopForward( int nMode )
 			}
 // 			else
 // 			{//950000 1 A "PRESS_CARRIER_TYPE_CHECK_ERROR_PS2312_PS2313_PS2314."
-// 				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, "950000");
+// 				CTL_Lib.Alarm_Error_Occurrence(10302, dWARNING, "950000");
 // 				//nFuncRet = RET_ERROR;
 // 				break;
 // 			}
@@ -1709,7 +1728,7 @@ int CDialog_Manual_Move::CarrierMoveDown()
 // 			{
 // 				nRetryCyl = 0;
 // 				strTmp.Format("8%d%04d", IO_OFF, st_io.i_Slide_Guide_X1_Backward_Check);
-// 				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, strTmp);
+// 				CTL_Lib.Alarm_Error_Occurrence(10303, dWARNING, strTmp);
 // 			}
 // 			mn_RunDownStep = 200;
 		}
@@ -1967,7 +1986,7 @@ int CDialog_Manual_Move::CarrierBtmForwrad()
 		{
 			//if( nRet_1 == IO_OFF ) strTmp.Format("8%d%04d", IO_OFF, st_io.i_Carrier_Z_1_Down_Check);
 			//else                          strTmp.Format("8%d%04d", IO_ON, st_io.i_Carrier_Z_2_Down_Check);
-			//CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, strTmp);
+			//CTL_Lib.Alarm_Error_Occurrence(10304, dWARNING, strTmp);
 // 			nFuncRet = RET_ERROR;
 		}
 		break;
@@ -2000,7 +2019,7 @@ int CDialog_Manual_Move::CarrierBtmForwrad()
 		{
 			//if( nRet_1 == IO_OFF ) strTmp.Format("8%d%04d", IO_ON, st_io.i_Carrier_Z_1_Down_Check);
 			//else                          strTmp.Format("8%d%04d", IO_OFF, st_io.i_Carrier_Z_2_Down_Check);
-			//CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, strTmp);
+			//CTL_Lib.Alarm_Error_Occurrence(10305, dWARNING, strTmp);
 		}
 		break;
 		
@@ -2093,7 +2112,7 @@ int CDialog_Manual_Move::Check_Carrier_Move_Enable( int nMode)
 			else if( nRet[16] == IO_OFF ) stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Up_Check);
 			else/* if( nRet[17] != IO_ON )*/ stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Down_Check);
 			
-			CTL_Lib.Alarm_Error_Occurrence(1100, dWARNING, stralarm);
+			CTL_Lib.Alarm_Error_Occurrence(10310, dWARNING, stralarm);
 		}
 	}
 	else if ( nMode == 1 )//상단 민 상태
@@ -2115,7 +2134,7 @@ int CDialog_Manual_Move::Check_Carrier_Move_Enable( int nMode)
 		}
 		else
 		{
-			CTL_Lib.Alarm_Error_Occurrence(1100, dWARNING, "931001");
+			CTL_Lib.Alarm_Error_Occurrence(10311, dWARNING, "931001");
 		}
 	}
 	else if( nMode == 2 )//2 상단 다운 상태
@@ -2136,7 +2155,7 @@ int CDialog_Manual_Move::Check_Carrier_Move_Enable( int nMode)
 		}
 		else
 		{
-			CTL_Lib.Alarm_Error_Occurrence(1100, dWARNING, "931002");
+			CTL_Lib.Alarm_Error_Occurrence(10312, dWARNING, "931002");
 		}
 	}
 	else if(nMode == 3)//3 한다 업 상태
@@ -2157,12 +2176,12 @@ int CDialog_Manual_Move::Check_Carrier_Move_Enable( int nMode)
 		}
 		else
 		{
-			CTL_Lib.Alarm_Error_Occurrence(1100, dWARNING, "931003");
+			CTL_Lib.Alarm_Error_Occurrence(10313, dWARNING, "931003");
 		}
 	}
 	else
 	{
-		CTL_Lib.Alarm_Error_Occurrence(1100, dWARNING, "931004");
+		CTL_Lib.Alarm_Error_Occurrence(10314, dWARNING, "931004");
 	}
 	
 	return nFuncRet;
@@ -2536,7 +2555,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10401, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 210;
 			}
 			break;
@@ -2563,7 +2582,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10402, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 210;
 			}
 			break;
@@ -2671,7 +2690,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 				mCurrPosX < ( st_motor[m_nAxisNum].md_pos[P_CARRIER_X_UNPRESS_POS] - st_motor[m_nAxisNum].mn_allow ) ) )
 			{
 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
+				CTL_Lib.Alarm_Error_Occurrence(10403, dWARNING, "070008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -2679,7 +2698,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			if( m_nTrayDeviceGap == 0 && ( mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS".
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
+				CTL_Lib.Alarm_Error_Occurrence(10404, dWARNING, "020008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -2707,7 +2726,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10405, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2000;
 			}
 			break;
@@ -2725,7 +2744,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10406, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2000;
 			}
 			break;
@@ -2754,7 +2773,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			if( m_nTrayDeviceGap == 0 && ( mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS".
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
+				CTL_Lib.Alarm_Error_Occurrence(10407, dWARNING, "020008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -2786,7 +2805,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 				}
 				else if(nRet_1 == RET_ERROR || nRet_2 == RET_ERROR)
 				{
-					//CTL_Lib.Alarm_Error_Occurrence(1101, dWARNING, m_strAlarmCode);
+					//CTL_Lib.Alarm_Error_Occurrence(10408, dWARNING, m_strAlarmCode);
 					//m_move_step[m_nAxisNum] = 2200;
 				}
 			}
@@ -2795,12 +2814,12 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 				if( nRet[0] != IO_ON || nRet[2] != IO_ON)
 				{
 					m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_Press_Up_Check);
-					CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10409, dWARNING, m_strAlarmCode);
 				}
 				else if( nRet[1] != IO_OFF || nRet[3] != IO_OFF)
 				{
 					m_strAlarmCode.Format("8%d%04d", IO_OFF, st_io.i_Press_Down_Check);
-					CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10410, dWARNING, m_strAlarmCode);
 				}
 			}
 			break;
@@ -2830,7 +2849,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 				mCurrPosX < ( st_motor[m_nAxisNum].md_pos[P_CARRIER_X_UNPRESS_POS] - st_motor[m_nAxisNum].mn_allow ) ) )
 			{
 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
+				CTL_Lib.Alarm_Error_Occurrence(10411, dWARNING, "070008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -2848,7 +2867,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10412, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2300;
 			}
 			break;
@@ -2878,7 +2897,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 				mCurrPosX < ( st_motor[m_nAxisNum].md_pos[P_CARRIER_X_UNPRESS_POS] - st_motor[m_nAxisNum].mn_allow ) ) )
 			{
 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
+				CTL_Lib.Alarm_Error_Occurrence(10413, dWARNING, "070008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -2895,7 +2914,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10414, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2300;
 			}
 			break;
@@ -2905,7 +2924,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			if( g_ioMgr.get_in_bit(st_io.i_Press_UpDown_CellIn_Check, IO_ON) != IO_ON)
 			{
 				m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_Press_UpDown_CellIn_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10415, dWARNING, m_strAlarmCode);
 				break;
 			}
 			//Run_UnPress_Robot.Set_Device_Carrier_Holder(OFF);
@@ -2952,7 +2971,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 				( mCurrPosX < ( st_motor[m_nAxisNum].md_pos[P_CARRIER_X_UNPRESS_POS] - st_motor[m_nAxisNum].mn_allow ) ) )
 			{
 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
+				CTL_Lib.Alarm_Error_Occurrence(10416, dWARNING, "070008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -2969,7 +2988,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10417, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2400;
 			}
 			break;	
@@ -3000,7 +3019,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 				}
 				else if(nRet_1 == RET_ERROR)
 				{
-// 					CTL_Lib.Alarm_Error_Occurrence(1101, dWARNING, m_strAlarmCode);
+// 					CTL_Lib.Alarm_Error_Occurrence(10418, dWARNING, m_strAlarmCode);
 // 					m_move_step[m_nAxisNum] = 2420;
 				}
 			}
@@ -3009,12 +3028,12 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 				if( nRet[0] != IO_OFF || nRet[2] != IO_OFF)
 				{
 					m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_Press_Up_Check);
-					CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10419, dWARNING, m_strAlarmCode);
 				}
 				else if( nRet[1] != IO_ON || nRet[3] != IO_ON)
 				{
 					m_strAlarmCode.Format("8%d%04d", IO_OFF, st_io.i_Press_Down_Check);
-					CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10420, dWARNING, m_strAlarmCode);
 				}
 			}
 			break;
@@ -3083,7 +3102,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 				( mCurrPosX < ( st_motor[m_nAxisNum].md_pos[P_CARRIER_X_UNPRESS_POS] - st_motor[m_nAxisNum].mn_allow ) ) )
 			{
 				//070008 1 0 "M_CARRIER_X_MOTOR_IS_NON_SAFETY_POS."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "070008");
+				CTL_Lib.Alarm_Error_Occurrence(10421, dWARNING, "070008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -3100,7 +3119,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10422, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2600;
 			}
 			break;
@@ -3125,7 +3144,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			if( mCurrPosY > ( st_motor[m_nAxisNum].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nAxisNum].mn_allow )  )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
+				CTL_Lib.Alarm_Error_Occurrence(10423, dWARNING, "020008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -3142,7 +3161,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10424, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2700;
 			}
 			break;
@@ -3185,7 +3204,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			if(  mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS".
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
+				CTL_Lib.Alarm_Error_Occurrence(10425, dWARNING, "020008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -3203,7 +3222,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10426, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 3100;
 			}
 			break;
@@ -3231,7 +3250,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			if( m_nTrayDeviceGap == 0 && ( mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS".
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
+				CTL_Lib.Alarm_Error_Occurrence(10427, dWARNING, "020008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -3297,7 +3316,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			if(  mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
+				CTL_Lib.Alarm_Error_Occurrence(10428, dWARNING, "020008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -3316,7 +3335,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10429, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 3200;
 			}
 			break;
@@ -3377,7 +3396,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			if(  mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
+				CTL_Lib.Alarm_Error_Occurrence(10430, dWARNING, "020008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -3396,7 +3415,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10431, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 3400;
 			}
 			break;
@@ -3429,7 +3448,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			if(  mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) )
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS."
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, "020008");
+				CTL_Lib.Alarm_Error_Occurrence(10432, dWARNING, "020008");
 				COMI.Set_MotStop( 0 , m_nAxisNum);
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
@@ -3447,7 +3466,7 @@ int CDialog_Manual_Move::Move_UnPressTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10433, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 3500;
 			}
 			break;
@@ -3520,7 +3539,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10501, dWARNING, alarm.mstr_code);
 				mn_SafetyStep = 200;
 			}
 			break;
@@ -3577,12 +3596,21 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 					}
 					else
 					{//알람 트레이 트랜스퍼와 충돌 우려가 있다
+
+						if( ( dCurrentPosX >= ( st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DISCHARGE_POS] - 100 ) ) &&
+							( dCurrentPosX <= ( st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DISCHARGE_POS] + 100 ) ) )
+						{
+							mn_SafetyStep = 1010;
+							break;
+						}
+
+
 						COMI.Set_MotStop( 0 , m_nRobot_X );
 						COMI.Set_MotStop( 0 , m_nRobot_Y );
 						COMI.Set_MotPower( m_nRobot_X, IO_OFF);
 						COMI.Set_MotPower( m_nRobot_Y, IO_OFF);
 						//960000 1 A "EPOXY_MOTOR_IS_NOT_SAFETY_MOVE_MANUALLY."
-						CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, "960000");
+						CTL_Lib.Alarm_Error_Occurrence(10502, dWARNING, "960000");
 						mn_SafetyStep = 0;
 					}					
 				}
@@ -3598,11 +3626,80 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 					}
 				}
 			}
-			break;			
+			break;
+			
+		case 1010:
+			nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobot_X, st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DISCHARGE_POS], COMI.mn_runspeed_rate);
+			if(nRet_1 == BD_GOOD) //정상적으로 완료된 상태
+			{
+				mn_SafetyStep = 1020;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_SafetyStep = 1010;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{
+				mn_SafetyStep = 1010;
+				CTL_Lib.Alarm_Error_Occurrence(10503, dWARNING, alarm.mstr_code);
+			}
+			break;
+
+		case 1020:
+			if( ( dCurrentPosX >= ( st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DISCHARGE_POS] - 100 ) ) &&
+				( dCurrentPosX <= ( st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DISCHARGE_POS] + 100 ) ) )
+			{
+				nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
+				if(nRet_1 == BD_GOOD) //정상적으로 완료된 상태
+				{
+					mn_SafetyStep = 0;
+				}
+				else if (nRet_1 == BD_RETRY)
+				{
+					mn_SafetyStep = 1020;
+				}
+				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+				{
+					mn_SafetyStep = 1020;
+					CTL_Lib.Alarm_Error_Occurrence(10504, dWARNING, alarm.mstr_code);
+				}
+			}
+			else
+			{
+				COMI.Set_MotStop( 0, m_nRobot_X);
+				COMI.Set_MotStop( 0, m_nRobot_Y);
+				mn_SafetyStep = 0;
+			}
+			break;
+
 
 		case 1100:
-			mn_SafetyStep = 0;
-			FuncRet = RET_GOOD;			
+			if( dCurrentPosX >=  ( st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY] + COMI.md_allow_value[m_nRobot_X] ) )
+			{
+				mn_SafetyStep = 1110;
+			}
+			else
+			{
+				mn_SafetyStep = 0;
+				FuncRet = RET_GOOD;			
+			}
+			break;
+
+		case 1110:
+			nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobot_X, st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_INIT_POS], COMI.mn_runspeed_rate);
+			if(nRet_1 == BD_GOOD) //정상적으로 완료된 상태
+			{
+				mn_SafetyStep = 0;
+				FuncRet = RET_GOOD;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_SafetyStep = 1110;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{
+				mn_SafetyStep = 1110;
+			}
 			break;
 
 		case 1200:
@@ -3626,7 +3723,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 1200;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10505, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -3650,7 +3747,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 2000;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10506, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -3670,7 +3767,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
 					mn_SafetyStep = 2000;
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(10507, dWARNING, alarm.mstr_code);
 				}
 			}
 			else
@@ -3697,7 +3794,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(10508, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 2200;
 				}
 			}
@@ -3729,7 +3826,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 3000;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10509, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -3750,7 +3847,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
 					mn_SafetyStep = 3100;
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(10510, dWARNING, alarm.mstr_code);
 				}
 			}
 			else
@@ -3781,7 +3878,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 4000;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10511, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -3801,7 +3898,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(10512, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 4100;
 				}
 			}
@@ -3834,7 +3931,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 5000;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10513, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -3858,7 +3955,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 6000;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10514, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -3878,7 +3975,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(10515, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 6100;
 				}
 			}
@@ -3905,7 +4002,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(10516, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 7000;
 				}
 			}
@@ -3932,7 +4029,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(10517, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 7100;
 				}
 			}
@@ -3960,7 +4057,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(10518, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 7200;
 				}
 			}
@@ -3988,7 +4085,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(10519, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 8000;
 				}
 			}
@@ -4016,7 +4113,7 @@ int CDialog_Manual_Move::Robot_Move_Safety_Zone( int nMode, int n_site, int n_fl
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(10520, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 8100;
 				}
 			}
@@ -4094,19 +4191,19 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10601, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 200;
 			}
 			break;
 
 		case 1000:
-			if( st_recipe.dLoaderTransferTrayDeviceGap <= 0 ) st_recipe.dLoaderTransferTrayDeviceGap = 100.0;
+			//if( st_recipe.dLoaderTransferTrayDeviceGap <= 0 ) st_recipe.dLoaderTransferTrayDeviceGap = 100.0;
 			Run_Epoxy_Transfer_Robot.Get_Billard_Pos( nSite);
 
 			m_dpTargetPosList[0] = Run_Epoxy_Transfer_Robot.md_TargetAxisXValue[mn_FirstSecond][0];
 			m_dpTargetPosList[1] = Run_Epoxy_Transfer_Robot.md_TargetAxisYValue[mn_FirstSecond][0];
 
-			dp_SpdRatio[0] = (double)50;////st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[0] = (double)70;////st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
 			dp_SpdRatio[1] = (double)300;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
 			dp_SpdRatio[2] = (double)300;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
@@ -4122,7 +4219,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10602, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1000;
 			}
 			break;
@@ -4141,7 +4238,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10603, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1100;
 			}
 			break;
@@ -4153,8 +4250,25 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			if( m_dwSatbleWaitTime[2] > st_recipe.dSatbleTime )
 			{
 				//st_work.nEpoxyBiliardThreadRunMode = dRUN;
+				mn_MoveStep = 1210;
+			}
+			break;
+		case 1210:
+			nRet_1 = COMI.Start_JogMove(m_nRobot_S, PLUS);// cmmSxVMoveStart(m_nRobot_S, PLUS);
+			
+			if( nRet_1 == BD_GOOD) 
+			{
 				Func.VppmSet();//미리하는데 체크해야한다.
 				mn_MoveStep = 1300;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_MoveStep = 1000;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(10604, dWARNING, alarm.mstr_code);
+				mn_MoveStep = 1000;
 			}
 			break;
 
@@ -4164,7 +4278,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			m_dpTargetPosList[0] = Run_Epoxy_Transfer_Robot.md_TargetAxisXValue[mn_FirstSecond][1];
 			m_dpTargetPosList[1] = Run_Epoxy_Transfer_Robot.md_TargetAxisYValue[mn_FirstSecond][1];
 
-			if(st_basic.n_mode_7387 == 0)
+			if(st_basic.n_mode_7387 == CTL_YES)
 			{
 				//dp_PosList[2] = st_recipe.nEpoxyCircleCount;
 			}
@@ -4173,15 +4287,17 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 				//dp_PosList[2] = 10;
 			}
 
-			dp_SpdRatio[0] = (double)30;//st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
-			dp_SpdRatio[1] = (double)200;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
-			dp_SpdRatio[2] = (double)200;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			dp_SpdRatio[0] = (double)st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
 			
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio );
+			nRet_2 = COMI.Start_JogMove(m_nRobot_S, PLUS);// cmmSxVMoveStart(m_nRobot_S, PLUS);
 
 			if( nRet_1 == BD_GOOD) 
 			{
+				COMI.Set_MotStop(0, m_nRobot_S);
 				mn_MoveStep = 1400;
 			}
 			else if (nRet_1 == BD_RETRY)
@@ -4190,7 +4306,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10605, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1000;
 			}
 			break;
@@ -4202,11 +4318,14 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			break;
 
 		case 1500:
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_S, -0.5 , st_recipe.nEpoxyRunSpeed);
+			nRet_1 = COMI.Start_JogMove(m_nRobot_S, MINUS);
+			//nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_S, -0.5 , st_recipe.nEpoxyRunSpeed);
 			if( nRet_1 == BD_GOOD)
 			{
 				COMI.Set_MotStop(0, m_nRobot_S);
 				//st_work.nEpoxyBiliardThreadRunMode = dSTOP;
+				cmmStSetPosition(m_nRobot_S, cmCNT_COMM, (double)0.0);
+				cmmStSetPosition(m_nRobot_S, cmCNT_FEED, (double)0.0);
 				m_dwSatbleWaitTime[0] = GetCurrentTime();
 				mn_MoveStep = 1600;
 			}
@@ -4216,13 +4335,13 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10606, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1500;
 			}
 			break;
 
 		case 1600:
-			nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_EPOXY_TRANSFER_Z_BOT_DOWN_POS], COMI.mn_runspeed_rate);
+			nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_EPOXY_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
 			if( nRet_1 == BD_GOOD)
 			{
 				mn_MoveStep = 1700;
@@ -4233,7 +4352,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10607, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1600;
 			}
 			break;
@@ -4266,7 +4385,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10608, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1900;
 			}
 			break;
@@ -4292,7 +4411,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10609, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2000;
 			}
 			break;
@@ -4310,7 +4429,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10610, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2100;
 			}
 			break;
@@ -4359,7 +4478,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10611, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2300;
 			}
 			break;
@@ -4367,7 +4486,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 		case 2310:
 			Run_Epoxy_Transfer_Robot.Get_Billard_Pos( nSite);
 			if( mn_dotPos < 2) nRet_1 = CTL_Lib.Single_Move( ONLY_MOVE_CHECK, m_nRobot_X, Run_Epoxy_Transfer_Robot.md_TargetDotXValue[mn_dotPos], st_recipe.nEpoxyRunSpeed);
-			else                     nRet_1 = CTL_Lib.Single_Move( ONLY_MOVE_CHECK, m_nRobot_Y, Run_Epoxy_Transfer_Robot.md_TargetDotYValue[mn_dotPos] - st_recipe.dEpoxyYOffSet , st_recipe.nEpoxyRunSpeed);
+			else               nRet_1 = CTL_Lib.Single_Move( ONLY_MOVE_CHECK, m_nRobot_Y, Run_Epoxy_Transfer_Robot.md_TargetDotYValue[mn_dotPos]/*- st_recipe.dEpoxyYOffSet*/, st_recipe.nEpoxyRunSpeed);
 			nRet_2 = CTL_Lib.Single_Move( ONLY_MOVE_CHECK, m_nRobot_S, st_recipe.nEpoxyDotScrewCount, st_recipe.nEpoxyRunSpeed);
 			if( nRet_1 == BD_GOOD ) ml_motflag[0] = CTL_YES;
 			if( nRet_2 == BD_GOOD ) ml_motflag[1] = CTL_YES;
@@ -4385,17 +4504,19 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10612, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2310;
 			}
 			break;
 
 		case 2400:
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_S, -0.5 , st_recipe.nEpoxyRunSpeed);
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_S, st_recipe.nEpoxyDotScrewCount-1 , st_recipe.nEpoxyRunSpeed);
 			if( nRet_1 == BD_GOOD)
 			{
 				COMI.Set_MotStop(0, m_nRobot_S);
 				//st_work.nEpoxyBiliardThreadRunMode = dSTOP;
+				cmmStSetPosition(m_nRobot_S, cmCNT_COMM, (double)0.0);
+				cmmStSetPosition(m_nRobot_S, cmCNT_FEED, (double)0.0);
 				m_dwSatbleWaitTime[0] = GetCurrentTime();
 				mn_MoveStep = 2500;
 			}
@@ -4405,13 +4526,13 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10613, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2400;
 			}
 			break;
 
 		case 2500://Zaxis do a littlebit up
-			nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_EPOXY_TRANSFER_Z_BOT_DOWN_POS], COMI.mn_runspeed_rate);
+			nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_EPOXY_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
 			if( nRet_1 == BD_GOOD)
 			{
 				mn_MoveStep = 2600;
@@ -4422,7 +4543,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10614, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2500;
 			}
 			break;
@@ -4453,7 +4574,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10615, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 200;
 			}
 			break;
@@ -4473,6 +4594,9 @@ int CDialog_Manual_Move::Move_EpoxyTransfer()
 	int m_nRobot_Y = M_EPOXY_TRANSFER_Y;
 	int m_nRobot_Z = M_EPOXY_TRANSFER_Z;
 	
+	if( m_nEpoxyStop == 1 )
+		return nFunRet;
+
 	switch( m_move_step[m_nAxisNum] )
 	{
 	case 0:
@@ -4492,14 +4616,14 @@ int CDialog_Manual_Move::Move_EpoxyTransfer()
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-			CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+			CTL_Lib.Alarm_Error_Occurrence(10701, dWARNING, alarm.mstr_code);
 			m_move_step[m_nAxisNum] = 0;
 		}
 		break;
 
 	case 100:
-		nRet_1 = COMI.Check_MotPosRange(m_nAxisNum, st_motor[m_nAxisNum].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], COMI.md_allow_value[m_nAxisNum] );
-		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.md_allow_value[m_nRobot_Y] );
+		nRet_1 = COMI.Check_MotPosRange(m_nAxisNum, st_motor[m_nAxisNum].md_pos[P_EPOXY_TRANSFER_X_INIT_POS], COMI.md_allow_value[m_nAxisNum] );
+		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS], COMI.md_allow_value[m_nRobot_Y] );
 		if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
 		{
 			m_move_step[m_nAxisNum] = 200;
@@ -4532,6 +4656,11 @@ int CDialog_Manual_Move::Move_EpoxyTransfer()
 			m_move_step[m_nAxisNum] = 1200;
 		}
 		else if( mn_move_carrier == 1)//무한 동작
+		{
+			m_move_step[m_nAxisNum] = 2000;
+			mn_BufferPos = 0;
+		}
+		else if( m_hs_epoxy >= 0 )
 		{
 			m_move_step[m_nAxisNum] = 2000;
 			mn_BufferPos = 0;
@@ -4592,23 +4721,35 @@ int CDialog_Manual_Move::Move_EpoxyTransfer()
 		break;
 
 	case 2200:
-		nRet_1 = Move_Billiard_Epoxy( 0, mn_BufferPos);
-		if( nRet_1 == RET_GOOD )
+		if( m_hs_epoxy >= 0 )
 		{
-			//st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[mn_BufferPos] = BIN_EPOXY;
-			mn_BufferPos++;
-			if( mn_BufferPos >= 3 )//단순 테스트 ->  3
+			nRet_1 = Move_Billiard_Epoxy( 0, m_hs_epoxy);
+			if( nRet_1 == RET_GOOD )
 			{
 				mn_BufferPos = 0;
 				m_move_step[m_nAxisNum] = 4000;
 			}
-			else
-			{
-				m_move_step[m_nAxisNum] = 2000;
-			}
 		}
-		else if( nRet_1 == RET_ERROR)
+		else
 		{
+			nRet_1 = Move_Billiard_Epoxy( 0, mn_BufferPos);
+			if( nRet_1 == RET_GOOD )
+			{
+				//st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[mn_BufferPos] = BIN_EPOXY;
+				mn_BufferPos++;
+				if( mn_BufferPos >= 3 )//단순 테스트 ->  3
+				{
+					mn_BufferPos = 0;
+					m_move_step[m_nAxisNum] = 4000;
+				}
+				else
+				{
+					m_move_step[m_nAxisNum] = 2000;
+				}
+			}
+			else if( nRet_1 == RET_ERROR)
+			{
+			}
 		}
 		break;
 
@@ -4626,6 +4767,9 @@ int CDialog_Manual_Move::Move_EpoxyTransfer()
 // 		if( mn_move_carrier == 1)//무한 반복
 // 		{
 			m_move_step[m_nAxisNum] = 0;
+
+			if( m_hs_epoxy >= 0 )
+				nFunRet = RET_GOOD;
 // 		}
 		break;
 
@@ -4664,7 +4808,7 @@ int CDialog_Manual_Move::Move_HeatSinkTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10702, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 0;
 			}
 			break;
@@ -4681,7 +4825,7 @@ int CDialog_Manual_Move::Move_HeatSinkTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10703, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 100;
 			}
 			break;
@@ -4790,7 +4934,7 @@ int CDialog_Manual_Move::Move_HeatSinkTransfer()
 			else
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_HeatSink_Reverse_0_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10704, dWARNING, m_strAlarmCode);
 			}
 			break;
 
@@ -5028,7 +5172,7 @@ int CDialog_Manual_Move::Move_HeatSinkTransfer()
 // 				}
 // 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 // 				{
-// 					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+// 					CTL_Lib.Alarm_Error_Occurrence(10705, dWARNING, alarm.mstr_code);
 // 					mn_MoveMeasureStep = 1100;
 // 				}
 // 			}
@@ -5052,7 +5196,7 @@ int CDialog_Manual_Move::Move_HeatSinkTransfer()
 // 				}
 // 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 // 				{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-// 					CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+// 					CTL_Lib.Alarm_Error_Occurrence(10706, dWARNING, alarm.mstr_code);
 // 					mn_MoveMeasureStep = 1200;
 // 				}
 // 			}
@@ -5303,7 +5447,7 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10707, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 0;
 			}
 			break;
@@ -5322,12 +5466,12 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			break;
 
 		case 200:
-			Run_HeatSinkVision_Transfer_Robot.Set_Device_CameraY_Jig_Press_ForwardBackward(IO_OFF);
+			Run_HeatSinkVision_Transfer_Robot.Set_Device_CameraY_Jig_Press_ForwardBackward(IO_ON);
 			m_move_step[m_nAxisNum] = 210;
 			break;
 
 		case 210:
-			nRet_1 = Run_HeatSinkVision_Transfer_Robot.Chk_Device_CameraY_Jig_Press_ForwardBackward( IO_OFF);
+			nRet_1 = Run_HeatSinkVision_Transfer_Robot.Chk_Device_CameraY_Jig_Press_ForwardBackward( IO_ON );
 			if( nRet_1 == IO_ON )
 			{
 				m_move_step[m_nAxisNum] = 300;
@@ -5346,7 +5490,7 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10708, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 300;
 			}
 			break;
@@ -5380,7 +5524,11 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			}
 			if( m_hs_vision >= 0 )
 			{
-				m_nVisCarriorPos = 0;
+ 				m_nVisCarriorPos = m_hs_vision;
+				if( m_nVisCarriorPos >= 3 )
+				{
+					m_nVisCarriorPos = m_nVisCarriorPos - 3;
+				}
 				m_nVisTeachPos = 0;
 				m_move_step[m_nAxisNum] = 2000;
 			}
@@ -5399,7 +5547,7 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10709, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 1800;
 			}
 			break;
@@ -5416,7 +5564,7 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10710, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 1900;
 			}
 			break;
@@ -5452,7 +5600,7 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 				}
 				else if( nRet_1 == RET_ERROR )
 				{
-					CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(10711, dWARNING, m_strAlarmCode);
 				}
 				else
 				{
@@ -5474,12 +5622,20 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10712, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2110;
 			}
 			break;
 
 		case 2200:
+			if( m_hs_vision >= 3)//Heatsink vison
+			{
+				m_move_step[m_nAxisNum] = 2500;
+				break;
+			}
+			
+
+
 			st_vision.bHeatsinkMeasureCmp = FALSE;
 			st_vision.bEpoxyMeasureCmp = FALSE;
 			st_vision.nEpoxyMeasureResultFlag = -1;
@@ -5507,17 +5663,36 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10712, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2310;
 			}
 			break;
 
 		case 2400:
 			Run_HeatSinkVision_Transfer_Robot.Set_Device_Carrier_Camera_LED_LAMP_OnOff(IO_OFF);
-			m_move_step[m_nAxisNum] = 2500;
+			m_move_step[m_nAxisNum] = 2410;
+			break;
+
+		case 2410:
+			Run_HeatSinkVision_Transfer_Robot.Set_Device_Carrier_Camera_Y_Press_UpDown(IO_OFF);
+			m_move_step[m_nAxisNum] = 2420;
+			break;
+			
+		case 2420:
+			nRet_1 = Run_HeatSinkVision_Transfer_Robot.Chk_Device_Carrier_Camera_Y_Press_UpDown( IO_OFF);
+			if( nRet_1 == IO_ON )
+			{
+				m_move_step[m_nAxisNum] = 2430;
+			}
+			break;
+
+		case 2430:
+			nFunRet = RET_GOOD;
+			m_move_step[m_nAxisNum] = 0;
 			break;
 
 		case 2500:
+
 			st_vision.bHeatsinkMeasureCmp = FALSE;
 			st_vision.bEpoxyMeasureCmp = FALSE;
 			st_vision.nEpoxyMeasureResultFlag = -1;
@@ -5527,27 +5702,90 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			break;
 
 		case 2600:
-			if( bHeatsinkMeasureCmp == TRUE )
+			if( st_vision.bHeatsinkMeasureCmp == TRUE )
 			{
 				m_move_step[m_nAxisNum] = 2700;
+				m_nVisTeachPos++;
 			}
 			break;
 
 		case 2700:
-
-
-
-
-
-			Func.SendHeatsinkMeasureStart(m_nVisTeachPos);
-			m_move_step[m_nAxisNum] = 2800;
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisY, st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_TOP2_POS + m_nVisCarriorPos], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				m_move_step[m_nAxisNum] = 2800;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				m_move_step[m_nAxisNum] = 2700;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(10713, dWARNING, alarm.mstr_code);
+				m_move_step[m_nAxisNum] = 2700;
+			}
 			break;
 
 		case 2800:
+			st_vision.bHeatsinkMeasureCmp = FALSE;
+			st_vision.bEpoxyMeasureCmp = FALSE;
+			st_vision.nEpoxyMeasureResultFlag = -1;
+			st_vision.nHeatSinkMeasureResultFlag = -1;
+			Func.SendHeatsinkMeasureStart(m_nVisTeachPos);
+			m_move_step[m_nAxisNum] = 2810;
+			break;
+
+		case 2810:
+			if( st_vision.bHeatsinkMeasureCmp == TRUE )
+			{
+				m_move_step[m_nAxisNum] = 2900;
+			}
 			break;
 
 		case 2900:
+			Run_HeatSinkVision_Transfer_Robot.Set_Vision_Y_Clamp_ForeardBackward( IO_OFF );
+			m_move_step[m_nAxisNum] = 2910;
 			break;
+			
+		case 2910:
+			nRet_1 = Run_HeatSinkVision_Transfer_Robot.Chk_Vision_Y_Clamp_ForeardBackward( IO_OFF );
+			if( nRet_1 == IO_ON )
+			{
+				m_move_step[m_nAxisNum] = 2920;
+			}
+			break;
+
+		case 2920:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisY, st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				m_move_step[m_nAxisNum] = 2930;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				m_move_step[m_nAxisNum] = 2920;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(10714, dWARNING, alarm.mstr_code);
+				m_move_step[m_nAxisNum] = 2920;
+			}
+			break;
+
+		case 2930:
+			Run_HeatSinkVision_Transfer_Robot.Set_Device_Carrier_Camera_Y_Press_UpDown(IO_OFF);
+			m_move_step[m_nAxisNum] = 2940;
+			break;
+			
+		case 2940:
+			nRet_1 = Run_HeatSinkVision_Transfer_Robot.Chk_Device_Carrier_Camera_Y_Press_UpDown( IO_OFF);
+			if( nRet_1 == IO_ON )
+			{
+				m_move_step[m_nAxisNum] = 0;
+				nFunRet = RET_GOOD;
+			}
+			break;
+
 
 		case 5000:
 			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisY, st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_PRESS_START_POS] + (m_nVisCarriorPos*1), COMI.mn_runspeed_rate);
@@ -5561,7 +5799,7 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10715, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 5000;
 			}
 			break;
@@ -5675,7 +5913,7 @@ int CDialog_Manual_Move::Move_BuffDispensor()
 					( dCurrHeatSinkY < (st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRASNFER_Y_TURN_READY_POS] - st_motor[M_HEATSINK_TRANSFER_Y].mn_allow) ) )
 				{
 					strAlarm.Format("%02d0008", m_nRobot_DisY );
-					CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, strAlarm);
+					CTL_Lib.Alarm_Error_Occurrence(10716, dWARNING, strAlarm);
 					break;
 				}
 
@@ -5687,7 +5925,7 @@ int CDialog_Manual_Move::Move_BuffDispensor()
 			else
 			{
 				strAlarm.Format("8%d%04d", IO_ON, st_io.i_Dispenser_Device_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, strAlarm);
+				CTL_Lib.Alarm_Error_Occurrence(10717, dWARNING, strAlarm);
 			}
 			break;
 
@@ -5721,7 +5959,7 @@ int CDialog_Manual_Move::Move_BuffDispensor()
 
 		case 2230:
 			nRet_1 = Run_HeatSinkVision_Transfer_Robot.Chk_HeatSink_Reverse_Clamp_ForwardBackward(ON);
-			if( 1 || nRet_1 == RET_GOOD )//check
+			if(/*1 ||*/ nRet_1 == RET_GOOD )//check
 			{
 				m_move_step[m_nAxisNum] = 2240;
 			}
@@ -5756,7 +5994,7 @@ int CDialog_Manual_Move::Move_BuffDispensor()
 			else
 			{
 				strAlarm.Format("8%d%04d", IO_OFF, st_io.i_Dispenser_Device_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, strAlarm);
+				CTL_Lib.Alarm_Error_Occurrence(10718, dWARNING, strAlarm);
 			}
 			break;
 
@@ -5801,7 +6039,7 @@ int CDialog_Manual_Move::Move_BuffDispensor()
 
 				m_move_step[m_nAxisNum] = 2600;
 			}
-			else if( m_hs_rub == 2 ) m_move_step[m_nAxisNum] = 2600;
+			else if( m_hs_rub == 2 ) m_move_step[m_nAxisNum] = 2700;
 			break;
 			
 		case 2600:
@@ -5893,7 +6131,7 @@ int CDialog_Manual_Move::Move_Dispensor()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10719, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 0;
 				m_nhsexystop = 1;
 			}
@@ -5943,12 +6181,12 @@ int CDialog_Manual_Move::Move_Dispensor()
 				nRet_1 = g_ioMgr.get_in_bit(st_io.i_Dispenser_Device_Check, IO_ON);//B접점
 				nRet_2 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_0_Check, IO_ON);
 				nRet_3 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_180_Check, IO_OFF);
-				if( nRet_1 != IO_ON ||  nRet_2 != IO_ON || nRet_3 != IO_OFF)
+				if( nRet_1 != IO_OFF ||  nRet_2 != IO_ON || nRet_3 != IO_OFF)
 				{
 					if( nRet_1 != IO_OFF) strAlarm.Format("8%d%04d", IO_OFF, st_io.i_Dispenser_Device_Check);
 					else if( nRet_2 != IO_ON ) strAlarm.Format("8%d%04d", IO_ON, st_io.i_HeatSink_Reverse_0_Check);
 					else								strAlarm.Format("8%d%04d", IO_OFF, st_io.i_HeatSink_Reverse_180_Check);						
-					CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, strAlarm);
+					CTL_Lib.Alarm_Error_Occurrence(10720, dWARNING, strAlarm);
 				}
 				else
 				{
@@ -5975,7 +6213,7 @@ int CDialog_Manual_Move::Move_Dispensor()
 				( dCurrHeatSinkY < (st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRASNFER_Y_TURN_READY_POS] - st_motor[M_HEATSINK_TRANSFER_Y].mn_allow) ) )
 			{
 				strAlarm.Format("%02d0008", m_nRobot_DisY );
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, strAlarm);
+				CTL_Lib.Alarm_Error_Occurrence(10721, dWARNING, strAlarm);
 				m_nhsexystop = 1;
 				break;
 			}
@@ -5990,7 +6228,7 @@ int CDialog_Manual_Move::Move_Dispensor()
 			else
 			{
 				strAlarm.Format("8%d%04d", IO_ON, st_io.i_Dispenser_Color_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, strAlarm);
+				CTL_Lib.Alarm_Error_Occurrence(10722, dWARNING, strAlarm);
 				m_nhsexystop = 1;
 			}
 			break;
@@ -6007,7 +6245,7 @@ int CDialog_Manual_Move::Move_Dispensor()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10713, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 1200;
 				m_nhsexystop = 1;
 			}
@@ -6044,7 +6282,7 @@ int CDialog_Manual_Move::Move_Dispensor()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10714, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2000;
 				m_nhsexystop = 1;
 			}
@@ -6075,7 +6313,7 @@ int CDialog_Manual_Move::Move_Dispensor()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10715, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2200;
 				m_nhsexystop = 1;
 			}
@@ -6096,8 +6334,8 @@ int CDialog_Manual_Move::Move_Dispensor()
 			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_DisY, st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_DISPENSING_END_POS], COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
-				Run_HeatSinkVision_Transfer_Robot.Set_Dispenser_Air_Blow(IO_ON);
-				m_dwWaitDispenserAirBlow[0] = GetCurrentTime();
+				//Run_HeatSinkVision_Transfer_Robot.Set_Dispenser_Air_Blow(IO_ON);
+				//m_dwWaitDispenserAirBlow[0] = GetCurrentTime();
 				m_move_step[m_nAxisNum] = 3100;
 			}
 			else if (nRet_1 == BD_RETRY)
@@ -6106,7 +6344,7 @@ int CDialog_Manual_Move::Move_Dispensor()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10716, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 3000;
 				m_nhsexystop = 1;
 			}
@@ -6135,7 +6373,7 @@ int CDialog_Manual_Move::Move_Dispensor()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10717, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 3200;
 				m_nhsexystop = 1;
 			}
@@ -6153,7 +6391,7 @@ int CDialog_Manual_Move::Move_Dispensor()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10718, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 3300;
 				m_nhsexystop = 1;
 			}
@@ -6169,7 +6407,7 @@ int CDialog_Manual_Move::Move_Dispensor()
 			else
 			{
 				strAlarm.Format("8%d%04d", IO_ON, st_io.i_Dispenser_Color_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, strAlarm);
+				CTL_Lib.Alarm_Error_Occurrence(10719, dWARNING, strAlarm);
 				m_nhsexystop = 1;
 			}
 			break;
@@ -6261,7 +6499,7 @@ int CDialog_Manual_Move::Move_DvcBuffer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{			 
-				CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10801, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 300;
 			}
 			break;
@@ -6330,7 +6568,7 @@ int CDialog_Manual_Move::Move_DvcBuffer()
 			{//자재가 남아있다면, 소켓 오프등으로 남아있는 자재이니 이떄는 테슽 로봇이 요청한 대로 바로 집을 수 있게 처리한다  
 
 				m_move_step[m_nAxisNum] = 3000; 
-				//CTL_Lib.Alarm_Error_Occurrence(m_nRunStep, dWARNING, Func.m_strAlarmCode);
+				//CTL_Lib.Alarm_Error_Occurrence(10802, dWARNING, Func.m_strAlarmCode);
 			}
 			break;
 
@@ -6343,7 +6581,7 @@ int CDialog_Manual_Move::Move_DvcBuffer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{//자재가 남아있다면 에러 
-				CTL_Lib.Alarm_Error_Occurrence(3100, dWARNING, Func.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10803, dWARNING, Func.m_strAlarmCode);
 			}			 
 			break;
 
@@ -6468,7 +6706,7 @@ int CDialog_Manual_Move::Move_DvcBuffer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{			 
-				CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10804, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 2200;
 			}
 			break;
@@ -6483,7 +6721,7 @@ int CDialog_Manual_Move::Move_DvcBuffer()
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10805, dWARNING, m_strAlarmCode);
 				break;
 			} 
 			m_move_step[m_nAxisNum] = 2320;
@@ -6503,7 +6741,7 @@ int CDialog_Manual_Move::Move_DvcBuffer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{			 
-				CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10806, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 2320;
 			}
 			break;
@@ -6518,7 +6756,7 @@ int CDialog_Manual_Move::Move_DvcBuffer()
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10807, dWARNING, m_strAlarmCode);
 				break;
 			} 
 			m_move_step[m_nAxisNum] = 2400;
@@ -6543,7 +6781,7 @@ int CDialog_Manual_Move::Move_DvcBuffer()
 			}
 			else if(nRet_1== RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(3120, dWARNING, Func.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10808, dWARNING, Func.m_strAlarmCode);
 			} 
 			break;
 
@@ -6571,7 +6809,7 @@ int CDialog_Manual_Move::Move_DvcBuffer()
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10809, dWARNING, m_strAlarmCode);
 				break;
 			} 
 			m_move_step[m_nAxisNum] = 3200;
@@ -6605,7 +6843,7 @@ int CDialog_Manual_Move::Move_DvcBuffer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{			 
-				CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10810, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 3210;
 			}
 			break;
@@ -6654,7 +6892,7 @@ int CDialog_Manual_Move::Move_LoadPlate()
 			{
 				//930001 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR"
 				m_strAlarmCode.Format(_T("930001"));
-				CTL_Lib.Alarm_Error_Occurrence(21001, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10901, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 100;
 			}
 			else 
@@ -6676,7 +6914,7 @@ int CDialog_Manual_Move::Move_LoadPlate()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1101, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10902, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 300;
 			}
 			break;
@@ -6724,7 +6962,7 @@ int CDialog_Manual_Move::Move_LoadPlate()
 			else 
 			{
 				m_strAlarmCode.Format(_T("910002")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-				CTL_Lib.Alarm_Error_Occurrence(5530, dWARNING, m_strAlarmCode); 
+				CTL_Lib.Alarm_Error_Occurrence(10903, dWARNING, m_strAlarmCode); 
 			}
 			break;
 
@@ -6741,7 +6979,7 @@ int CDialog_Manual_Move::Move_LoadPlate()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1101, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10904, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 2100;
 			}
 			break;
@@ -6756,7 +6994,7 @@ int CDialog_Manual_Move::Move_LoadPlate()
 			else 
 			{
 				m_strAlarmCode.Format(_T("900001")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-				CTL_Lib.Alarm_Error_Occurrence(5550, dWARNING, m_strAlarmCode);			 
+				CTL_Lib.Alarm_Error_Occurrence(10905, dWARNING, m_strAlarmCode);			 
 			} 
 			break;
 
@@ -6773,7 +7011,7 @@ int CDialog_Manual_Move::Move_LoadPlate()
 					else 
 					{
 						m_strAlarmCode.Format(_T("910002")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-						CTL_Lib.Alarm_Error_Occurrence(5560, dWARNING, m_strAlarmCode);			 
+						CTL_Lib.Alarm_Error_Occurrence(10906, dWARNING, m_strAlarmCode);			 
 					} 					
 				}
 				else //if(st_tray_info[THD_LD_TRAY_PLATE].nTrayExist == CTL_NO)
@@ -6782,7 +7020,7 @@ int CDialog_Manual_Move::Move_LoadPlate()
 					if(nRet_1 == BD_GOOD)
 					{
 						m_strAlarmCode.Format(_T("910002")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-						CTL_Lib.Alarm_Error_Occurrence(5570, dWARNING, m_strAlarmCode); 
+						CTL_Lib.Alarm_Error_Occurrence(10907, dWARNING, m_strAlarmCode); 
 					}
 					else 
 					{
@@ -6839,7 +7077,7 @@ int CDialog_Manual_Move::Move_LoadPlate()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(5580, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10908, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 6000;
 			}
 			break; 
@@ -6867,7 +7105,7 @@ int CDialog_Manual_Move::Move_LoadPlate()
 				else 
 				{
 					m_strAlarmCode.Format(_T("910003")); //910003 1 A "LOAD_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-					CTL_Lib.Alarm_Error_Occurrence(5590, dWARNING, m_strAlarmCode);			 
+					CTL_Lib.Alarm_Error_Occurrence(10909, dWARNING, m_strAlarmCode);			 
 				} 
 			}
 			break;
@@ -6898,7 +7136,7 @@ int CDialog_Manual_Move::Move_LoadPlate()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(5580, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10910, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 9000;
 			}
 			break; 
@@ -6967,7 +7205,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			}
 			else if( nRet_1 == RET_ERROR )
 			{
-				CTL_Lib.Alarm_Error_Occurrence( 1022, dWARNING, Run_LdPicker.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence( 10911, dWARNING, Run_LdPicker.m_strAlarmCode);
 			}
 			break;
 
@@ -6980,7 +7218,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			{
 				//810113 0 A "LOADER_PICKER_CLAMP_ON_ERROR."
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(1100, dWARNING, m_strAlarmCode);	
+				CTL_Lib.Alarm_Error_Occurrence(10912, dWARNING, m_strAlarmCode);	
 			}
 			else
 			{
@@ -7002,7 +7240,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1101, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10913, dWARNING, m_strAlarmCode);
 				m_move_step[m_nAxisNum] = 100;
 			}
 			break;
@@ -7019,7 +7257,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10914, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 300;
 			}
 			break;
@@ -7036,7 +7274,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10915, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 400;
 			}
 			break;
@@ -7084,7 +7322,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 // 							}
 // 							else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 // 							{
-// 								CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+// 								CTL_Lib.Alarm_Error_Occurrence(10916, dWARNING, alarm.mstr_code);
 // 								m_move_step[m_nAxisNum] = 500;
 // 							}
 // 						}					
@@ -7201,7 +7439,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10917, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 1200;
 			}
 			break;
@@ -7218,7 +7456,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1105, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10918, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 1300;
 			}
 			break;
@@ -7267,7 +7505,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10919, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2010;
 			}
 			break;
@@ -7282,7 +7520,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 // 			else
 // 			{
 // 				//900100 1 00 "IT_IS DIFFERENT_TO_LOT_NAME_BETWEEN_LOT_LOAD_STACKER."
-// 				CTL_Lib.Alarm_Error_Occurrence(1105, dWARNING, "900100");
+// 				CTL_Lib.Alarm_Error_Occurrence(10920, dWARNING, "900100");
 // 			}
 			break;
 
@@ -7452,7 +7690,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10920, dWARNING, m_strAlarmCode);
 				break;
 			}
 
@@ -7469,7 +7707,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10921, dWARNING, m_strAlarmCode);
 				break;
 			}
 
@@ -7622,7 +7860,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loader_Transfer_Clamp_Off_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10923, dWARNING, m_strAlarmCode);
 				break;
 			}
 
@@ -7641,7 +7879,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10924, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 5510;
 			}
 			break;
@@ -7670,7 +7908,7 @@ int CDialog_Manual_Move::Move_LoadTransfer()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10925, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 5700;
 			}
 			break;
@@ -7720,7 +7958,10 @@ int CDialog_Manual_Move::Move_HSPickHeatSinkTransfer( int m_hs_rub_pick )
 		case 0:
 			m_move_step[m_nAxisNum] = 10;
 			if( m_hs_rub_pick == 3 )
+			{
+				st_buffer_info[THD_DISPENSOR_PRBT].st_pcb_info[0].nYesNo = CTL_YES;
 				m_move_step[m_nAxisNum] = 3000;
+			}
 			else if( m_hs_rub_pick == 4 || m_hs_rub_pick == 5 || m_hs_rub_pick == 6 )
 				m_move_step[m_nAxisNum] = 4000;
 			break;
@@ -7737,7 +7978,7 @@ int CDialog_Manual_Move::Move_HSPickHeatSinkTransfer( int m_hs_rub_pick )
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10926, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 0;
 				m_nhsexystop = 1;
 			}
@@ -7755,7 +7996,7 @@ int CDialog_Manual_Move::Move_HSPickHeatSinkTransfer( int m_hs_rub_pick )
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(10927, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 100;
 				m_nhsexystop = 1;
 			}
@@ -7847,7 +8088,7 @@ int CDialog_Manual_Move::Move_HSPickHeatSinkTransfer( int m_hs_rub_pick )
 			else
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_HeatSink_Reverse_0_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(10928, dWARNING, m_strAlarmCode);
 				m_nhsexystop = 1;
 			}
 			break;
@@ -7897,7 +8138,6 @@ int CDialog_Manual_Move::Move_HSPickHeatSinkTransfer( int m_hs_rub_pick )
 			}
 			else if( nRet_1 == RET_TRAY_NOT_FIND)
 			{
-				st_buffer_info[THD_DISPENSOR_PRBT].st_pcb_info[0].nYesNo = CTL_YES;
 				m_move_step[m_nAxisNum] = 3000;
 			}
 			break;
@@ -7908,7 +8148,7 @@ int CDialog_Manual_Move::Move_HSPickHeatSinkTransfer( int m_hs_rub_pick )
 			{
 				if( m_hs_rub_pick >= 0 )
 				{
-					nFunRet = RET_GOOD;
+					m_move_step[m_nAxisNum] = 3115;
 				}
 				else
 				{
@@ -7916,6 +8156,16 @@ int CDialog_Manual_Move::Move_HSPickHeatSinkTransfer( int m_hs_rub_pick )
 					nHeatSinkRbt_Dvc_Req[THD_DISPENSOR_PRBT][1] = CTL_NO;
 					m_move_step[m_nAxisNum] = 3120;
 				}
+			}
+			break;
+
+		case 3115:
+			nRet_1 = Run_HeatSinkVision_Transfer_Robot.Robot_AutoMove_Safety_Zone( 3, 0 );
+			if( nRet_1 == RET_GOOD )
+			{
+				//m_nCarriorPos = 0;
+				nFunRet = RET_GOOD;
+				m_move_step[m_nAxisNum] = 0;
 			}
 			break;
 
@@ -7973,6 +8223,7 @@ int CDialog_Manual_Move::Move_HSPickHeatSinkTransfer( int m_hs_rub_pick )
 				m_move_step[m_nAxisNum] = 4200;
 				if( m_hs_rub_pick >= 4 || m_hs_rub_pick >= 3)
 				{
+					st_picker[THD_HEATSINK_PRBT].st_pcb_info[0].nYesNo = CTL_YES;
 					m_nCarriorPos = m_hs_rub_pick-4;
 					m_move_step[m_nAxisNum] = 4210;
 				}
@@ -8001,7 +8252,6 @@ int CDialog_Manual_Move::Move_HSPickHeatSinkTransfer( int m_hs_rub_pick )
 				}
 				else if( nRet_1 == RET_PICKER_NOT_FIND)
 				{
-					st_picker[THD_HEATSINK_PRBT].st_pcb_info[0].nYesNo = CTL_YES;
 					m_move_step[m_nAxisNum] = 4210;
 				}
 				else if( nRet_1 == RET_TRAY_NOT_FIND)
@@ -8026,6 +8276,213 @@ int CDialog_Manual_Move::Move_HSPickHeatSinkTransfer( int m_hs_rub_pick )
 	}
 	return nFunRet;
 }
+
+int CDialog_Manual_Move::Move_CleanEpoxy()
+{
+	int nRet_1 = 0, nRet_2 = 0;
+	int nFunRet = RET_PROCEED;
+	int m_nAxisNum = M_EPOXY_TRANSFER_Z;
+	int m_nRobot_X = M_EPOXY_TRANSFER_X;
+	int m_nRobot_Y = M_EPOXY_TRANSFER_Y;
+	int m_nRobot_Z = M_EPOXY_TRANSFER_Z;
+	
+	switch( m_move_step[m_nAxisNum] )
+	{
+		case 0:
+			m_move_step[m_nAxisNum] = 10;
+			break;
+			
+		case 10:		
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_EPOXY_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				Func.VppmOff();
+				m_move_step[m_nAxisNum] = 100;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				m_move_step[m_nAxisNum] = 0;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(10929, dWARNING, alarm.mstr_code);
+				m_move_step[m_nAxisNum] = 0;
+			}
+			break;
+
+		case 100:
+			nRet_1 = COMI.Check_MotPosRange(m_nAxisNum, st_motor[m_nAxisNum].md_pos[P_EPOXY_TRANSFER_X_INIT_POS], COMI.md_allow_value[m_nAxisNum] );
+			nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS], COMI.md_allow_value[m_nRobot_Y] );
+			if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
+			{
+				m_move_step[m_nAxisNum] = 200;
+			}
+			else
+			{
+				Func.VppmOff();
+				m_move_step[m_nAxisNum] = 1000;
+			}
+			break;
+
+		case 200:
+			nRet_1 = Robot_Move_Safety_Zone( 0, 0, 0 );
+			if( nRet_1 == RET_GOOD )
+			{
+				m_move_step[m_nAxisNum] = 100;
+			}
+			break;
+
+		case 1000:
+			m_move_step[m_nAxisNum] = 1100;
+			break;
+
+		case 1100:			
+			nRet_1 = Robot_Move_Safety_Zone( 2, 0, 0 );
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_MoveStep = 0;
+				m_move_step[m_nAxisNum] = 2000;
+				ml_motflag[0] = CTL_NO;
+				ml_motflag[1] = CTL_NO;
+			}
+			break;
+
+		case 2000:
+			m_move_step[m_nAxisNum] = 0;
+			nFunRet = RET_GOOD;
+			break;		
+	}
+	return nFunRet;
+}
+
+int CDialog_Manual_Move::Move_ChkAlarm()
+{
+	int nRet_1 = 0, nRet_2 = 0;
+	int nFumcRet = RET_PROCEED;
+
+	switch(m_pitch_step)
+	{
+		case 0:
+			m_dwWaitTime[0] = GetCurrentTime();
+			m_pitch_step = 100;
+			break;
+
+		case 100:
+			m_dwWaitTime[1] = GetCurrentTime();
+			m_dwWaitTime[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
+			if( m_dwWaitUntil[2] <= 0 ) m_dwWaitTime[0] = GetCurrentTime();
+			if( m_dwWaitTime[2] > 60000000)
+			{
+				nFumcRet = RET_ERROR;
+			}
+
+			LONG nStatues;
+			int aa = -1;
+			cmmDiGetMulti(0, 32,&nStatues);
+			for(int i=0; i < 32; i++)
+			{
+				if ( (nStatues >> i ) & 0x1) 
+				{
+					aa = 99;
+					
+				}
+				else
+				{
+					aa = 0;
+				}
+			}
+			break;
+
+	}
+
+	return nFumcRet;
+
+}
+
+int CDialog_Manual_Move::Move_EpoxyOut()
+{
+	int nRet_1 = 0, nRet_2 = 0;
+	int nFumcRet = RET_PROCEED;
+	int m_nAxisNum = M_EPOXY_TRANSFER_Z;
+	int m_nRobotZ = M_EPOXY_TRANSFER_Z;
+	int m_nRobotS = M_EPOXY_SCREW;
+	
+	if( m_nEpoxyStop == 1)
+		return nFumcRet;
+
+	switch(m_move_step[m_nAxisNum])
+	{
+	case 0:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobotZ, st_motor[m_nRobotZ].md_pos[P_EPOXY_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD) //좌측으로 이동
+		{
+			Func.VppmSet();
+			m_move_step[m_nAxisNum] = 100;
+		}
+		else if (nRet_1 == BD_RETRY)
+		{
+			m_move_step[m_nAxisNum] = 0;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+			CTL_Lib.Alarm_Error_Occurrence(10930, dWARNING, alarm.mstr_code);
+			m_move_step[m_nAxisNum] = 0;
+		}
+		break;
+
+	case 100:
+ 		nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobotS, st_recipe.nEpoxyDotScrewCount, st_recipe.nEpoxyRunSpeed);
+		//nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobotS, -10 , st_recipe.nEpoxyRunSpeed);
+		if( nRet_1 == CTL_YES )
+		{
+			m_dwWaitTime[0] = GetCurrentTime();
+			m_move_step[m_nAxisNum] = 200;
+		}
+		else if( nRet_1 == BD_RETRY )
+		{
+			m_move_step[m_nAxisNum] = 100;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(10931, dWARNING, alarm.mstr_code);
+			m_move_step[m_nAxisNum] = 100;
+		}
+		break;
+		
+	case 200:
+		//nRet_1 = CTL_YES;
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobotS, st_recipe.nEpoxyDotScrewCount -2 , st_recipe.nEpoxyRunSpeed);
+		if( nRet_1 == CTL_YES )
+		{
+// 			Func.VppmOff();
+
+			double dCurrPos = 0.0;// g_comiMgr.Get_MotCurrentPos(m_nRobotS);
+		
+			cmmStSetPosition(m_nRobotS, cmCNT_COMM, (double)0);
+			cmmStSetPosition(m_nRobotS, cmCNT_FEED, (double)0);
+
+			m_move_step[m_nAxisNum] = 100;
+		}
+		else if( nRet_1 == BD_RETRY )
+		{
+			m_move_step[m_nAxisNum] = 200;
+		}
+		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(10932, dWARNING, alarm.mstr_code);
+			m_move_step[m_nAxisNum] = 200;
+		}
+		break;
+
+	case 300:
+		Func.VppmOff();
+		m_move_step[m_nAxisNum] = 0;
+		nFumcRet = RET_GOOD;
+	}
+
+	return nFumcRet;
+}
+
 
 void CDialog_Manual_Move::OnTimer(UINT nIDEvent) 
 {
@@ -8058,7 +8515,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if( nIDEvent == TM_CARRIER_MOVE)
+	else if( nIDEvent == TM_CARRIER_MOVE)
 	{
 		nRet_1 = Move_CarrierTransfer();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8067,7 +8524,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if( nIDEvent == TM_UNPRESS_MOVE )
+	else if( nIDEvent == TM_UNPRESS_MOVE )
 	{
 		nRet_1 = Move_UnPressTransfer();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8076,7 +8533,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if( nIDEvent == TM_EPOXY_MOVE)
+	else if( nIDEvent == TM_EPOXY_MOVE)
 	{
 		nRet_1 = Move_EpoxyTransfer();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8085,7 +8542,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if( nIDEvent == TM_LOAD_PLATE )
+	else if( nIDEvent == TM_LOAD_PLATE )
 	{
 		nRet_1 = Move_LoadPlate();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8094,7 +8551,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if ( nIDEvent == TM_LOADER_MOVE )
+	else if ( nIDEvent == TM_LOADER_MOVE )
 	{
 		nRet_1 = Move_LoadTransfer();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8103,7 +8560,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if ( nIDEvent == TM_DVCBUFFER)
+	else if ( nIDEvent == TM_DVCBUFFER)
 	{
 		nRet_1 = Move_DvcBuffer();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8112,7 +8569,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if ( nIDEvent == TM_HEATSINK_MOVE )
+	else if ( nIDEvent == TM_HEATSINK_MOVE )
 	{
 		nRet_1 = Move_HeatSinkTransfer();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8121,7 +8578,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if ( nIDEvent == TM_HSVISION_MOVE )
+	else if ( nIDEvent == TM_HSVISION_MOVE )
 	{
 		nRet_1 = Move_VisionTransfer();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8130,7 +8587,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if ( nIDEvent == TM_DISPENSOR )
+	else if ( nIDEvent == TM_DISPENSOR )
 	{
 		nRet_1 = Move_Dispensor();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8145,7 +8602,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if ( nIDEvent == TM_ONLYDISPENSOR )
+	else if ( nIDEvent == TM_ONLYDISPENSOR )
 	{
 		nRet_1 = Move_Dispensor();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8154,7 +8611,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if ( nIDEvent == TM_ONLYREVERSE )
+	else if ( nIDEvent == TM_ONLYREVERSE )
 	{
 		nRet_1 = Move_BuffDispensor();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8163,7 +8620,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			Init_Timer();
 		}
 	}
-	if( nIDEvent == TM_ONLYHSPICKPLACE )
+	else if( nIDEvent == TM_ONLYHSPICKPLACE )
 	{
 		if( m_hs_rub != 0 && m_hs_rub != 3 && m_hs_rub != 4 && m_hs_rub != 5 && m_hs_rub != 6)
 		{
@@ -8180,7 +8637,7 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 		}
 
 	}
-	if ( nIDEvent == TM_VISIONCHK )
+	else if ( nIDEvent == TM_VISIONCHK )
 	{
 		nRet_1 = Move_VisionTransfer();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
@@ -8188,6 +8645,35 @@ void CDialog_Manual_Move::OnTimer(UINT nIDEvent)
 			KillTimer( nIDEvent );
 			Init_Timer();
 		}
+	}
+	else if ( nIDEvent == TM_EPOXY_CLEAN_MOVE )
+	{
+		nRet_1 = Move_CleanEpoxy();
+		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
+		{
+			KillTimer( nIDEvent );
+			Init_Timer();
+		}
+	}
+	else if( nIDEvent == TM_PITCH_CHK_ALARM )
+	{
+		nRet_1 = Move_ChkAlarm();
+		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
+		{
+			KillTimer( nIDEvent );
+			Init_Timer();
+		}
+
+	}
+	else if(nIDEvent == TM_EPOXY_OUT)
+	{
+		nRet_1 = Move_EpoxyOut();
+		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
+		{
+			KillTimer( nIDEvent );
+			Init_Timer();
+		}
+
 	}
 
 
@@ -8212,6 +8698,7 @@ void CDialog_Manual_Move::OnBtnStop()
 {
 	m_nhsexystop = 1;
 	m_nvisionstop = 1;
+	m_nEpoxyStop = 1;
 	for ( int i = 0; i < M_MOTOR_COUNT; i++ )
 	{
 		COMI.Set_MotStop( 0, i );
@@ -8221,7 +8708,11 @@ void CDialog_Manual_Move::OnBtnStop()
 	{
 		return;
 	}
-	if( m_hs_vision >= 0 && m_hs_vision < 3)
+	if( m_hs_vision >= 0 && m_hs_vision < 6)
+	{
+		return;
+	}
+	if( m_hs_epoxy >= 0 && m_hs_epoxy < 3 )
 	{
 		return;
 	}
@@ -8296,7 +8787,7 @@ void CDialog_Manual_Move::OnBtnVisionGo()
 	m_hs_vision = m_cbo_vision.GetCurSel();
 	if( m_hs_vision <= 0 ) m_hs_vision = 0;
 
-	if( m_hs_vision >= 0 && m_hs_vision < 3)
+	if( m_hs_vision >= 0 && m_hs_vision < 6)
 	{
 		SetTimer( TM_VISIONCHK, 100, NULL );
 		//SetTimer( TM_HSVISION_MOVE, 100, NULL );
@@ -8308,5 +8799,234 @@ void CDialog_Manual_Move::OnBtnVisionGo()
 void CDialog_Manual_Move::OnButton15() 
 {
 	m_nvisionstop = 0;	
+	
+}
+
+void CDialog_Manual_Move::OnBtnEpoxyGo() 
+{
+
+	Init_Timer();
+	m_hs_epoxy = m_cbo_epoxy.GetCurSel();
+	if( m_hs_epoxy < 0 || m_hs_epoxy > 2 )
+	{
+		m_hs_epoxy = -1;
+		Init_Timer();
+		return;
+	}
+	SetTimer( TM_EPOXY_MOVE, 100, NULL );
+	
+}
+
+void CDialog_Manual_Move::OnButton18() 
+{
+	m_nEpoxyStop = 0;	
+	
+}
+
+void CDialog_Manual_Move::OnBtnCleanEpoxy() 
+{
+	Init_Timer();
+	SetTimer( TM_EPOXY_CLEAN_MOVE, 100, NULL );
+	mn_epoxy_clean = 0;
+
+}
+
+void CDialog_Manual_Move::OnBtnInit() 
+{
+// CTL_Lib.Single_Move(BOTH_MOVE_FINISH, M_HEATSINK_PICKER_PITCH, st_motor[M_HEATSINK_PICKER_PITCH].md_pos[P_HEATSINK_PICKER_PITCH_INIT_POS], COMI.mn_runspeed_rate);
+	COMI.Start_SingleMove( M_HEATSINK_PICKER_PITCH, st_motor[M_HEATSINK_PICKER_PITCH].md_pos[P_HEATSINK_PICKER_PITCH_INIT_POS], COMI.mn_runspeed_rate);
+}
+
+void CDialog_Manual_Move::OnBtnClamp() 
+{
+	//CTL_Lib.Single_Move(BOTH_MOVE_FINISH, M_HEATSINK_PICKER_PITCH, st_motor[M_HEATSINK_PICKER_PITCH].md_pos[P_HEATSINK_PICKER_PITCH_CLAMP_POS], COMI.mn_runspeed_rate);
+	COMI.Start_SingleMove( M_HEATSINK_PICKER_PITCH, st_motor[M_HEATSINK_PICKER_PITCH].md_pos[P_HEATSINK_PICKER_PITCH_UNCLAMP_POS], COMI.mn_runspeed_rate);
+	
+}
+
+void CDialog_Manual_Move::OnBtnClampCo() 
+{
+// 	CTL_Lib.Single_Move(ONLY_MOVE_START, M_HEATSINK_PICKER_PITCH, st_motor[M_HEATSINK_PICKER_PITCH].md_pos[P_HEATSINK_PICKER_PITCH_CLAMP_POS] + 5, COMI.mn_runspeed_rate/10);
+	COMI.Start_SingleMove( M_HEATSINK_PICKER_PITCH, st_motor[M_HEATSINK_PICKER_PITCH].md_pos[P_HEATSINK_PICKER_PITCH_CLAMP_POS] + 2, 1);
+	
+}
+
+CString CDialog_Manual_Move::CRCCalculation(CString strData)
+{
+	BYTE DT					= 0;
+	unsigned short dtn		= 0;
+	unsigned short sft		= 0;
+	unsigned short N		= 0;
+	WORD CRC				= 0xFFFF;
+	WORD POLY				= 0xA001;	
+	CString strCutData		= _T("");
+	CString strResultData	= _T("");
+	CString strHighData		= _T("");
+	CString strLowData		= _T("");
+	
+	N = strData.GetLength();
+	N = N/2;
+	for(;;)
+	{
+		strCutData = strData.Mid( (dtn * 2), 2 );
+		DT = (BYTE)strtol(strCutData,NULL,16);
+		sft = 0;
+		
+		CRC = CRC ^ DT;
+		
+		for(;;)
+		{
+			if( ( CRC & 0x1 ) == 0x1 )
+			{
+				CRC = CRC >> 1;
+				CRC = CRC ^ POLY;
+			}
+			else
+			{
+				CRC = CRC >> 1;
+			}
+			
+			sft = sft + 1;
+			
+			if( sft < 8 ){}
+			else
+			{
+				dtn = dtn + 1;
+				if( dtn < N )
+				{
+					break;
+				}
+				else
+				{
+					strResultData.Format("%04X", CRC);
+					
+					strLowData = strResultData.Left( 2 );
+					strHighData = strResultData.Right( 2 );
+					
+					strResultData = strHighData + strLowData;
+					return strResultData;					 
+				}
+				break;
+			}			
+		}
+	}
+	
+	return strResultData;
+}
+
+BOOL CDialog_Manual_Move::MessageChange(CString strData, BYTE *bBuff) 
+{
+	BYTE bAddr				= 0;
+	BYTE bGetMessage[256]	= {0};
+	DWORD dwLength			= 0;
+	CString strCutMessage	= _T("");
+	CString strSendData		= _T("");	
+	
+	dwLength = strData.GetLength();
+	
+	for( DWORD i = 0 ; i < dwLength ; i ++ )
+	{
+		strCutMessage = strData.Mid( i , 2 );
+		bAddr = (BYTE)strtol(strCutMessage, NULL, 16);
+		bBuff[ i / 2 ] = bAddr;
+		i ++;
+	}
+	
+	return TRUE;
+}
+
+CString CDialog_Manual_Move::DataChange( BYTE *ReceiveData )
+{
+	CString strReceiveData	= _T("");
+	DWORD dwBuff			= 0;
+	DWORD dwData1			= 0;
+	DWORD dwData2			= 0;
+	
+	dwBuff = ((DWORD)(ReceiveData[4] & 0xFF ) << 8) | (DWORD)(ReceiveData[5] & 0xFF);
+	
+	switch( dwBuff )
+	{
+	case 0x02:		
+		dwData1 = ((DWORD)(ReceiveData[6] & 0xFF ) << 8) | (DWORD)(ReceiveData[7] & 0xFF);
+		strReceiveData.Format( "%ld", dwData1 );		
+		break;
+		
+	case 0x04:
+		dwData1 = ((DWORD)(ReceiveData[6] & 0xFF ) << 8) | (DWORD)(ReceiveData[7] & 0xFF);
+		dwData2 = ((DWORD)(ReceiveData[8] & 0xFF ) << 8) | (DWORD)(ReceiveData[9] & 0xFF);
+		strReceiveData.Format( "%ld %ld", dwData1, dwData2 );
+		break;
+	}
+	
+	return strReceiveData;
+}
+
+
+void CDialog_Manual_Move::OnBtnTorque() 
+{
+	CString strSendMessage		= _T("");
+	CString strAddress			= _T("");
+	CString strReturnMessage	= _T("");
+	BYTE	bBuff[256]			= {0};
+	BYTE	bReturnMessage[256]	= {0}; 
+	DWORD	dwLength			= 0;
+	CString strBcrCommand = _T("");
+	CString m_csExchangeNumber = _T("");
+
+	strAddress = _T("0402");
+	m_csExchangeNumber = _T("01");
+/*
+	// 국번 + FC + FC(하위) + 어드레스 + 데이터 수
+	strSendMessage = m_csExchangeNumber + "40" + "0003" + strAddress + "0001";
+	
+	strSendMessage = strSendMessage + CRCCalculation(strSendMessage);
+	
+	dwLength = strSendMessage.GetLength();
+	
+	MessageChange( strSendMessage, bBuff );
+	
+   // SendMessage( bBuff, dwLength, bReturnMessage );
+
+	memset(&st_serial.bBuff, 0x00, sizeof(st_serial.bBuff));
+	memcpy( st_serial.bBuff, bBuff, sizeof(bBuff) );
+
+
+	strBcrCommand.Format("%s", bBuff);//바코드 리더기 읽기 시작 명령
+	 st_serial.str_snd[3-1] = strBcrCommand;
+	 ::PostMessage(st_handler.hWnd, WM_DATA_SEND, 3, 0);
+
+	*/
+//	strReturnMessage = DataChange( bReturnMessage );
+
+
+
+	Init_Timer();
+// 	SetTimer( TM_PITCH_CHK_ALARM, 100, NULL );
+}
+
+
+void CDialog_Manual_Move::OnButton3() 
+{
+	int nTorque = 0;
+	
+	nTorque = st_recipe.fDispenserVppmA;
+	
+	double  fTemp ;
+	fTemp = (st_recipe.fDispenserVppmA/60);
+	WORD     wBoardToActive=0;
+	WORD     wChannelToActive=0;
+    //-----  output voltage ----------
+    PIODA_CalVoltage(wBoardToActive,wChannelToActive,fTemp);	
+}
+
+void CDialog_Manual_Move::OnButton4() 
+{
+	Func.VppmOff();
+}
+
+void CDialog_Manual_Move::OnBtnEpoxyOut() 
+{
+	Init_Timer();
+	SetTimer(  TM_EPOXY_OUT, 100, NULL );
 	
 }

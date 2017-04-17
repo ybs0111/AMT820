@@ -43,6 +43,9 @@
 #define TM_ONLYREVERSE		921
 #define TM_ONLYHSPICKPLACE	922
 #define TM_VISIONCHK		923
+#define TM_EPOXY_CLEAN_MOVE	924
+#define TM_PITCH_CHK_ALARM	925
+#define TM_EPOXY_OUT		926
 
 class CDialog_Manual_Move : public CDialog
 {
@@ -78,6 +81,8 @@ public:
 	int m_nWork_Pos;
 	int m_LoadBufferPos;
 	int m_hs_rub;
+	int m_pitch_step;
+	int m_epoxy_out_step;
 
 	int mn_FirstSecond;
 	int mn_StartEnd;
@@ -101,6 +106,9 @@ public:
 	int m_nhsexystop;
 	int m_nvisionstop;
 	int m_hs_vision;
+	int m_nEpoxyStop;
+	int m_hs_epoxy;
+	int mn_epoxy_clean;
 
 	int nHeatSinkRbt_Dvc_Req[30][5];
 	DWORD m_dwWaitDispenserAirBlow[3];
@@ -132,6 +140,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDialog_Manual_Move)
 	enum { IDD = IDD_DIALOG_MANUAL_MOVE };
+	CComboBox	m_cbo_epoxy;
 	CComboBox	m_cbo_vision;
 	CComboBox	m_cbo_hs_rub;
 	CComboBox	m_cbo_carrier;
@@ -169,6 +178,7 @@ public:
 	int Move_LoadTransfer();
 	int Move_BufferTransfer();
 	int Move_DvcBuffer();
+	int Move_EpoxyOut();
 
 	int CarrierTopForward( int nMode );
 	int CheckCarrierType();
@@ -180,6 +190,11 @@ public:
 	int Move_Billiard_Epoxy( int nMode, int nSite);
 	int Move_BuffDispensor();
 	int Move_HSPickHeatSinkTransfer( int m_hs_rub_pick );
+	int Move_CleanEpoxy();
+	CString CRCCalculation(CString strData);
+	BOOL MessageChange(CString strData, BYTE *bBuff);
+	CString DataChange( BYTE *ReceiveData );
+	int Move_ChkAlarm();
 
 protected:
 
@@ -198,6 +213,16 @@ protected:
 	afx_msg void OnButton1();
 	afx_msg void OnBtnVisionGo();
 	afx_msg void OnButton15();
+	afx_msg void OnBtnEpoxyGo();
+	afx_msg void OnButton18();
+	afx_msg void OnBtnCleanEpoxy();
+	afx_msg void OnBtnInit();
+	afx_msg void OnBtnClamp();
+	afx_msg void OnBtnClampCo();
+	afx_msg void OnBtnTorque();
+	afx_msg void OnButton3();
+	afx_msg void OnButton4();
+	afx_msg void OnBtnEpoxyOut();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

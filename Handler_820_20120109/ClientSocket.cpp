@@ -32,7 +32,7 @@ CClientSocket::~CClientSocket()
 	}
 }
 
-BOOL CClientSocket::Create(int address, LPSTR szAddress, UINT nPortNo, int nReceiveSize)
+BOOL CClientSocket::Create(int address, CString szAddress, UINT nPortNo, int nReceiveSize)
 {
 	if (!CSocket::Create())
 	{

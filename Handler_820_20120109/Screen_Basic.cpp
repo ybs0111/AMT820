@@ -65,27 +65,19 @@ void CScreen_Basic::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_DGT_RUBB, m_dgt_Rubb);
 	DDX_Control(pDX, IDC_DGT_PICK_RETRY_CNT, m_dgt_Pick_Retry_Cnt);
 	DDX_Control(pDX, IDC_DGT_PARTIAL_CNT, m_dgt_Partial_Cnt);
-	DDX_Control(pDX, IDC_DGT_OFFSET_DIS, m_dgt_Offset_Dis);
-	DDX_Control(pDX, IDC_DGT_OFFSET_30, m_dgt_Offset_30);
-	DDX_Control(pDX, IDC_DGT_OFFSET_20, m_dgt_Offset_20);
-	DDX_Control(pDX, IDC_DGT_OFFSET_10, m_dgt_Offset_10);
-	DDX_Control(pDX, IDC_DGT_OFFSET, m_dgt_Offset);
+	
 	DDX_Control(pDX, IDC_DGT_EPOXY_Y, m_dgt_Epoxy_Y);
 	DDX_Control(pDX, IDC_DGT_EPOXY_X, m_dgt_Epoxy_X);
 	DDX_Control(pDX, IDC_DGT_ELV_PARTIAL_CNT, m_dgt_Elv_Partial_Cnt);
 	DDX_Control(pDX, IDC_DGT_7387_ALARM_CNT, m_dgt_7387_Alarm_Cnt);
 	DDX_Control(pDX, IDC_MSG_XPOXY_Y, m_msg_Epoxy_Y);
-	DDX_Control(pDX, IDC_MSG_OFFSET_30, m_msg_Offset_30);
-	DDX_Control(pDX, IDC_MSG_OFFSET_20, m_msg_Offset_20);
-	DDX_Control(pDX, IDC_MSG_OFFSET_10, m_msg_Offset_10);
-	DDX_Control(pDX, IDC_MSG_OFFSET, m_msg_Offset);
+	
 	DDX_Control(pDX, IDC_MSG_EPOXY_X, m_msg_Epoxy_X);
-	DDX_Control(pDX, IDC_MSG_DISTANCE, m_msg_Distance);
 	DDX_Control(pDX, IDC_GROUP_RUBB_CNT, m_group_Rubb_Cnt);
 	DDX_Control(pDX, IDC_GROUP_PARTIAL_CNT, m_group_Patial_Cnt);
 	DDX_Control(pDX, IDC_GROUP_EPOXY_OFFSET, m_group_Epoxy_Offset);
 	DDX_Control(pDX, IDC_GROUP_ELV_PARTIAL_CNT, m_group_Elv_Partial_Cnt);
-	DDX_Control(pDX, IDC_GROUP_CARRIER_MOVE, m_group_Carrier_Move);
+	
 	DDX_Control(pDX, IDC_GROUP_7387_ALARM_CNT, m_group_7387_Alarm_Cnt);
 	DDX_Control(pDX, IDC_BTN_DELETE, m_btn_delete);
 	DDX_Control(pDX, IDC_BTN_BASIC_CREATE, m_btn_create);
@@ -106,11 +98,7 @@ BEGIN_MESSAGE_MAP(CScreen_Basic, CFormView)
 	ON_BN_CLICKED(IDC_BTN_DELETE, OnBtnDelete)
 	ON_BN_CLICKED(IDC_DGT_EPOXY_X, OnDgtEpoxyX)
 	ON_BN_CLICKED(IDC_DGT_EPOXY_Y, OnDgtEpoxyY)
-	ON_BN_CLICKED(IDC_DGT_OFFSET, OnDgtOffset)
-	ON_BN_CLICKED(IDC_DGT_OFFSET_10, OnDgtOffset10)
-	ON_BN_CLICKED(IDC_DGT_OFFSET_20, OnDgtOffset20)
-	ON_BN_CLICKED(IDC_DGT_OFFSET_30, OnDgtOffset30)
-	ON_BN_CLICKED(IDC_DGT_OFFSET_DIS, OnDgtOffsetDis)
+	
 	ON_BN_CLICKED(IDC_DGT_RUBB, OnDgtRubb)
 	ON_BN_CLICKED(IDC_DGT_7387_ALARM_CNT, OnDgt7387AlarmCnt)
 	ON_BN_CLICKED(IDC_DGT_ELV_PARTIAL_CNT, OnDgtElvPartialCnt)
@@ -209,10 +197,10 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 	nCnt = lpcc->Row;
 
 	//kwlee 2017.0403
-	if (nCnt <= 0 || g_lotMgr.GetLotCount() > 0 )
-	{
-		return;
-	}
+// 	if (nCnt <= 0 || g_lotMgr.GetLotCount() > 0 )
+// 	{
+// 		return;
+// 	}
 	///
 
 	if(wParam == IDC_CUSTOM_FILE_LIST)
@@ -859,10 +847,6 @@ void CScreen_Basic::OnBasic_Data_Group()
 	m_group_Elv_Partial_Cnt.SetCatptionTextColor(RGB(145,25,0));
 	m_group_Elv_Partial_Cnt.SetFontBold(TRUE);
 	
-	m_group_Carrier_Move.SetFont(main_font);
-	m_group_Carrier_Move.SetCatptionTextColor(RGB(145,25,0));
-	m_group_Carrier_Move.SetFontBold(TRUE);
-	
 	m_group_7387_Alarm_Cnt.SetFont(main_font);
 	m_group_7387_Alarm_Cnt.SetCatptionTextColor(RGB(145,25,0));
 	m_group_7387_Alarm_Cnt.SetFontBold(TRUE);
@@ -931,31 +915,6 @@ void CScreen_Basic::OnBasic_Digital()
 	m_dgt_Partial_Cnt.SetStyle(IDB_BIG3, 2);
 	m_dgt_Partial_Cnt.SetValue(strTmp);
 	
-	strTmp.Format("%0.2f",dHSCarrierSpreadMoveDistance[1]);
-	m_dgt_Offset_Dis.SubclassDlgItem(IDC_DGT_OFFSET_DIS, this);
-	m_dgt_Offset_Dis.SetStyle(IDB_BIG3, 6);
-	m_dgt_Offset_Dis.SetValue(strTmp);
-
-
-	strTmp.Format("%0.2f",dHeatSinkCarrierSpreadMove3Offset[1]);
-	m_dgt_Offset_30.SubclassDlgItem(IDC_DGT_OFFSET_30, this);
-	m_dgt_Offset_30.SetStyle(IDB_BIG3, 6);
-	m_dgt_Offset_30.SetValue(strTmp);
-	
-	strTmp.Format("%0.2f",dHeatSinkCarrierSpreadMove2Offset[1]);
-	m_dgt_Offset_20.SubclassDlgItem(IDC_DGT_OFFSET_20, this);
-	m_dgt_Offset_20.SetStyle(IDB_BIG3, 6);
-	m_dgt_Offset_20.SetValue(strTmp);
-	
-	strTmp.Format("%0.2f",dHeatSinkCarrierSpreadMove1Offset[1]);
-	m_dgt_Offset_10.SubclassDlgItem(IDC_DGT_OFFSET_10, this);
-	m_dgt_Offset_10.SetStyle(IDB_BIG3, 6);
-	m_dgt_Offset_10.SetValue(strTmp);
-	
-	strTmp.Format("%0.2f",dHSCarrierSpreadMoveOffset[1]);
-	m_dgt_Offset.SubclassDlgItem(IDC_DGT_OFFSET, this);
-	m_dgt_Offset.SetStyle(IDB_BIG3, 6);
-	m_dgt_Offset.SetValue(strTmp);
 	
 	strTmp.Format("%0.2f",dEpoxyYLineOffSet[1]);
 	m_dgt_Epoxy_Y.SubclassDlgItem(IDC_DGT_EPOXY_Y, this);
@@ -1046,11 +1005,7 @@ void CScreen_Basic::OnBasic_Data_Set()
 	n_rubb_count[1]									= 	st_basic.n_rubb_count;						
 	dEpoxyXLineOffSet[1]							= 	st_basic.dEpoxyXLineOffSet;					
 	dEpoxyYLineOffSet[1]							= 	st_basic.dEpoxyYLineOffSet;					
-	dHSCarrierSpreadMoveOffset[1]					= 	st_basic.dHSCarrierSpreadMoveOffset;			
-	dHSCarrierSpreadMoveDistance[1]					= 	st_basic.dHSCarrierSpreadMoveDistance;		
-	dHeatSinkCarrierSpreadMove1Offset[1]			= 	st_basic.dHeatSinkCarrierSpreadMove1Offset;	
-	dHeatSinkCarrierSpreadMove2Offset[1]			= 	st_basic.dHeatSinkCarrierSpreadMove2Offset;	
-	dHeatSinkCarrierSpreadMove3Offset[1]			= 	st_basic.dHeatSinkCarrierSpreadMove3Offset;	
+	
 	m_n_count_retry[1]								= 	st_basic.n_count_retry;
 
 	//kwlee 2017.0406
@@ -1093,43 +1048,7 @@ void CScreen_Basic::OnBasic_Data_Label()
 	m_msg_Epoxy_X.SetGradientColor(GREEN_C);
 	m_msg_Epoxy_X.SetTextColor(BLACK_C);
 
-	m_msg_Offset_30.SetFont(mp_basic_font);
-	m_msg_Offset_30.SetWindowText(_T("Offset 30"));
-	m_msg_Offset_30.SetCenterText();
-	m_msg_Offset_30.SetColor(WHITE_C);
-	m_msg_Offset_30.SetGradientColor(GREEN_C);
-	m_msg_Offset_30.SetTextColor(BLACK_C);
-
-	m_msg_Offset_20.SetFont(mp_basic_font);
-	m_msg_Offset_20.SetWindowText(_T("Offset 20"));
-	m_msg_Offset_20.SetCenterText();
-	m_msg_Offset_20.SetColor(WHITE_C);
-	m_msg_Offset_20.SetGradientColor(GREEN_C);
-	m_msg_Offset_20.SetTextColor(BLACK_C);
-
 	
-	m_msg_Offset_10.SetFont(mp_basic_font);
-	m_msg_Offset_10.SetWindowText(_T("Offset 10"));
-	m_msg_Offset_10.SetCenterText();
-	m_msg_Offset_10.SetColor(WHITE_C);
-	m_msg_Offset_10.SetGradientColor(GREEN_C);
-	m_msg_Offset_10.SetTextColor(BLACK_C);
-
-	m_msg_Offset.SetFont(mp_basic_font);
-	m_msg_Offset.SetWindowText(_T("Offset"));
-	m_msg_Offset.SetCenterText();
-	m_msg_Offset.SetColor(WHITE_C);
-	m_msg_Offset.SetGradientColor(GREEN_C);
-	m_msg_Offset.SetTextColor(BLACK_C);
-	
-	
-	m_msg_Distance.SetFont(mp_basic_font);
-	m_msg_Distance.SetWindowText(_T("Distance"));
-	m_msg_Distance.SetCenterText();
-	m_msg_Distance.SetColor(WHITE_C);
-	m_msg_Distance.SetGradientColor(GREEN_C);
-	m_msg_Distance.SetTextColor(BLACK_C);
-
 }
 
 void CScreen_Basic::OnBtnBasicCancel() 
@@ -1184,11 +1103,7 @@ void CScreen_Basic::OnBasic_Data_Backup()
 	n_rubb_count[0]							= n_rubb_count[1];
 	dEpoxyXLineOffSet[0]					= dEpoxyXLineOffSet[1];
 	dEpoxyYLineOffSet[0]					= dEpoxyYLineOffSet[1];
-	dHSCarrierSpreadMoveOffset[0]			= dHSCarrierSpreadMoveOffset[1];
-	dHSCarrierSpreadMoveDistance[0]			= dHSCarrierSpreadMoveDistance[1];
-	dHeatSinkCarrierSpreadMove1Offset[0]	= dHeatSinkCarrierSpreadMove1Offset[1];
-	dHeatSinkCarrierSpreadMove2Offset[0]	= dHeatSinkCarrierSpreadMove2Offset[1];
-	dHeatSinkCarrierSpreadMove3Offset[0]	= dHeatSinkCarrierSpreadMove3Offset[1];
+	
 	m_n_count_retry[0]						= m_n_count_retry[1];
 
 	//kwlee 2017.0406
@@ -1244,11 +1159,6 @@ void CScreen_Basic::OnBasic_Data_Apply()
 	st_basic.n_rubb_count						= n_rubb_count[1];
 	st_basic.dEpoxyXLineOffSet					= dEpoxyXLineOffSet[1];
 	st_basic.dEpoxyYLineOffSet					= dEpoxyYLineOffSet[1];
-	st_basic.dHSCarrierSpreadMoveOffset			= dHSCarrierSpreadMoveOffset[1];
-	st_basic.dHSCarrierSpreadMoveDistance		= dHSCarrierSpreadMoveDistance[1];
-	st_basic.dHeatSinkCarrierSpreadMove1Offset	= dHeatSinkCarrierSpreadMove1Offset[1];
-	st_basic.dHeatSinkCarrierSpreadMove2Offset	= dHeatSinkCarrierSpreadMove2Offset[1];
-	st_basic.dHeatSinkCarrierSpreadMove3Offset	= dHeatSinkCarrierSpreadMove3Offset[1];
 	st_basic.n_count_retry						= m_n_count_retry[1];
 
 	//kwlee 2017.0406
@@ -1304,11 +1214,7 @@ int CScreen_Basic::Data_Comparison()
 	if(n_rubb_count[0]						!= n_rubb_count[1])					return RET_ERROR;
 	if(dEpoxyXLineOffSet[0]					!= dEpoxyXLineOffSet[1])			return RET_ERROR;
 	if(dEpoxyYLineOffSet[0]					!= dEpoxyYLineOffSet[1])			return RET_ERROR;
-	if(dHSCarrierSpreadMoveOffset[0]		!= dHSCarrierSpreadMoveOffset[1])	return RET_ERROR;
-	if(dHSCarrierSpreadMoveDistance[0]			!= dHSCarrierSpreadMoveDistance[1])					return RET_ERROR;
-	if(dHeatSinkCarrierSpreadMove1Offset[0]		!= dHeatSinkCarrierSpreadMove1Offset[1])			return RET_ERROR;
-	if(dHeatSinkCarrierSpreadMove2Offset[0]		!= dHeatSinkCarrierSpreadMove2Offset[1])			return RET_ERROR;
-	if(dHeatSinkCarrierSpreadMove3Offset[0]		!= dHeatSinkCarrierSpreadMove3Offset[1])			return RET_ERROR;
+	
 	
 	//kwlee 2017.0406
 	if(m_dLoaderTransferTrayDeviceGap[0]	!= m_dLoaderTransferTrayDeviceGap[1])   return RET_ERROR;
@@ -1360,11 +1266,7 @@ void CScreen_Basic::Data_Recovery()
 	n_rubb_count[1]							= n_rubb_count[0];
 	dEpoxyXLineOffSet[1]					= dEpoxyXLineOffSet[0];
 	dEpoxyYLineOffSet[1]					= dEpoxyYLineOffSet[0];
-	dHSCarrierSpreadMoveOffset[1]			= dHSCarrierSpreadMoveOffset[0];
-	dHSCarrierSpreadMoveDistance[1]			= dHSCarrierSpreadMoveDistance[0];
-	dHeatSinkCarrierSpreadMove1Offset[1]	= dHeatSinkCarrierSpreadMove1Offset[0];
-	dHeatSinkCarrierSpreadMove2Offset[1]	= dHeatSinkCarrierSpreadMove2Offset[0];
-	dHeatSinkCarrierSpreadMove3Offset[1]	= dHeatSinkCarrierSpreadMove3Offset[0];
+	
 	m_n_count_retry[1]						= m_n_count_retry[0];
 
 	//kwlee 2017.0406
@@ -1751,35 +1653,6 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	if(dEpoxyXLineOffSet[0] != dEpoxyXLineOffSet[1])
 	{
 		str_msg.Format( "[BASIC] EpoxyXLineOffSet Change %0.2f -> 0.2f", dEpoxyXLineOffSet[0], dEpoxyXLineOffSet[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(dHSCarrierSpreadMoveOffset[0] != dHSCarrierSpreadMoveOffset[1])
-	{
-		str_msg.Format( "[BASIC] HSCarrierSpreadMoveOffset Change %0.2f -> 0.2f", dHSCarrierSpreadMoveOffset[0], dHSCarrierSpreadMoveOffset[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	if(dHSCarrierSpreadMoveDistance[0] != dHSCarrierSpreadMoveDistance[1])
-	{
-		str_msg.Format( "[BASIC] HSCarrierSpreadMoveDistance Change %0.2f -> 0.2f", dHSCarrierSpreadMoveDistance[0], dHSCarrierSpreadMoveDistance[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(dHeatSinkCarrierSpreadMove1Offset[0] != dHeatSinkCarrierSpreadMove1Offset[1])
-	{
-		str_msg.Format( "[BASIC] HeatSinkCarrierSpreadMove1Offset Change %0.2f -> 0.2f", dHeatSinkCarrierSpreadMove1Offset[0], dHeatSinkCarrierSpreadMove1Offset[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(dHeatSinkCarrierSpreadMove2Offset[0] != dHeatSinkCarrierSpreadMove2Offset[1])
-	{
-		str_msg.Format( "[BASIC] HeatSinkCarrierSpreadMove2Offset Change%0.2f -> 0.2f", dHeatSinkCarrierSpreadMove2Offset[0], dHeatSinkCarrierSpreadMove2Offset[1]);
-		Func.On_LogFile_Add(0, str_msg);
-	}
-	
-	if(dHeatSinkCarrierSpreadMove3Offset[0] != dHeatSinkCarrierSpreadMove3Offset[1])
-	{
-		str_msg.Format( "[BASIC] HeatSinkCarrierSpreadMove3Offset Change %0.2f -> 0.2f", dHeatSinkCarrierSpreadMove3Offset[0], dHeatSinkCarrierSpreadMove3Offset[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 	
@@ -2819,121 +2692,7 @@ void CScreen_Basic::OnDgtEpoxyY()
 	
 }
 
-void CScreen_Basic::OnDgtOffset() 
-{
-	// TODO: Add your control notification handler code here
-	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	double mdTemp;
 
-	
-	mdTemp = m_dgt_Offset.GetValue();
-	mstr_temp = LPCTSTR(_ltoa(mdTemp, chr_buf, 10));
-	
-	st_msg.mstr_keypad_msg = _T("Carrier Move Offset");
-    
-	st_msg.mstr_keypad_val = mstr_temp;
-	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-	dHSCarrierSpreadMoveOffset[1] = atof(mstr_temp);
-	//int iTemp = atoi(mstr_temp);
-	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	mstr_temp.Format("%0.2f",dHSCarrierSpreadMoveOffset[1]);
-	m_dgt_Offset.SetValue( mstr_temp);
-}
-
-void CScreen_Basic::OnDgtOffset10() 
-{
-	// TODO: Add your control notification handler code here
-	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	double mdTemp;
-
-	
-	mdTemp = m_dgt_Offset_10.GetValue();
-	mstr_temp = LPCTSTR(_ltoa(mdTemp, chr_buf, 10));
-	
-	st_msg.mstr_keypad_msg = _T("Carrier Offset 10");
-    
-	st_msg.mstr_keypad_val = mstr_temp;
-	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-	dHeatSinkCarrierSpreadMove1Offset[1] = atof(mstr_temp);
-	//int iTemp = atoi(mstr_temp);
-	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	mstr_temp.Format("%0.2f",dHeatSinkCarrierSpreadMove1Offset[1]);
-	m_dgt_Offset_10.SetValue( mstr_temp);
-	
-}
-
-void CScreen_Basic::OnDgtOffset20() 
-{
-	// TODO: Add your control notification handler code here
-	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	double mdTemp;
-	
-	
-	mdTemp = m_dgt_Offset_20.GetValue();
-	mstr_temp = LPCTSTR(_ltoa(mdTemp, chr_buf, 10));
-	
-	st_msg.mstr_keypad_msg = _T("Carrier Offset 10");
-    
-	st_msg.mstr_keypad_val = mstr_temp;
-	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-	dHeatSinkCarrierSpreadMove2Offset[1] = atof(mstr_temp);
-	//int iTemp = atoi(mstr_temp);
-	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	mstr_temp.Format("%0.2f",dHeatSinkCarrierSpreadMove2Offset[1]);
-	m_dgt_Offset_20.SetValue( mstr_temp);
-}
-
-void CScreen_Basic::OnDgtOffset30() 
-{
-	// TODO: Add your control notification handler code here
-	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	double mdTemp;
-
-	
-	mdTemp = m_dgt_Offset_30.GetValue();
-	mstr_temp = LPCTSTR(_ltoa(mdTemp, chr_buf, 10));
-	
-	st_msg.mstr_keypad_msg = _T("Carrier Offset 10");
-    
-	st_msg.mstr_keypad_val = mstr_temp;
-	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-	dHeatSinkCarrierSpreadMove3Offset[1] = atof(mstr_temp);
-	//int iTemp = atoi(mstr_temp);
-	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	mstr_temp.Format("%0.2f",dHeatSinkCarrierSpreadMove2Offset[1]);
-	m_dgt_Offset_30.SetValue( mstr_temp);
-}
-
-void CScreen_Basic::OnDgtOffsetDis() 
-{
-	// TODO: Add your control notification handler code here
-	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	double mdTemp;
-
-	
-	mdTemp = m_dgt_Offset_Dis.GetValue();
-	mstr_temp = LPCTSTR(_ltoa(mdTemp, chr_buf, 10));
-	
-	st_msg.mstr_keypad_msg = _T("Carrier Offset 10");
-    
-	st_msg.mstr_keypad_val = mstr_temp;
-	
-	mstr_temp = KeyPad.GetNumEditString_D(1, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
-	dHSCarrierSpreadMoveDistance[1] = atof(mstr_temp);
-	//int iTemp = atoi(mstr_temp);
-	//g_dataMgr.SetDataTemp( &st_basic.n_tray_x, iTemp );
-	mstr_temp.Format("%0.2f",dHSCarrierSpreadMoveDistance[1]);
-	m_dgt_Offset_Dis.SetValue( mstr_temp);
-}
 
 void CScreen_Basic::OnDgtRubb() 
 {

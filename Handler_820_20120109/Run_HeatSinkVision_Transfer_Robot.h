@@ -33,6 +33,7 @@ public:
 	int mn_InitStep;
 	int mn_BufferPos;
 	int mn_MoveMeasureStep;
+	int mn_RunBuffStep;
 	
 	int m_nRobot_X;
 	int m_nRobot_Y;
@@ -139,7 +140,8 @@ public:
 	void RunMoveVision();
 	void RunMoveDispensor();
 	void RunInit();
-	
+	void RunMoveBuffDispensor();
+
 	int Process_Measure_Vision();
 	int Process_Dvc_Pickup(int nMode, int nWork_Site);
 	int Process_Dvc_Place(int nMode, int nWork_Site, int nPos);

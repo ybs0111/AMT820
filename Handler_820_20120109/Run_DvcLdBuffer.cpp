@@ -109,11 +109,11 @@ void CRun_DvcLdBuffer::OnRunMove()
 
 		if(nRet_1 == RET_GOOD)
 		{
-			mn_RunStep = 320;
+			mn_RunStep = 500;
 		}
 		else if(nRet_1 == RET_ERROR)
 		{			 
-			CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5001, dWARNING, m_strAlarmCode);
 			mn_RunStep = 300;
 		}
 		break;
@@ -181,7 +181,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		{//자재가 남아있다면, 소켓 오프등으로 남아있는 자재이니 이떄는 테슽 로봇이 요청한 대로 바로 집을 수 있게 처리한다  
 
 			mn_RunStep = 3000; 
-			//CTL_Lib.Alarm_Error_Occurrence(m_nRunStep, dWARNING, Func.m_strAlarmCode);
+			//CTL_Lib.Alarm_Error_Occurrence(5002, dWARNING, Func.m_strAlarmCode);
 		}
 		break;
 
@@ -194,7 +194,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{//자재가 남아있다면 에러 
-			CTL_Lib.Alarm_Error_Occurrence(3100, dWARNING, Func.m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5003, dWARNING, Func.m_strAlarmCode);
 		}			 
 		break;
 
@@ -319,7 +319,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{			 
-			CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5004, dWARNING, m_strAlarmCode);
 			mn_RunStep = 2200;
 		}
 		break;
@@ -334,7 +334,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 		{
 			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
-			CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5005, dWARNING, m_strAlarmCode);
 			break;
 		} 
 		mn_RunStep = 2320;
@@ -354,7 +354,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{			 
-			CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5006, dWARNING, m_strAlarmCode);
 			mn_RunStep = 2320;
 		}
 		break;
@@ -369,7 +369,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 		{
 			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
-			CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5007, dWARNING, m_strAlarmCode);
 			break;
 		} 
 		mn_RunStep = 2400;
@@ -394,7 +394,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1== RET_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(3120, dWARNING, Func.m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5008, dWARNING, Func.m_strAlarmCode);
 		} 
 		break;
 
@@ -422,7 +422,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 		{
 			m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
-			CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5009, dWARNING, m_strAlarmCode);
 			break;
 		} 
 		mn_RunStep = 3200;
@@ -456,7 +456,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{			 
-			CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5010, dWARNING, m_strAlarmCode);
 			mn_RunStep = 3210;
 		}
 		break;

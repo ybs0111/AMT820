@@ -155,6 +155,7 @@
 #define IDB_BIG4                        239
 #define IDR_GIF_LOGO                    240
 #define IDB_TOOLBAR_DRAW_HOT1           240
+#define IDC_BTN_CNT_REAR_CLIENT         240
 #define IDD_SCREEN_MOTOR_DISPENSER_TEST 241
 #define IDB_TOOLBAR_DRAW_DISABLED1      241
 #define IDD_DIALOG_CAMERA               242
@@ -232,6 +233,7 @@
 #define IDC_BTN_ML_EL_LATCH_ON          300
 #define IDD_DIALOG_MOTOR                300
 #define IDC_BTN_ML_EL_MOVE_LEFT         301
+#define IDC_BTN_CIP_SET_REAR_CLIENT     301
 #define IDC_BTN_ML_EL_MOVE_RIGHT        302
 #define IDC_BTN_ML_EL_UP                303
 #define IDC_BTN_ML_ESTOP                304
@@ -376,6 +378,7 @@
 #define IDD_DIALOG_MOTOR_AXIS_1         446
 #define IDD_MOTOR_PART_1                446
 #define IDD_MOTOR_PART                  447
+#define IDC_BTN_CPORT_SET_REAR_CLIENT   468
 #define IDI_LEFT                        471
 #define IDI_RIGHT                       472
 #define IDI_POWER_ON                    492
@@ -387,6 +390,7 @@
 #define IDI_MAINTENANCE_1               510
 #define IDI_UP_D                        519
 #define IDI_UP_E                        520
+#define IDC_BTN_TST_REAR_CLIENT         521
 #define IDC_DGT_RETRY_CNT               526
 #define IDC_DGT_RETRY_WAIT              527
 #define IDC_DGT_Decel                   527
@@ -394,6 +398,7 @@
 #define IDC_DGT_DISPENSERVPPMA          527
 #define IDC_DGT_MAX_SPEED               528
 #define IDI_RIGHT_D                     528
+#define IDC_DGT_EPOXY_USECNT            528
 #define IDC_DGT_HOME_SPEED              529
 #define IDD_DIALOG_PART_IO              529
 #define IDC_DGT_JOG_SPEED               530
@@ -525,7 +530,9 @@
 #define IDC_DGT_POWER_OFF_TIME3         770
 #define IDC_DGT_OFFSET_DIS              770
 #define IDC_DGT_BOOT_TIME               771
+#define IDC_DGT_HS_RUB_X_OFFSET         771
 #define IDC_DGT_NOVIDEO                 772
+#define IDC_DGT_HS_RUB_Y_OFFSET         772
 #define IDC_DGT_POWER_OFF_PERCENT       773
 #define IDC_DGT_ELV_PARTIAL_CNT         773
 #define IDC_DGT_BOARD_CNT               774
@@ -538,6 +545,7 @@
 #define IDC_RADIO_IN_STATE_13           797
 #define IDC_RADIO_IN_STATE_14           798
 #define IDC_RADIO_IN_STATE_15           799
+#define IDC_EDIT_CPORT_REAR_CLIENT      805
 #define IDC_DGT_MAINT_TIME              819
 #define IDC_RADIO_OUT_STATE_12          820
 #define IDC_RADIO_OUT_STATE_13          821
@@ -584,7 +592,9 @@
 #define IDC_DGT_WORKTIME_REAR_11        857
 #define IDC_GROUP_DAILY_YIELD_INFO      857
 #define IDC_DGT_WORKTIME_REAR_12        858
+#define IDC_GROUP_BTM_INFO              858
 #define IDC_DGT_WORKTIME_REAR_13        859
+#define IDC_GROUP_TOP_INFO              859
 #define IDC_DGT_WORKTIME_FRONT_13       860
 #define IDC_DGT_RUN_TIME                861
 #define IDC_DGT_WORKTIME_REAR_14        862
@@ -612,6 +622,7 @@
 #define IDC_EDIT_ALARM_REPARE           930
 #define IDC_EDIT_ALARM_TITLE            931
 #define IDC_EDIT_DEVICE_TYPE            933
+#define IDC_GROUP_REAR_CLIENT           937
 #define IDC_GIF_ALARM                   942
 #define IDC_GROUP_ALARM_INFO            951
 #define IDC_GROUP_DEVICE                969
@@ -627,6 +638,7 @@
 #define IDC_GROUP_VISION                974
 #define IDC_GROUP_ACTIVATOR_DROP_CNT    975
 #define IDC_GROUP_TRAY_GAP              975
+#define IDC_GROUP_EPOXY                 975
 #define IDC_GROUP_CLEANER_CLEAN_CNT     976
 #define IDC_GROUP_SOCKET_GAP            976
 #define IDC_GROUP_NEEDLE_CLEAN_CNT      977
@@ -751,6 +763,7 @@
 #define IDC_BUTTON2                     1029
 #define IDC_BTN_LOT_START               1029
 #define IDC_BTN_MM_GO                   1029
+#define IDC_BTN_CLEAN_EPOXY             1029
 #define IDC_BTN_PASS_CHK_5              1030
 #define IDC_BUTTON3                     1030
 #define IDC_DGT_ML_RETRY_CNT            1030
@@ -775,11 +788,13 @@
 #define IDC_GIF_MESSAGE                 1032
 #define IDC_BUTTON5                     1032
 #define IDC_BTN_MOTOR_PART_SAVE         1032
+#define IDC_BTN_EPOXY_OUT               1032
 #define IDC_BTN_PASS_CHK_8              1033
 #define IDC_BTN_INIT_RETRY              1033
 #define IDC_BUTTON6                     1033
 #define IDC_BTN_NOVIDEO                 1033
 #define IDC_BTN_MOTOR_POS_SAVE          1033
+#define IDC_BTN_EPOXY_OUT_STOP          1033
 #define IDC_BTN_PASS_CHK_9              1034
 #define IDC_RADIO_IO_BD                 1034
 #define IDC_BUTTON7                     1034
@@ -813,6 +828,7 @@
 #define IDC_BUTTON_LEFT_SAVE_RIGHT      1038
 #define IDC_BTN_MAIN_X_READ4            1038
 #define IDC_GROUP_RUN_SPEED             1038
+#define IDC_GROUP_EPOXY_USECNT          1038
 #define IDC_BTN_PASS_CHK_T              1039
 #define IDC_RADIO_ULD_TR                1039
 #define IDC_RADIO_BASE_LOWER            1039
@@ -935,6 +951,7 @@
 #define IDC_LABEL_IN_5                  1064
 #define IDC_BTN_PASS_CHK_LINE           1064
 #define IDC_BTN_MAIN_Y_READ7            1064
+#define IDC_CIP_REAR_CLIENT             1064
 #define IDC_LABEL_IN_6                  1065
 #define IDC_BTN_PASS_CHK_DOLLAR         1065
 #define IDC_GROUP_WORK_COUNT            1065
@@ -1116,6 +1133,7 @@
 #define IDC_LIST_DEVICE_TYPE            1141
 #define IDC_GROUP_WORK_LIST             1142
 #define IDC_MSG_WORK_FILE_NAME          1143
+#define IDC_MSG_IP_REAR_CLIENT          1143
 #define IDC_LIST_WORK_FILE              1144
 #define IDC_BTN_WORK_FILE_DEL           1145
 #define IDC_BTN_WORK_FILE_REFRESH       1146
@@ -1170,6 +1188,7 @@
 #define IDC_MSG_THREAD_10               1175
 #define IDC_MSG_GOOD                    1175
 #define IDC_MSG_PASS                    1175
+#define IDC_MSG_CPORT_REAR_CLIENT       1175
 #define IDC_RADIO_OPERATION             1176
 #define IDC_DATA_THREAD_10              1176
 #define IDC_MSG_TOTAL_LEFT              1176
@@ -1230,7 +1249,9 @@
 #define IDC_RADIO_SOCKET_MONTH          1191
 #define IDC_MSG_DISTANCE                1191
 #define IDC_RADIO_SOCKET_LIST           1192
+#define IDC_MSG_X_RUBB_OFFSET           1192
 #define IDC_MSG_MOTOR_NAME              1193
+#define IDC_MSG_Y_RUBB_OFFSET           1193
 #define IDC_MSG_MOTOR_1                 1194
 #define IDC_MSG_MOTOR_2                 1195
 #define IDC_MSG_MOTOR_3                 1196
@@ -2973,6 +2994,7 @@
 #define IDC_BUTTON_PICKER_UP_2          2100
 #define IDC_BTN_O_TEXT                  2100
 #define IDC_BUTTON_X_POWER_OFF          2100
+#define IDC_BUTTON18                    2100
 #define IDC_BUTTON_MAIN_X_LEFT          2101
 #define IDC_BUTTON_RIGHT_R_OFF          2101
 #define IDC_BTN_MOTOR_SUB_Z             2101
@@ -4994,11 +5016,12 @@
 #define IDC_BTN_SERIAL_APPLY_2          3676
 #define IDC_BTN_BCR1                    3676
 #define IDC_IO_TR_L                     3677
-#define IDC_BTN_PITCH_APPLY             3677
+#define IDC_BTN_SERIAL_CONNECT_2        3677
+#define IDC_BTN_SERIAL_APPLY_4          3677
 #define IDC_IO_MAIN_ROBOT               3678
 #define IDC_MSG_LOT_ID_DATA             3678
 #define IDC_MSG_STOP_3                  3678
-#define IDC_BTN_PITCH_CONNECT           3678
+#define IDC_BTN_SERIAL_CONNECT_4        3678
 #define IDC_IO_TR_R                     3679
 #define IDC_MSG_OPER_ID                 3679
 #define IDC_MSG_PARITY_3                3679
@@ -5166,10 +5189,30 @@
 #define IDC_GROUP_CARRIER               3795
 #define IDC_BTN_ENDLESS_LOOP            3796
 #define IDC_COMBO_MOVE_CARRIER          3797
+#define IDC_EDIT1                       3798
+#define IDC_TRAY2_LOCK                  3799
+#define IDC_TRAY2_UNLOCK                3800
+#define IDC_TRAY1_LOCK                  3801
 #define IDC_BTN_HEAT_SINK_GO            3802
+#define IDC_TRAY1_UNLOCK                3802
 #define IDC_COMBO_MOVE_HEATSINK         3803
+#define IDC_BTN_LOADER_RCV              3803
 #define IDC_BTN_VISION_GO               3804
+#define IDC_BTN_INPUT_LOADER            3804
 #define IDC_COMBO_MOVE_VISION           3805
+#define IDC_BTN_EPOXY_GO                3806
+#define IDC_BTN_WAIT_INDEX              3806
+#define IDC_COMBO_MOVE_EPOXY            3807
+#define IDC_CHECK1                      3807
+#define IDC_BTN_INIT                    3808
+#define IDC_BTN_CLAMP                   3809
+#define IDC_BTN_CLAMP_CO                3810
+#define IDC_BTN_TORQUE                  3811
+#define IDC_BTN_HEATSINK_VISION         3811
+#define IDC_OUT_SEND                    3812
+#define IDC_BTN_UNLOADER                3813
+#define IDC_HARDNESS_OUT                3828
+#define IDC_EPOXY_OUT                   3829
 #define ID_EMPTY                        32771
 #define ID_MAIN                         32772
 #define ID_BASIC                        32773
@@ -5225,7 +5268,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        548
 #define _APS_NEXT_COMMAND_VALUE         32818
-#define _APS_NEXT_CONTROL_VALUE         3797
+#define _APS_NEXT_CONTROL_VALUE         3808
 #define _APS_NEXT_SYMED_VALUE           117
 #endif
 #endif

@@ -165,7 +165,7 @@ void CRun_Handler_Check::ButtonCheck_Start()
 		}
 	
 		// Air 감지 센서를 확인한다.
-		if (g_ioMgr.get_in_bit( st_io.i_Main_Air1_Check, IO_OFF) == IO_OFF || g_ioMgr.get_in_bit( st_io.i_Main_Air2_Check, IO_OFF) == IO_OFF)
+		if (g_ioMgr.get_in_bit( st_io.i_Main_Air1_Check, IO_OFF) == IO_ON || g_ioMgr.get_in_bit( st_io.i_Main_Air2_Check, IO_OFF) == IO_ON)
 		{
 			Func.OnSet_IO_Port_Sound(IO_ON);
 //			st_msg.mstr_abnormal_msg = _T("[AIR CHECK] Though supply Air, become Run.");
@@ -342,7 +342,7 @@ void CRun_Handler_Check::ButtonCheck_Stop()
 		if (g_ioMgr.get_in_bit(st_io.i_Stop_SwitchCheck, IO_ON) == IO_ON && st_work.mn_run_status != dSTOP)
 		{
 			// 만일 Start Button이 같이 눌렸다면 동작되지 않는다.
-			if (g_ioMgr.Get_In_Bit(st_io.i_Stop_SwitchCheck) == TRUE)
+			if (g_ioMgr.Get_In_Bit(st_io.i_Start_SwitchCheck) == TRUE)
 			{
 				break;
 			}
@@ -368,16 +368,17 @@ void CRun_Handler_Check::ButtonCheck_Stop()
 	case 200: 
 		SwitchWaitTime[1] = GetCurrentTime();
 		SwitchWaitTime[2] = SwitchWaitTime[1] - SwitchWaitTime[0];
+		if(SwitchWaitTime[2] <= 0)
+		{
+			SwitchWaitTime[0] = GetCurrentTime();
+			break;
+		}
 		
 		if(SwitchWaitTime[2] > 50 && g_ioMgr.get_in_bit(st_io.i_Stop_SwitchCheck, IO_OFF) == IO_OFF)
 		{
 			SwitchWaitTime[0] = GetCurrentTime();
 			StopStep = 300;
 		}//2012,1220
-		else if(SwitchWaitTime[2] < 0)
-		{
-			SwitchWaitTime[0] = GetCurrentTime();
-		}
 		else if (g_ioMgr.get_in_bit(st_io.i_Stop_SwitchCheck, IO_OFF) == IO_OFF)
 		{
 			StopStep = 0;
@@ -511,6 +512,7 @@ void CRun_Handler_Check::ButtonCheck_Reset()
 						Func.OnSet_IO_Port_Stop();
 					}
 					Func.OnSet_IO_Port_Sound(IO_OFF);
+					g_ioMgr.set_out_bit(st_io.o_AlarmClear_SwitchLamp, IO_OFF);
 				}
 				else
 				{
@@ -521,6 +523,7 @@ void CRun_Handler_Check::ButtonCheck_Reset()
 						st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
 					}
 					Func.OnSet_IO_Port_Sound(IO_OFF);
+					g_ioMgr.set_out_bit(st_io.o_AlarmClear_SwitchLamp, IO_OFF);
 				}
 				ResetStep = 0;
 			}

@@ -328,12 +328,12 @@ void CMyJamData::On_Alarm_Display()
 	{
 		if (st_handler.n_alarm_screen == TRUE)	return;
 
-		if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
-		{
-			st_other.str_abnormal_msg = "Alarm Code = " + alarm.mstr_code;
-			sprintf(st_msg.c_abnormal_msg, st_other.str_abnormal_msg);
-			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
-		}
+// 		if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
+// 		{
+// 			st_other.str_abnormal_msg = "Alarm Code = " + alarm.mstr_code;
+// 			sprintf(st_msg.c_abnormal_msg, st_other.str_abnormal_msg);
+// 			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
+// 		}
 
 		// **********************************************************************
 		// 알람 화면 출력 불가능한 경우 검사한다.                                

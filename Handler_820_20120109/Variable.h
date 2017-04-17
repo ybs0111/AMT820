@@ -78,8 +78,8 @@ enum SAFETY_FLAG
 #define MAX_SITE_INFO		10
 #define MACHINE_MANUAL			0
 #define MACHINE_AUTO			1
-
-
+#define CLS_REAR              0 //kwlee 2017.0417
+               
 // *****************************************************************************
 //////////vision camera
 #define MEASURE_RESULT_RCV_7387		0
@@ -259,9 +259,9 @@ enum ENUM_WM_MESSAGE
 #define MAIN_LOTINFO		21
 #define MAIN_CYCLETIME		22
 #define MAIN_FTPDOWN        23
-//kwlee 2017.0413
-#define MAIN_TOP_INFO       24
-#define MAIN_BTM_INFO       25
+//kwlee 2017.0414
+#define MAIN_TOP_INFO        24
+#define MAIN_BTM_INFO        25
 // *****************************************************************************
 
 
@@ -380,12 +380,12 @@ enum ENUM_WM_MESSAGE
 // RS-232C 시리얼 통신 시 사용되는 메시지 정의                                   
 // -> MAX_PORT : 기본 포트 2개로 구성되어 있다						             
 // *************************************************************************
-#define MAX_PORT				10	// 생성할 시리얼 포트 갯수
+#define MAX_PORT				3	// 생성할 시리얼 포트 갯수
 #define COM_ERROR				-1	// 에러 메시지
 #define LOT_BARCODE_PORT		1		// 현재 BCR READ 포트 번호
 #define DEVICE_BARCODE_PORT		2		// 현재 BCR READ 포트 번호
 
-#define BCR_PORT	        2 //kwlee 201704.12
+#define BCR_PORT	        1 //kwlee 201704.12
 #define COM_PORT			0
 #define COM_BAUDRATE		1
 #define COM_DATA			2
@@ -1323,6 +1323,8 @@ struct st_serial_param
 	int n_serial_data[10];
 	int n_serial_parity[10];
 	int n_serial_stop[10];
+
+	BYTE	bBuff[256];
 };
 extern  st_serial_param  st_serial;
 // *************************************************************************
@@ -1545,12 +1547,6 @@ struct st_basic_param
 
 	double dEpoxyXLineOffSet;
 	double dEpoxyYLineOffSet;
-	
-	double dHSCarrierSpreadMoveOffset;
-	double dHSCarrierSpreadMoveDistance;
-	double dHeatSinkCarrierSpreadMove1Offset;
-	double dHeatSinkCarrierSpreadMove2Offset;
-	double dHeatSinkCarrierSpreadMove3Offset;
 	
 	int n_rubb_count;
 	int n_Light_Curtain_Mode;
@@ -2008,6 +2004,8 @@ struct st_work_param
 	//kwlee 2017.0406
 	int n_barcode_recive;
 	CString strBarcodeRecive;
+
+	int n_OnlyCarrierMove;
 };
 extern  st_work_param  st_work;
 
@@ -2166,7 +2164,7 @@ extern st_sync_param	st_sync;
 #define YELLOW_GC				0xFFFF
 #define TEST_BC					RGB(194, 231, 150)
 #define IN_BC					RGB(204, 153, 255)
-#define GRAY					RGB(90, 80, 80)
+
 #define DVC_READY_C				RGB(153, 153, 255)
 #define DVC_LOAD_C				RGB(239, 214, 198)
 #define DVC_NOVIDEO_C			RGB(0,100,20)
@@ -2176,6 +2174,7 @@ extern st_sync_param	st_sync;
 #define DVC_START_C				RGB(150, 255, 150)
 #define DVC_NO_C				RGB(128, 128, 0)
 
+#define GRAY					RGB(90, 80, 80)                     
 #define THICKNESS_FAIL			RGB(255,255,0)
 #define LENGTH_FAIL				RGB(0xFF, 0x68, 0x20)
 #define BARCODE_FAIL			RGB(255, 0, 0)
@@ -2733,6 +2732,17 @@ struct tagRECIPE_INFO
 	double nRubHSRunSpeed;
 
 	int fDispenserVppmA;
+	
+	//kwlee 2017.0416
+	double dHSCarrierSpreadMoveOffset;
+	double dHSCarrierSpreadMoveDistance;
+	double dHeatSinkCarrierSpreadMove1Offset;
+	double dHeatSinkCarrierSpreadMove2Offset;
+	double dHeatSinkCarrierSpreadMove3Offset;
+	
+	double dHeatsinkRubXOffset;
+	double dHeatsinkRubYOffset;
+	int	nEpoxyUseLimitCont;//Epoxy 사용 횟수
 };
 extern tagRECIPE_INFO	st_recipe;
 
@@ -3075,50 +3085,76 @@ enum HEATSINK_INSPECT_Z
 
 
 //Buffer_Info 3개의 사이트
-#define MAX_SHIFT_DATA_NUM		12 //최대 데이타 
+#define MAX_SHIFT_DATA_NUM		19 //최대 데이타 
 //TOP : 7개 사이트  [7][3]
 //BTM : 7개 사이트  [7][3]
 
-#define TOP			0
-#define MIDDLE		1
-#define BTM			2
+#define TOP				0
+#define MIDDLE			1
+#define BTM				2
 
 //BIN_VALUE -> 0:Load_bin 1:Epoxy bin 2: Heat_sink bin 3:Vision_bin 4: 자재 없음
-#define  BIN_CDIMM	1
+#define  BIN_CDIMM		1
 #define  BIN_EPOXY		2
 #define  BIN_HEATSINK	3
-#define  BIN_VISION	4
+#define  BIN_VISION		4
+#define  BIN_GOOD		5 //kwlee 2017.0414
+#define  BIN_FAIL		6
+
+// #define  TOPSHIFT_BUFF_LOADER_RECEIVE				0
+// #define  TOPSHIFT_BUFF_INPUT_LOADER					1			
+// #define  TOPSHIFT_BUFF_EPOXY						2					
+// #define  TOPSHIFT_BUFF_WAIT_INDEX					3				
+// #define  TOPSHIFT_BUFF_HEATSINK_VISION				4			
+// #define  TOPSHIFT_BUFF_OUTSEND						5					
+// #define  TOPSHIFT_BUFF_UNLOADER						6					
+// #define  BTMSHIFT_BUFF_DOWN,
+// #define  BTMSHIFT_BUFF_DOWNFORWARD,
+// #define  BTMSHIFT_BUFF_HEATSINK_DOWN,
+// #define  BTMSHIFT_BUFF_INDEX_DOWN,
+// #define  BTMSHIFT_BUFF_EPOXY_DOWN,
+// #define  BTMSHIFT_BUFF_INPUT_DOWN,
+// #define  BTMSHIFT_BUFF_LOADER_DOWN,
+// #define  TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE,	
+// #define  TOPSHIFT_DATA_TEMP_CHECK,
+// #define  TOPSHIFT_IDBUFF_SEALING_SITE_ALL_CHK,
+// #define  BTMSHIFT_DATA_TEMP_CHECK,
+// #define	BTMSHIFT_IDBUFF_SEALING_SITE_ALL_CHK,
 
 
-enum carrier_top_buffer_move_info_shift //carrier buffer가 이동하면서 각각의 정보를 유지 및 생성하면서 쉬프트한다 
-{
-	TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE = 0,
-	
-	TOPSHIFT_BUFF_LOADER_RECEIVE,		//Loader에 carrier를 공급한 상태 또는 초기화 후 맨처음 상태
-	TOPSHIFT_BUFF_INPUT_LOADER ,				//Epoxy 전 상태
-	TOPSHIFT_BUFF_EPOXY,							//EPOXY
-	TOPSHIFT_BUFF_WAIT_INDEX,					//Heatsink vison 대기 상태
-	TOPSHIFT_BUFF_HEATSINK_VISION,			//Heatsink vision 상태
-	TOPSHIFT_BUFF_OUTSEND,								//send 전상태
-	TOPSHIFT_BUFF_UNLOADER,							//Unload 상태
 
-	TOPSHIFT_DATA_TEMP_CHECK,
-	TOPSHIFT_IDBUFF_SEALING_SITE_ALL_CHK
-};
+// enum carrier_top_buffer_move_info_shift //carrier buffer가 이동하면서 각각의 정보를 유지 및 생성하면서 쉬프트한다 
+// {
+// 	TOPSHIFT_BUFF_LOADER_RECEIVE		= 0,		//Loader에 carrier를 공급한 상태 또는 초기화 후 맨처음 상태
+// 	TOPSHIFT_BUFF_INPUT_LOADER ,				//Epoxy 전 상태
+// 	TOPSHIFT_BUFF_EPOXY,							//EPOXY
+// 	TOPSHIFT_BUFF_WAIT_INDEX,					//Heatsink vison 대기 상태
+// 	TOPSHIFT_BUFF_HEATSINK_VISION,			//Heatsink vision 상태
+// 	TOPSHIFT_BUFF_OUTSEND,								//send 전상태
+// 	TOPSHIFT_BUFF_UNLOADER,							//Unload 상태
+// 	
+// 	
+// 	TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE = 16,
+// 	
+// 	
+// 	TOPSHIFT_DATA_TEMP_CHECK,
+// 	TOPSHIFT_IDBUFF_SEALING_SITE_ALL_CHK
+// };
+// 
+// enum carrier_btm_buffer_move_info_shift
+// {
+// 	BTMSHIFT_BUFF_DOWN					= 7,
+// 	BTMSHIFT_BUFF_DOWNFORWARD,
+// 	BTMSHIFT_BUFF_HEATSINK_DOWN,
+// 	BTMSHIFT_BUFF_INDEX_DOWN,
+// 	BTMSHIFT_BUFF_EPOXY_DOWN,
+// 	BTMSHIFT_BUFF_INPUT_DOWN,
+// 	BTMSHIFT_BUFF_LOADER_DOWN,
+// 	
+// 	BTMSHIFT_DATA_TEMP_CHECK,
+// 	BTMSHIFT_IDBUFF_SEALING_SITE_ALL_CHK
+// };
 
-enum carrier_btm_buffer_move_info_shift
-{
-	BTMSHIFT_BUFF_DOWN,
-	BTMSHIFT_BUFF_DOWNFORWARD,
-	BTMSHIFT_BUFF_HEATSINK_DOWN,
-	BTMSHIFT_BUFF_INDEX_DOWN,
-	BTMSHIFT_BUFF_EPOXY_DOWN,
-	BTMSHIFT_BUFF_INPUT_DOWN,
-	BTMSHIFT_BUFF_LOADER_DOWN,
-
-	BTMSHIFT_DATA_TEMP_CHECK,
-	BTMSHIFT_IDBUFF_SEALING_SITE_ALL_CHK
-};
 
 struct st_carrier_buffer_info_param
 { 

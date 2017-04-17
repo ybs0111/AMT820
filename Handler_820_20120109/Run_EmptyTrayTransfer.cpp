@@ -43,7 +43,7 @@ void CRun_EmptyTrayTransfer::Thread_Run()
 		break;
 
 	case dRUN:
-		RunMove();
+// 		RunMove();
 		break;
 
 	case dSTOP:
@@ -67,7 +67,7 @@ void CRun_EmptyTrayTransfer::RunInit()
 	if( st_handler.mn_init_state[INIT_EMPTYSTACKER_ELV] == CTL_NO ) return;
 	if( st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
 	if( st_handler.mn_init_state[INIT_EMPTYTRAY_TRANSFER] != CTL_NO ) return;
-	st_handler.mn_init_state[INIT_EMPTYTRAY_TRANSFER] = CTL_YES;
+// 	st_handler.mn_init_state[INIT_EMPTYTRAY_TRANSFER] = CTL_YES;
 	switch(mn_InitStep)
 	{
 		case 0:		
@@ -87,7 +87,7 @@ void CRun_EmptyTrayTransfer::RunInit()
 			}
 			else if( nRet_1 == RET_ERROR )
 			{
-				CTL_Lib.Alarm_Error_Occurrence( 4001, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence( 2001, dWARNING, m_strAlarmCode);
 				mn_InitStep = 900;
 			}
 			break;
@@ -101,7 +101,7 @@ void CRun_EmptyTrayTransfer::RunInit()
 			nRet_1 = Chk_Tray_Grip_Vacuum_OnOff(IO_ON);
 			if( nRet_1 == RET_GOOD )
 			{
-				CTL_Lib.Alarm_Error_Occurrence( 4002, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence( 2002, dWARNING, m_strAlarmCode);
 			}
 			else if( nRet_1 == RET_ERROR)
 			{
@@ -119,7 +119,7 @@ void CRun_EmptyTrayTransfer::RunInit()
 			else if( nRet_1 == BD_ERROR)
 			{
 				mn_InitStep = 900;
-				CTL_Lib.Alarm_Error_Occurrence( 3003, dWARNING, COMI.mc_alarmcode);
+				CTL_Lib.Alarm_Error_Occurrence( 2003, dWARNING, COMI.mc_alarmcode);
 			}
 			break;
 
@@ -136,7 +136,7 @@ void CRun_EmptyTrayTransfer::RunInit()
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
 				mn_InitStep = 900;
-				CTL_Lib.Alarm_Error_Occurrence(3004, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(2004, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -167,7 +167,6 @@ void CRun_EmptyTrayTransfer::RunMove()
 		break;
 
 	case 0:
-
 		m_nFindLotNo_Flag = -1;
 		if( g_lotMgr.GetLotCount() > 0 )
 		{
@@ -207,7 +206,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(1501, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(2100, dWARNING, m_strAlarmCode);
 			mn_RunStep = 100;
 		}
 		break;
@@ -225,7 +224,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(1501, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(2101, dWARNING, m_strAlarmCode);
 			mn_RunStep = 100;
 		}
 		break;
@@ -273,7 +272,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 			if(nRet_1 == IO_OFF)
 			{	//트레이가 없어서 에러발생  
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Tray_Vacuum_On_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(4630, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(2102, dWARNING, m_strAlarmCode);
 				break;
 			}	
 
@@ -293,7 +292,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 			if(nRet_1 == IO_ON)
 			{//트레이 있으면 알람 
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Tray_Vacuum_On_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(4640, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(2103, dWARNING, m_strAlarmCode);
 				break;
 			}
 
@@ -337,7 +336,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(1501, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(2104, dWARNING, m_strAlarmCode);
 			mn_RunStep = 1110;
 		}
 		break;
@@ -373,7 +372,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-			CTL_Lib.Alarm_Error_Occurrence(4660, dWARNING,  alarm.mstr_code);
+			CTL_Lib.Alarm_Error_Occurrence(2105, dWARNING,  alarm.mstr_code);
 			mn_RunStep = 1200;
 		}
 		break; 
@@ -407,7 +406,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(1501, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(2106, dWARNING, m_strAlarmCode);
 			mn_RunStep = 2010;
 		}
 		break;
@@ -437,7 +436,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-			CTL_Lib.Alarm_Error_Occurrence(4680, dWARNING, alarm.mstr_code);
+			CTL_Lib.Alarm_Error_Occurrence(2107, dWARNING, alarm.mstr_code);
 			mn_RunStep = 2000;
 		}
 		break; 
@@ -450,7 +449,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 			if(nRet_1 != BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
 			{
 				m_strAlarmCode.Format(_T("910003")); //910003 1 A "LOAD_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-				CTL_Lib.Alarm_Error_Occurrence(4690, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(2108, dWARNING, m_strAlarmCode);
 				break;
 			}	
 		}
@@ -497,7 +496,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(4710, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(2109, dWARNING, m_strAlarmCode);
 			mn_RunStep = 3100;
 		}
 		break;
@@ -525,7 +524,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 			else if(nRet_1 == RET_ERROR)
 			{
 				Set_Tray_Remover_Z_UpDown(IO_OFF); 
-				CTL_Lib.Alarm_Error_Occurrence(4720, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(2110, dWARNING, m_strAlarmCode);
 				mn_RunStep = 2000;
 			}
 		}
@@ -540,7 +539,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 			else if(nRet_1 == RET_ERROR)
 			{
 				Set_Tray_Remover_Z_UpDown(IO_OFF); 
-				CTL_Lib.Alarm_Error_Occurrence(4730, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(2111, dWARNING, m_strAlarmCode);
 				mn_RunStep = 2000;
 			}
 		} 
@@ -559,7 +558,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(1501, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(2112, dWARNING, m_strAlarmCode);
 			mn_RunStep = 3300;
 		}
 		break;
@@ -575,7 +574,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 			else
 			{	//트레이 있어야 한다 
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Tray_Vacuum_On_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(4750, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(2113, dWARNING, m_strAlarmCode);
 				break;
 			}	
 		}
@@ -590,7 +589,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 			{
 				//트레이 없어야 한다 
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Tray_Vacuum_On_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(4760, dWARNING, m_strAlarmCode); 
+				CTL_Lib.Alarm_Error_Occurrence(2114, dWARNING, m_strAlarmCode); 
 			}	
 		} 
 		break;
@@ -604,6 +603,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 
 				st_sync.nWorkTransfer_Req[THD_LD_TRAY_PLATE][0] = CTL_READY;
 				st_tray_info[THD_WORK_TRANSFER].nTrayExist = CTL_YES;
+
 
 				st_tray_info[THD_WORK_TRANSFER].strLogKey[0]	= _T("EMPRT_TRAY_TRANSFER");
 				if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetLotID() != _T("") && g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() != "YES")
@@ -632,6 +632,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 					st_tray_info[THD_WORK_TRANSFER].strLogKey,
 					st_tray_info[THD_WORK_TRANSFER].strLogData);
 
+				mn_RunStep = 4010;
 
 			}
 			else// if(m_nTransferJobFlag[0] == THD_EMPTY_STACKER)
@@ -647,6 +648,7 @@ void CRun_EmptyTrayTransfer::RunMove()
 
 				st_sync.nWorkTransfer_Req[THD_EMPTY_STACKER][0] = CTL_FREE;
 				st_tray_info[THD_WORK_TRANSFER].nTrayExist =  CTL_NO;
+				mn_RunStep = 4100;
 			}
 		}
 		else
@@ -654,9 +656,24 @@ void CRun_EmptyTrayTransfer::RunMove()
 			//error
 			break;
 		}
-		mn_RunStep = 1000; 			 
+// 		mn_RunStep = 1000; 			 
 		break;
 
+		
+	case 4010:
+		if( st_sync.nWorkTransfer_Req[THD_LD_TRAY_PLATE][0] == CTL_FREE )
+		{
+			st_sync.nWorkTransfer_Req[THD_LD_TRAY_PLATE][0] = CTL_CLEAR;
+			mn_RunStep = 1000; 			 
+		}
+		break;
+		
+	case 4100:
+		if( st_sync.nWorkTransfer_Req[THD_EMPTY_STACKER][0] == CTL_CLEAR)
+		{
+			mn_RunStep = 1000;
+		}
+		break;
 
 	default:
 		if (st_handler.cwnd_list != NULL)	// 리스트 바 화면 존재

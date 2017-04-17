@@ -23,7 +23,7 @@ public:
 	CClientSocket();
 	virtual ~CClientSocket();
 
-	BOOL Create(int address, LPSTR szAddress, UINT nPortNo, int nReceiveDataSize=MAX_RECEIVE_LEN);
+	BOOL Create(int address, CString szAddress, UINT nPortNo, int nReceiveDataSize=MAX_RECEIVE_LEN);
 
 // Overrides
 public:

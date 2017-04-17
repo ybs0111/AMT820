@@ -644,7 +644,7 @@ void CScreen_Initial::EIS_InitIO()
 	
 	if (Ret != TRUE)  
 	{//900003 1 A "IO_BOARD_INITIALIZATIN_ERROR."
-		CTL_Lib.Alarm_Error_Occurrence(700, CTL_dWARNING, "900003");
+		CTL_Lib.Alarm_Error_Occurrence(501, CTL_dWARNING, "900003");
 		
 		ml_init_step = 0;						// 초기화 진행 스텝 정보 초기화 
 		mn_init_flag = RET_ERROR;				// 초기화 작업 에러 플래그 설정
@@ -673,7 +673,7 @@ void CScreen_Initial::EIS_Motor()
 	
 	if (Ret != BD_GOOD )
 	{//900002 1 A "MOTOR_BOARD_INITIALIZATION_CHECK_ERROR."
-		CTL_Lib.Alarm_Error_Occurrence(701, CTL_dWARNING, "900002");
+		CTL_Lib.Alarm_Error_Occurrence(502, CTL_dWARNING, "900002");
 		
 		ml_init_step = 0;						// 초기화 진행 스텝 정보 초기화 
 		mn_init_flag = RET_ERROR;				// 초기화 작업 에러 플래그 설정 

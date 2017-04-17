@@ -6,6 +6,7 @@
 #include "Run_Epoxy_Transfer_Robot.h"
 #include "Public_Function.h"
 #include "AMTLotManager.h"
+#include "Run_Device_Carrier_Robot.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -62,7 +63,7 @@ void CRun_Epoxy_Transfer_Robot::Thread_Run()
 		break;
 
 	case dRUN:
-		RunMove();
+//		RunMove();
 		break;
 
 	case dSTOP:
@@ -90,7 +91,7 @@ void CRun_Epoxy_Transfer_Robot::RunInit()
 	if( st_handler.mn_init_state[INIT_LD_ROBOT] == CTL_NO ) return;
  	if( st_handler.mn_init_state[INIT_ULD_ROBOT] == CTL_NO ) return;
 	if( st_handler.mn_init_state[INIT_EPOXY_ROBOT] != CTL_NO ) return;
-	st_handler.mn_init_state[INIT_EPOXY_ROBOT] = CTL_YES;
+// 	st_handler.mn_init_state[INIT_EPOXY_ROBOT] = CTL_YES;
 
 	switch( mn_InitStep )
 	{
@@ -112,7 +113,7 @@ void CRun_Epoxy_Transfer_Robot::RunInit()
 			else if( nRet_1 == BD_ERROR)
 			{
 				mn_InitStep = 900;
-				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+				CTL_Lib.Alarm_Error_Occurrence( 9001, dWARNING, COMI.mc_alarmcode);
 			}
 			break;
 
@@ -133,7 +134,7 @@ void CRun_Epoxy_Transfer_Robot::RunInit()
 			else if( nRet_1 == BD_ERROR)
 			{
 				mn_InitStep = 900;
-				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+				CTL_Lib.Alarm_Error_Occurrence( 9002, dWARNING, COMI.mc_alarmcode);
 			}
 			break;
 
@@ -150,7 +151,7 @@ void CRun_Epoxy_Transfer_Robot::RunInit()
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 				mn_InitStep = 900;
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9003, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -163,7 +164,7 @@ void CRun_Epoxy_Transfer_Robot::RunInit()
 			else if( nRet_1 == BD_ERROR)
 			{
 				mn_InitStep = 900;
-				CTL_Lib.Alarm_Error_Occurrence( 2004, dWARNING, COMI.mc_alarmcode);
+				CTL_Lib.Alarm_Error_Occurrence( 9004, dWARNING, COMI.mc_alarmcode);
 			}
 			break;
 			
@@ -180,7 +181,7 @@ void CRun_Epoxy_Transfer_Robot::RunInit()
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 				mn_InitStep = 900;
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9005, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -190,6 +191,7 @@ void CRun_Epoxy_Transfer_Robot::RunInit()
 			break;
 			
 		case 1000:
+			Func.VppmOff();
 			st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] = CTL_READY;
 			st_handler.mn_init_state[INIT_EPOXY_ROBOT] = CTL_YES;
 			mn_InitStep = 0;
@@ -225,14 +227,14 @@ void CRun_Epoxy_Transfer_Robot::RunMove()
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-			CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+			CTL_Lib.Alarm_Error_Occurrence(9101, dWARNING, alarm.mstr_code);
 			mn_RunStep = 0;
 		}
 		break;
 
 	case 100:
-		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, st_motor[m_nRobot_X].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], st_motor[m_nRobot_X].mn_allow);
-		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], st_motor[m_nRobot_Y].mn_allow);
+		nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, st_motor[m_nRobot_X].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], COMI.md_allow_value[m_nRobot_X] );
+		nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.md_allow_value[m_nRobot_Y] );
 		if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
 		{
 			mn_RunStep = 200;
@@ -268,7 +270,6 @@ void CRun_Epoxy_Transfer_Robot::RunMove()
 		break;
 
 	case 1200:
-
 		if( st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] == CTL_CHANGE)
 		{
 			mn_RunStep = 2000;
@@ -278,23 +279,23 @@ void CRun_Epoxy_Transfer_Robot::RunMove()
 	case 2000:
 		if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_idbuffer[0] == CTL_YES )
 		{
-			if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[0] == BIN_CDIMM )
+			if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[0] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[0] == BIN_CDIMM )
 			{
 				mn_BufferPos = 0;
 				mn_RunStep = 2100;
 			}
 		}
-		else if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_idbuffer[1] == CTL_YES )
+		else if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_idbuffer[1] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[1] == BIN_CDIMM )
 		{
-			if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[1] == BIN_CDIMM )
+			if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[1] == CTL_YES )
 			{
 				mn_BufferPos = 1;
 				mn_RunStep = 2100;
 			}
 		}		
-		else if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_idbuffer[2] == CTL_YES )
+		else if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_idbuffer[2] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[2] == BIN_CDIMM )
 		{
-			if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[2] == BIN_CDIMM )
+			if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[2] == CTL_YES )
 			{
 				mn_BufferPos = 2;
 				mn_RunStep = 2100;
@@ -302,7 +303,7 @@ void CRun_Epoxy_Transfer_Robot::RunMove()
 		}
 		else
 		{
-			mn_RunStep = 4000;
+		//	mn_RunStep = 4000;
 		}
 		break;
 
@@ -321,8 +322,17 @@ void CRun_Epoxy_Transfer_Robot::RunMove()
 		nRet_1 = Move_Billiard_Epoxy( 0, mn_BufferPos);
 		if( nRet_1 == RET_GOOD )
 		{
-			st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[mn_BufferPos] = BIN_EPOXY;
-			mn_RunStep = 2000;
+			st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[mn_BufferPos] = BIN_EPOXY;
+			mn_BufferPos++;
+			if( mn_BufferPos >= st_recipe.nCarrierBuffer_Num )//단순 테스트 ->  3
+			{
+				mn_BufferPos = 0;
+				mn_RunStep = 4000;
+			}
+			else
+			{
+				mn_RunStep = 2000;
+			}
 		}
 		break;
 
@@ -330,23 +340,15 @@ void CRun_Epoxy_Transfer_Robot::RunMove()
 		nRet_1 = Robot_Move_Safety_Zone( 1, 0, 0 );//nMode == 1  ==> 작업 완료후 안전위치로 이동
 		if( nRet_1 == RET_GOOD )
 		{
+			st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] = CTL_FREE;
+			st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][1] = CTL_FREE;
 			mn_RunStep = 4100;
 		}
 		break;
 
-
-
-
-
-		st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] = CTL_NO;
-		st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][1] = CTL_NO;
+	case 4100:
 		mn_RunStep = 0;
 		break;
-
-
-
-
-
 
 	default:
 		if (st_handler.cwnd_list != NULL)	// 리스트 바 화면 존재
@@ -404,7 +406,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9102, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 200;
 			}
 			break;
@@ -415,9 +417,9 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			m_dpTargetPosList[0] = md_TargetAxisXValue[mn_FirstSecond][0];
 			m_dpTargetPosList[1] = md_TargetAxisYValue[mn_FirstSecond][0];
 
-			dp_SpdRatio[0] = (double)st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
-			dp_SpdRatio[1] = (double)st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
-			dp_SpdRatio[2] = (double)st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			dp_SpdRatio[0] = (double)70;////st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)300;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)300;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio );		
 			if( nRet_1 == BD_GOOD)
@@ -430,7 +432,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9103, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1000;
 			}
 			break;
@@ -449,7 +451,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9104, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1100;
 			}
 			break;
@@ -481,9 +483,9 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 				//dp_PosList[2] = 10;
 			}
 
-			dp_SpdRatio[0] = (double)st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
-			dp_SpdRatio[1] = (double)st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
-			dp_SpdRatio[2] = (double)st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			dp_SpdRatio[0] = (double)50;//st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)200;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)200;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
 			
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio );
@@ -498,7 +500,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9105, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1000;
 			}
 			break;
@@ -524,7 +526,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9106, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1500;
 			}
 			break;
@@ -541,7 +543,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9107, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1600;
 			}
 			break;
@@ -574,7 +576,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9108, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1900;
 			}
 			break;
@@ -585,9 +587,9 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			m_dpTargetPosList[0] = md_TargetDotXValue[mn_dotPos];
 			m_dpTargetPosList[1] = md_TargetDotYValue[mn_dotPos];
 
-			dp_SpdRatio[0] = (double)st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
-			dp_SpdRatio[1] = (double)st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
-			dp_SpdRatio[2] = (double)st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			dp_SpdRatio[0] = (double)70;//st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)300;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)300;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio );		
 			if( nRet_1 == BD_GOOD)
@@ -600,7 +602,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9109, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2000;
 			}
 			break;
@@ -618,7 +620,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9110, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2100;
 			}
 			break;
@@ -640,8 +642,8 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 		case 2300:
 			//x Axis - md_TargetDotXValue[mn_dotPos];
 			//Y- Axis md_TargetDotYValue[mn_dotPos];
-			nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, md_TargetDotXValue[mn_dotPos], 5*st_motor[m_nRobot_X].mn_allow);
-			nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, md_TargetDotYValue[mn_dotPos], 5*st_motor[m_nRobot_Y].mn_allow);
+			nRet_1 = COMI.Check_MotPosRange(m_nRobot_X, md_TargetDotXValue[mn_dotPos], 5*COMI.md_allow_value[m_nRobot_X]);
+			nRet_2 = COMI.Check_MotPosRange(m_nRobot_Y, md_TargetDotYValue[mn_dotPos], 5*COMI.md_allow_value[m_nRobot_Y]);
 			if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
 			{
 				COMI.Set_MotStop( 0, m_nRobot_X);
@@ -667,7 +669,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9111, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2300;
 			}
 			break;
@@ -693,7 +695,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9112, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2310;
 			}
 			break;
@@ -713,7 +715,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9113, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2400;
 			}
 			break;
@@ -730,7 +732,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9114, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 2500;
 			}
 			break;
@@ -761,7 +763,7 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9115, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 200;
 			}
 			break;
@@ -837,7 +839,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9201, dWARNING, alarm.mstr_code);
 				mn_SafetyStep = 200;
 			}
 			break;
@@ -862,9 +864,13 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				}
 				else//약간 왼쪽 영역이므로 일단 약간 오른쪽으로 이동 후 동작한다.
 				{
-					if(nMode == 0 || nMode == 1)  //로보트가 Carrier로 들어가는 동작 
+					if(nMode == 0 )  //로보트가 Carrier로 들어가는 동작 
 					{
-						mn_SafetyStep = 3000;	//이미Carrier 안으로 들어가 있는 상태로 어느 위치에 있는지 확인한다 
+						mn_SafetyStep = 1100;	//이미Carrier 안으로 들어가 있는 상태로 어느 위치에 있는지 확인한다 
+					}
+					else if(  nMode == 1)//안전 위칠 빠진다.
+					{
+						mn_SafetyStep = 5000;
 					}
 					else //if(nMode == 2) //로보트가 Carrier 이외의 작업을 동작 할 예정
 					{
@@ -895,7 +901,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 						COMI.Set_MotPower( m_nRobot_X, IO_OFF);
 						COMI.Set_MotPower( m_nRobot_Y, IO_OFF);
 						//960000 1 A "EPOXY_MOTOR_IS_NOT_SAFETY_MOVE_MANUALLY."
-						CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, "960000");
+						CTL_Lib.Alarm_Error_Occurrence(9202, dWARNING, "960000");
 						mn_SafetyStep = 0;
 					}					
 				}
@@ -939,7 +945,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 1200;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9203, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -947,9 +953,9 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			m_dpTargetPosList[0] = st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY];
 			m_dpTargetPosList[1] = st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SAFETY];
 
-			dp_SpdRatio[0] = (double)st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
-			dp_SpdRatio[1] = (double)st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
-			dp_SpdRatio[2] = (double)st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			dp_SpdRatio[0] = (double)70;//st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)200;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)200;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio);
 			if(nRet_1 == BD_GOOD) //정상적으로 완료된 상태
@@ -963,7 +969,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 2000;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9204, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -983,7 +989,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
 					mn_SafetyStep = 2000;
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(9205, dWARNING, alarm.mstr_code);
 				}
 			}
 			else
@@ -1010,7 +1016,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(9206, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 2200;
 				}
 			}
@@ -1042,7 +1048,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 3000;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9207, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -1063,7 +1069,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
 					mn_SafetyStep = 3100;
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(9208, dWARNING, alarm.mstr_code);
 				}
 			}
 			else
@@ -1078,9 +1084,9 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			m_dpTargetPosList[0] = st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DISCHARGE_POS];
 			m_dpTargetPosList[1] = st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SAFETY];
 
-			dp_SpdRatio[0] = (double)st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
-			dp_SpdRatio[1] = (double)st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
-			dp_SpdRatio[2] = (double)st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			dp_SpdRatio[0] = (double)50;//st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)200;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)200;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio);
 			if(nRet_1 == BD_GOOD) //정상적으로 완료된 상태
@@ -1094,7 +1100,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 4000;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9209, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -1114,7 +1120,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(9210, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 4100;
 				}
 			}
@@ -1130,9 +1136,9 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			m_dpTargetPosList[0] = st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_INIT_POS];
 			m_dpTargetPosList[1] = st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS];
 
-			dp_SpdRatio[0] = (double)st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
-			dp_SpdRatio[1] = (double)st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
-			dp_SpdRatio[2] = (double)st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			dp_SpdRatio[0] = (double)70;//st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)200;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)200;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio);
 			if(nRet_1 == BD_GOOD) //정상적으로 완료된 상태
@@ -1147,7 +1153,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 5000;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9211, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -1155,9 +1161,9 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			m_dpTargetPosList[0] = st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DISCHARGE_POS];
 			m_dpTargetPosList[1] = st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS];
 
-			dp_SpdRatio[0] = (double)st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
-			dp_SpdRatio[1] = (double)st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
-			dp_SpdRatio[2] = (double)st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			dp_SpdRatio[0] = (double)70;//st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)200;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)200;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio);
 			if(nRet_1 == BD_GOOD) //정상적으로 완료된 상태
@@ -1171,7 +1177,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{
 				mn_SafetyStep = 6000;
-				CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(9212, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -1191,7 +1197,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(9213, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 6100;
 				}
 			}
@@ -1218,7 +1224,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(9214, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 7000;
 				}
 			}
@@ -1245,7 +1251,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(9215, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 7100;
 				}
 			}
@@ -1273,7 +1279,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(9216, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 7200;
 				}
 			}
@@ -1301,7 +1307,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(9217, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 8000;
 				}
 			}
@@ -1329,7 +1335,7 @@ int CRun_Epoxy_Transfer_Robot::Robot_Move_Safety_Zone( int nMode, int n_site, in
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(3620, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(9218, dWARNING, alarm.mstr_code);
 					mn_SafetyStep = 8100;
 				}
 			}
