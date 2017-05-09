@@ -55,27 +55,41 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Set_Maintenance)
 	enum { IDD = IDD_SCREEN_SET_MAINTENANCE };
-	CGradientStatic	m_msg_stop_2;
-	CGradientStatic	m_msg_rate_2;
-	CGradientStatic	m_msg_port_2;
-	CGradientStatic	m_msg_parity_2;
-	CGradientStatic	m_msg_data_2;
-	CComboBox	m_cb_stop_2;
-	CComboBox	m_cb_rate_2;
-	CComboBox	m_cb_port_2;
-	CComboBox	m_cb_data_2;
-	CComboBox	m_cb_parity_2;
 	CGradientStatic	m_msg_stop_1;
 	CGradientStatic	m_msg_rate_1;
 	CGradientStatic	m_msg_port_1;
 	CGradientStatic	m_msg_parity_1;
 	CGradientStatic	m_msg_data_1;
+
+	CGradientStatic	m_msg_stop_2;
+	CGradientStatic	m_msg_rate_2;
+	CGradientStatic	m_msg_port_2;
+	CGradientStatic	m_msg_parity_2;
+	CGradientStatic	m_msg_data_2;
+
+	CComboBox	m_cb_stop_2;
+	CComboBox	m_cb_rate_2;
+	CComboBox	m_cb_port_2;
+	CComboBox	m_cb_data_2;
+	CComboBox	m_cb_parity_2;
+
+	//kwlee 20170414
+	CGradientStatic	m_msg_sport_rear;
+	CGradientStatic	m_msg_cip_rear_client; 
+	CGradientStatic	m_msg_cport_rear_client;
+	CXPGroupBox	m_group_rear_client;
+	CIPAddressCtrl	m_cip_rear_client;
+	CMacButton	m_btn_cport_set_rear_client;
+	CMacButton	m_btn_cip_rear_client;
+	CMacButton	m_btn_sport_set_rear;
+
 	CXPGroupBox	m_group_serial_1;
 	CComboBox	m_cb_stop_1;
 	CComboBox	m_cb_rate_1;
 	CComboBox	m_cb_port_1;
 	CComboBox	m_cb_parity_1;
 	CComboBox	m_cb_data_1;
+
 	CMacButton	m_btn_password_change_level2;
 	CMacButton	m_btn_password_change_level1;
 	CMacButton	m_btn_data_backup;
@@ -107,7 +121,6 @@ public:
 	CXPGroupBox	m_group_buzzer;
 	CButtonST	m_chk_buzzer;
 	CXPButton	m_btn_maintenance_apply;
-	
 	//}}AFX_DATA
 
 // Attributes
@@ -128,15 +141,6 @@ public:
 		   ID_LAMP_GFLICKER	= 3130, 
 	};
 
-	enum { STOP			= 0,
-		   RUN			= 1,
-		   ALARM		= 2,
-		   LOTEND		= 3,
-		   INIT			= 4,
-		   WARNING		= 5,
-		   LOCK			= 6,
-		   SELFCHECK	= 7
-	};
 
 	CFont* mp_maintenance_font;			// 폰트 정보 설정 변수
 	CFont* mp_combo_font;
@@ -155,7 +159,7 @@ public:
 	// **************************************************************************
 	CEXDigitST  m_dgt_flicker_time;
 	CEXDigitST  m_dgt_change_time;
-
+	CEditEx  m_edit_cport_Rear_client;//kwlee 2017.0401
 	int	mn_buzzer_mode[2];
 	
 	int mn_lamp_flicker_time[2];
@@ -261,7 +265,7 @@ protected:
 	afx_msg void OnSetfocusEditEcEquipId();
 	afx_msg void OnPadEquipArea();
 	afx_msg void OnSetfocusEditEquipArea();
-	afx_msg void OnBtnSerialConnect2();
+//	afx_msg void OnBtnSerialConnect2();
 	afx_msg void OnBtnSerialApply2();
 	afx_msg void OnBtnSerialApply1();
 	afx_msg void OnBtnSerialConnect1();
@@ -270,11 +274,11 @@ protected:
 	afx_msg void OnBtnEpoxy();
 	afx_msg void OnBtn7387();
 	afx_msg void OnBtnHeatsink();
-<<<<<<< HEAD:Handler_820_20120109/Screen_Set_Maintenance.h
-=======
-	afx_msg void OnBtnPitchApply();
-	afx_msg void OnBtnPitchConnect();
->>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/Screen_Set_Maintenance.h
+	afx_msg void OnBtnCipSetRearClient();
+	afx_msg void OnBtnCportSetRearClient();
+	afx_msg void OnBtnCntRearClient();
+	afx_msg void OnBtnPitchSerialApply();
+	afx_msg void OnBtnPitchSerialConnect();
 	//}}AFX_MSG
 	afx_msg void OnRLampClick(UINT);
 	afx_msg void OnYLampClick(UINT);

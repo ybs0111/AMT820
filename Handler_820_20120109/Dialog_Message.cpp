@@ -71,7 +71,9 @@ void CDialog_Message::OnMsg_Button_Set()
 void CDialog_Message::OnMsg_Lable_Set()
 {
 	m_msg_message.SetFont(mp_msg_font);
-	m_msg_message.SetWindowText(_T(st_other.str_fallacy_msg));
+//	m_msg_message.SetWindowText(_T(st_other.str_fallacy_msg));
+	//kwlee 2017.0421
+	m_msg_message.SetWindowText(_T(st_other.str_confirm_msg));
 	m_msg_message.SetCenterText();
 	m_msg_message.SetColor(RGB(0,0,255));
 	m_msg_message.SetGradientColor(RGB(0,0,0));

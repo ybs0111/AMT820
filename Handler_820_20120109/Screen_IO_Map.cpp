@@ -1053,11 +1053,11 @@ int CScreen_IO_Map::OnIO_Cylinder_Excution()
 			break;
 
 		case 500:
-			if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
-			{
-				st_other.str_normal_msg = _T("[Repeat action] The action was completed.!");
-				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
-			}
+// 			if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
+// 			{
+// 				st_msgr.str_normal_msg = _T("[Repeat action] The action was completed.!");
+// 				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
+// 			}
 			mn_action_flag = RET_GOOD;
 			break;
 

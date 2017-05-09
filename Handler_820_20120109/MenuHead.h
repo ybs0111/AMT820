@@ -19,8 +19,9 @@
 #include "Screen_List_Alarm.h"			// 알람 텍스트 리스트 출력 화면 클래스 추가 
 #include "Screen_List_Work.h"			// 디바이스 테스트 결과 텍스트 리스트 출력 화면 클래스 추가 
 #include "Screen_List_Operation.h"		// Operation 정보 출력 화면 클래스 추가 
-#include "Screen_List_Step.h"			// 쓰레드 스텝 정보 출력 화면 클래스 추가 
-
+//#include "Screen_List_Step.h"			// 쓰레드 스텝 정보 출력 화면 클래스 추가 
+//kwlee 2017.0421
+#include "Screen_List_Boatteaching.h"
 //#include "Screen_IO.h"					// I/O 상태 정보 출력 화면 클래스 추가 
 
 #include "Screen_Administrator.h"		// Administrator 출력 화면 클래스 추가 
@@ -48,7 +49,7 @@
 #define IDW_SCREEN_LIST_OPERATION		601
 #define IDW_SCREEN_LIST_WORK			602
 #define IDW_SCREEN_LIST_ALARM			603
-#define IDW_SCREEN_LIST_STEP			605
+#define IDW_SCREEN_LIST_BOATTEACING		605 //kwlee 2017.0420 IDW_SCREEN_LIST_STEP -> IDW_SCREEN_LIST_BOATTEACING
 #define IDW_SCREEN_LIST_ERROR			606
 #define IDW_SCREEN_LIST_DATA_VIEW		607
 #define IDW_SCREEN_LIST_WAIT			608 //kwlee 2017.0406

@@ -63,10 +63,6 @@ public:
 	int HeatSinkAreaSensor_Flag;
 
 	CString m_strAlarmCode;
-	int nLightCurtainMutingOnStep;
-	int nLightCurtainMutingOffStep;
-	DWORD lLightCurtainMutingOnTime[3];
-	DWORD lLightCurtainMutingOffTime[3];
 
 	//////////////////////////////////////2K10/02/09/ViboX////////////////////////////////////
 
@@ -76,6 +72,8 @@ public:
 
 	CString str_step_temp[100];
 	CTime  StepChangeTime[100];
+
+
 public: 
 	int OnIO_Safety(int n_io, int n_onoff);
 	CString Get_MotorName(int n_axis);
@@ -141,11 +139,7 @@ public:
 	void VppmOff();
 	void SaveHeatSinkBoxPos();
 	int Calculate_MovePos_Find(int nMode, int nMotNum, int nSite, int nWorkPart, int *npFindWorkPosYXCPB, double *dpGetTargetPos);
-	void Set_Light_Curtain_Muting_On();
-	void Set_Light_Curtain_Muting_Off();
-	void Case_Assembly_Able_Check();
-	void Case_Assembly_Place_Check();
-	void HS_Able_Signal(int OnOff);
+
 	void OnBcrReader(); //kwlee 2017.0412
 	BOOL SendLocalMsg(RCV_STRUCT msg);
 	BOOL Send7387MeasureStart();

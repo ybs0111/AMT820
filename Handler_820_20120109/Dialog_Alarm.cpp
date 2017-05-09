@@ -897,9 +897,9 @@ void CDialog_Alarm::OnOK()
  	if (st_work.mn_run_status == dWARNING || st_work.mn_run_status == dJAM || st_work.mn_run_status == dLOTEND)
  	{
 		alarm.mn_reset_status = NO;
-		st_other.str_normal_msg = _T("[JAM RESET] JAM RESET.");
-		sprintf(st_msg.c_normal_msg, st_other.str_normal_msg);
-		if (st_handler.cwnd_list != NULL)  st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
+// 		st_other.str_normal_msg = _T("[JAM RESET] JAM RESET.");
+// 		sprintf(st_msg.c_normal_msg, st_other.str_normal_msg);
+// 		if (st_handler.cwnd_list != NULL)  st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
 //		FAS_IO.Set_Out_Bit(st_io.o_reset, IO_OFF);
  		Func.OnSet_IO_Port_Stop();
 		Run_Handler_Check.ResetStep = 0;

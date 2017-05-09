@@ -1,0 +1,24 @@
+1.daily yield 화면 -> prime cum 하나로
+2.lot delete 후 화면 갱신
+3.lot yield info -> prime cum 하나로
+4.메인화면 토출 100번
+5.epoxy clean 토출 및 safety이동
+6.st_teach 화면 적용
+7.unload 후 자재 load 할때 언로더에서 에폭시와 비젼동작후 
+  load 동작 할 경우 flag를 다시 리셋한다 --> 확인 필요
+8. epoxy 리밋교체 수
+9. epoxy 동작후 멈춰있는 시간체크하여 clean 알람. -> 알람 리셋
+10. 비젼 알람리셋할문제(에폭시,경화제)
+11. 메인화면
+   bcr : DVC : 
+   LOTID : 동작 시간:  표시
+12. 히트싱크 editor
+13. LOT 생산량 저장
+14. LOT END  후 st_sync.nLotEndFlag[m_nFindLotNo_Flag] 1,2,3 LOTEND 상태
+   lot delete 후 초기화
+15.메인화면 디바이스네임 표시
+16.AUTO 스위치
+810403 i_Carrier_Z_1_Down_Check
+800403
+810407
+800407 i_Carrier_Z_2_Down_Check

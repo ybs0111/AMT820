@@ -61,11 +61,12 @@ void CDialog_List::DoDataExchange(CDataExchange* pDX)
 {
 	CInitDialogBar::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CDialog_List)
-	DDX_Control(pDX, IDC_EDIT_LIST_MSG, m_edit_list_msg);
-	DDX_Control(pDX, IDC_DATA_MACHINE, m_data_machine);
-	DDX_Control(pDX, IDC_DATA_DEVICE, m_data_device_name);
-	DDX_Control(pDX, IDC_MSG_MACHINE, m_msg_machine);
+	DDX_Control(pDX, IDC_MSG_EQP_ID, m_msg_eqp_id);
 	DDX_Control(pDX, IDC_MSG_DEVICE_NAME, m_msg_device_name);
+	DDX_Control(pDX, IDC_LABEL_EQP_ID, m_label_eqp_id);
+	DDX_Control(pDX, IDC_LABEL_DEVICE_NAME, m_label_device_name);
+	DDX_Control(pDX, IDC_LABEL_FTP, m_label_ftp);
+	DDX_Control(pDX, IDC_MSG_FTP, m_msg_ftp);
 	DDX_Control(pDX, IDC_LIST_DATA, m_list_data);
 	DDX_Control(pDX, IDC_LIST_CLOCK, m_list_clock);
 	//}}AFX_DATA_MAP
@@ -75,6 +76,7 @@ void CDialog_List::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CDialog_List, CInitDialogBar)
 	//{{AFX_MSG_MAP(CDialog_List)
 	ON_WM_TIMER()
+	ON_LBN_SELCHANGE(IDC_LIST_DATA, OnSelchangeListData)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_LIST_DATA, OnListDataUpdate)  // 수신 메시지 리스트 박스 컨트롤에 추가 메시지 선언  
 END_MESSAGE_MAP()
@@ -118,6 +120,46 @@ void CDialog_List::OnList_Check_Tab_Stops(int mb_use_tab_stops)
 
 void CDialog_List::OnList_Lable_Set()
 {
+	m_label_eqp_id.SetText("EQP ID");
+	m_label_eqp_id.SetTextColor(RGB(0, 0, 0));
+	m_label_eqp_id.SetBkColor(RGB(181, 182, 140));
+	m_label_eqp_id.SetFontBold(TRUE);
+	m_label_eqp_id.SetFontName("MS Sans Serif");
+	m_label_eqp_id.SetFontSize(11);
+	
+	m_msg_eqp_id.SetFont(mp_list_font);
+	m_msg_eqp_id.SetCenterText();
+	m_msg_eqp_id.SetColor(RGB(0,0,0));
+	m_msg_eqp_id.SetGradientColor(RGB(0,0,0));
+	m_msg_eqp_id.SetTextColor(RGB(255,255,255));
+	
+	m_label_device_name.SetText("DEVICE NAME");
+	m_label_device_name.SetTextColor(RGB(0, 0, 0));
+	m_label_device_name.SetBkColor(RGB(181, 182, 140));
+	m_label_device_name.SetFontBold(TRUE);
+	m_label_device_name.SetFontName("MS Sans Serif");
+	m_label_device_name.SetFontSize(11);
+	
+	m_msg_device_name.SetFont(mp_list_font);
+	m_msg_device_name.SetCenterText();
+	m_msg_device_name.SetColor(RGB(0,0,0));
+	m_msg_device_name.SetGradientColor(RGB(0,0,0));
+	m_msg_device_name.SetTextColor(RGB(255,255,255));
+	
+	////2015.0604
+	m_label_ftp.SetText("FTP Mode");
+	m_label_ftp.SetTextColor(RGB(0, 0, 0));
+	m_label_ftp.SetBkColor(RGB(181, 182, 140));
+	m_label_ftp.SetFontBold(TRUE);
+	m_label_ftp.SetFontName("MS Sans Serif");
+	m_label_ftp.SetFontSize(11);
+	
+	m_msg_ftp.SetFont(mp_list_font);
+	m_msg_ftp.SetCenterText();
+	m_msg_ftp.SetColor(RGB(0,0,0));
+	m_msg_ftp.SetGradientColor(RGB(0,0,0));
+	m_msg_ftp.SetTextColor(RGB(255,255,255));
+	////
 	m_msg_machine.SetText("EQP NO");
 	m_msg_machine.SetTextColor(RGB(0, 0, 0));
 	m_msg_machine.SetBkColor(RGB(181, 182, 140));
@@ -130,13 +172,6 @@ void CDialog_List::OnList_Lable_Set()
 	m_data_machine.SetColor(RGB(0,0,0));
 	m_data_machine.SetGradientColor(RGB(0,0,0));
 	m_data_machine.SetTextColor(RGB(255,255,255));
-
-	m_msg_device_name.SetText("DEVICE NAME");
-	m_msg_device_name.SetTextColor(RGB(0, 0, 0));
-	m_msg_device_name.SetBkColor(RGB(181, 182, 140));
-	m_msg_device_name.SetFontBold(TRUE);
-	m_msg_device_name.SetFontName("MS Sans Serif");
-	m_msg_device_name.SetFontSize(11);
 
 	m_data_device_name.SetFont(mp_list_font);
 	m_data_device_name.SetCenterText();
@@ -415,12 +450,21 @@ void CDialog_List::OnList_Receive_Msg_Display(int n_mode)
 
 void CDialog_List::OnList_Machine_Info_Set()
 {
+	m_msg_eqp_id.SetWindowText(_T(st_lamp.mstr_equip_id));		// 장비 호기 정보 출력 
+	m_msg_device_name.SetWindowText(_T(st_basic.mstr_device_name));		// DEVICE 정보 출력
+	
+	m_msg_ftp.SetWindowText(_T(st_basic.mstr_mode_ftp));//2015.0604
+
 	m_data_machine.SetWindowText(_T(mstr_machine_info));		// 장비 호기 정보 출력 
 }
 
 void CDialog_List::OnList_Device_Info_Set()
 {
-	m_data_device_name.SetWindowText(_T(mstr_device_name));		// DEVICE 정보 출력 
+// 	m_data_device_name.SetWindowText(_T(st_basic.mstr_device_name));		// DEVICE 정보 출력 
+// 	m_msg_eqp_id.SetWindowText(_T(st_lamp.mstr_equip_id));		// 장비 호기 정보 출력 
+	m_msg_device_name.SetWindowText(_T(st_basic.mstr_device_name));		// DEVICE 정보 출력
+	
+	m_msg_ftp.SetWindowText(_T(st_basic.mstr_mode_ftp));//2015.0604
 }
 
 // ******************************************************************************
@@ -509,7 +553,35 @@ void CDialog_List::PostNcDestroy()
 }
 
 
-
-
-
-
+void CDialog_List::OnSelchangeListData() 
+{
+	CString mstr_cur_year, mstr_cur_month, mstr_cur_day, str_display_time; // 현재 년, 월, 일 정보 문자형으로 변환하여 저장할 변수 
+	int mn_cur_year, mn_cur_month, mn_cur_day; // 현재 년, 월, 일 정보 저장 변수 
+	CString mstr_file_name;		// 마지막으로 생성된 파일 이름 저장 변수 
+	CString mstr_create_file;	// 알람 정보 저장할 파일에 대한 [폴더]+[파일명]+[확장자] 설정 변수 
+	COleDateTime time_cur;		// 검사할 시간 정보 저장 변수 
+	
+	// **************************************************************************
+	// 파일 이름으로 사용할 날짜 정보를 얻는다                                   
+	// **************************************************************************
+	time_cur = COleDateTime::GetCurrentTime();  // 현재 시간 정보를 얻는다. 
+	
+	mn_cur_year = time_cur.GetYear();  
+	mn_cur_month = time_cur.GetMonth();  
+    mn_cur_day = time_cur.GetDay();  
+	
+	// **************************************************************************
+	// 날짜 정보를 문자형으로 변환하여 변수에 설정한다                           
+	// **************************************************************************
+	mstr_cur_year.Format("%04d", mn_cur_year);
+	mstr_cur_month.Format("%02d", mn_cur_month);
+	mstr_cur_day.Format("%02d", mn_cur_day);
+	
+	mstr_file_name = "TOT" + mstr_cur_year;
+	mstr_file_name += mstr_cur_month; 
+	mstr_file_name += mstr_cur_day; 
+	mstr_create_file = st_path.mstr_total + mstr_file_name;
+	mstr_create_file += ".TXT";
+	
+	::ShellExecute(NULL, NULL, "NotePAD.exe", mstr_create_file, NULL, SW_SHOWNORMAL);// TODO: Add your control notification handler code here
+}

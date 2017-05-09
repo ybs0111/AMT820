@@ -34,6 +34,7 @@ public:
 	int m_nRobot_Z;
 	int m_nRobot_S;
 
+	long m_dwInitWaitTime[3];
 
 	
 	int mn_retry_cnt;

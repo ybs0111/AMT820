@@ -324,16 +324,18 @@ void CMyJamData::On_Alarm_Display()
 	// -> 알람 발생한 경우 로그 파일 및 임시 파일에 저장하고 화면에 출력한다     
 	// **************************************************************************
 //	alarm.mstr_code = "111111";
+	if(	st_work.nEpoxyBiliardThreadRunMode == dRUN ) return;
+	if(	st_work.nHeatSinkRubThreadRunMode == dRUN ) return;
 	if (st_work.mn_run_status == dJAM || st_work.mn_run_status == dWARNING || st_work.mn_run_status == dLOTEND)  // 알람 발생
 	{
 		if (st_handler.n_alarm_screen == TRUE)	return;
 
-		if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
-		{
-			st_other.str_abnormal_msg = "Alarm Code = " + alarm.mstr_code;
-			sprintf(st_msg.c_abnormal_msg, st_other.str_abnormal_msg);
-			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
-		}
+// 		if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
+// 		{
+// 			st_other.str_abnormal_msg = "Alarm Code = " + alarm.mstr_code;
+// 			sprintf(st_msg.c_abnormal_msg, st_other.str_abnormal_msg);
+// 			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
+// 		}
 
 		// **********************************************************************
 		// 알람 화면 출력 불가능한 경우 검사한다.                                

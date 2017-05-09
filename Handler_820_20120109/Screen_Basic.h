@@ -44,6 +44,8 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Basic)
 	enum { IDD = IDD_SCREEN_BASIC };
+	CEXDigitST	m_dgt_hardness_time;
+	CEXDigitST	m_dgt_epoxy_clean_time;
 	CXPGroupBox	m_group_Tray_Y;
 	CXPGroupBox	m_group_Tray_X;
 	CXPGroupBox	m_group_HsTray_Y;
@@ -61,28 +63,17 @@ public:
 	CEXDigitST	m_dgt_Rubb;
 	CEXDigitST	m_dgt_Pick_Retry_Cnt;
 	CEXDigitST	m_dgt_Partial_Cnt;
-	CEXDigitST	m_dgt_Offset_Dis;
-	CEXDigitST	m_dgt_Offset_30;
-	CEXDigitST	m_dgt_Offset_20;
-	CEXDigitST	m_dgt_Offset_10;
-	CEXDigitST	m_dgt_Offset;
 	CEXDigitST	m_dgt_Epoxy_Y;
 	CEXDigitST	m_dgt_Epoxy_X;
 	CEXDigitST	m_dgt_Elv_Partial_Cnt;
 	CEXDigitST	m_dgt_7387_Alarm_Cnt;
 	CGradientStatic	m_msg_Epoxy_Y;
-	CGradientStatic	m_msg_Offset_30;
-	CGradientStatic	m_msg_Offset_20;
-	CGradientStatic	m_msg_Offset_10;
-	CGradientStatic	m_msg_Offset;
 	CGradientStatic	m_msg_Epoxy_X;
-	CGradientStatic	m_msg_Distance;
 	CXPGroupBox	m_group_Rubb_Cnt;
 	CXPGroupBox	m_group_Pick_Retry_Cnt;
 	CXPGroupBox	m_group_Patial_Cnt;
 	CXPGroupBox	m_group_Epoxy_Offset;
 	CXPGroupBox	m_group_Elv_Partial_Cnt;
-	CXPGroupBox	m_group_Carrier_Move;
 	CXPGroupBox	m_group_7387_Alarm_Cnt;
 	CButtonST	m_btn_delete;
 	CButtonST	m_btn_create;
@@ -126,13 +117,10 @@ public:
 	int				n_rubb_count[2];
 	double			dEpoxyXLineOffSet[2];
 	double			dEpoxyYLineOffSet[2];
+	int				m_nEPoxyCleanTime[2];
+	int				m_nHardnessUseTime[2];
 	
-	double			dHSCarrierSpreadMoveOffset[2];
-	double			dHSCarrierSpreadMoveDistance[2];
-	double			dHeatSinkCarrierSpreadMove1Offset[2];
-	double			dHeatSinkCarrierSpreadMove2Offset[2];
-	double			dHeatSinkCarrierSpreadMove3Offset[2];
-
+	
 	//kwlee 2017.0406
 	double	m_dLoaderTransferTrayDeviceGap[2];
 	DWORD m_dSatbleTime[2];
@@ -155,8 +143,6 @@ public:
 	int m_nTrayX[2];	
 	
 
-	TSpread			*m_grid_operate;
-	TSpread			*m_grid_file;
 	CFont*			mp_basic_font;			// 폰트 정보 설정 변수
 	GridControlAlg	m_p_grid;
 	CMyBasicData    mcls_basic;		// 기본 셋팅 정보 로딩 및 저장 클래스
@@ -236,11 +222,6 @@ protected:
 	afx_msg void OnBtnDelete();
 	afx_msg void OnDgtEpoxyX();
 	afx_msg void OnDgtEpoxyY();
-	afx_msg void OnDgtOffset();
-	afx_msg void OnDgtOffset10();
-	afx_msg void OnDgtOffset20();
-	afx_msg void OnDgtOffset30();
-	afx_msg void OnDgtOffsetDis();
 	afx_msg void OnDgtRubb();
 	afx_msg void OnDgt7387AlarmCnt();
 	afx_msg void OnDgtElvPartialCnt();
@@ -253,6 +234,10 @@ protected:
 	afx_msg void OnDgtTrayY();
 	afx_msg void OnDgtTrayX();
 	afx_msg void OnDgtDispenservppmA();
+	afx_msg void OnDgtEpoxyCleanTime();
+	afx_msg void OnButtonCleanReset();
+	afx_msg void OnButtonHardnessReset();
+	afx_msg void OnDgtHardnessTime();
 	//}}AFX_MSG
 	afx_msg void OnCell_L_Click(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnCell_R_Click(WPARAM wParam, LPARAM lParam);

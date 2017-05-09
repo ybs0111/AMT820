@@ -11,6 +11,29 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CRun_Device_Carrier_Robot command target
+enum carrier_buffer_move_info_shift
+{
+	TOPSHIFT_BUFF_LOADER_RECEIVE = 0,
+	TOPSHIFT_BUFF_INPUT_LOADER,			
+	TOPSHIFT_BUFF_EPOXY,					
+	TOPSHIFT_BUFF_WAIT_INDEX,				
+	TOPSHIFT_BUFF_HEATSINK_VISION,			
+	TOPSHIFT_BUFF_OUTSEND,					
+	TOPSHIFT_BUFF_UNLOADER,					
+	BTMSHIFT_BUFF_DOWN,
+	BTMSHIFT_BUFF_DOWNFORWARD,
+	BTMSHIFT_BUFF_HEATSINK_DOWN,
+	BTMSHIFT_BUFF_INDEX_DOWN,
+	BTMSHIFT_BUFF_EPOXY_DOWN,
+	BTMSHIFT_BUFF_INPUT_DOWN,
+	BTMSHIFT_BUFF_LOADER_DOWN,
+	TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE,	
+	TOPSHIFT_DATA_TEMP_CHECK,
+	TOPSHIFT_IDBUFF_SEALING_SITE_ALL_CHK,
+	BTMSHIFT_DATA_TEMP_CHECK,
+	BTMSHIFT_IDBUFF_SEALING_SITE_ALL_CHK,
+};
+
 
 class CRun_Device_Carrier_Robot : public CObject
 {
@@ -100,7 +123,7 @@ public:
 	DWORD m_dwBcrWaitTime[3];
 	int mn_BufferPos;
 
-	int nRetryCyl;
+	int nRetryCyl[4];
 
 	int m_Thread_Flag[4];
 

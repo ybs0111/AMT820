@@ -335,6 +335,7 @@ st_io_param::st_io_param()
 	st_io.i_Press_PIN_Guide_Backward_Check			=	501;
 	st_io.i_Press_Carrier_Holder_Up_Check			=	502;
 	st_io.i_Press_Carrier_Holder_Down_Check			=	503;
+	st_io.i_Epoxy_Y_Axis_Safety_Check				=	504;
 
 	st_io.i_Transfer1_Clamp_Forward_Check			=	505;					///PS0502
 	st_io.i_Transfer1_Clamp_Backward_Check			=	506;					///PS0503
@@ -703,12 +704,12 @@ int IO_Manager::IO_Board_Initialize()
 	FAS_IO.Set_IO_DefineWord(0, 0, 3, 0x0000); // 0번 Master, 0번 포트, 3번 슬레이브 , 16bit 셋팅
 	FAS_IO.Set_IO_DefineWord(0, 0, 4, 0x0000); // 0번 Master, 0번 포트, 4번 슬레이브 , 16bit 셋팅
 	FAS_IO.Set_IO_DefineWord(0, 0, 5, 0x0000); // 0번 Master, 0번 포트, 5번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 0, 6, 0x0000); // 0번 Master, 0번 포트, 6번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 0, 7, 0x07ff); // 0번 Master, 0번 포트, 7번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 0, 6, 0x03ff); // 0번 Master, 0번 포트, 6번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 0, 7, 0xffff); // 0번 Master, 0번 포트, 7번 슬레이브 , 16bit 셋팅
 	
 	FAS_IO.Set_IO_DefineWord(0, 1, 0, 0xffff); // 0번 Master, 1번 포트, 0번 슬레이브 , 16bit 셋팅
 	FAS_IO.Set_IO_DefineWord(0, 1, 1, 0xffff); // 0번 Master, 1번 포트, 1번 슬레이브 , 16bit 셋팅
-	FAS_IO.Set_IO_DefineWord(0, 1, 2, 0xffff); // 0번 Master, 1번 포트, 2번 슬레이브 , 16bit 셋팅
+	FAS_IO.Set_IO_DefineWord(0, 1, 2, 0x0fff); // 0번 Master, 1번 포트, 2번 슬레이브 , 16bit 셋팅
 	FAS_IO.Set_IO_DefineWord(0, 1, 3, 0xffff); // 0번 Master, 1번 포트, 3번 슬레이브 , 16bit 셋팅
 	FAS_IO.Set_IO_DefineWord(0, 1, 4, 0xff00); // 0번 Master, 1번 포트, 4번 슬레이브 , 16bit 셋팅
 	FAS_IO.Set_IO_DefineWord(0, 1, 5, 0x0000); // 0번 Master, 1번 포트, 5번 슬레이브 , 16bit 셋팅

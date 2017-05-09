@@ -10,6 +10,7 @@
 #include "IO_Manager.h"
 #include "CmmsdkDef.h"
 #include "Run_EmptyTrayTransfer.h"
+#include "Run_Device_Carrier_Robot.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -46,6 +47,7 @@ CRun_LdPicker::~CRun_LdPicker()
 
 void CRun_LdPicker::Thread_Run()
 {
+
 	int nRet_1;
 	switch( st_work.mn_run_status)
 	{
@@ -96,7 +98,7 @@ void CRun_LdPicker::RunInit()
 	int i = 0,nRet_1=0, nSNum = 0;
 		
 	if( st_handler.mn_init_state[INIT_LD_ROBOT] != CTL_NO ) return;
-	st_handler.mn_init_state[INIT_LD_ROBOT] = CTL_YES;
+// 	st_handler.mn_init_state[INIT_LD_ROBOT] = CTL_YES;
 	switch(mn_InitStep)
 	{
 		case 0:
@@ -116,7 +118,7 @@ void CRun_LdPicker::RunInit()
 			}
 			else if( nRet_1 == RET_ERROR )
 			{
-				CTL_Lib.Alarm_Error_Occurrence( 4001, dWARNING, Run_EmptyTrayTransfer.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence( 1001, dWARNING, Run_EmptyTrayTransfer.m_strAlarmCode);
 				mn_InitStep = 900;
 			}
 			break;	
@@ -130,7 +132,7 @@ void CRun_LdPicker::RunInit()
 			else if( nRet_1 == BD_ERROR)
 			{
 				mn_InitStep = 900;
-				CTL_Lib.Alarm_Error_Occurrence( 1001, dWARNING, COMI.mc_alarmcode);
+				CTL_Lib.Alarm_Error_Occurrence( 1002, dWARNING, COMI.mc_alarmcode);
 			}
 			break;
 
@@ -140,7 +142,7 @@ void CRun_LdPicker::RunInit()
 				mn_InitStep = 900;
 				mn_InitStep = 300;
 // 				sprintf(mc_alarmcode,"8%d%04d", CTL_YES, st_io.i_loading_rbt_glipper_sff_missalign_chk_1 + nSNum);
-// 				CTL_Lib.Alarm_Error_Occurrence( 1002, dWARNING, mc_alarmcode);				
+// 				CTL_Lib.Alarm_Error_Occurrence( 1003, dWARNING, mc_alarmcode);				
 			}
 			else
 			{
@@ -226,10 +228,10 @@ void CRun_LdPicker::RunInit()
 
 void CRun_LdPicker::RunMove()
 {
-	int i = 0,nRet_1=0,nRet_2=0,nRet_3=0,nCount=0;
+	int i = 0,nRet_1=0,nRet_2=0,nRet_3=0,nRet_4=0,nCount=0;
 	long lMotionDone=0;
 
-	Func.ThreadFunctionStepTrace(1, mn_RunStep);
+	Func.ThreadFunctionStepTrace(6, mn_RunStep);
 	switch(mn_RunStep)
 	{
 		case -1:
@@ -239,7 +241,76 @@ void CRun_LdPicker::RunMove()
 		case 0:		
 			if( g_lotMgr.GetLotCount() > 0 )
 			{
+				mn_RunStep = 20;
+			}
+			break;
+
+// 			st_io.i_loading_rbt_glipper_sff_missalign_chk_1 =	2400;
+// 			st_io.i_loading_rbt_glipper_sff_missalign_chk_2 =	2401;
+// 			st_io.i_loading_rbt_glipper_sff_missalign_chk_3 =	2402;
+// 			st_io.i_loading_rbt_glipper_sff_missalign_chk_4 =	2403;
+// 			
+// 			st_io.i_loading_rbt_glipper_tff_missalign_chk_1 =	2404;
+// 			st_io.i_loading_rbt_glipper_tff_missalign_chk_2 =	2405;
+// 			st_io.i_loading_rbt_glipper_tff_missalign_chk_3 =	2406;
+// 			st_io.i_loading_rbt_glipper_tff_missalign_chk_4 =	2407;
+
+		case 10:
+			nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_1, IO_OFF);
+			nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_2, IO_OFF);
+			nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_3, IO_OFF);
+			nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_4, IO_OFF);
+			if( nRet_1 == IO_OFF && nRet_1 == IO_OFF && nRet_1 == IO_OFF && nRet_1 == IO_OFF )
+			{
+				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_OFF);
+				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_OFF);
+				nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_OFF);
+				nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_OFF);
+				if( nRet_1 == IO_OFF && nRet_1 == IO_OFF && nRet_1 == IO_OFF && nRet_1 == IO_OFF )
+				{
+					mn_RunStep = 20;
+				}
+				else
+				{
+					if( nRet_1 == IO_ON)
+						m_strAlarmCode.Format("8%d%04d", st_io.i_loading_rbt_glipper_tff_missalign_chk_1);
+					else if( nRet_2 == IO_ON )
+						m_strAlarmCode.Format("8%d%04d", st_io.i_loading_rbt_glipper_tff_missalign_chk_2);
+					else if( nRet_3 == IO_ON )
+						m_strAlarmCode.Format("8%d%04d", st_io.i_loading_rbt_glipper_tff_missalign_chk_3);
+					else// if( nRet_4 == IO_ON )
+						m_strAlarmCode.Format("8%d%04d", st_io.i_loading_rbt_glipper_tff_missalign_chk_4);
+					CTL_Lib.Alarm_Error_Occurrence( 1301, dWARNING, m_strAlarmCode);
+				}
+			}
+			else
+			{
+				if( nRet_1 == IO_ON)
+					m_strAlarmCode.Format("8%d%04d", st_io.i_loading_rbt_glipper_sff_missalign_chk_1);
+				else if( nRet_2 == IO_ON )
+					m_strAlarmCode.Format("8%d%04d", st_io.i_loading_rbt_glipper_sff_missalign_chk_2);
+				else if( nRet_3 == IO_ON )
+					m_strAlarmCode.Format("8%d%04d", st_io.i_loading_rbt_glipper_sff_missalign_chk_3);
+				else// if( nRet_4 == IO_ON )
+					m_strAlarmCode.Format("8%d%04d", st_io.i_loading_rbt_glipper_sff_missalign_chk_4);
+				CTL_Lib.Alarm_Error_Occurrence( 1302, dWARNING, m_strAlarmCode);
+			}
+			break;
+
+		case 20:
+			Set_Loader_Transfer_Clamp_OnOff( IO_OFF);
+			mn_RunStep = 30;
+			break;
+			
+		case 30:
+			nRet_1 = Chk_Loader_Transfer_Clamp_OnOff( IO_OFF );
+			if(nRet_1 == RET_GOOD)
+			{
 				mn_RunStep = 100;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				CTL_Lib.Alarm_Error_Occurrence( 1303, dWARNING, m_strAlarmCode);
 			}
 			break;
 
@@ -247,7 +318,7 @@ void CRun_LdPicker::RunMove()
 			nRet_1 = g_ioMgr.get_in_bit(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_OFF);
 			nRet_2 = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_On_Sol,	 IO_OFF);
 			nRet_3 = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_Off_Sol, IO_ON);
-			if(nRet_1 == IO_ON && nRet_2 == IO_OFF && nRet_3 == IO_ON) 
+			if(nRet_1 == IO_OFF || nRet_2 == IO_ON || nRet_3 == IO_OFF) 
 			{
 				//810113 0 A "LOADER_PICKER_CLAMP_ON_ERROR."
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
@@ -255,7 +326,6 @@ void CRun_LdPicker::RunMove()
 			}
 			else
 			{
-				st_picker[m_nRobotSite].st_pcb_info[0].nYesNo = CTL_NO; //james 2016.0909 
 				mn_RunStep = 200;				 
 			}
 			break;
@@ -315,26 +385,39 @@ void CRun_LdPicker::RunMove()
 		case 500:
 			if( g_lotMgr.GetLotCount() > 0 )
 			{
-				if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
+				int num = g_lotMgr.GetLotAt(0).GetInputCnt(PRIME);
+// 				g_lotMgr.GetLotAt(0).AddInputCnt(PRIME);
+				int aa = g_lotMgr.GetLotAt(0).GetTotLotCount();
+				if( st_sync.nLotEndFlag[0][THD_LOAD_WORK_RBT] != LOTEND && g_lotMgr.GetLotAt(0).GetTotLotCount() > 0 && 
+					( g_lotMgr.GetLotAt(0).GetInputCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() ) )
 				{
 					//load plate에 자재 요청
-					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ;
-					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = WORK_PICK;
-
-					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] = CTL_REQ;
-					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][1] = WORK_PLACE;
-					m_nFindLotNo_Flag = 0;
+// 					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ;
+// 					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = WORK_PICK;
+					if(st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] == CTL_READY )
+					{
+						st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] = CTL_REQ;
+						st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][1] = WORK_PLACE;
+						m_nFindLotNo_Flag = 0;						
+						mn_RunStep = 1000;
+					}
 				}
 				else if( g_lotMgr.GetLotCount() >= 2 )
 				{
-					if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
+					if( st_sync.nLotEndFlag[1][THD_LOAD_WORK_RBT] != LOTEND && g_lotMgr.GetLotAt(1).GetTotLotCount() > 0 && 
+						g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
 					{
-						st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ;
-						st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = WORK_PICK;
+// 						st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ;
+// 						st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = WORK_PICK;
 
-						st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] = CTL_REQ;
-						st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][1] = WORK_PLACE;
-						m_nFindLotNo_Flag = 1;
+						if(st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] == CTL_READY )
+						{
+							st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] = CTL_REQ;
+							st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][1] = WORK_PLACE;
+							m_nFindLotNo_Flag = 1;
+							mn_RunStep = 1000;
+						}
+
 					}
 					else
 					{
@@ -354,9 +437,9 @@ void CRun_LdPicker::RunMove()
 // 								mn_RunStep= 500; 
 // 								break;
 // 							}
-						if( COMI.Get_MotCurrentPos(m_nRobot_Y) >= ( st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS] + st_motor[m_nRobot_Y].mn_allow ) )
+						if( COMI.Get_MotCurrentPos(m_nRobot_Y) >= ( st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] + COMI.md_allow_value[m_nRobot_Y] ) )
 						{
-							nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
+							nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS], COMI.mn_runspeed_rate);
 							if (nRet_1 == BD_GOOD)
 							{
 								mn_RunStep = 500;
@@ -375,7 +458,35 @@ void CRun_LdPicker::RunMove()
 						return;
 					}
 				}
-				mn_RunStep = 1000;
+				else
+				{
+					if( st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_REQ && 
+						st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] == WORK_PLACE )
+					{
+						st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] = CTL_READY;
+					}
+					else if( st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_READY && 
+						st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] == WORK_PLACE )
+					{
+						st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] = CTL_FREE; 
+						st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] = CTL_FREE;
+					}
+
+				}
+			}
+			else
+			{
+				if( st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_REQ && 
+					st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] == WORK_PLACE )
+				{
+					st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] = CTL_READY;
+				}
+				else if( st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_READY && 
+					st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] == WORK_PLACE )
+				{
+					st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] = CTL_FREE; 
+					st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] = CTL_FREE;
+				}
 			}
 			break;
 
@@ -385,17 +496,17 @@ void CRun_LdPicker::RunMove()
 			m_strFindLotNo = "";
 			if( g_lotMgr.GetLotCount() > 0 )
 			{
-				if( g_lotMgr.GetLotAt(0).GetInputCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
+				if( g_lotMgr.GetLotAt(0).GetTotLotCount() > 0 && g_lotMgr.GetLotAt(0).GetInputCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
 				{
 					m_nFindLotNo_Flag = 0;
 					m_strFindLotNo = g_lotMgr.GetLotAt(0).GetLotID();
 				}
 				else if( g_lotMgr.GetLotCount() >= 2 )
 				{
-					if( g_lotMgr.GetLotAt(1).GetInputCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
+					if( g_lotMgr.GetLotAt(1).GetTotLotCount() > 0 && g_lotMgr.GetLotAt(1).GetInputCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
 					{
 						m_nFindLotNo_Flag = 1;
-						m_strFindLotNo = g_lotMgr.GetLotAt(0).GetLotID();
+						m_strFindLotNo = g_lotMgr.GetLotAt(1).GetLotID();
 					}
 					else
 					{
@@ -472,8 +583,8 @@ void CRun_LdPicker::RunMove()
 			}
 			else
 			{
-				nRet_1 = COMI.Check_MotPosRange(m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], st_motor[m_nRobot_Y].mn_allow);
-				nRet_2 = COMI.Check_MotPosRange(m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], st_motor[m_nRobot_Z].mn_allow);
+				nRet_1 = COMI.Check_MotPosRange(m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], COMI.md_allow_value[m_nRobot_Y]);
+				nRet_2 = COMI.Check_MotPosRange(m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.md_allow_value[m_nRobot_Z]);
 				if(nRet_1 != BD_GOOD || nRet_2 != BD_GOOD)
 				{
 					mn_RunStep = 1200;
@@ -497,7 +608,7 @@ void CRun_LdPicker::RunMove()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1104, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1105, dWARNING, alarm.mstr_code);
 				mn_RunStep = 1200;
 			}
 			break;
@@ -514,7 +625,7 @@ void CRun_LdPicker::RunMove()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1105, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1106, dWARNING, alarm.mstr_code);
 				mn_RunStep = 1300;
 			}
 			break;
@@ -560,7 +671,7 @@ void CRun_LdPicker::RunMove()
 			else
 			{
 				//900100 1 00 "IT_IS DIFFERENT_TO_LOT_NAME_BETWEEN_LOT_LOAD_STACKER."
-				CTL_Lib.Alarm_Error_Occurrence(1105, dWARNING, "900100");
+				CTL_Lib.Alarm_Error_Occurrence(1107, dWARNING, "900100");
 			}
 			break;
 
@@ -576,7 +687,8 @@ void CRun_LdPicker::RunMove()
 			break;
 
 		case 3000:
-			if( st_sync.nCarrierRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] == CTL_READY && st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][1] == WORK_PLACE )
+			if( st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] == CTL_READY && 
+				st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][1] == WORK_PLACE )
 			{
 				mn_RunStep = 3100;
 			}
@@ -737,13 +849,13 @@ void CRun_LdPicker::RunMove()
 					nCount++;
 				} 
 			}
-			if(nCount > 0) //자재가 남아있으면 
+			if(nCount > 0) //자재를 픽업하면
 			{
-				mn_RunStep = 4000;   
+				mn_RunStep = 4200;   
 			}
 			else
 			{
-				mn_RunStep = 4200;   
+				mn_RunStep = 4000;   
 			}
 			break;
 
@@ -756,7 +868,7 @@ void CRun_LdPicker::RunMove()
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1108, dWARNING, m_strAlarmCode);
 				break;
 			}
 
@@ -765,8 +877,7 @@ void CRun_LdPicker::RunMove()
 
 		case 4300:
 			//디바이스 픽업 센서체크함
-			//nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
-			nRet_1 = RET_GOOD;
+			nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
 			if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
 			{
 				break; 
@@ -774,7 +885,7 @@ void CRun_LdPicker::RunMove()
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1109, dWARNING, m_strAlarmCode);
 				break;
 			}
 
@@ -791,14 +902,21 @@ void CRun_LdPicker::RunMove()
 		//Carrier Buffer Place
 		////////////////////////////////
 		case 5000:
-			if( st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_REQ && st_sync.nLdWorkRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] == WORK_PLACE )
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_REQ && 
+				st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] == WORK_PLACE )
+			{
+				st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] = CTL_READY;
+				mn_RunStep = 5100;
+			}
+			if( st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_READY && 
+				st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] == WORK_PLACE )
 			{
 				mn_RunStep = 5100;
 			}
 			break;
 
 		case 5100:
-			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X )  > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_READY_POS] + st_motor[M_UNLOADER_TRANSFER_X].mn_allow ) )
+			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X )  > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_READY_POS] + COMI.md_allow_value[M_UNLOADER_TRANSFER_X] ) )
 			{
 				break;
 			}
@@ -852,9 +970,16 @@ void CRun_LdPicker::RunMove()
 			//nRet_1 = Func.Find_TrayWork_Pos(WORK_PLACE, THD_LDULD_CARRIER_BUFF, CTL_YES, m_npFindWorkPosYXCPB, THD_LOAD_WORK_RBT, m_strFindLotNo );	
 			//if(nRet_1 == RET_SKIP) //더이상 작업할 공간이 없다 
 				
-			if( st_buffer_info[THD_LDULD_CARRIER_BUFF].st_pcb_info[m_n_FirstTray_Y_Num].nYesNo == CTL_YES && (st_buffer_info[THD_LDULD_CARRIER_BUFF].st_pcb_info[m_n_FirstTray_Y_Num].strLotNo == m_strFindLotNo) )
+// 			if( st_buffer_info[THD_LDULD_CARRIER_BUFF].st_pcb_info[m_n_FirstTray_Y_Num].nYesNo == CTL_YES && (st_buffer_info[THD_LDULD_CARRIER_BUFF].st_pcb_info[m_n_FirstTray_Y_Num].strLotNo == m_strFindLotNo) )
+// 			{
+			if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[mn_override_flag] == CTL_YES )// && (st_buffer_info[THD_LDULD_CARRIER_BUFF].st_pcb_info[m_n_FirstTray_Y_Num].strLotNo == m_strFindLotNo) )
 			{			
 				st_sync.nCarrierRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] = CTL_READY;
+
+				if( st_handler.cwnd_main != NULL )
+				{
+					st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_LOADER_RECEIVE, 0);
+				}
 
 				//Carrier
 				//Carrier site 의 버퍼 위치 
@@ -914,7 +1039,7 @@ void CRun_LdPicker::RunMove()
 			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loader_Transfer_Clamp_Off_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1110, dWARNING, m_strAlarmCode);
 				break;
 			}
 
@@ -933,13 +1058,13 @@ void CRun_LdPicker::RunMove()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1194, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1111, dWARNING, alarm.mstr_code);
 				mn_RunStep = 5510;
 			}
 			break;
 
 		case 5600:
-			nRet_1 = COMI.Check_MotPosRange(m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], st_motor[m_nRobot_Z].mn_allow);
+			nRet_1 = COMI.Check_MotPosRange(m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.md_allow_value[m_nRobot_Z]);
 			if(nRet_1 != BD_GOOD )
 			{
 				mn_RunStep = 5510;
@@ -951,10 +1076,11 @@ void CRun_LdPicker::RunMove()
 			break;
 
 		case 5700:
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
+			//nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS], COMI.mn_runspeed_rate);
+			nRet_1 = COMI.Start_SingleMove(m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS], COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
-				mn_RunStep = 500;
+				mn_RunStep = 5800;
 			}
 			else if (nRet_1 == BD_RETRY)
 			{
@@ -962,10 +1088,51 @@ void CRun_LdPicker::RunMove()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1112, dWARNING, alarm.mstr_code);
 				mn_RunStep = 5700;
 			}
 			break;
+
+
+		case 5800:
+// 			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS], COMI.mn_runspeed_rate);
+			nRet_1 = COMI.Check_SingleMove( m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] );
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_RunStep = 6000;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_RunStep = 5700;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1112, dWARNING, alarm.mstr_code);
+				mn_RunStep = 5700;
+			}
+			break;
+
+		case 6000:
+			if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_YES &&
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_YES &&
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_YES )
+			{
+				st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] = CTL_FREE; 
+				st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] = CTL_FREE;
+			}
+			if( st_handler.cwnd_main != NULL )
+			{
+				st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_LOADER_RECEIVE, 0);
+			}
+
+			if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES" )
+			{
+				st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_LOAD_WORK_RBT] = LOTEND;
+			}
+
+			mn_RunStep = 500;
+			break;
+
 
 
 		default:
@@ -983,7 +1150,7 @@ void CRun_LdPicker::RunMove()
 int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*/, CString strLotNo)//WORK_TOP WORK_MID WORK_BTM
 {
 	int nFuncRet = RET_PROCEED;
-	int nRet_1, i, nFlag;
+	int nRet_1,nRet_2,nRet_3,nRet_4,i,nFlag;
 
 	Func.ThreadFunctionStepTrace(7, mn_Place_Step);
 
@@ -997,7 +1164,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 
 		case 100:
 			m_dCurrentPos[m_nRobot_Z] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[m_nRobot_Z] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벗어나 있으면 저위치 시킨다
+			if(m_dCurrentPos[m_nRobot_Z] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z]) //안전 위치를 벗어나 있으면 저위치 시킨다
 			{
 				mn_Place_Step = 200;
 			}
@@ -1020,7 +1187,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1230, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1200, dWARNING, alarm.mstr_code);
 				mn_Place_Step = 200;
 			}
 			break;
@@ -1044,12 +1211,12 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 					m_dwWaitUntil[1] = GetCurrentTime();
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
-					CTL_Lib.Alarm_Error_Occurrence(1231, dWARNING, Func.m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(1201, dWARNING, Func.m_strAlarmCode);
 					break;
 				}
 			}
 			m_dCurrentPos[2] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벅어나 있으면 저위치 시킨다
+			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z]) //안전 위치를 벅어나 있으면 저위치 시킨다
 			{
 				mn_Place_Step = 200;
 				break;
@@ -1069,16 +1236,6 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				mn_Place_Step = 0;
 				nFuncRet = RET_PICKER_NOT_FIND;
 				break;
-			}
-
-			//제거할것 
-			if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[0] == CTL_YES &&
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[1] == CTL_YES &&
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[2] == CTL_YES )
-			{
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[0] = CTL_NO;
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[1] = CTL_NO;
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[2] = CTL_NO;
 			}
 
 			nRet_1 = Func.Find_TrayWork_Pos(WORK_PLACE, nWork_Site, CTL_NO, m_npFindWorkPosYXCPB, THD_LOAD_WORK_RBT, m_strFindLotNo); //놓을때버퍼에서으 ㅣ작업순서는 뒤부터 놓는다 (4 -> 1 순서) 
@@ -1144,13 +1301,12 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 
 				m_nMove_Flag[0] = CTL_NO; m_nMove_Flag[1] = CTL_NO;
 				mn_Place_Step = 2000;
-				COMI.Set_MotStop(0, m_nRobot_Y);
 			}
 			break;
 
 		case 2000:
 			m_dCurrentPos[2] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벗어나 있으면 정위치 시킨다
+			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z]) //안전 위치를 벗어나 있으면 정위치 시킨다
 			{
 				mn_Place_Step = 200;
 				break;
@@ -1161,7 +1317,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				nRet_1 = Func.Check_Robot_Buffer_Clash( THD_LOAD_WORK_RBT, THD_LD_ALIGN_BUFF, m_n_FirstTray_Y_Num, m_n_FirstPicker_Num, m_nClash_ErrorInfoStatus); //피커와 버퍼등의 자재 충돌 확인 
 				if(nRet_1 == RET_ERROR)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(1232, dWARNING, Func.m_strAlarmCode);		
+					CTL_Lib.Alarm_Error_Occurrence(1202, dWARNING, Func.m_strAlarmCode);		
 					break;
 				}
 			}
@@ -1170,7 +1326,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				nRet_1 = Func.Check_Robot_Buffer_Clash( THD_LOAD_WORK_RBT, THD_LDULD_CARRIER_BUFF, m_n_FirstTray_Y_Num, m_n_FirstPicker_Num, m_nClash_ErrorInfoStatus); //피커와 버퍼등의 자재 충돌 확인 
 				if(nRet_1 == RET_ERROR)
 				{
-					CTL_Lib.Alarm_Error_Occurrence(1232, dWARNING, Func.m_strAlarmCode);		
+					CTL_Lib.Alarm_Error_Occurrence(1203, dWARNING, Func.m_strAlarmCode);		
 					break;
 				}
 			}
@@ -1187,13 +1343,13 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			}
 			else
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1233, dWARNING, Func.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1204, dWARNING, Func.m_strAlarmCode);
 				break;
 			}
 
 			if(nWork_Site == THD_LDULD_CARRIER_BUFF)
 			{
-				if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X )  > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_READY_POS] + st_motor[M_UNLOADER_TRANSFER_X].mn_allow ) )
+				if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X )  > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_READY_POS] + COMI.md_allow_value[M_UNLOADER_TRANSFER_X] ) )
 				{
 					break;
 				}
@@ -1203,13 +1359,11 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				}
 			}
 
-
-
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, m_dpTargetPosList[1], COMI.mn_runspeed_rate); 
+// 			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, m_dpTargetPosList[1], COMI.mn_runspeed_rate); 
+			nRet_1 = COMI.Start_SingleMove( m_nRobot_Y, m_dpTargetPosList[1], COMI.mn_runspeed_rate); 
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
-				m_bDvcWaitChk_Falg =  false;
-				mn_Place_Step = 2100;
+				mn_Place_Step = 2010;
 			}
 			else if (nRet_1 == BD_RETRY)
 			{
@@ -1218,9 +1372,48 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				//CTL_Lib.Alarm_Error_Occurrence(1234, dWARNING, alarm.mstr_code);
+				//CTL_Lib.Alarm_Error_Occurrence(1205, dWARNING, alarm.mstr_code);
 //				COMI.Set_MotStop(0, m_nRobot_Y);
 				mn_Place_Step = 2000;
+			}
+			break; 
+
+		case 2010:
+			nRet_1 = COMI.Start_SingleMove( m_nRobot_Y, m_dpTargetPosList[1], COMI.mn_runspeed_rate); 
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				mn_Place_Step = 2020;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				COMI.Set_MotStop(0, m_nRobot_Y);
+				mn_Place_Step = 2010;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				//CTL_Lib.Alarm_Error_Occurrence(1205, dWARNING, alarm.mstr_code);
+				//				COMI.Set_MotStop(0, m_nRobot_Y);
+				mn_Place_Step = 2010;
+			}
+			break; 
+
+		case 2020:
+			nRet_1 = COMI.Check_SingleMove( m_nRobot_Y, m_dpTargetPosList[1] ); 
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				m_bDvcWaitChk_Falg =  false;
+				mn_Place_Step = 2100;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				COMI.Set_MotStop(0, m_nRobot_Y);
+				mn_Place_Step = 2010;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				//CTL_Lib.Alarm_Error_Occurrence(1205, dWARNING, alarm.mstr_code);
+				//				COMI.Set_MotStop(0, m_nRobot_Y);
+				mn_Place_Step = 2010;
 			}
 			break; 	
 
@@ -1243,7 +1436,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1236, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1206, dWARNING, alarm.mstr_code);
 				mn_Place_Step = 2500;
 			}
 			break;
@@ -1253,7 +1446,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 		////////////////////////////////////////////////////////
 		case 3000:
 			m_dCurrentPos[2] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow)
+			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z])
 			{
 				mn_Place_Step = 2500;
 				break;
@@ -1277,12 +1470,12 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 					m_dwWaitUntil[1] = GetCurrentTime();
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
-					CTL_Lib.Alarm_Error_Occurrence(1237, dWARNING, Func.m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(1207, dWARNING, Func.m_strAlarmCode);
 					break;
 				}
 			}
 
-			nRet_1 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], st_motor[m_nRobot_Y].mn_allow);
+			nRet_1 = COMI.Check_MotPosRange(m_nRobot_Y, m_dpTargetPosList[1], COMI.md_allow_value[m_nRobot_Y]);
 			if(nRet_1 != BD_GOOD)
 			{
 				mn_Place_Step = 2000;
@@ -1291,7 +1484,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 
 			if(nWork_Site == THD_LD_ALIGN_BUFF)
 			{
-				nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_ON, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
+				nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
 				if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
 				{
 					break; 
@@ -1299,14 +1492,14 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 				{
 					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
-					CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(1208, dWARNING, m_strAlarmCode);
 					break;
 				} 
 				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_ALIGN_PLACE_POS];
 			}
 			else if(nWork_Site == THD_LDULD_CARRIER_BUFF)// TOP MIDDEL BTM
 			{
-				nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_ON, IO_STABLE_WAIT, IO_STABLE_LIMIT); //버퍼에 센서가 없어 피커 센서로 대체
+				nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loader_Transfer_Clamp_On_Check, IO_ON, IO_STABLE_WAIT, IO_STABLE_LIMIT); //버퍼에 센서가 없어 피커 센서로 대체
 				if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
 				{
 					break; 
@@ -1314,14 +1507,14 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC) //with device 가 아니면  
 				{
 					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
-					CTL_Lib.Alarm_Error_Occurrence(1242, dWARNING, m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(1209, dWARNING, m_strAlarmCode);
 					break;
 				} 
 				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_CARRIER_PLACE_POS];
 			}
 			else
 			{//910000 1 A "THERE_IS_NO_SITE_TO_GO_AT_PLACE_DVC_IN_RUN_LDPICKER."
-				CTL_Lib.Alarm_Error_Occurrence(1244, dWARNING, "910000");
+				CTL_Lib.Alarm_Error_Occurrence(1210, dWARNING, "910000");
 				break;
 			}
 
@@ -1336,7 +1529,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1245, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1211, dWARNING, alarm.mstr_code);
 				mn_Place_Step = 3000;
 			}		
 			break;
@@ -1353,7 +1546,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1212, dWARNING, alarm.mstr_code);
 				mn_Place_Step = 3000;
 			}		
 			break;
@@ -1404,7 +1597,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 					break;
 				}
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(1248, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1213, dWARNING, m_strAlarmCode);
 			} 
 			break; 
 
@@ -1428,7 +1621,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 					mn_Place_Step = 3420;
 					break;
 				}
-				CTL_Lib.Alarm_Error_Occurrence(1247, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1214, dWARNING, m_strAlarmCode);
 				mn_Place_Step = 3400;
 			}
 			break;
@@ -1437,14 +1630,50 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loader_Transfer_Clamp_Off_Check, IO_ON, st_wait.nOnWaitTime[WAIT_PICKER_CLAMP_ON_OFF], st_wait.nLimitWaitTime[WAIT_PICKER_CLAMP_ON_OFF]); 
 			if(nRet_1 == RET_GOOD) //감지가 안되도 안전화 시간까지는 기다리자 
 			{
-				mn_Place_Step = 4000;
+				if(nWork_Site == THD_LD_ALIGN_BUFF)
+					mn_Place_Step = 3500;
+				else
+					mn_Place_Step = 4000;
 			} 
 			else if(nRet_1 == RET_ERROR)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loader_Transfer_Clamp_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(1250, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1215, dWARNING, m_strAlarmCode);
 			} 
 			break; 
+
+			//align 에서 디바이스 체크
+// 			int i_loading_buffer_sff_tilt_chk;
+// 			int i_loading_buffer_tff_tilt_chk;
+		case 3500:
+			if( g_lotMgr.GetLotByLotID( m_strFindLotNo).GetDvcType() = "SFF" )
+			{
+				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_sff_tilt_chk, IO_ON);
+				if( nRet_1 == IO_OFF )
+				{
+					mn_Place_Step = 4000;
+				}
+				else
+				{
+					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_sff_tilt_chk); 
+					CTL_Lib.Alarm_Error_Occurrence(1255, dWARNING, m_strAlarmCode);
+				}
+			}
+			else
+			{
+				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_tff_tilt_chk, IO_ON);
+				if( nRet_1 == IO_OFF )
+				{
+					mn_Place_Step = 4000;
+				}
+				else
+				{					
+					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_tff_tilt_chk); 
+					CTL_Lib.Alarm_Error_Occurrence(1256, dWARNING, m_strAlarmCode);
+				}
+			}
+			break;
+		
 
 		////////////////////////////////////////////////////////////
 		//로보트를 안전 위치로 올린다 
@@ -1464,7 +1693,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-					CTL_Lib.Alarm_Error_Occurrence(1251, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(1216, dWARNING, alarm.mstr_code);
 					mn_Place_Step = 4000;	
 				}
 			}
@@ -1473,6 +1702,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_LASER_CHKPOS], COMI.mn_runspeed_rate);
 				if (nRet_1 == BD_GOOD) //좌측으로 이동
 				{
+					m_dwWaitUntil[0] = GetCurrentTime();
 					mn_Place_Step = 4010;
 				}
 				else if (nRet_1 == BD_RETRY)
@@ -1481,39 +1711,85 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				}
 				else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 				{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-					CTL_Lib.Alarm_Error_Occurrence(1251, dWARNING, alarm.mstr_code);
+					CTL_Lib.Alarm_Error_Occurrence(1217, dWARNING, alarm.mstr_code);
 					mn_Place_Step = 4000;	
 				}
 			}
 			else
 			{//910000 1 A "THERE_IS_NO_SITE_TO_GO_AT_PLACE_DVC_IN_RUN_LDPICKER."
-				CTL_Lib.Alarm_Error_Occurrence(1291, dWARNING, "910000");
+				CTL_Lib.Alarm_Error_Occurrence(1218, dWARNING, "910000");
 			}
 			break;
 
 			//carrirer buffer에서 디바이스 위치가 맞는치 체크힌다.
 		case 4010:
-			//nRet_1 = FAS_IO.Chk_IO_OnOff(st_io., IO_ON, IO_STABLE_WAIT, 1000);
-			nRet_1 = RET_GOOD;//
-			if(nRet_1 == RET_GOOD) //감지가 안되도 안전화 시간까지는 기다리자 
+			if( g_lotMgr.GetLotByLotID(m_strFindLotNo).GetDvcType() == "SFF" )
 			{
-				mn_Place_Step = 4020;
-			} 
-			else if(nRet_1 == RET_PROCEED)
-			{
-				break;
-			}
-			else if(nRet_1 == RET_ERROR)
-			{
-				if(st_basic.n_mode_device == WITHOUT_DVC)
+				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_1, IO_ON);
+				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_2, IO_ON);
+				nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_3, IO_ON);
+				nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_4, IO_ON);
+				if( nRet_1 == IO_OFF && nRet_2 == IO_OFF && nRet_3 == IO_OFF && nRet_4 == IO_OFF)
 				{
 					mn_Place_Step = 4020;
-					break;
 				}
-				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(1248, dWARNING, m_strAlarmCode);
-			} 
+				else
+				{
+					m_dwWaitUntil[1] = GetCurrentTime();
+					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
+					if( m_dwWaitUntil[2] <= 0 ) m_dwWaitUntil[0] = GetCurrentTime();
+					if( m_dwWaitUntil[2] < (2*IO_STABLE_WAIT)) break;
+					if	   ( nRet_1 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_1);
+					else if( nRet_2 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_2);
+					else if( nRet_3 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_3);
+					else /*if( nRet_4 != IO_ON )*/ m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_4);
+					//CTL_Lib.Alarm_Error_Occurrence(1281, dWARNING, m_strAlarmCode);
+					mn_Place_Step = 4015;
+				}
+			}
+			else if( g_lotMgr.GetLotByLotID(m_strFindLotNo).GetDvcType() == "TFF" )
+			{
+				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
+				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
+				nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
+				nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
+				if( nRet_1 == IO_OFF && nRet_2 == IO_OFF && nRet_3 == IO_OFF && nRet_4 == IO_OFF)
+				{
+					mn_Place_Step = 4020;
+				}
+				else
+				{
+					m_dwWaitUntil[1] = GetCurrentTime();
+					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
+					if( m_dwWaitUntil[2] <= 0 ) m_dwWaitUntil[0] = GetCurrentTime();
+					if( m_dwWaitUntil[2] < (2*IO_STABLE_WAIT)) break;
+					if	   ( nRet_1 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_1);
+					else if( nRet_2 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_1);
+					else if( nRet_3 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_1);
+					else/* if( nRet_4 != IO_ON )*/ m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_4);
+					//CTL_Lib.Alarm_Error_Occurrence(1282, dWARNING, m_strAlarmCode);
+					mn_Place_Step = 4015;
+				}
+			}
 			break; 
+
+		case 4015:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{ 			 
+				mn_Place_Step = 4000;
+				CTL_Lib.Alarm_Error_Occurrence(1282, dWARNING, m_strAlarmCode);
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_Place_Step = 4015;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(1299, dWARNING, alarm.mstr_code);
+				mn_Place_Step = 4015;
+			}		
+			break;
 
 		case 4020:
 			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
@@ -1523,12 +1799,12 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			}
 			else if (nRet_1 == BD_RETRY)
 			{
-				mn_Place_Step = 4000;
+				mn_Place_Step = 4020;
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1251, dWARNING, alarm.mstr_code);
-				mn_Place_Step = 4000;	
+				CTL_Lib.Alarm_Error_Occurrence(1220, dWARNING, alarm.mstr_code);
+				mn_Place_Step = 4020;	
 			}
 			break;
 
@@ -1548,7 +1824,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			
 		case 4200:
 			m_dCurrentPos[2] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[2] < st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벅어나 있으면 저위치 시킨다
+			if(m_dCurrentPos[2] < st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z]) //안전 위치를 벅어나 있으면 저위치 시킨다
 			{
 				mn_Place_Step = 5000;
 			}
@@ -1624,7 +1900,14 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 							m_npSet_WorkPosYXCPB[1] = m_npFindWorkPosYXCPB[1] + (i - m_n_FirstPicker_Num); //Y Pos 위치
 							m_npSet_WorkPosYXCPB[3]  = i; //picker 위치 정보
 
+							g_lotMgr.GetLotAt(m_nFindLotNo_Flag).AddInputCnt( PRIME );
+							st_picker[m_nRobotSite].st_pcb_info[i].nBinNum = g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetInputCnt( PRIME );
 							Func.Data_Exchange_PickPlace(PICKER_PLACE_MODE, 1, m_nRobotSite, nWork_Site, m_npSet_WorkPosYXCPB); //피커 및 트레이 정보 셋팅 함수
+
+							if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetInputCnt(PRIME) >= g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetTotLotCount() )
+							{
+								g_lotMgr.GetLotAt(m_nFindLotNo_Flag).SetLastModule("YES");
+							}
 						}
 						//2017.0109
 						clsLog.LogTransfer(_T("LOADING_ROBOT"),
@@ -1646,18 +1929,15 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				//화면 정보 갱신
 				m_bDvcWaitChk_Falg = false;
 
-				// jtkim 20150303 conveyor/loader tray 화면 표시
 				if (st_handler.cwnd_main != NULL)
 				{
-// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_PICKER_DISPLAY, 0);
-// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_BUF_PICK_DISPLAY, 0);
-// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_COUNT_DISPLAY, 0);
+					st_handler.cwnd_main->PostMessage(WM_WORK_END, MAIN_COUNTINFO, 0);
 				}
 				mn_Place_Step = 6000;
 			}
 			else if (nRet_1 == RET_ERROR) //셋팅한 피커중 한개라도 제대로 집지 못했으면 이곳으로 이동
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1255, dWARNING, Func.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1221, dWARNING, Func.m_strAlarmCode);
 			}
 			break;
 
@@ -1683,7 +1963,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
 				}
-				CTL_Lib.Alarm_Error_Occurrence(1256, dWARNING, Func.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1222, dWARNING, Func.m_strAlarmCode);
 			}
 			break; 
 
@@ -1702,7 +1982,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotNo)
 {
 	int nFuncRet = RET_PROCEED;
-	int i, nRet_1, nRet_2, nRet_3, nFlag = 0;
+	int i, nRet_1, nRet_2, nRet_3, nRet_4, nFlag = 0;
 
 	CString strMsg;
 	CString strLogKey[10];
@@ -1720,7 +2000,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 
 		case 100:
 			m_dCurrentPos[m_nRobot_Z] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[m_nRobot_Z] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벗어나 있으면 저위치 시킨다
+			if(m_dCurrentPos[m_nRobot_Z] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z]) //안전 위치를 벗어나 있으면 저위치 시킨다
 			{
 				mn_Pick_Step = 900;
 			}
@@ -1743,7 +2023,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1102, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1300, dWARNING, alarm.mstr_code);
 				mn_Pick_Step = 900;
 			}
 			break;
@@ -1753,7 +2033,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 		//////////////////////////////////////////////////////
 		case 1000:
 			m_dCurrentPos[m_nRobot_Z] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[m_nRobot_Z] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벗어나 있으면 저위치 시킨다
+			if(m_dCurrentPos[m_nRobot_Z] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z]) //안전 위치를 벗어나 있으면 저위치 시킨다
 			{
 				mn_Pick_Step = 900;
 				break;
@@ -1772,7 +2052,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 					clsLog.OnAddKeyAlarm(_T("IO"), _T("ERROR"), 3, strLogKey, strLogData);
 
 					m_strAlarmCode.Format(_T("900001")); //900000 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR" //kwlee 2016.0902 "900000" ->"900001"
-					CTL_Lib.Alarm_Error_Occurrence(1109, dWARNING, m_strAlarmCode);			
+					CTL_Lib.Alarm_Error_Occurrence(1301, dWARNING, m_strAlarmCode);			
 					break;
 				}  			 
 			}
@@ -1797,7 +2077,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 					m_dwWaitUntil[1] = GetCurrentTime();
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
-					CTL_Lib.Alarm_Error_Occurrence(1200, dWARNING, Func.m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(1302, dWARNING, Func.m_strAlarmCode);
 					m_bDvcWaitChk_Falg = false;
 					break;
 				}
@@ -1915,14 +2195,14 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1201, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1303, dWARNING, alarm.mstr_code);
 				mn_Pick_Step = 1500;
 			}
 			break;
 
 		case 2000:
 			m_dCurrentPos[2] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벅어나 있으면 저위치 시킨다
+			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z]) //안전 위치를 벅어나 있으면 저위치 시킨다
 			{
 				mn_Pick_Step = 1500;
 				break;
@@ -1936,7 +2216,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1203, dWARNING, Func.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1304, dWARNING, Func.m_strAlarmCode);
 				break;
 			}
 
@@ -1952,13 +2232,14 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1204, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1305, dWARNING, alarm.mstr_code);
 				mn_Pick_Step = 2000;
 			}
+			break;
 
 		case 2100:
 			m_dCurrentPos[2] = COMI.Get_MotCurrentPos(m_nRobot_Z);  // 모터 특정 축의 현재 위치 리턴 함수
-			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + st_motor[m_nRobot_Z].mn_allow) //안전 위치를 벅어나 있으면 저위치 시킨다
+			if(m_dCurrentPos[2] > st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z]) //안전 위치를 벅어나 있으면 저위치 시킨다
 			{
 				mn_Pick_Step = 900;
 				break;
@@ -1980,7 +2261,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if( nRet_1 == RET_ERROR )
 			{
-				CTL_Lib.Alarm_Error_Occurrence( 1208, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence( 1306, dWARNING, alarm.mstr_code);
 			}
 			break;
 
@@ -2026,7 +2307,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1210, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1307, dWARNING, alarm.mstr_code);
 				mn_Pick_Step = 3000;
 			}	
 
@@ -2044,7 +2325,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1211, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1308, dWARNING, alarm.mstr_code);
 				mn_Pick_Step = 3000;
 			}		
 			break;
@@ -2057,7 +2338,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1212, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1309, dWARNING, m_strAlarmCode);
 				mn_Pick_Step = 3000;
 			}
 			break;
@@ -2076,7 +2357,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if( nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1101, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1310, dWARNING, alarm.mstr_code);
 				mn_Pick_Step = 3200;
 			}
 			break;
@@ -2099,7 +2380,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 					}
 					m_nPickRetry_Cnt = 0;
 					//900200 0 0 "REMOVE DEVIC. INPUT DEVUCE IS MUCH MORE THAN PRODUCT QTY."
-					CTL_Lib.Alarm_Error_Occurrence(1250, dWARNING, _T("900200") );
+					CTL_Lib.Alarm_Error_Occurrence(1311, dWARNING, _T("900200") );
 				}
 			}
 			else if(nRet_1 == RET_PROCEED)
@@ -2121,7 +2402,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 				}
 				//800113 0 A "LOADER_TRANSFER_CLAMP_OFF_센서_OFF_CHECK_ERROR.
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loader_Transfer_Clamp_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(1214, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1312, dWARNING, m_strAlarmCode);
 			} 
 			break;
 
@@ -2168,7 +2449,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 				}
 
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(1215, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1313, dWARNING, m_strAlarmCode);
 			} 
 			break; 
 
@@ -2185,7 +2466,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			else if(nRet_1 == RET_ERROR)
 			{
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(1216, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1314, dWARNING, m_strAlarmCode);
 			} 
 			break;
 
@@ -2203,7 +2484,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1217, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1315, dWARNING, alarm.mstr_code);
 				mn_Pick_Step = 4000;
 			}		
 			break;
@@ -2213,7 +2494,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{ 
 				m_bDvcWaitChk_Falg = false;
-				mn_Pick_Step = 5000;
+				mn_Pick_Step = 4200;
 			}
 			else if (nRet_1 == BD_RETRY)
 			{
@@ -2221,20 +2502,70 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1218, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1316, dWARNING, alarm.mstr_code);
 				mn_Pick_Step = 4000;
 			}		
 			break;
 
+// 			st_io.i_loading_rbt_glipper_sff_missalign_chk_1 =	2400;
+// 			st_io.i_loading_rbt_glipper_sff_missalign_chk_2 =	2401;
+// 			st_io.i_loading_rbt_glipper_sff_missalign_chk_3 =	2402;
+// 			st_io.i_loading_rbt_glipper_sff_missalign_chk_4 =	2403;
+// 			
+// 			st_io.i_loading_rbt_glipper_tff_missalign_chk_1 =	2404;
+// 			st_io.i_loading_rbt_glipper_tff_missalign_chk_2 =	2405;
+// 			st_io.i_loading_rbt_glipper_tff_missalign_chk_3 =	2406;
+// 			st_io.i_loading_rbt_glipper_tff_missalign_chk_4 =	2407;
+		case 4200:
+			if( g_lotMgr.GetLotByLotID(m_strFindLotNo).GetDvcType() == "SFF" )
+			{
+				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_1, IO_ON);
+				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_2, IO_ON);
+				nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_3, IO_ON);
+				nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_4, IO_ON);
+				if( nRet_1 == IO_ON || nRet_2 == IO_ON || nRet_3 == IO_ON || nRet_4 == IO_ON)
+				{
+					mn_Pick_Step = 5000;
+				}
+				else
+				{
+					if	   ( nRet_1 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_1);
+					else if( nRet_2 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_2);
+					else if( nRet_3 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_3);
+					else /*if( nRet_4 != IO_ON )*/ m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_4);
+					CTL_Lib.Alarm_Error_Occurrence(1370, dWARNING, m_strAlarmCode);
+				}
+			}
+			else if( g_lotMgr.GetLotByLotID(m_strFindLotNo).GetDvcType() == "TFF" )
+			{
+				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
+				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
+				nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
+				nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
+				if( nRet_1 == IO_ON && nRet_2 == IO_ON && nRet_3 == IO_ON && nRet_4 == IO_ON)
+				{
+					mn_Pick_Step = 5000;
+				}
+				else
+				{
+					if	   ( nRet_1 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_1);
+					else if( nRet_2 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_1);
+					else if( nRet_3 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_1);
+					else/* if( nRet_4 != IO_ON )*/ m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_4);
+					CTL_Lib.Alarm_Error_Occurrence(1371, dWARNING, m_strAlarmCode);
+				}
+			}
+			break;
+
 		case 5000:
-			if( st_handler.bLoaderOnFlag == CTL_YES )
-			{
-				nRet_1 = Func.Check_PickerStatus(0, THD_LOAD_WORK_RBT, CTL_NO, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
-			}
-			else
-			{
+// 			if( st_handler.bLoaderOnFlag == CTL_YES )
+// 			{
+// 				nRet_1 = Func.Check_PickerStatus(0, THD_LOAD_WORK_RBT, CTL_NO, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
+// 			}
+// 			else
+// 			{
 				nRet_1 = Func.Check_PickerStatus(1, THD_LOAD_WORK_RBT, CTL_YES, m_npPicker_YesNo, m_npPicker_Vacuum_Status, m_npPicker_OutputStatus);
-			}
+// 			}
 
 			if (nRet_1 != RET_GOOD) //
 			{
@@ -2290,9 +2621,6 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 
 								Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, m_nRobotSite, nWorkSite, m_npSet_WorkPosYXCPB);
 
-
-								g_lotMgr.GetLotByLotID(strLotNo).AddInputCnt( PRIME );	
-
 								if ( strLotNo == st_picker[m_nRobotSite].st_pcb_info[i].strLotNo)//진행중인 Lot과 같으면
 								{
 									// 현재 또는 next lot 수량 증가
@@ -2334,12 +2662,9 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 
 				m_bDvcWaitChk_Falg = false;
 
-				// jtkim 20150216 conveyor/loader tray 화면 표시
 				if (st_handler.cwnd_main != NULL)
 				{
-// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_PICKER_DISPLAY, 0);
-// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_LD_TRAY_DISPLAY, 0);
-// 					st_handler.cwnd_main->PostMessage(WM_WORK_DISPLAY, MAIN_RETEST_BUF_DISPLAY, 0);
+					st_handler.cwnd_main->PostMessage(WM_WORK_END, MAIN_COUNTINFO, 0);
 				}
 
 				mn_Pick_Step = 6000;
@@ -2347,7 +2672,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			else if (nRet_1 == RET_ERROR) //셋팅한 피커중 한개라도 제대로 집지 못했으면 이곳으로 이동
 			{
 				m_nPickRetry_Cnt++;
-				CTL_Lib.Alarm_Error_Occurrence(1220, dWARNING, Func.m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(1317, dWARNING, Func.m_strAlarmCode);
 				//kwlee 2017.0214
 				//mn_Pick_Step = 0;
 			}
@@ -2373,7 +2698,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 					m_dwWaitUntil[1] = GetCurrentTime();
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
-					CTL_Lib.Alarm_Error_Occurrence(1221, dWARNING, Func.m_strAlarmCode);
+					CTL_Lib.Alarm_Error_Occurrence(1318, dWARNING, Func.m_strAlarmCode);
 				}
 			}
 			break;
@@ -2402,7 +2727,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1201, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1319, dWARNING, alarm.mstr_code);
 				mn_Pick_Step = 6200;
 			}
 			break;
@@ -2420,7 +2745,7 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-				CTL_Lib.Alarm_Error_Occurrence(1201, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(1320, dWARNING, alarm.mstr_code);
 				mn_Pick_Step = 6200;
 			}
 			break;
@@ -2474,12 +2799,14 @@ int CRun_LdPicker::Chk_Loader_Buffer_Align_OnOff( int OnOff )
 
 	if (OnOff == IO_OFF)
 	{
-		if (m_bClampOnOffFlag == false )//&&	g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_OFF)	== IO_OFF )
+		if (m_bClampOnOffFlag == false && g_ioMgr.get_in_bit(st_io.i_Loader_Align_Forward_Check, IO_OFF) == IO_OFF &&
+			g_ioMgr.get_in_bit(st_io.i_Loader_Align_Backward_Check, IO_ON) == IO_ON )
 		{
 			m_bClampOnOffFlag		= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true)// &&	 g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk, IO_OFF) == IO_OFF )
+		else if (m_bClampOnOffFlag == true && g_ioMgr.get_in_bit(st_io.i_Loader_Align_Forward_Check, IO_OFF) == IO_OFF &&
+			g_ioMgr.get_in_bit(st_io.i_Loader_Align_Backward_Check, IO_ON) == IO_ON )
 		{
 			m_dwClampOnOff[1] = GetCurrentTime();
 			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
@@ -2517,12 +2844,14 @@ int CRun_LdPicker::Chk_Loader_Buffer_Align_OnOff( int OnOff )
 	}
 	else
 	{
-		if (m_bClampOnOffFlag == false)// &&	g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_ON)	== IO_ON )
+		if (m_bClampOnOffFlag == false && g_ioMgr.get_in_bit(st_io.i_Loader_Align_Forward_Check, IO_ON)	== IO_ON &&
+			g_ioMgr.get_in_bit(st_io.i_Loader_Align_Backward_Check, IO_OFF)	== IO_OFF )
 		{
 			m_bClampOnOffFlag			= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true) //&&		 g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk, IO_ON)	== IO_ON )
+		else if (m_bClampOnOffFlag == true && g_ioMgr.get_in_bit(st_io.i_Loader_Align_Forward_Check, IO_ON)	== IO_ON &&
+				 g_ioMgr.get_in_bit(st_io.i_Loader_Align_Backward_Check, IO_OFF) == IO_OFF )
 		{
 			m_dwClampOnOff[1]	= GetCurrentTime();
 			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];

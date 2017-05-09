@@ -123,114 +123,230 @@ void CMyBasicData::OnMotorSpeed_Set_Data_Load()
 
 	CString str_msg, str_LoadFile;       // 임시 저장 변수
 	
-	str_LoadFile = OnGet_Teach_File_Name("Speed");  // 데이터 저장 파일명 로딩 함수 
-	
-	for ( i = 0; i < M_MOTOR_COUNT; i++ )		// 새로운 Allow용 2K14/11/04/ViboX
+	if( st_basic.n_file_save == CTL_NO)
 	{
-		str_part.Format("[%d]", i);
+
+		str_LoadFile = OnGet_Teach_File_Name("Speed");  // 데이터 저장 파일명 로딩 함수 
+		
+		for ( i = 0; i < M_MOTOR_COUNT; i++ )		// 새로운 Allow용 2K14/11/04/ViboX
+		{
+			str_part.Format("[%d]", i);
 
 
-		:: GetPrivateProfileString("MotorSpeed", "Acc" + str_part, "0", chr_data, 10, st_path.mstr_basic);
-		d_chk = atof(chr_data);
-		
-		if ( d_chk <= 0 )
-		{
-			COMI.md_spd_vel[i][1] = 300;
-			str_temp.Format( "%3.2f", COMI.md_spd_vel[i][1] );
-			:: WritePrivateProfileString("MotorSpeed", "Acc" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
-		}
-		else
-			COMI.md_spd_vel[i][1] = d_chk;
+			:: GetPrivateProfileString("MotorSpeed", "Acc" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_spd_vel[i][1] = 300;
+				str_temp.Format( "%3.2f", COMI.md_spd_vel[i][1] );
+				:: WritePrivateProfileString("MotorSpeed", "Acc" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_spd_vel[i][1] = d_chk;
 
 
-		:: GetPrivateProfileString("MotorSpeed", "Dec" + str_part, "0", chr_data, 10, st_path.mstr_basic);
-		d_chk = atof(chr_data);
-		
-		if ( d_chk <= 0 )
-		{
-			COMI.md_spd_vel[i][2] = 300;
-			str_temp.Format( "%3.2f", COMI.md_spd_vel[i][2] );
-			:: WritePrivateProfileString("MotorSpeed", "Dec" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
-		}
-		else
-			COMI.md_spd_vel[i][2] = d_chk;
+			:: GetPrivateProfileString("MotorSpeed", "Dec" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_spd_vel[i][2] = 300;
+				str_temp.Format( "%3.2f", COMI.md_spd_vel[i][2] );
+				:: WritePrivateProfileString("MotorSpeed", "Dec" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_spd_vel[i][2] = d_chk;
 
 
-		:: GetPrivateProfileString("MotorSpeed", "Vel" + str_part, "0", chr_data, 10, st_path.mstr_basic);
-		d_chk = atof(chr_data);
-		
-		if ( d_chk <= 0 )
-		{
-			COMI.md_spd_vel[i][0] = 50;
-			str_temp.Format( "%3.2f", COMI.md_spd_vel[i][0] );
-			:: WritePrivateProfileString("MotorSpeed", "Vel" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
-		}
-		else
-			COMI.md_spd_vel[i][0] = d_chk;
+			:: GetPrivateProfileString("MotorSpeed", "Vel" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_spd_vel[i][0] = 50;
+				str_temp.Format( "%3.2f", COMI.md_spd_vel[i][0] );
+				:: WritePrivateProfileString("MotorSpeed", "Vel" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_spd_vel[i][0] = d_chk;
 
 
-		:: GetPrivateProfileString("MotorSpeed", "Home" + str_part, "0", chr_data, 10, st_path.mstr_basic);
-		d_chk = atof(chr_data);
-		
-		if ( d_chk <= 0 )
-		{
-			COMI.md_spd_home[i] = 10;
-			str_temp.Format( "%3.2f", COMI.md_allow_value[i] );
-			:: WritePrivateProfileString("MotorSpeed", "Home" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			:: GetPrivateProfileString("MotorSpeed", "Home" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_spd_home[i] = 10;
+				str_temp.Format( "%3.2f", COMI.md_allow_value[i] );
+				:: WritePrivateProfileString("MotorSpeed", "Home" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_spd_home[i] = d_chk;
+			
+			
+			:: GetPrivateProfileString("MotorSpeed", "Jog" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_spd_jog[i] = 0.1;
+				str_temp.Format( "%3.2f", COMI.md_allow_value[i] );
+				:: WritePrivateProfileString("MotorSpeed", "Jog" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_spd_jog[i] = d_chk;
+			
+			
+			:: GetPrivateProfileString("MotorSpeed", "Allow" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_allow_value[i] = 0.1;
+				str_temp.Format( "%3.2f", COMI.md_allow_value[i] );
+				:: WritePrivateProfileString("MotorSpeed", "Allow" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_allow_value[i] = d_chk;
+			
+			:: GetPrivateProfileString("MotorSpeed", "M_LIMIT" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_limit_position[i][0] = 0.1;
+				str_temp.Format( "%3.2f", COMI.md_limit_position[i][0] );
+				:: WritePrivateProfileString("MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_limit_position[i][0] = d_chk;
+			
+			:: GetPrivateProfileString("MotorSpeed", "P_LIMIT" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_limit_position[i][1] = 0.1;
+				str_temp.Format( "%3.2f", COMI.md_limit_position[i][1] );
+				:: WritePrivateProfileString("MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_limit_position[i][1] = d_chk;
+			
 		}
-		else
-			COMI.md_spd_home[i] = d_chk;
-		
-		
-		:: GetPrivateProfileString("MotorSpeed", "Jog" + str_part, "0", chr_data, 10, st_path.mstr_basic);
-		d_chk = atof(chr_data);
-		
-		if ( d_chk <= 0 )
+	}
+
+	//2016.0327
+	if( st_basic.n_file_save == CTL_YES)
+	{
+		for ( i = 0; i < M_MOTOR_COUNT; i++ )		// 새로운 Allow용 2K14/11/04/ViboX
 		{
-			COMI.md_spd_jog[i] = 0.1;
-			str_temp.Format( "%3.2f", COMI.md_allow_value[i] );
-			:: WritePrivateProfileString("MotorSpeed", "Jog" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+
+			str_part.Format("[%d]", i);
+
+
+			:: GetPrivateProfileString("MotorSpeed", "Acc" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_spd_vel[i][1] = 300;
+				str_temp.Format( "%3.2f", COMI.md_spd_vel[i][1] );
+				:: WritePrivateProfileString("MotorSpeed", "Acc" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_spd_vel[i][1] = d_chk;
+
+
+			:: GetPrivateProfileString("MotorSpeed", "Dec" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_spd_vel[i][2] = 300;
+				str_temp.Format( "%3.2f", COMI.md_spd_vel[i][2] );
+				:: WritePrivateProfileString("MotorSpeed", "Dec" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_spd_vel[i][2] = d_chk;
+
+
+			:: GetPrivateProfileString("MotorSpeed", "Vel" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_spd_vel[i][0] = 50;
+				str_temp.Format( "%3.2f", COMI.md_spd_vel[i][0] );
+				:: WritePrivateProfileString("MotorSpeed", "Vel" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_spd_vel[i][0] = d_chk;
+
+
+			:: GetPrivateProfileString("MotorSpeed", "Home" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_spd_home[i] = 10;
+				str_temp.Format( "%3.2f", COMI.md_allow_value[i] );
+				:: WritePrivateProfileString("MotorSpeed", "Home" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_spd_home[i] = d_chk;
+			
+			
+			:: GetPrivateProfileString("MotorSpeed", "Jog" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_spd_jog[i] = 0.1;
+				str_temp.Format( "%3.2f", COMI.md_allow_value[i] );
+				:: WritePrivateProfileString("MotorSpeed", "Jog" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_spd_jog[i] = d_chk;
+			
+			
+			:: GetPrivateProfileString("MotorSpeed", "Allow" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_allow_value[i] = 0.1;
+				str_temp.Format( "%3.2f", COMI.md_allow_value[i] );
+				:: WritePrivateProfileString("MotorSpeed", "Allow" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_allow_value[i] = d_chk;
+			
+			:: GetPrivateProfileString("MotorSpeed", "M_LIMIT" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_limit_position[i][0] = 0.1;
+				str_temp.Format( "%3.2f", COMI.md_limit_position[i][0] );
+				:: WritePrivateProfileString("MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_limit_position[i][0] = d_chk;
+			
+			:: GetPrivateProfileString("MotorSpeed", "P_LIMIT" + str_part, "0", chr_data, 10, st_path.mstr_basic);
+			d_chk = atof(chr_data);
+			
+			if ( d_chk <= 0 )
+			{
+				COMI.md_limit_position[i][1] = 0.1;
+				str_temp.Format( "%3.2f", COMI.md_limit_position[i][1] );
+				:: WritePrivateProfileString("MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
+			}
+			else
+				COMI.md_limit_position[i][1] = d_chk;
 		}
-		else
-			COMI.md_spd_jog[i] = d_chk;
-		
-		
-		:: GetPrivateProfileString("MotorSpeed", "Allow" + str_part, "0", chr_data, 10, st_path.mstr_basic);
-		d_chk = atof(chr_data);
-		
-		if ( d_chk <= 0 )
-		{
-			COMI.md_allow_value[i] = 0.1;
-			str_temp.Format( "%3.2f", COMI.md_allow_value[i] );
-			:: WritePrivateProfileString("MotorSpeed", "Allow" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
-		}
-		else
-			COMI.md_allow_value[i] = d_chk;
-		
-		:: GetPrivateProfileString("MotorSpeed", "M_LIMIT" + str_part, "0", chr_data, 10, st_path.mstr_basic);
-		d_chk = atof(chr_data);
-		
-		if ( d_chk <= 0 )
-		{
-			COMI.md_limit_position[i][0] = 0.1;
-			str_temp.Format( "%3.2f", COMI.md_limit_position[i][0] );
-			:: WritePrivateProfileString("MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
-		}
-		else
-			COMI.md_limit_position[i][0] = d_chk;
-		
-		:: GetPrivateProfileString("MotorSpeed", "P_LIMIT" + str_part, "0", chr_data, 10, st_path.mstr_basic);
-		d_chk = atof(chr_data);
-		
-		if ( d_chk <= 0 )
-		{
-			COMI.md_limit_position[i][1] = 0.1;
-			str_temp.Format( "%3.2f", COMI.md_limit_position[i][1] );
-			:: WritePrivateProfileString("MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic);
-		}
-		else
-			COMI.md_limit_position[i][1] = d_chk;
-		
 	}
 
 	//Speed Rate
@@ -254,68 +370,104 @@ void CMyBasicData::OnMotorSpeed_Set_Data_Save()
 	
 	CString str_SaveFile;			// 임시 저장 변수
 	
-	str_SaveFile = OnGet_Teach_File_Name( "Speed" );  // 데이터 저장 파일명 로딩 함수 
-	
-	for (i = 0; i < M_MOTOR_COUNT; i++)
+	if(st_basic.n_file_save == CTL_NO)
 	{
-		str_part.Format("[%d]", i);
-		str_temp.Format("%3.2f", COMI.md_spd_vel[i][1] );
-		:: WritePrivateProfileString( "MotorSpeed", "Acc" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
 
-		str_temp.Format("%3.2f", COMI.md_spd_vel[i][2] );
-		:: WritePrivateProfileString( "MotorSpeed", "Dec" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
-
-		str_temp.Format("%3.2f", COMI.md_spd_vel[i][0] );
-		:: WritePrivateProfileString( "MotorSpeed", "Vel" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
-
-		str_temp.Format("%3.2f", COMI.md_spd_home[i] );
-		:: WritePrivateProfileString( "MotorSpeed", "Home" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
-
-		str_temp.Format("%3.2f", COMI.md_spd_jog[i] );
-		:: WritePrivateProfileString( "MotorSpeed", "Jog" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
-
-		str_temp.Format("%3.2f", COMI.md_allow_value[i] );
-		:: WritePrivateProfileString( "MotorSpeed", "Allow" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
-
-		str_temp.Format("%3.2f", COMI.md_limit_position[i][0] );
-		:: WritePrivateProfileString( "MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+		str_SaveFile = OnGet_Teach_File_Name( "Speed" );  // 데이터 저장 파일명 로딩 함수 
 		
-		str_temp.Format("%3.2f", COMI.md_limit_position[i][1] );
-		:: WritePrivateProfileString( "MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+		for (i = 0; i < M_MOTOR_COUNT; i++)
+		{
+			str_part.Format("[%d]", i);
+			str_temp.Format("%3.2f", COMI.md_spd_vel[i][1] );
+			:: WritePrivateProfileString( "MotorSpeed", "Acc" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+			str_temp.Format("%3.2f", COMI.md_spd_vel[i][2] );
+			:: WritePrivateProfileString( "MotorSpeed", "Dec" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+			str_temp.Format("%3.2f", COMI.md_spd_vel[i][0] );
+			:: WritePrivateProfileString( "MotorSpeed", "Vel" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+			str_temp.Format("%3.2f", COMI.md_spd_home[i] );
+			:: WritePrivateProfileString( "MotorSpeed", "Home" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+			str_temp.Format("%3.2f", COMI.md_spd_jog[i] );
+			:: WritePrivateProfileString( "MotorSpeed", "Jog" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+			str_temp.Format("%3.2f", COMI.md_allow_value[i] );
+			:: WritePrivateProfileString( "MotorSpeed", "Allow" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+			str_temp.Format("%3.2f", COMI.md_limit_position[i][0] );
+			:: WritePrivateProfileString( "MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+			
+			str_temp.Format("%3.2f", COMI.md_limit_position[i][1] );
+			:: WritePrivateProfileString( "MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+		}
+		
+		str_SaveFile = OnGet_Teach_File_Name("Speed_Back" );  // 데이터 저장 파일명 로딩 함수 
+		
+		for (i = 0; i < M_MOTOR_COUNT; i++)
+		{
+			str_part.Format("[%d]", i);
+			
+			str_temp.Format("%3.2f", COMI.md_spd_vel[i][1] );
+			:: WritePrivateProfileString( "MotorSpeed", "Acc" + str_part, LPCTSTR(str_temp), str_SaveFile );
+			
+			str_temp.Format("%3.2f", COMI.md_spd_vel[i][2] );
+			:: WritePrivateProfileString( "MotorSpeed", "Dec" + str_part, LPCTSTR(str_temp), str_SaveFile );
+			
+			str_temp.Format("%3.2f", COMI.md_spd_vel[i][0] );
+			:: WritePrivateProfileString( "MotorSpeed", "Vel" + str_part, LPCTSTR(str_temp), str_SaveFile );
+			
+			str_temp.Format("%3.2f", COMI.md_spd_home[i] );
+			:: WritePrivateProfileString( "MotorSpeed", "Home" + str_part, LPCTSTR(str_temp), str_SaveFile );
+			
+			str_temp.Format("%3.2f", COMI.md_spd_jog[i] );
+			:: WritePrivateProfileString( "MotorSpeed", "Jog" + str_part, LPCTSTR(str_temp), str_SaveFile );
+			
+			str_temp.Format("%3.2f", COMI.md_allow_value[i] );
+			:: WritePrivateProfileString( "MotorSpeed", "Allow" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+			str_temp.Format("%3.2f", COMI.md_limit_position[i][0] );
+			:: WritePrivateProfileString( "MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+			
+			str_temp.Format("%3.2f", COMI.md_limit_position[i][1] );
+			:: WritePrivateProfileString( "MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+		}
 	}
-	
-	str_SaveFile = OnGet_Teach_File_Name("Speed_Back" );  // 데이터 저장 파일명 로딩 함수 
-	
-	for (i = 0; i < M_MOTOR_COUNT; i++)
+
+	if(st_basic.n_file_save == CTL_YES)
 	{
-		str_part.Format("[%d]", i);
-		
-		str_temp.Format("%3.2f", COMI.md_spd_vel[i][1] );
-		:: WritePrivateProfileString( "MotorSpeed", "Acc" + str_part, LPCTSTR(str_temp), str_SaveFile );
-		
-		str_temp.Format("%3.2f", COMI.md_spd_vel[i][2] );
-		:: WritePrivateProfileString( "MotorSpeed", "Dec" + str_part, LPCTSTR(str_temp), str_SaveFile );
-		
-		str_temp.Format("%3.2f", COMI.md_spd_vel[i][0] );
-		:: WritePrivateProfileString( "MotorSpeed", "Vel" + str_part, LPCTSTR(str_temp), str_SaveFile );
-		
-		str_temp.Format("%3.2f", COMI.md_spd_home[i] );
-		:: WritePrivateProfileString( "MotorSpeed", "Home" + str_part, LPCTSTR(str_temp), str_SaveFile );
-		
-		str_temp.Format("%3.2f", COMI.md_spd_jog[i] );
-		:: WritePrivateProfileString( "MotorSpeed", "Jog" + str_part, LPCTSTR(str_temp), str_SaveFile );
-		
-		str_temp.Format("%3.2f", COMI.md_allow_value[i] );
-		:: WritePrivateProfileString( "MotorSpeed", "Allow" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+		for( i = 0; i < M_MOTOR_COUNT; i++ )
+		{//double md_spd_vel[BD_MAX_MOTOR][3]; 		//[0]:VEL, [1]:accel,[2]:deceel
+			str_part.Format("[%d]", i);
+			str_temp.Format("%3.2f", COMI.md_spd_vel[i][1] );
+			:: WritePrivateProfileString( "MotorSpeed", "Acc" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
 
-		str_temp.Format("%3.2f", COMI.md_limit_position[i][0] );
-		:: WritePrivateProfileString( "MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
-		
-		str_temp.Format("%3.2f", COMI.md_limit_position[i][1] );
-		:: WritePrivateProfileString( "MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+			str_temp.Format("%3.2f", COMI.md_spd_vel[i][2] );
+			:: WritePrivateProfileString( "MotorSpeed", "Dec" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
 
+			str_temp.Format("%3.2f", COMI.md_spd_vel[i][0] );
+			:: WritePrivateProfileString( "MotorSpeed", "Vel" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+			str_temp.Format("%3.2f", COMI.md_spd_home[i] );
+			:: WritePrivateProfileString( "MotorSpeed", "Home" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+			str_temp.Format("%3.2f", COMI.md_spd_jog[i] );
+			:: WritePrivateProfileString( "MotorSpeed", "Jog" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+
+			str_temp.Format("%3.2f", COMI.md_allow_value[i] );
+			:: WritePrivateProfileString( "MotorSpeed", "Allow" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+			
+			str_temp.Format("%3.2f", COMI.md_limit_position[i][0] );
+			:: WritePrivateProfileString( "MotorSpeed", "M_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+			
+			str_temp.Format("%3.2f", COMI.md_limit_position[i][1] );
+			:: WritePrivateProfileString( "MotorSpeed", "P_LIMIT" + str_part, LPCTSTR(str_temp), st_path.mstr_basic );
+		}
+		
 	}
-	
+
 	// Speed Rate
 	str_temp = LPCTSTR(_itoa((int)(COMI.mn_runspeed_rate), chr_buf, 10));
 	:: WritePrivateProfileString("Speed_Rate", "Run", LPCTSTR(str_temp), st_path.mstr_basic);
@@ -337,45 +489,95 @@ void CMyBasicData::OnWaitTime_Data_Load()
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 기존 DAT -> TXT로 바꾸기 위한 저장용.
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-	str_LoadFile = OnGet_Teach_File_Name( "Time" );  // 데이터 저장 파일명 로딩 함수 
-	
-	for (i = 0; i < MAX_WAIT_TIME_NUM; i++)
+
+	if( st_basic.n_file_save == CTL_NO)
 	{
-		strPos.Format("%02d_Off", i);
-		:: GetPrivateProfileString( "Wait Time", strPos, "-1", chr_data, 20, str_LoadFile );
-		n_chk = atoi(chr_data);
-		if ( n_chk <= 0 )
-		{
-			st_time.m_iWaitTime[i][0] = 100;
-			str_temp.Format("%d", st_time.m_iWaitTime[i][0] );
-			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_LoadFile );
-		}
-		else
-			st_time.m_iWaitTime[i][0] = n_chk;
+
+		str_LoadFile = OnGet_Teach_File_Name( "Time" );  // 데이터 저장 파일명 로딩 함수 
 		
-		strPos.Format("%02d_On", i);
-		:: GetPrivateProfileString( "Wait Time", strPos, "-1", chr_data, 20, str_LoadFile );
-		n_chk = atoi(chr_data);
-		if ( n_chk <= 0 )
+		for (i = 0; i < MAX_WAIT_TIME_NUM; i++)
 		{
-			st_time.m_iWaitTime[i][1] = 100;
-			str_temp.Format("%d", st_time.m_iWaitTime[i][1] );
-			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_LoadFile );
+			strPos.Format("%02d_Off", i);
+			:: GetPrivateProfileString( "Wait Time", strPos, "-1", chr_data, 20, str_LoadFile );
+			n_chk = atoi(chr_data);
+			if ( n_chk <= 0 )
+			{
+				st_wait.nOffWaitTime[i] = 100;
+				str_temp.Format("%d", st_wait.nOffWaitTime[i] );
+				:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_LoadFile );
+			}
+			else
+				st_wait.nOffWaitTime[i] = n_chk;
+			
+			strPos.Format("%02d_On", i);
+			:: GetPrivateProfileString( "Wait Time", strPos, "-1", chr_data, 20, str_LoadFile );
+			n_chk = atoi(chr_data);
+			if ( n_chk <= 0 )
+			{
+				st_wait.nOnWaitTime[i] = 100;
+				str_temp.Format("%d", st_wait.nOnWaitTime[i] );
+				:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_LoadFile );
+			}
+			else
+				st_wait.nOnWaitTime[i] = n_chk;
+			
+			strPos.Format("%02d_Limit", i);
+			:: GetPrivateProfileString( "Wait Time", strPos, "-1", chr_data, 20, str_LoadFile );
+			n_chk = atoi(chr_data);
+			if ( n_chk <= 0 )
+			{
+				st_wait.nLimitWaitTime[i] = 2000;
+				str_temp.Format("%d", st_wait.nLimitWaitTime[i] );
+				:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_LoadFile );
+			}
+			else
+				st_wait.nLimitWaitTime[i] = n_chk;
 		}
-		else
-			st_time.m_iWaitTime[i][1] = n_chk;
-		
-		strPos.Format("%02d_Limit", i);
-		:: GetPrivateProfileString( "Wait Time", strPos, "-1", chr_data, 20, str_LoadFile );
-		n_chk = atoi(chr_data);
-		if ( n_chk <= 0 )
+	}
+
+	if( st_basic.n_file_save == CTL_YES)
+	{
+
+		for (i = 0; i < MAX_WAIT_TIME_NUM; i++)
 		{
-			st_time.m_iLimitTime[i] = 2000;
-			str_temp.Format("%d", st_time.m_iLimitTime[i] );
-			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_LoadFile );
+
+			strPos.Format("%02d_Off", i);
+			:: GetPrivateProfileString( "Wait Time", strPos, "-1", chr_data, 20, st_path.mstr_basic );
+			n_chk = atoi(chr_data);
+			if ( n_chk <= 0 )
+			{
+				st_wait.nOffWaitTime[i] = 100;
+				str_temp.Format("%d", st_wait.nOffWaitTime[i] );
+				:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), st_path.mstr_basic );
+			}
+			else
+				st_wait.nOffWaitTime[i] = n_chk;
+			
+			strPos.Format("%02d_On", i);
+			:: GetPrivateProfileString( "Wait Time", strPos, "-1", chr_data, 20, st_path.mstr_basic );
+			n_chk = atoi(chr_data);
+			if ( n_chk <= 0 )
+			{
+				st_wait.nOnWaitTime[i] = 100;
+				str_temp.Format("%d", st_wait.nOnWaitTime[i] );
+				:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), st_path.mstr_basic );
+			}
+			else
+				st_wait.nOnWaitTime[i] = n_chk;
+			
+			strPos.Format("%02d_Limit", i);
+			:: GetPrivateProfileString( "Wait Time", strPos, "-1", chr_data, 20, st_path.mstr_basic );
+			n_chk = atoi(chr_data);
+			if ( n_chk <= 0 )
+			{
+				st_wait.nLimitWaitTime[i] = 2000;
+				str_temp.Format("%d", st_wait.nLimitWaitTime[i] );
+				:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), st_path.mstr_basic );
+			}
+			else
+				st_wait.nLimitWaitTime[i] = n_chk;
+			
 		}
-		else
-			st_time.m_iLimitTime[i] = n_chk;
 	}
 }
 
@@ -392,56 +594,87 @@ void CMyBasicData::OnWaitTime_Data_Save()
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 기존 DAT -> TXT로 바꾸기 위한 저장용.
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-	str_SaveFile = OnGet_Teach_File_Name( "Time" );  // 데이터 저장 파일명 로딩 함수 
-	
-	for (i = 0; i < MAX_WAIT_TIME_NUM; i++)
+	if( st_basic.n_file_save == CTL_NO)
 	{
-		strPos.Format("%02d_Off", i);
-		if( st_time.m_iWaitTime[i][0] < 0 )
-			str_temp.Format("%d", 300 );
-		else
-			str_temp.Format("%d", (st_time.m_iWaitTime[i][0]) );
-		:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
+
+		str_SaveFile = OnGet_Teach_File_Name( "Time" );  // 데이터 저장 파일명 로딩 함수 
 		
-		strPos.Format("%02d_On", i);
-		if( st_time.m_iWaitTime[i][1] < 0 )
-			str_temp.Format("%d", 300 );
-		else
-			str_temp.Format("%d", (st_time.m_iWaitTime[i][1]) );
-		:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
+		for (i = 0; i < MAX_WAIT_TIME_NUM; i++)
+		{
+			strPos.Format("%02d_Off", i);
+			if( st_wait.nOffWaitTime[i] < 0 )
+				str_temp.Format("%d", 300 );
+			else
+				str_temp.Format("%d", st_wait.nOffWaitTime[i] );
+			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
+			
+			strPos.Format("%02d_On", i);
+			if( st_wait.nOnWaitTime[i] < 0 )
+				str_temp.Format("%d", 300 );
+			else
+				str_temp.Format("%d", st_wait.nOnWaitTime[i] );
+			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
+			
+			strPos.Format("%02d_Limit", i);
+			if( st_wait.nLimitWaitTime[i] < 0 )
+				str_temp.Format("%d", 2000 );
+			else
+				str_temp.Format("%d", st_wait.nLimitWaitTime[i] );
+			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
+		}
 		
-		strPos.Format("%02d_Limit", i);
-		if( st_time.m_iLimitTime[i] < 0 )
-			str_temp.Format("%d", 2000 );
-		else
-			str_temp.Format("%d", (st_time.m_iLimitTime[i]) );
-		:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
+		str_SaveFile = OnGet_Teach_File_Name( "Time_Back" );  // 데이터 저장 파일명 로딩 함수 
+		
+		for (i = 0; i < MAX_WAIT_TIME_NUM; i++)
+		{
+			strPos.Format("%02d_Off", i);
+			if( st_wait.nOffWaitTime[i] < 0 )
+				str_temp.Format("%d", 300 );
+			else
+				str_temp.Format("%d", st_wait.nOffWaitTime[i] );
+			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
+			
+			strPos.Format("%02d_On", i);
+			if( st_wait.nOnWaitTime[i] < 0 )
+				str_temp.Format("%d", 300 );
+			else
+				str_temp.Format("%d", st_wait.nOnWaitTime[i] );
+			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
+			
+			strPos.Format("%02d_Limit", i);
+			if( st_wait.nOnWaitTime[i] < 0 )
+				str_temp.Format("%d", 2000 );
+			else
+				str_temp.Format("%d", st_wait.nOnWaitTime[i] );
+			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
+		}
 	}
-	
-	str_SaveFile = OnGet_Teach_File_Name( "Time_Back" );  // 데이터 저장 파일명 로딩 함수 
-	
-	for (i = 0; i < MAX_WAIT_TIME_NUM; i++)
+
+	if(st_basic.n_file_save == CTL_YES)
 	{
-		strPos.Format("%02d_Off", i);
-		if( st_time.m_iWaitTime[i][0] < 0 )
-			str_temp.Format("%d", 300 );
-		else
-			str_temp.Format("%d", (st_time.m_iWaitTime[i][0]) );
-		:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
-		
-		strPos.Format("%02d_On", i);
-		if( st_time.m_iWaitTime[i][1] < 0 )
-			str_temp.Format("%d", 300 );
-		else
-			str_temp.Format("%d", (st_time.m_iWaitTime[i][1]) );
-		:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
-		
-		strPos.Format("%02d_Limit", i);
-		if( st_time.m_iLimitTime[i] < 0 )
-			str_temp.Format("%d", 2000 );
-		else
-			str_temp.Format("%d", (st_time.m_iLimitTime[i]) );
-		:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), str_SaveFile );
+		for (i = 0; i < MAX_WAIT_TIME_NUM; i++)
+		{
+			strPos.Format("%02d_Off", i);
+			if( st_wait.nOffWaitTime[i] < 0 )
+				str_temp.Format("%d", 300 );
+			else
+				str_temp.Format("%d", st_wait.nOffWaitTime[i] );
+			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), st_path.mstr_basic );
+			
+			strPos.Format("%02d_On", i);
+			if( st_wait.nOnWaitTime[i] < 0 )
+				str_temp.Format("%d", 300 );
+			else
+				str_temp.Format("%d", st_wait.nOnWaitTime[i] );
+			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), st_path.mstr_basic );
+			
+			strPos.Format("%02d_Limit", i);
+			if( st_wait.nLimitWaitTime[i] < 0 )
+				str_temp.Format("%d", 2000 );
+			else
+				str_temp.Format("%d", st_wait.nLimitWaitTime[i] );
+			:: WritePrivateProfileString( "Wait Time", strPos, LPCTSTR(str_temp), st_path.mstr_basic );
+		}		
 	}
 }
 
@@ -981,87 +1214,178 @@ void CMyBasicData::OnMaintenance_Data_Save()
 
 void CMyBasicData::On_Teach_Data_Save()
 {
-	CString str_temp, str_SaveFile;			// 임시 저장 변수
-	int i = 0, j = 0;
+	CString str_temp, str_SaveFile,str_load_file, str_motor_name, str_chk_ext,str_pos;			// 임시 저장 변수
+	int i = 0, j = 0, k =0, n_pos = 0;
 	
-	str_SaveFile = OnGet_Teach_File_Name("Teach");		// 데이터 저장 파일명 로딩 함수 
-	
-	int   err = 0;
+// 	str_SaveFile = OnGet_Teach_File_Name("Teach");		// 데이터 저장 파일명 로딩 함수 
+//	int   err = 0;
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 기존 DAT -> TXT로 바꾸기 위한 저장용.
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	CString strMotor = "", strPos = "";
 	
-	str_SaveFile = OnGet_Teach_File_Name( "Teach" );  // 데이터 저장 파일명 로딩 함수 
-	
-	for (i = 0; i < M_MOTOR_COUNT; i++)
+
+	if(st_basic.n_file_save == CTL_NO)
 	{
-		strMotor.Format("%02d_Motor", i);
+
+		str_SaveFile = OnGet_Teach_File_Name( "Teach" );  // 데이터 저장 파일명 로딩 함수 
 		
-		for ( j = 0; j < M_MAX_POS; j++ )
+		for (i = 0; i < M_MOTOR_COUNT; i++)
 		{
-			strPos.Format("%02d_Pos", j);
+			strMotor.Format("%02d_Motor", i);
 			
-			str_temp.Format("%f", st_motor[i].md_pos[j] );
-			:: WritePrivateProfileString( strMotor, strPos, LPCTSTR(str_temp), str_SaveFile );
+			for ( j = 0; j < M_MAX_POS; j++ )
+			{
+				strPos.Format("%02d_Pos", j);
+				
+				str_temp.Format("%f", st_motor[i].md_pos[j] );
+				:: WritePrivateProfileString( strMotor, strPos, LPCTSTR(str_temp), str_SaveFile );
+			}
+		}
+		
+		str_SaveFile = OnGet_Teach_File_Name("Teach_Back" );  // 데이터 저장 파일명 로딩 함수 
+		
+		for (i = 0; i < M_MOTOR_COUNT; i++)
+		{
+			strMotor.Format("%02d_Motor", i);
+			
+			for ( j = 0; j < M_MAX_POS; j++ )
+			{
+				strPos.Format("%02d_Pos", j);
+				
+				str_temp.Format("%f", st_motor[i].md_pos[j] );
+				:: WritePrivateProfileString( strMotor, strPos, LPCTSTR(str_temp), str_SaveFile );
+			}
 		}
 	}
-	
-	str_SaveFile = OnGet_Teach_File_Name("Teach_Back" );  // 데이터 저장 파일명 로딩 함수 
-	
-	for (i = 0; i < M_MOTOR_COUNT; i++)
+
+	if( st_basic.n_file_save == CTL_YES )
 	{
-		strMotor.Format("%02d_Motor", i);
+		str_load_file = st_path.mstr_path_dvc + st_basic.mstr_device_name;  // 티칭 데이터 로딩 파일 설정
+		n_pos = str_load_file.Find(".");  // 확장자 위치 검사
 		
-		for ( j = 0; j < M_MAX_POS; j++ )
+		if (n_pos == -1)
+			str_load_file += _T(".TXT");  // 확장자 추가
+		else 
 		{
-			strPos.Format("%02d_Pos", j);
+			str_chk_ext = str_load_file.Mid(n_pos);  // 파일 확장자 설정
+			if (str_chk_ext != _T(".TXT"))  
+			{
+				str_load_file = st_path.mstr_path_dvc + _T("DEFAULT.TXT");  // 로딩 로봇 X축 티칭 데이터 로딩 새로운 파일 설정
+				
+				if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
+				{
+					sprintf(st_msg.c_abnormal_msg, "[DEVICE FILE] The error happened at a file extension.");
+					st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
+				}
+			}
+		}
+		
+		for (i = 0; i < M_MOTOR_COUNT; i++)
+		{
+			strMotor.Format("%02d_Motor", i);
 			
-			str_temp.Format("%f", st_motor[i].md_pos[j] );
-			:: WritePrivateProfileString( strMotor, strPos, LPCTSTR(str_temp), str_SaveFile );
+			for ( j = 0; j < M_MAX_POS; j++ )
+			{
+				strPos.Format("%02d_Pos", j);
+				
+				str_temp.Format("%f", st_motor[i].md_pos[j] );
+				:: WritePrivateProfileString( strMotor, strPos, LPCTSTR(str_temp), str_load_file );
+			}
 		}
 	}
 }
+
 void CMyBasicData::On_Teach_Data_Load()
 {
-	CString str_temp, str_msg, str_LoadFile;       // 임시 저장 변수
-	int i = 0, j = 0;
+	CString str_temp, str_msg, str_LoadFile, str_load_file, str_chk_ext, str_motor_name, str_pos;       // 임시 저장 변수
+	int i = 0, j = 0, n_pos= 0, k = 0;
 	double d_chk;
 	
 	char chr_data[20];
 	
-	str_LoadFile = OnGet_Teach_File_Name("Teach");  // 데이터 저장 파일명 로딩 함수 
+// 	str_LoadFile = OnGet_Teach_File_Name("Teach");  // 데이터 저장 파일명 로딩 함수 
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 기존 DAT -> TXT로 바꾸기 위한 로드
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	CString strMotor = "", strPos = "";
 	
-	str_LoadFile = OnGet_Teach_File_Name( "Teach" );  // 데이터 저장 파일명 로딩 함수 
-	
-	for (i = 0; i < M_MOTOR_COUNT; i++)
+	if( st_basic.n_file_save == CTL_NO )
 	{
-		strMotor.Format("%02d_Motor", i);
+		str_LoadFile = OnGet_Teach_File_Name( "Teach" );  // 데이터 저장 파일명 로딩 함수 
 		
-		for ( j = 0; j < M_MAX_POS; j++ )
+		for (i = 0; i < M_MOTOR_COUNT; i++)
 		{
-			strPos.Format("%02d_Pos", j);
+			strMotor.Format("%02d_Motor", i);
 			
-			:: GetPrivateProfileString( strMotor, strPos, "-1", chr_data, 20, str_LoadFile);
-			
-			d_chk = atof(chr_data);
-			
-			if ( d_chk <= 0 )
+			for ( j = 0; j < M_MAX_POS; j++ )
 			{
-				st_motor[i].md_pos[j] = 1;
-				str_temp.Format("%f", st_motor[i].md_pos[j] );
-				:: WritePrivateProfileString( strMotor, strPos, LPCTSTR(str_temp), str_LoadFile );
+				strPos.Format("%02d_Pos", j);
+				
+				:: GetPrivateProfileString( strMotor, strPos, "-1", chr_data, 20, str_LoadFile);
+				
+				d_chk = atof(chr_data);
+				
+				if ( d_chk <= 0 )
+				{
+					st_motor[i].md_pos[j] = 1;
+					str_temp.Format("%f", st_motor[i].md_pos[j] );
+					:: WritePrivateProfileString( strMotor, strPos, LPCTSTR(str_temp), str_LoadFile );
+				}
+				else
+					st_motor[i].md_pos[j] = d_chk;
 			}
-			else
-				st_motor[i].md_pos[j] = d_chk;
 		}
-	}	
+	}
+
+	if( st_basic.n_file_save == CTL_YES )
+	{
+		str_LoadFile = st_path.mstr_path_dvc + st_basic.mstr_device_name;  // 티칭 데이터 로딩 파일 설정
+		n_pos = str_load_file.Find(".");  // 확장자 위치 검사
+		
+		if (n_pos == -1)
+			str_load_file += _T(".TXT");  // 확장자 추가
+		else 
+		{
+			str_chk_ext = str_load_file.Mid(n_pos);  // 파일 확장자 설정
+			if (str_chk_ext != _T(".TXT"))  
+			{
+				str_load_file = st_path.mstr_path_dvc + _T("DEFAULT.TXT");  // 로딩 로봇 X축 티칭 데이터 로딩 새로운 파일 설정
+				
+				if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
+				{
+					sprintf(st_msg.c_abnormal_msg, "[DEVICE FILE] The error happened at a file extension.");
+					st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 동작 실패 출력 요청
+				}
+			}
+		}
+		
+		for (i = 0; i < M_MOTOR_COUNT; i++)
+		{
+			strMotor.Format("%02d_Motor", i);
+			
+			for ( j = 0; j < M_MAX_POS; j++ )
+			{
+				strPos.Format("%02d_Pos", j);
+				
+				:: GetPrivateProfileString( strMotor, strPos, "-1", chr_data, 20, str_LoadFile);
+				
+				d_chk = atof(chr_data);
+				
+				if ( d_chk <= 0 )
+				{
+					st_motor[i].md_pos[j] = 1;
+					str_temp.Format("%f", st_motor[i].md_pos[j] );
+					:: WritePrivateProfileString( strMotor, strPos, LPCTSTR(str_temp), str_LoadFile );
+				}
+				else
+					st_motor[i].md_pos[j] = d_chk;
+			}
+		}
+	}
+
 }
 
 void CMyBasicData::OnBasic_Data_Load()
@@ -1070,12 +1394,11 @@ void CMyBasicData::OnBasic_Data_Load()
 	CString str_load_file;
 	CString str_chk_ext;		// 파일 확장자 저장 변수
 	CString mstr_temp, str_part, str_station, str_board;			// 저장할 정보 임시 저장 변수 
-//	char chr_data[50], chr_buf[20];	
+	char chr_data[50], chr_buf[20];	
 	int mn_chk = 0, mn_pos = 0, n_pos = 0, i = 0, j = 0;
 	double md_chk = 0;
 	float mf_chk = 0;
-	char chr_data[20]; 
-	
+	CString str_Temp;
 	/* ************************************************************************** */
     /*  데이터 로딩할 파일 설정한다 [파일 확장자 검사]                            */
     /* ************************************************************************** */
@@ -1109,7 +1432,7 @@ void CMyBasicData::OnBasic_Data_Load()
 		}
 	}
 	/* ************************************************************************** */
-	:: GetPrivateProfileString("BASIC", "INTERFACE_MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "INTERFACE_MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 2)
 	{
@@ -1118,9 +1441,8 @@ void CMyBasicData::OnBasic_Data_Load()
 		:: WritePrivateProfileString("BASIC", "INTERFACE_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	}
 	else  st_basic.n_mode_interface = mn_chk;
-	
 
-	:: GetPrivateProfileString("BASIC", "DEVICE_MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "DEVICE_MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 2)
 	{
@@ -1131,7 +1453,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	else  st_basic.n_mode_device = mn_chk;
 
 
-	:: GetPrivateProfileString("BASIC", "RETEST_MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "RETEST_MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1141,7 +1463,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	}
 	else  st_basic.n_mode_retest = mn_chk;
 
-	:: GetPrivateProfileString("BASIC", "TESTER_MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "TESTER_MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1153,7 +1475,7 @@ void CMyBasicData::OnBasic_Data_Load()
 
 
 
-	:: GetPrivateProfileString("BASIC", "BCR_MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "BCR_MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1165,7 +1487,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	
 
 
-	:: GetPrivateProfileString("BASIC", "MODULE_MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "MODULE_MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1176,7 +1498,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	else  st_basic.n_mode_module = mn_chk;
 
 	
-	:: GetPrivateProfileString("BASIC", "7387 MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "7387 MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1187,7 +1509,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	else  st_basic.n_mode_7387 = mn_chk;
 
 
-	:: GetPrivateProfileString("BASIC", "TRAY TYPE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "TRAY TYPE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1198,7 +1520,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	else  st_basic.n_mode_tray_type = mn_chk;
 
 	//kwlee 2017.0411
-	:: GetPrivateProfileString("BASIC", "3874_ALARMSKIP_MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "3874_ALARMSKIP_MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1209,7 +1531,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	else  st_basic.n_3874InspectAlarmSkipMode = mn_chk;
 
 	
-	:: GetPrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1220,7 +1542,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	else  st_basic.n_7387InspectAlarmSkipMode = mn_chk;
 
 
-	:: GetPrivateProfileString("BASIC", "3874 MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "3874 MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1231,7 +1553,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	else  st_basic.n_3874InspectMode = mn_chk;
 
 
-	:: GetPrivateProfileString("BASIC", "LIGHT CURTAIN_MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "LIGHT CURTAIN_MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1241,7 +1563,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	}
 	else  st_basic.n_Light_Curtain_Mode = mn_chk;
 	
-	:: GetPrivateProfileString("BASIC", "CASE_ASSEMBLY_MODE", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "CASE_ASSEMBLY_MODE", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0 || mn_chk > 1)
 	{
@@ -1253,7 +1575,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	
 	//Count
 
-	:: GetPrivateProfileString("BASIC", "RETRY_COUNT", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "RETRY_COUNT", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0)
 	{
@@ -1263,7 +1585,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	}
 	else  st_basic.n_count_retry = mn_chk;
 
-	:: GetPrivateProfileString("BASIC", "PICK_RETRY_COUNT", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "PICK_RETRY_COUNT", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0)
 	{
@@ -1275,7 +1597,7 @@ void CMyBasicData::OnBasic_Data_Load()
 
 
 
-	:: GetPrivateProfileString("BASIC", "PARTIAL_COUNT", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "PARTIAL_COUNT", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0)
 	{
@@ -1287,7 +1609,7 @@ void CMyBasicData::OnBasic_Data_Load()
 
 
 
-	:: GetPrivateProfileString("BASIC", "ELEVATOR_PARTIAL", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "ELEVATOR_PARTIAL", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0)
 	{
@@ -1298,7 +1620,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	else  st_basic.n_count_elevator_partial = mn_chk;
 
 
-	:: GetPrivateProfileString("BASIC", "7387ALARM_COUNT", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "7387ALARM_COUNT", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0)
 	{
@@ -1308,7 +1630,7 @@ void CMyBasicData::OnBasic_Data_Load()
 	}
 	else  st_basic.n7387AlarmCount = mn_chk;
 
-	:: GetPrivateProfileString("BASIC", "RUBB_COUNT", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("BASIC", "RUBB_COUNT", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0)
 	{
@@ -1318,6 +1640,26 @@ void CMyBasicData::OnBasic_Data_Load()
 	}
 	else  st_basic.n_rubb_count = mn_chk;
 
+	:: GetPrivateProfileString("BASIC", "EPOXY_CLEAN_TIME", "0", chr_data, 10, st_path.mstr_basic);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_basic.n_EPoxyCleanTime = 10;
+		mstr_temp.Format("%d",st_basic.n_EPoxyCleanTime);
+		:: WritePrivateProfileString("BASIC", "EPOXY_CLEAN_TIME", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_EPoxyCleanTime = mn_chk;
+
+	:: GetPrivateProfileString("BASIC", "HARDNESS_CHANGE_TIME", "0", chr_data, 10, st_path.mstr_basic);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_basic.n_HardnessUseTime = 10;
+		mstr_temp.Format("%d",st_basic.n_HardnessUseTime);
+		:: WritePrivateProfileString("BASIC", "HARDNESS_CHANGE_TIME", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_basic.n_HardnessUseTime = mn_chk;
+
 	//Offset
 	:: GetPrivateProfileString("BASIC", "EPOXY_X_OFFSET", "0", chr_data, 10, str_load_file);
 	st_basic.dEpoxyXLineOffSet = atof(chr_data);
@@ -1325,21 +1667,41 @@ void CMyBasicData::OnBasic_Data_Load()
 	:: GetPrivateProfileString("BASIC", "EPOXY_Y_OFFSET", "0", chr_data, 10, str_load_file);
 	st_basic.dEpoxyYLineOffSet = atof(chr_data);
 
-	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", "0", chr_data, 10, str_load_file);
-	st_basic.dHSCarrierSpreadMoveOffset = atof(chr_data);
 
-	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", "0", chr_data, 10, str_load_file);
-	st_basic.dHSCarrierSpreadMoveDistance = atof(chr_data);
+	//kwlee 2017.0417
+	:: GetPrivateProfileString("RECIPE", "CARRIER_MOVE_OFFSET", "0", chr_data, 10, str_load_file);
+	st_recipe.dHSCarrierSpreadMoveOffset = atof(chr_data);
 
-	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", "0", chr_data, 10, str_load_file);
-	st_basic.dHeatSinkCarrierSpreadMove1Offset = atof(chr_data);
+	:: GetPrivateProfileString("RECIPE", "CARRIER_MOVE_DISTANCE", "0", chr_data, 10, str_load_file);
+	st_recipe.dHSCarrierSpreadMoveDistance = atof(chr_data);
 
-	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", "0", chr_data, 10, str_load_file);
-	st_basic.dHeatSinkCarrierSpreadMove2Offset = atof(chr_data);
+	:: GetPrivateProfileString("RECIPE", "CARRIER_MOVE_10_OFFSET", "0", chr_data, 10, str_load_file);
+	st_recipe.dHeatSinkCarrierSpreadMove1Offset = atof(chr_data);
 
-	:: GetPrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", "0", chr_data, 10, str_load_file);
-	st_basic.dHeatSinkCarrierSpreadMove3Offset = atof(chr_data);
+	:: GetPrivateProfileString("RECIPE", "CARRIER_MOVE_20_OFFSET", "0", chr_data, 10, str_load_file);
+	st_recipe.dHeatSinkCarrierSpreadMove2Offset = atof(chr_data);
+
+	:: GetPrivateProfileString("RECIPE", "CARRIER_MOVE_30_OFFSET", "0", chr_data, 10, str_load_file);
+	st_recipe.dHeatSinkCarrierSpreadMove3Offset = atof(chr_data);
 	
+	//kwlee 2017.0416
+	:: GetPrivateProfileString("RECIPE", "dHeatsinkRubXOffset", "0", chr_data, 10, str_load_file);
+	st_recipe.dHeatsinkRubXOffset = atof(chr_data);
+	
+	:: GetPrivateProfileString("RECIPE", "dHeatsinkRubYOffset", "0", chr_data, 10, str_load_file);
+	st_recipe.dHeatsinkRubYOffset = atof(chr_data);
+	
+
+	:: GetPrivateProfileString("RECIPE", "nEpoxyUseLimitCont", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.nEpoxyUseLimitCont = 0;
+		mstr_temp.Format("%d",st_recipe.nEpoxyUseLimitCont);
+		:: WritePrivateProfileString("RECIPE", "nEpoxyUseLimitCont", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.nEpoxyUseLimitCont = mn_chk;
+
 	//kwlee 2017.0406
 	:: GetPrivateProfileString("RECIPE", "dLoaderTransferTrayDeviceGap", "0", chr_data, 10, str_load_file);
 	st_recipe.dLoaderTransferTrayDeviceGap = atof(chr_data);
@@ -1373,7 +1735,27 @@ void CMyBasicData::OnBasic_Data_Load()
 	
 	:: GetPrivateProfileString("RECIPE", "dTrayPitch_X", "0", chr_data, 10, str_load_file);
 	st_recipe.dTrayPitch_X = atof(chr_data);
+	
+	//kwlee 2017.0421
+	for (i = 0; i<MAX_BCR_CNT; i++)
+	{
+		for (int j =0; j<MAX_BOAT_CNT; j++)
+		{
 
+			str_Temp.Format("Boat_%d_X_Pos_%d",i+1,j+1);
+			:: GetPrivateProfileString("CARRIER", str_Temp, "0", chr_data, 10, str_load_file);
+			st_BoatTeaching[i].m_dPos_x[j] = atof(chr_data);
+			
+			str_Temp.Format("Boat_%d_Y_Pos_%d",i+1,j+1);
+			:: GetPrivateProfileString("CARRIER", str_Temp, "0", chr_data, 10, str_load_file);
+			st_BoatTeaching[i].m_dPos_y[j] = atof(chr_data);
+			
+			str_Temp.Format("Boat_%d_Z_Pos_%d",i+1,j+1);
+			:: GetPrivateProfileString("CARRIER", str_Temp, "0", chr_data, 10, str_load_file);
+			st_BoatTeaching[i].m_dPos_z[j] = atof(chr_data);
+			
+		}
+	}
 
 	:: GetPrivateProfileString("RECIPE", "fDispenserVppmA", "0", chr_data, 10, str_load_file);
 	mn_chk = atoi(chr_data);
@@ -1385,6 +1767,36 @@ void CMyBasicData::OnBasic_Data_Load()
 	}
 	else  st_recipe.fDispenserVppmA = mn_chk;
 
+	//kwlee 2017.0421
+	:: GetPrivateProfileString("RECIPE", "nLdBuffer_Num", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.nLdBuffer_Num = 0;
+		mstr_temp.Format("%d",st_recipe.nLdBuffer_Num);
+		:: WritePrivateProfileString("RECIPE", "nLdBuffer_Num", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.nLdBuffer_Num = mn_chk;
+	
+	:: GetPrivateProfileString("RECIPE", "nTrayNum", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.nTrayNum = 0;
+		mstr_temp.Format("%d",st_recipe.nTrayNum);
+		:: WritePrivateProfileString("RECIPE", "nTrayNum", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.nTrayNum = mn_chk;
+	
+	:: GetPrivateProfileString("RECIPE", "nCarrierBuffer_Num", "0", chr_data, 10, str_load_file);
+	mn_chk = atoi(chr_data);
+	if (mn_chk < 0)
+	{
+		st_recipe.nCarrierBuffer_Num = 0;
+		mstr_temp.Format("%d",st_recipe.nCarrierBuffer_Num);
+		:: WritePrivateProfileString("RECIPE", "nCarrierBuffer_Num", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	}
+	else  st_recipe.nCarrierBuffer_Num = mn_chk;
 
 	:: GetPrivateProfileString("RECIPE", "nEpoxyDotScrewCount", "0", chr_data, 10, str_load_file);
 	mn_chk = atoi(chr_data);
@@ -1435,17 +1847,28 @@ void CMyBasicData::OnBasic_Data_Load()
 		:: WritePrivateProfileString("RECIPE", "nTrayX", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	}
 	else  st_recipe.nTrayX = mn_chk;
-	/////////////
-	/*
-	:: GetPrivateProfileString("BasicData", "Device_Mode", "0", chr_data, 10, st_path.mstr_basic);
+
+	:: GetPrivateProfileString("RECIPE", "EPOXY_LIMIT_CNT", "0", chr_data, 10, str_load_file);
 	mn_chk = atoi(chr_data);
-	if (mn_chk < 0 || mn_chk > 1)
+	if (mn_chk < 0)
 	{
-		st_basic.m_iDeviceMode = 1;
-		mstr_temp.Format("%d", st_basic.m_iDeviceMode);
-		:: WritePrivateProfileString("BasicData", "Device_Mode", LPCTSTR(mstr_temp), st_path.mstr_basic);
+		st_recipe.nEpoxyUseLimitCont = 0;
+		mstr_temp.Format("%d",st_recipe.nEpoxyUseLimitCont);
+		:: WritePrivateProfileString("RECIPE", "EPOXY_LIMIT_CNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	}
-	else  st_basic.m_iDeviceMode = mn_chk;
+	else  st_recipe.nEpoxyUseLimitCont = mn_chk;
+
+	/////////////
+	
+// 	:: GetPrivateProfileString("BasicData", "Device_Mode", "0", chr_data, 10, st_path.mstr_basic);
+// 	mn_chk = atoi(chr_data);
+// 	if (mn_chk < 0 || mn_chk > 1)
+// 	{
+// 		st_basic.m_iDeviceMode = 1;
+// 		mstr_temp.Format("%d", st_basic.m_iDeviceMode);
+// 		:: WritePrivateProfileString("BasicData", "Device_Mode", LPCTSTR(mstr_temp), st_path.mstr_basic);
+// 	}
+// 	else  st_basic.m_iDeviceMode = mn_chk;
 
 	:: GetPrivateProfileString("BasicData", "Electric_Check", "0", chr_data, 10, st_path.mstr_basic);
 	mn_chk = atoi(chr_data);
@@ -1564,12 +1987,42 @@ void CMyBasicData::OnBasic_Data_Load()
 		st_handler.m_tDMTBI = 0;
 	}
 	else  st_handler.m_tDMTBI = mn_chk;
-	*/
+	
+}
+
+void CMyBasicData::OnDaily_Count_Save()
+{
+	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+	char chr_buf[20];
+	
+	mstr_temp = LPCTSTR(_itoa(alarm.mn_alarm_occured_day, chr_buf, 10)) ;
+	:: WritePrivateProfileString("BasicData", "Day_Alarm_Count", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+	mstr_temp.Format("%d",st_handler.m_tDR);
+	:: WritePrivateProfileString("BasicData", "Daily_Run_Time", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+	mstr_temp.Format("%d",st_handler.m_tDS);
+	:: WritePrivateProfileString("BasicData", "Daily_Stop_Time", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+	mstr_temp.Format("%d",st_handler.m_tDJ);
+	:: WritePrivateProfileString("BasicData", "Daily_Alarm_Time", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+	mstr_temp.Format("%d",st_handler.m_tDM);
+	:: WritePrivateProfileString("BasicData", "Daily_Maint_Time", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+	//2015.0715
+	mstr_temp.Format("%d",st_handler.m_tDRef);
+	:: WritePrivateProfileString("BasicData", "Daily_Ref_Time", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+	mstr_temp.Format("%d",st_handler.m_tDRdown);
+	:: WritePrivateProfileString("BasicData", "Daily_RunDown_Time", LPCTSTR(mstr_temp), st_path.mstr_basic);
+		
 }
 
 void CMyBasicData::OnBasic_Data_Save()
 {
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+	CString strTemp;
 	CString str_save_file;
 	CString str_part, str_chk_ext;
 //	char chr_buf[20];
@@ -1607,63 +2060,74 @@ void CMyBasicData::OnBasic_Data_Save()
 	:: WritePrivateProfileString("BasicData", "Model_Name", LPCTSTR(st_basic.mstr_device_name), st_path.mstr_basic);	//2017.0403
 	
 	//kwlee 2017.0403
-	:: WritePrivateProfileString("BASIC", "MODEL_NAME", LPCTSTR(st_basic.mstr_device_name), str_save_file);
+	:: WritePrivateProfileString("BASIC", "MODEL_NAME", LPCTSTR(st_basic.mstr_device_name), st_path.mstr_basic);
 
 	mstr_temp.Format("%d", st_basic.n_mode_interface);
-	:: WritePrivateProfileString("BASIC", "INTERFACE_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "INTERFACE_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 
 	mstr_temp.Format("%d", st_basic.n_mode_device);
-	:: WritePrivateProfileString("BASIC", "DEVICE_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "DEVICE_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_mode_retest);
-	:: WritePrivateProfileString("BASIC", "RETEST_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "RETEST_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	//kwlee 2017.0405
 	mstr_temp.Format("%d", st_basic.n_mode_tester);
-	:: WritePrivateProfileString("BASIC", "TESTER_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "TESTER_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_mode_bcr);
-	:: WritePrivateProfileString("BASIC", "BCR_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "BCR_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_mode_module);
-	:: WritePrivateProfileString("BASIC", "MODULE_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "MODULE_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_mode_7387);
-	:: WritePrivateProfileString("BASIC", "7387 MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "7387 MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_mode_tray_type);
-	:: WritePrivateProfileString("BASIC", "TRAY TYPE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "TRAY TYPE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	//kwlee 2017.0411
 	mstr_temp.Format("%d", st_basic.n_3874InspectAlarmSkipMode);
-	:: WritePrivateProfileString("BASIC", "3874_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "3874_ALARMSKIP_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 
 	mstr_temp.Format("%d", st_basic.n_7387InspectAlarmSkipMode);
-	:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_3874InspectMode);
-	:: WritePrivateProfileString("BASIC", "3874 MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "3874 MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_Light_Curtain_Mode);
-	:: WritePrivateProfileString("BASIC", "LIGHT CURTAIN_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "LIGHT CURTAIN_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_mode_case_assembly);
-	:: WritePrivateProfileString("BASIC", "CASE_ASSEMBLY_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "CASE_ASSEMBLY_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_count_pick_retry);
-	:: WritePrivateProfileString("BASIC", "PICK_RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "PICK_RETRY_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_count_partial);
-	:: WritePrivateProfileString("BASIC", "PARTIAL_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "PARTIAL_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_count_elevator_partial);
-	:: WritePrivateProfileString("BASIC", "ELEVATOR_PARTIAL", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "ELEVATOR_PARTIAL", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n7387AlarmCount);
-	:: WritePrivateProfileString("BASIC", "7387ALARM_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "7387ALARM_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_rubb_count);
-	:: WritePrivateProfileString("BASIC", "RUBB_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "RUBB_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
+
+	mstr_temp.Format("%d", st_basic.n_EPoxyCleanTime);
+	:: WritePrivateProfileString("BASIC", "EPOXY_CLEAN_TIME", LPCTSTR(mstr_temp), st_path.mstr_basic);
+
+	mstr_temp.Format("%d",st_basic.n_HardnessUseTime);
+	:: WritePrivateProfileString("BASIC", "HARDNESS_CHANGE_TIME", LPCTSTR(mstr_temp), st_path.mstr_basic);
+
+	
+	mstr_temp.Format("%d", st_basic.n_count_retry);
+	:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
+
 	
 	mstr_temp.Format("%0.2f", st_basic.dEpoxyXLineOffSet);
 	:: WritePrivateProfileString("BASIC", "EPOXY_X_OFFSET", LPCTSTR(mstr_temp), str_save_file);
@@ -1671,23 +2135,30 @@ void CMyBasicData::OnBasic_Data_Save()
 	mstr_temp.Format("%0.2f", st_basic.dEpoxyYLineOffSet);
 	:: WritePrivateProfileString("BASIC", "EPOXY_Y_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveOffset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHSCarrierSpreadMoveOffset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveDistance);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHSCarrierSpreadMoveDistance);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove1Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove1Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove2Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove2Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove3Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove3Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%d", st_basic.n_count_retry);
-	:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	//kwlee 2017.0416
+	mstr_temp.Format("%0.2f", st_recipe.dHeatsinkRubXOffset);
+	:: WritePrivateProfileString("RECIPE", "dHeatsinkRubXOffset", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dHeatsinkRubYOffset);
+	:: WritePrivateProfileString("RECIPE", "dHeatsinkRubYOffset", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nEpoxyUseLimitCont);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyUseLimitCont", LPCTSTR(mstr_temp), str_save_file);
 
 	//kwlee 2017.0406
 	mstr_temp.Format("%0.2f", st_recipe.dLoaderTransferTrayDeviceGap);
@@ -1728,6 +2199,17 @@ void CMyBasicData::OnBasic_Data_Save()
 
 	mstr_temp.Format("%d", st_recipe.nEpoxyDotScrewCount);
 	:: WritePrivateProfileString("RECIPE", "nEpoxyDotScrewCount", LPCTSTR(mstr_temp), str_save_file);
+	
+	//kwlee 2017.0420
+	mstr_temp.Format("%d", st_recipe.nLdBuffer_Num);
+	:: WritePrivateProfileString("RECIPE", "nLdBuffer_Num", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nCarrierBuffer_Num);
+	:: WritePrivateProfileString("RECIPE", "nCarrierBuffer_Num", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nTrayNum);
+	:: WritePrivateProfileString("RECIPE", "nTrayNum", LPCTSTR(mstr_temp), str_save_file);
+	//
 
 	mstr_temp.Format("%d", st_recipe.nHsTrayY);
 	:: WritePrivateProfileString("RECIPE", "nHsTrayY", LPCTSTR(mstr_temp), str_save_file);
@@ -1740,6 +2222,25 @@ void CMyBasicData::OnBasic_Data_Save()
 
 	mstr_temp.Format("%d", st_recipe.nTrayX);
 	:: WritePrivateProfileString("RECIPE", "nTrayX", LPCTSTR(mstr_temp), str_save_file);
+
+	//kwlee 2017.0421
+	for (i = 0; i<MAX_BCR_CNT; i++)
+	{
+		for (int j =0; j<MAX_BOAT_CNT; j++)
+		{
+			strTemp.Format("Boat_%d_X_Pos_%d",i+1,j+1);
+			mstr_temp.Format("%0.2f", st_BoatTeaching[i].m_dPos_x[j]);
+			:: WritePrivateProfileString("CARRIER", strTemp, LPCTSTR(mstr_temp), str_save_file);
+
+			strTemp.Format("Boat_%d_Y_Pos_%d",i+1,j+1);
+			mstr_temp.Format("%0.2f",st_BoatTeaching[i].m_dPos_y[j]);
+			:: WritePrivateProfileString("CARRIER", strTemp, LPCTSTR(mstr_temp), str_save_file);
+
+			strTemp.Format("Boat_%d_Z_Pos_%d",i+1,j+1);
+			mstr_temp.Format("%0.2f",st_BoatTeaching[i].m_dPos_z[j]);
+			:: WritePrivateProfileString("CARRIER", strTemp, LPCTSTR(mstr_temp), str_save_file);
+		}
+	}
 
 	/* ************************************************************************** */
 
@@ -1876,6 +2377,22 @@ void CMyBasicData::OnInterface_Data_Load()
 		rs_232.n_serial_parity[i] = atoi(ch_data);	
 	}
 
+	//kwlee 2017.0414
+	:: GetPrivateProfileString("BASIC", "CIP_REAR", "", ch_data, 16, st_path.mstr_basic);
+	str_tmp = ch_data;
+	str_tmp.MakeUpper();     // 문자열 대문자로 변경
+	str_tmp.TrimLeft(' ');   // 좌측 문자열 공백 제거              
+	str_tmp.TrimRight(' ');  // 우측 문자열 공백 제거	
+	st_client[CLS_REAR].str_ip = str_tmp;
+	
+	:: GetPrivateProfileString("BASIC", "CPORT_REAR", "", ch_data, 10, st_path.mstr_basic);
+	str_tmp = ch_data;
+	str_tmp.MakeUpper();     // 문자열 대문자로 변경
+	str_tmp.TrimLeft(' ');   // 좌측 문자열 공백 제거              
+	str_tmp.TrimRight(' ');  // 우측 문자열 공백 제거
+	st_client[CLS_REAR].n_port = atoi(str_tmp);
+	//
+
 	:: GetPrivateProfileString("Interface", "EQUIP_ID", "", ch_data, 20, st_path.mstr_basic);
 	str_tmp = ch_data;
 
@@ -1895,7 +2412,7 @@ void CMyBasicData::OnInterface_Data_Load()
 void CMyBasicData::OnInterface_Data_Save()
 {
 	int i;
-	CString str_tmp, str_name;
+	CString str_tmp="", str_name="";
 
 	for(i=0; i<10; i++)
 	{
@@ -1908,7 +2425,7 @@ void CMyBasicData::OnInterface_Data_Save()
 		:: WritePrivateProfileString("INTERFACE_SCREEN", str_name, LPCTSTR(str_tmp), st_path.mstr_file_basic);
 		
 		str_name.Format("%02d_SERVER_PORT", i);
-		str_tmp.Format("%s", st_server[i].n_port);
+		str_tmp.Format("%d", st_server[i].n_port);
 		:: WritePrivateProfileString("INTERFACE_SCREEN", str_name, LPCTSTR(str_tmp), st_path.mstr_file_basic);
 
 		str_name.Format("PORT_%02d", i+1);
@@ -1944,7 +2461,7 @@ void CMyBasicData::OnInterface_Data_Save()
 
 void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
 {
-	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+	CString mstr_temp,strTemp;  // 저장할 정보 임시 저장 변수 
 	CString str_save_file;
 	CString str_part, str_chk_ext;
 	CString str_pos;
@@ -2041,82 +2558,100 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
 // 	:: WritePrivateProfileString("BASIC", "TURN_MODE", LPCTSTR(mstr_temp), str_save_file);
 
 	mstr_temp.Format("%d", st_basic.n_mode_device);
-	:: WritePrivateProfileString("BASIC", "DEVICE_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "DEVICE_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 
 	mstr_temp.Format("%d", st_basic.n_mode_retest);
-	:: WritePrivateProfileString("BASIC", "RETEST_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "RETEST_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 
 	//kwlee 2017.0405
 	mstr_temp.Format("%d", st_basic.n_mode_tester);
-	:: WritePrivateProfileString("BASIC", "TESTER_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "TESTER_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_mode_bcr);
-	:: WritePrivateProfileString("BASIC", "BCR_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "BCR_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_mode_module);
-	:: WritePrivateProfileString("BASIC", "MODULE_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "MODULE_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 
 	mstr_temp.Format("%d", st_basic.n_mode_7387);
-	:: WritePrivateProfileString("BASIC", "7387 MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "7387 MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 
 	mstr_temp.Format("%d", st_basic.n_mode_tray_type);
-	:: WritePrivateProfileString("BASIC", "TRAY TYPE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "TRAY TYPE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	//kwlee 2017.0411
 	mstr_temp.Format("%d", st_basic.n_3874InspectAlarmSkipMode);
-	:: WritePrivateProfileString("BASIC", "3874_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "3874_ALARMSKIP_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 
 	mstr_temp.Format("%d", st_basic.n_7387InspectAlarmSkipMode);
-	:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "7387_ALARMSKIP_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_3874InspectMode);
-	:: WritePrivateProfileString("BASIC", "3874 MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "3874 MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 
 	mstr_temp.Format("%d", st_basic.n_Light_Curtain_Mode);
-	:: WritePrivateProfileString("BASIC", "LIGHT CURTAIN_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "LIGHT CURTAIN_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_mode_case_assembly);
-	:: WritePrivateProfileString("BASIC", "CASE_ASSEMBLY_MODE", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "CASE_ASSEMBLY_MODE", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_count_pick_retry);
-	:: WritePrivateProfileString("BASIC", "PICK_RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "PICK_RETRY_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
 
 	mstr_temp.Format("%d", st_basic.n_count_partial);
-	:: WritePrivateProfileString("BASIC", "PARTIAL_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "PARTIAL_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n_count_elevator_partial);
-	:: WritePrivateProfileString("BASIC", "ELEVATOR_PARTIAL", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "ELEVATOR_PARTIAL", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
 	mstr_temp.Format("%d", st_basic.n7387AlarmCount);
-	:: WritePrivateProfileString("BASIC", "7387ALARM_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "7387ALARM_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
 
 	mstr_temp.Format("%d", st_basic.n_rubb_count);
-	:: WritePrivateProfileString("BASIC", "RUBB_COUNT", LPCTSTR(mstr_temp), str_save_file);
+	:: WritePrivateProfileString("BASIC", "RUBB_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	
+	mstr_temp.Format("%d", st_basic.n_EPoxyCleanTime);
+	:: WritePrivateProfileString("BASIC", "EPOXY_CLEAN_TIME", LPCTSTR(mstr_temp), st_path.mstr_basic);
+
+	mstr_temp.Format("%d",st_basic.n_HardnessUseTime);
+	:: WritePrivateProfileString("BASIC", "HARDNESS_CHANGE_TIME", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+	mstr_temp.Format("%d", st_basic.n_count_retry);
+	:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
+
+
 	mstr_temp.Format("%0.2f", st_basic.dEpoxyXLineOffSet);
 	:: WritePrivateProfileString("BASIC", "EPOXY_X_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
 	mstr_temp.Format("%0.2f", st_basic.dEpoxyYLineOffSet);
 	:: WritePrivateProfileString("BASIC", "EPOXY_Y_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 
-	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveOffset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHSCarrierSpreadMoveDistance);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
+	//kwlee 2017.0417
+	mstr_temp.Format("%0.2f", st_recipe.dHSCarrierSpreadMoveOffset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove1Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
-
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove2Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHSCarrierSpreadMoveDistance);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_DISTANCE", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%0.2f", st_basic.dHeatSinkCarrierSpreadMove3Offset);
-	:: WritePrivateProfileString("BASIC", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove1Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_10_OFFSET", LPCTSTR(mstr_temp), str_save_file);
 	
-	mstr_temp.Format("%d", st_basic.n_count_retry);
-	:: WritePrivateProfileString("BASIC", "RETRY_COUNT", LPCTSTR(mstr_temp), str_save_file);
-
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove2Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_20_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dHeatSinkCarrierSpreadMove3Offset);
+	:: WritePrivateProfileString("RECIPE", "CARRIER_MOVE_30_OFFSET", LPCTSTR(mstr_temp), str_save_file);
+	
+	//kwlee 2017.0416
+	mstr_temp.Format("%0.2f", st_recipe.dHeatsinkRubXOffset);
+	:: WritePrivateProfileString("RECIPE", "dHeatsinkRubXOffset", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%0.2f", st_recipe.dHeatsinkRubYOffset);
+	:: WritePrivateProfileString("RECIPE", "dHeatsinkRubYOffset", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nEpoxyUseLimitCont);
+	:: WritePrivateProfileString("RECIPE", "nEpoxyUseLimitCont", LPCTSTR(mstr_temp), str_save_file);
 
 	//kwlee 2017.0406
 	mstr_temp.Format("%0.2f", st_recipe.dLoaderTransferTrayDeviceGap);
@@ -2155,6 +2690,17 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
 	mstr_temp.Format("%d", st_recipe.fDispenserVppmA);
 	:: WritePrivateProfileString("RECIPE", "fDispenserVppmA", LPCTSTR(mstr_temp), str_save_file);
 	
+	//kwlee 2017.0421
+	mstr_temp.Format("%d", st_recipe.nLdBuffer_Num);
+	:: WritePrivateProfileString("RECIPE", "nLdBuffer_Num", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nCarrierBuffer_Num);
+	:: WritePrivateProfileString("RECIPE", "nCarrierBuffer_Num", LPCTSTR(mstr_temp), str_save_file);
+	
+	mstr_temp.Format("%d", st_recipe.nTrayNum);
+	:: WritePrivateProfileString("RECIPE", "nTrayNum", LPCTSTR(mstr_temp), str_save_file);
+	//
+
 	mstr_temp.Format("%d", st_recipe.nEpoxyDotScrewCount);
 	:: WritePrivateProfileString("RECIPE", "nEpoxyDotScrewCount", LPCTSTR(mstr_temp), str_save_file);
 	
@@ -2169,6 +2715,25 @@ void CMyBasicData::OnBasic_Data_Save_As(CString str_device)
 	
 	mstr_temp.Format("%d", st_recipe.nTrayX);
 	:: WritePrivateProfileString("RECIPE", "nTrayX", LPCTSTR(mstr_temp), str_save_file);
+
+	//kwlee 2017.0421
+	for (int i = 0; i<MAX_BCR_CNT; i++)
+	{
+		for (int j =0; j<MAX_BOAT_CNT; j++)
+		{
+			strTemp.Format("Boat_%d_X_Pos_%d",i+1,j+1);
+			mstr_temp.Format("%0.2f",st_BoatTeaching[i].m_dPos_x[j]);
+			:: WritePrivateProfileString("CARRIER", strTemp, LPCTSTR(mstr_temp), str_save_file);
+			
+			strTemp.Format("Boat_%d_Y_Pos_%d",i+1,j+1);
+			mstr_temp.Format("%0.2f",st_BoatTeaching[i].m_dPos_y[j]);
+			:: WritePrivateProfileString("CARRIER", strTemp, LPCTSTR(mstr_temp), str_save_file);
+			
+			strTemp.Format("Boat_%d_Z_Pos_%d",i+1,j+1);
+			mstr_temp.Format("%0.2f",st_BoatTeaching[i].m_dPos_z[j]);
+			:: WritePrivateProfileString("CARRIER", strTemp, LPCTSTR(mstr_temp), str_save_file);
+		}
+	}
 }
 
 void CMyBasicData::OnInterface_Data_Save_As(CString str_device)

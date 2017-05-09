@@ -41,7 +41,8 @@
 #include "CtlBd_Library.h"
 #include "SrcPart/APartShortkey.h"
 #include "SrcPart/APartDatabase.h"
-#include "SrcPart//PartFunction.h"
+#include "SrcPart/PartFunction.h"
+#include "SrcPart/APartHandler.h"
 #include "Screen_Set_Maintenance.h"
 #include "InterfaceBarcode.h"
 #ifdef _DEBUG
@@ -103,7 +104,7 @@ tag_PICKER_INFO				st_picker[THREAD_MAX_SITE];
 st_carrier_buffer_info_param	st_carrier_buff_info[MAX_SHIFT_DATA_NUM];
 st_variable_param			st_var;
 struct st_vision_camera		st_vision;
-
+st_BoatTeaching_param st_BoatTeaching[MAX_BCR_CNT]; //kwlee 2017.0421
 CPublic_Function			Func;
 struct st_serial_info		rs_232;
 extern CHANDLERApp theApp;
@@ -146,8 +147,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_NOTIFY(TBN_DROPDOWN, AFX_IDW_TOOLBAR, OnToolbarDropDown)		// 텍스트 툴바 드롭 다운 제어를 위한 사용자 정의 메시지 선언 
 	ON_MESSAGE(WM_MAINFRAME_WORK, OnMainframe_Work)
 	ON_MESSAGE(WM_FORM_CHANGE, OnViewChangeMode)					// Post Message에 대한 화면 전환 사용자 사용자 정의 메시지 선언 
-//	ON_MESSAGE(WM_CLIENT_MSG_1, OnCommand_Client_1)							// Network관련된 작업을 담당한다.
-//	ON_MESSAGE(WM_SERVER_MSG_1, OnCommand_Server_1)							// Network관련된 작업을 담당한다.
+	ON_MESSAGE(WM_CLIENT_MSG_1, OnCommand_Client_1)							// Network관련된 작업을 담당한다.
+	ON_MESSAGE(WM_SERVER_MSG_1, OnCommand_Server_1)							// Network관련된 작업을 담당한다.
 	ON_MESSAGE(WM_COMM_DATA, OnCommunication)						// RS-232C 시리얼 포트 제어 메시지
 	ON_MESSAGE(WM_COMM_EVENT, OnCommunicationEvent)					// RS-232C 시리얼 포트 이벤트 설정 메시지
 	ON_MESSAGE(WM_DATA_SEND, OnDataSend)							// RS-232C 시리얼 포트 통한 데이터 송신 메시지
@@ -185,32 +186,32 @@ CMainFrame::CMainFrame()
 		st_handler.mn_init_state[i] = CTL_NO;
 	}
 
-	for ( i = 0; i < MAX_WAIT_TIME; i++ )
-	{
-		st_wait.nOnWaitTime[i] = 200;
-		st_wait.nOffWaitTime[i] = 200;
-		st_wait.nLimitWaitTime[i] = 10000;
-	}
+// 	for ( i = 0; i < MAX_WAIT_TIME; i++ )
+// 	{
+// 		st_wait.nOnWaitTime[i] = 200;
+// 		st_wait.nOffWaitTime[i] = 200;
+// 		st_wait.nLimitWaitTime[i] = 10000;
+// 	}
 
 
 	OnMain_Var_Default_Set();				// 메인 프레임 클래스 변수 초기화 함수
 
-	st_recipe.nLdBuffer_Num = 1;
-	st_recipe.nTrayNum = 2;
-	st_recipe.nHsTrayY = 5;
-	st_recipe.nHsTrayX = 9;
-	st_recipe.nTrayX = 1;
-	st_recipe.nTrayY = 2;
-	st_recipe.nEpoxyRunSpeed = 20;
-	st_recipe.nEpoxyDotScrewCount = 20;
-	st_recipe.nEpoxyRunSpeed = 20;
-	st_basic.dHSCarrierSpreadMoveOffset = 5.0;
-	st_basic.n_rubb_count = 3;
-	st_recipe.nRubHSRunSpeed = 10;
-	st_recipe.dTrayPitch_Y = 95;
-	st_recipe.nTrayX = 1;
-	st_recipe.nTrayY = 2;
-	st_recipe.nCarrierBuffer_Num = 3;
+//	st_recipe.nLdBuffer_Num = 1;
+// 	st_recipe.nTrayNum = 2;
+// 	st_recipe.nHsTrayY = 5;
+// 	st_recipe.nHsTrayX = 9;
+// 	st_recipe.nTrayX = 1;
+// 	st_recipe.nTrayY = 2;
+// 	st_recipe.nEpoxyRunSpeed = 20;
+// 	st_recipe.nEpoxyDotScrewCount = 20;
+// 	st_recipe.nEpoxyRunSpeed = 20;
+// 	st_recipe.dHSCarrierSpreadMoveOffset = 5.0;
+// 	st_basic.n_rubb_count = 3;
+// 	st_recipe.nRubHSRunSpeed = 10;
+// 	st_recipe.dTrayPitch_Y = 95;
+// 	st_recipe.nTrayX = 1;
+// 	st_recipe.nTrayY = 2;
+//	st_recipe.nCarrierBuffer_Num = 3;
 	
 	st_handler.n_mot_board_initial	= FALSE;
 	st_handler.n_load_state			= FALSE;
@@ -218,10 +219,10 @@ CMainFrame::CMainFrame()
 	st_handler.n_ad_board_create	= NO;
 	st_handler.n_initial_flag		= NO;
 	
-	// 	st_handler.mn_virtual_mode = 1;
-	// 	COMI.mn_simulation_mode = 1;
-	// 	FAS_IO.mn_simulation_mode = 1;
-	//kwlee 2017.0404 
+// 	st_handler.mn_virtual_mode = 1;
+// 	COMI.mn_simulation_mode = 1;
+// 	FAS_IO.mn_simulation_mode = 1;
+
 	st_handler.mn_virtual_mode = 0;
 	COMI.mn_simulation_mode = 0;
 	FAS_IO.mn_simulation_mode = 0;
@@ -231,9 +232,9 @@ CMainFrame::CMainFrame()
 	Func.On_IOFlagReset();					// 동작시 사용하는 IO 관련 Flag 초기화 함수 2K4/12/10/ViboX
 	mcls_frm_alarm.On_Alarm_Info_Load();	// 파일에 저장된 모든 알람 정보 전역 변수에 설정하는 함수
 	
-	for(i=0; i<2; i++)
+	for(i=0; i<MAX_PORT; i++)
 	{
-		OnMain_Port_Create(i+1);
+		OnMain_Port_Create(i);
 	}
 // 	for(i=8; i<10; i++)
 // 	{
@@ -244,8 +245,37 @@ CMainFrame::CMainFrame()
 
 CMainFrame::~CMainFrame()
 {
-	if(mp_alarm_dlg != NULL) delete mp_alarm_dlg;
-}
+	int i = 0;
+	if(mp_alarm_dlg != NULL)
+	{
+		delete mp_alarm_dlg;
+		mp_alarm_dlg = NULL;
+	}
+	if(mp_msg_dlg != NULL)
+	{
+		delete mp_msg_dlg;
+		mp_msg_dlg = NULL;
+	}
+	if(mp_lotend_dlg != NULL )
+	{
+		delete mp_lotend_dlg;
+		mp_lotend_dlg = NULL;
+	}
+	for(i=0; i<10; i++)
+	{
+		if(m_p_client[i] != NULL)
+		{
+			delete m_p_client[i];
+			m_p_client[i] = NULL;
+		}
+		if(m_p_server[i] != NULL)
+		{
+			delete m_p_server[i];
+			m_p_server[i] = NULL;
+		}
+	}
+
+}	
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -348,10 +378,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MACHINE_STATUS, dSTOP); 
 		st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, DEVICE_MODE, 0);
 	}
-	
 
-
-
+	::PostMessage( st_handler.hWnd, WM_SERVER_MSG_1, SERVER_CONNECT, 0);
 
 	OnMain_Thread_Creating();
 	// **************************************************************************
@@ -363,7 +391,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	//SetWindowText("AMT820 : Ver.1.0.0");  // 타이틀 정보 출력 
 	//kwlee 2017.0412
-	SetWindowText("[SND HEATSINK]");
+	if(	st_handler.mn_virtual_mode == 1 || COMI.mn_simulation_mode == 1 || FAS_IO.mn_simulation_mode == 1 )
+	{
+		SetWindowText("CHECK PROGRAM [SND HEATSINK(SIMULATION MODE)] This is a software for simulatiom, Call AMT Co.!)]");
+	}
+	else
+	{
+		SetWindowText("[SND HEATSINK]");
+	}
 	CenterWindow();  // 현재 응용 프로그램을 정 중앙에 배치
 
 	/* ************************************************************************** */
@@ -574,8 +609,11 @@ void CMainFrame::OnListStep()
 	int nmenu_chk = OnMenu_Change_Checking(); // 메뉴 사용 가능 여부 검사 함수
 	if (nmenu_chk != TRUE)  return;
 
-	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_List_Step)))   return;
-	OnSwitchToForm(IDW_SCREEN_LIST_STEP);
+// 	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_List_Step)))   return;
+// 	OnSwitchToForm(IDW_SCREEN_LIST_STEP);
+	//kwlee 2017.0420
+	if (GetActiveView()->IsKindOf(RUNTIME_CLASS(CScreen_List_BoatTeacing)))   return;
+	OnSwitchToForm(IDW_SCREEN_LIST_BOATTEACING);
 }
 
 void CMainFrame::OnIo() 
@@ -740,8 +778,9 @@ void CMainFrame::OnReset()
 	/* ************************************************************************** */
 	if (st_handler.n_mot_board_initial != TRUE)  
 	{
-		st_other.str_fallacy_msg = _T("Do to initialize first motion board.");
-		
+		//st_other.str_fallacy_msg = _T("Do to initialize first motion board.");
+		//kwlee 2017.0421
+		st_other.str_confirm_msg = _T("Do to initialize first motion board.");
 		n_response = msg_dlg.DoModal();
 		if (n_response == IDOK) 
 			return;
@@ -753,7 +792,9 @@ void CMainFrame::OnReset()
 	/* ************************************************************************** */
 	if (st_work.mn_run_status != dSTOP)
 	{
-		st_other.str_fallacy_msg = _T("Handler is active Stop first.!");
+//		st_other.str_fallacy_msg = _T("Handler is active Stop first.!");
+		//kwlee 2017.0421
+		st_other.str_confirm_msg = _T("Handler is active Stop first.!");
 		n_response = msg_dlg.DoModal();
 		if (n_response == IDOK)  return;
 	}
@@ -823,7 +864,9 @@ void CMainFrame::OnExit()
 
 	if (st_work.mn_run_status != dSTOP)
 	{
-		st_other.str_fallacy_msg = _T("Now Machine is Running...");
+		//st_other.str_fallacy_msg = _T("Now Machine is Running...");
+		//kwlee 2017.0421
+		st_other.str_confirm_msg = _T("Now Machine is Running...");
 		mn_response = msg_dlg.DoModal();
 		if (mn_response == IDOK)  return ;
 	} 
@@ -942,8 +985,12 @@ void CMainFrame::OnSwitchToForm(int nForm)
 			case IDW_SCREEN_LIST_ALARM:			// 알람 리스트 화면 
 				m_pNewActiveView = (CView*)new CScreen_List_Alarm;
 				break;
-			case IDW_SCREEN_LIST_STEP:			// 쓰레드 스텝 정보 출력 화면 
-				m_pNewActiveView = (CView*)new CScreen_List_Step;
+// 			case IDW_SCREEN_LIST_STEP:			// 쓰레드 스텝 정보 출력 화면 
+// 				m_pNewActiveView = (CView*)new CScreen_List_Step;
+// 				break;
+				//kwlee 2017.0421
+			case IDW_SCREEN_LIST_BOATTEACING:			// 쓰레드 스텝 정보 출력 화면 
+				m_pNewActiveView = (CView*)new CScreen_List_BoatTeacing;
 				break;
 			case IDW_SCREEN_LIST_ERROR:
 				m_pNewActiveView = (CView*)new CScreen_List_Error;
@@ -1117,6 +1164,8 @@ void CMainFrame::OnMain_Var_Default_Set()
 	}
 
 	mp_alarm_dlg = NULL;
+	mp_msg_dlg = NULL;
+	mp_lotend_dlg = NULL;
 	st_handler.str_last_alarm = "";
 	alarm.mn_emo_set = NO;
 
@@ -1126,7 +1175,9 @@ void CMainFrame::OnMain_Var_Default_Set()
 
 	OnMain_Path_Set();
 
+	st_basic.n_file_save = 1;
 	mcls_m_basic.OnBasic_Data_Load();
+	st_basic.n_file_save = 1;
 	mcls_m_basic.On_Teach_Data_Load();
 	mcls_m_basic.OnMaintenance_Data_Load();
 	mcls_m_basic.OnWaitTime_Data_Load();
@@ -1257,35 +1308,35 @@ void CMainFrame::OnMain_Path_Set()
 	st_path.mstr_total     =		_T(strMainPath + "Log\\Total\\");					// Total Log 파일에 대한 폴더 설정 
 	Func.CreateFolder(st_path.mstr_total);
 
-	st_path.m_strBoardLog = 		_T(strMainPath + "Log\\Board\\");					// Total Log 파일에 대한 폴더 설정 
-	Func.CreateFolder(st_path.m_strBoardLog);
+// 	st_path.m_strBoardLog = 		_T(strMainPath + "Log\\Board\\");					// Total Log 파일에 대한 폴더 설정 
+// 	Func.CreateFolder(st_path.m_strBoardLog);
 
-	st_path.mstr_ngbuffer  =		_T(strMainPath + "Log\\NGBuffer\\");				// NGBuffer Log 파일에 대한 폴더 설정 2014.12.19 - Bredmin.
-	Func.CreateFolder(st_path.mstr_ngbuffer);
+// 	st_path.mstr_ngbuffer  =		_T(strMainPath + "Log\\NGBuffer\\");				// NGBuffer Log 파일에 대한 폴더 설정 2014.12.19 - Bredmin.
+// 	Func.CreateFolder(st_path.mstr_ngbuffer);
 
 	st_path.mstr_tcpip =				_T(strMainPath + "Log\\TCPIP\\");
 	Func.CreateFolder(st_path.mstr_tcpip);
 	
-	st_path.mstr_tcpip_tc_server =		_T(strMainPath + "Log\\TCPIP_TC_SERVER\\");
-	Func.CreateFolder(st_path.mstr_tcpip_tc_server);
-
-	st_path.mstr_tcpip_his =		_T(strMainPath + "Log\\TCPIP_HIS\\");
-	Func.CreateFolder(st_path.mstr_tcpip_his);
-
-	st_path.mstr_tcpip_vision =		_T(strMainPath + "Log\\TCPIP_VISION\\");
-	Func.CreateFolder(st_path.mstr_tcpip_vision);
-
-	st_path.mstr_tcpip_bpc =		_T(strMainPath + "Log\\TCPIP_BPC\\");
-	Func.CreateFolder(st_path.mstr_tcpip_bpc);
-
-	st_path.mstr_tcpip_cim =		_T(strMainPath + "Log\\TCPIP_CIM\\");
-	Func.CreateFolder(st_path.mstr_tcpip_cim);
-
-	st_path.mstr_tcpip_rfid =		_T(strMainPath + "Log\\TCPIP_RFID\\");
-	Func.CreateFolder(st_path.mstr_tcpip_rfid);
-
-	st_path.mstr_tcpip_bp =			_T(strMainPath + "Log\\TCPIP_BP\\");
-	Func.CreateFolder(st_path.mstr_tcpip_bp);
+// 	st_path.mstr_tcpip_tc_server =		_T(strMainPath + "Log\\TCPIP_TC_SERVER\\");
+// 	Func.CreateFolder(st_path.mstr_tcpip_tc_server);
+// 
+// 	st_path.mstr_tcpip_his =		_T(strMainPath + "Log\\TCPIP_HIS\\");
+// 	Func.CreateFolder(st_path.mstr_tcpip_his);
+// 
+// 	st_path.mstr_tcpip_vision =		_T(strMainPath + "Log\\TCPIP_VISION\\");
+// 	Func.CreateFolder(st_path.mstr_tcpip_vision);
+// 
+// 	st_path.mstr_tcpip_bpc =		_T(strMainPath + "Log\\TCPIP_BPC\\");
+// 	Func.CreateFolder(st_path.mstr_tcpip_bpc);
+// 
+// 	st_path.mstr_tcpip_cim =		_T(strMainPath + "Log\\TCPIP_CIM\\");
+// 	Func.CreateFolder(st_path.mstr_tcpip_cim);
+// 
+// 	st_path.mstr_tcpip_rfid =		_T(strMainPath + "Log\\TCPIP_RFID\\");
+// 	Func.CreateFolder(st_path.mstr_tcpip_rfid);
+// 
+// 	st_path.mstr_tcpip_bp =			_T(strMainPath + "Log\\TCPIP_BP\\");
+// 	Func.CreateFolder(st_path.mstr_tcpip_bp);
 
 	st_path.str_lot_data_path	=	_T(strMainPath + "Lot\\");	
 	Func.CreateFolder(st_path.str_lot_data_path);
@@ -1293,8 +1344,8 @@ void CMainFrame::OnMain_Path_Set()
 	st_path.str_daily_data_path =	_T(strMainPath + "Data\\");	
 	Func.CreateFolder(st_path.str_daily_data_path);
 
-	st_path.str_daily_pass_count =	_T(strMainPath + "Log\\Hour_Pass_Count\\");
-	Func.CreateFolder(st_path.str_daily_pass_count);
+// 	st_path.str_daily_pass_count =	_T(strMainPath + "Log\\Hour_Pass_Count\\");
+// 	Func.CreateFolder(st_path.str_daily_pass_count);
 
 	Func.CreateFolder(strMainPath + "Log\\AlarmCodeDebug\\");
 	Func.CreateFolder(strMainPath + "Alarm\\Daily\\");
@@ -1312,21 +1363,21 @@ void CMainFrame::OnMain_Path_Set()
 	st_path.mstr_partno_match		= _T("C:\\AMT820\\Setting\\PartNo.txt");
 	st_path.mstr_user_control_map	= _T(st_path.mstr_basic_folder + "AMT820_USERCONTROL_MAP.xls");
 
-	st_path.m_strPcBoxIDSave		= _T("C:\\AMT820\\Setting\\PcBoXID.dat");
+// 	st_path.m_strPcBoxIDSave		= _T("C:\\AMT820\\Setting\\PcBoXID.dat");
 
-	st_path.m_strMars				= _T("C:\\AMT820\\Log\\Mars\\");
-	Func.CreateFolder(st_path.m_strMars);
+// 	st_path.m_strMars				= _T("C:\\AMT820\\Log\\Mars\\");
+// 	Func.CreateFolder(st_path.m_strMars);
 
 	st_path.mstr_xgem_cfg_path		= _T("C:\\AMT820\\Setting\\AMT820_Eq.cfg");
 
-	st_path.mstr_heater =			_T(strMainPath + "Log\\HEATER\\");
-	Func.CreateFolder(st_path.mstr_heater);
+// 	st_path.mstr_heater =			_T(strMainPath + "Log\\HEATER\\");
+// 	Func.CreateFolder(st_path.mstr_heater);
 
-	st_path.m_strIndexLog =			_T(strMainPath + "Log\\Index\\");
-	Func.CreateFolder(st_path.m_strIndexLog);
+// 	st_path.m_strIndexLog =			_T(strMainPath + "Log\\Index\\");
+// 	Func.CreateFolder(st_path.m_strIndexLog);
 
-	st_path.m_strViboXLog =			_T(strMainPath + "Log\\ViboX\\");
-	Func.CreateFolder(st_path.m_strViboXLog);
+// 	st_path.m_strViboXLog =			_T(strMainPath + "Log\\ViboX\\");
+// 	Func.CreateFolder(st_path.m_strViboXLog);
 
 	st_path.m_strPickFailLog =		_T(strMainPath + "Log\\Machine\\");
 	Func.CreateFolder(st_path.m_strPickFailLog);
@@ -1414,7 +1465,9 @@ void CMainFrame::OnMain_Thread_Creating()
 
 	m_thread[THREAD_IO]=AfxBeginThread(OnThread_IO_Check, this);
 	if (m_thread[THREAD_IO] != NULL) 	
-		hThrHandle[THREAD_IO] = m_thread[THREAD_ALARM_DISPLAY]->m_hThread;
+		//hThrHandle[THREAD_IO] = m_thread[THREAD_ALARM_DISPLAY]->m_hThread;
+		//kwlee 2017.0424
+		hThrHandle[THREAD_IO] = m_thread[THREAD_IO]->m_hThread;
 
 	m_thread[THREAD_MOTORS] = AfxBeginThread( OnThread_Motors, this );
 	if( m_thread[THREAD_MOTORS] != NULL )
@@ -1501,37 +1554,26 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 			switch(st_work.mn_run_status)
 			{			
 			case dRUN:
-				Dll_TimeDataLog(2, 1);						// Run임을 DLL에 알려준다.
-				if(st_handler.n_lot_flag == TRUE)
-				{
-					st_handler.m_tR = st_handler.m_tR + diff;
-				}
+				st_handler.m_tR = st_handler.m_tR + diff;
 				st_handler.m_tDR = st_handler.m_tDR + diff;
+				
 				break;
 
 			case dWARNING:
 			case dJAM:		
-				if(st_handler.n_lot_flag == TRUE)
-				{
-					st_handler.m_tJ = st_handler.m_tJ + diff;
-				}
+				st_handler.m_tJ = st_handler.m_tJ + diff;
 				st_handler.m_tDJ = st_handler.m_tDJ + diff;
 				break;
 
 			case dLOCK:
-				if(st_handler.n_lot_flag == TRUE)
-				{
-					st_handler.m_tM = st_handler.m_tM + diff;
-				}
+				st_handler.m_tM = st_handler.m_tM + diff;
 				st_handler.m_tDM = st_handler.m_tDM + diff;
 				break;
+
 			
 			case dLOTEND:												// Lot End 시에도 Stop으로 시간을 올린다.
 			case dSTOP:
-				if(st_handler.n_lot_flag == TRUE)
-				{
-					st_handler.m_tS = st_handler.m_tS + diff;
-				}
+				st_handler.m_tS = st_handler.m_tS + diff;
 				st_handler.m_tDS = st_handler.m_tDS + diff;
 				break;
 			}
@@ -1597,6 +1639,19 @@ void CMainFrame::OnTimer(UINT nIDEvent)
 		{
 			// Socket Yield Reset
 		}
+		//hardness time  ++
+		if( n_second >= 59)
+		{
+			g_handler.AddHardnessTime();
+		}
+		if( ( n_second % 10) == 0 )
+		{
+			n_temp = g_ioMgr.get_in_bit(st_io.i_Interface_Input_1, IO_ON);
+			if( st_handler.cwnd_title != NULL)
+			{
+				st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, NEXTMACHINE_MODE, n_temp);
+			}
+		}
 	}
 	CFrameWnd::OnTimer(nIDEvent);
 }
@@ -1621,7 +1676,7 @@ void CMainFrame::OnMainFrame_SelectMessageDisplay()
 	
 	CDialog_Select select_dlg;
 	
-	st_msg.mstr_confirm_msg = _T(st_handler.mstrSelectMessage);
+	st_other.str_confirm_msg = _T(st_handler.mstrSelectMessage);
 	ReturnVal = select_dlg.DoModal();
 	
 	if (ReturnVal == IDOK)
@@ -1633,6 +1688,7 @@ void CMainFrame::OnMainFrame_SelectMessageDisplay()
 		st_handler.mnSelectMessage = 2;
 	}
 }
+
 
 void CMainFrame::Init_View()
 {
@@ -1665,8 +1721,6 @@ void CMainFrame::Init_View()
 */
 }
 
-
-/*
 LRESULT CMainFrame::OnCommand_Client_1(WPARAM wParam, LPARAM lParam)
 {	
 	CString str_send;
@@ -1679,7 +1733,7 @@ LRESULT CMainFrame::OnCommand_Client_1(WPARAM wParam, LPARAM lParam)
 			if(st_client[lParam].n_connect == NO)
 			{
 				m_p_client[lParam] = new CClientSocket;
-				if(m_p_client[lParam]->Create(lParam, st_client[lParam].str_ip, st_client[lParam].n_port, 1))
+				if(m_p_client[lParam]->Create(lParam, st_client[lParam].str_ip, st_client[lParam].n_port))
 				{
 					st_client[lParam].n_connect = YES;
 					if(st_handler.cwnd_list != NULL)
@@ -1723,12 +1777,13 @@ LRESULT CMainFrame::OnCommand_Client_1(WPARAM wParam, LPARAM lParam)
 				str_send.Format("%s", st_client[lParam].ch_send);
 				m_p_client[lParam]->Send(str_send, str_send.GetLength());
 
-				if(st_client[lParam].n_rev_info == NO)
-				{
-					delete m_p_client[lParam];
-					m_p_client[lParam]			= NULL;
-					st_client[lParam].n_connect = NO;
-				}
+// 				if(st_client[lParam].n_rev_info == NO)
+// 				{
+// 					delete m_p_client[lParam];
+// 					m_p_client[lParam]			= NULL;
+// 					st_client[lParam].n_connect = NO;
+// 				}
+				st_client[lParam].n_rev_info = NO;
 
 				if(st_handler.cwnd_list != NULL)
 				{
@@ -1740,14 +1795,16 @@ LRESULT CMainFrame::OnCommand_Client_1(WPARAM wParam, LPARAM lParam)
 			break;
 
 		case CLIENT_REV:
+	
 			str_rev.Format("%s", st_client[lParam].ch_rev);
 
-			if(st_client[lParam].n_rev_info == YES)
-			{
-				delete m_p_client[lParam];
-				m_p_client[lParam]			= NULL;
-				st_client[lParam].n_connect = NO;
-			}
+			st_client[lParam].n_rev_info = YES;
+// 			if(st_client[lParam].n_rev_info == YES)
+// 			{
+// 				delete m_p_client[lParam];
+// 				m_p_client[lParam]			= NULL;
+// 				st_client[lParam].n_connect = NO;
+// 			}
 
 			if(st_handler.cwnd_list != NULL)
 			{
@@ -1768,6 +1825,7 @@ LRESULT CMainFrame::OnCommand_Server_1(WPARAM wParam, LPARAM lParam)
 	CString str_tmp;
 	int		count;
 
+	st_server[0].n_port = 20000;
 	switch(wParam)
 	{
 		case SERVER_CONNECT:
@@ -1799,16 +1857,16 @@ LRESULT CMainFrame::OnCommand_Server_1(WPARAM wParam, LPARAM lParam)
 		case SERVER_CLOSE:
 			if(st_server[lParam].n_connect == YES)
 			{
-				delete m_p_server[lParam];
-				m_p_server[lParam]			= NULL;
-				st_server[lParam].n_connect = NO;
+// 				delete m_p_server[lParam];
+// 				m_p_server[lParam]			= NULL;
+// 				st_server[lParam].n_connect = NO;
 				
-				if(st_handler.cwnd_list != NULL)
-				{
-					str_tmp.Format("Server_[%02d] Close..", lParam);
-					sprintf(st_msg.c_normal_msg, str_tmp);
-					st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 동작 완료 출력 요청
-				}
+// 				if(st_handler.cwnd_list != NULL)
+// 				{
+// 					str_tmp.Format("Server_[%02d] Close..", lParam);
+// 					sprintf(st_msg.c_normal_msg, str_tmp);
+// 					st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 동작 완료 출력 요청
+// 				}
 			}
 			break;
 			
@@ -1843,11 +1901,7 @@ LRESULT CMainFrame::OnCommand_Server_1(WPARAM wParam, LPARAM lParam)
 	
 	return 0;
 }
-*/
 
-	// TODO: Add your control notification handler code here
-
-	
 
 
 
@@ -1856,29 +1910,33 @@ void CMainFrame::OnMain_Port_Create(int n_port)
 	char parity;
 	DWORD dwCommEvents;
 	//kwlee 20170412
-<<<<<<< HEAD:Handler_820_20120109/MainFrm.cpp
 
-	for (int i = 0;i < MAX_PORT; i++)
-	{
-		rs_232.n_serial_parity[i] = 2;
-		rs_232.n_serial_port[i]= i; 
-		rs_232.n_serial_baudrate[i] = 9600; 
-		rs_232.n_serial_data[i] = 8; 
-		rs_232.n_serial_stop[i] = 1; 
-	}
+// 	for (int i = 0;i < MAX_PORT; i++)
+// 	{
+// 		rs_232.n_serial_parity[i] = 2;
+// 		rs_232.n_serial_port[i]= i; 
+// 		rs_232.n_serial_baudrate[i] = 9600; 
+// 		rs_232.n_serial_data[i] = 8; 
+// 		rs_232.n_serial_stop[i] = 1; 
+// 	}
+	rs_232.n_serial_parity[0] = 2;
+	rs_232.n_serial_port[0]= 1; 
+	rs_232.n_serial_baudrate[0] = 9600; 
+	rs_232.n_serial_data[0] = 8; 
+	rs_232.n_serial_stop[0] = 1; 
 
-=======
+	rs_232.n_serial_parity[1] = 2;
+	rs_232.n_serial_port[1]= 2; 
+	rs_232.n_serial_baudrate[1] = 9600; 
+	rs_232.n_serial_data[1] = 8; 
+	rs_232.n_serial_stop[1] = 1; 
 
-	for (int i = 0;i < MAX_PORT; i++)
-	{
-		rs_232.n_serial_parity[i] = 2;
-		rs_232.n_serial_port[i]= i; 
-		rs_232.n_serial_baudrate[i] = 9600; 
-		rs_232.n_serial_data[i] = 8; 
-		rs_232.n_serial_stop[i] = 1; 
-	}
+	rs_232.n_serial_parity[2] = 0;
+	rs_232.n_serial_port[2]= 3; 
+	rs_232.n_serial_baudrate[2] = 19200; 
+	rs_232.n_serial_data[2] = 8; 
+	rs_232.n_serial_stop[2] = 1; 
 
->>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/MainFrm.cpp
 // 	clsBarcode.OnOpen(rs_232.n_serial_port[n_port], 9600, NOPARITY, 8, ONESTOPBIT, 0x03);
 //  	return;
 	
@@ -1963,40 +2021,73 @@ LRESULT CMainFrame::OnMainMessageEvent(WPARAM wParam, LPARAM lParam)
 	int i = 0;
 	CString strTemp;
 	
-	if (wParam == CTL_YES)
+	if( lParam == 0 )
 	{
-		if (mp_msg_dlg != NULL && IsWindow(mp_msg_dlg->m_hWnd))
+		if (wParam == CTL_YES)
 		{
-			mp_msg_dlg->SetFocus();	// 대화상자를 활성화
-			mp_msg_dlg->OnEventMsg_Text_Set();
+			if (mp_msg_dlg != NULL && IsWindow(mp_msg_dlg->m_hWnd))
+			{
+				mp_msg_dlg->SetFocus();	// 대화상자를 활성화
+				mp_msg_dlg->OnEventMsg_Text_Set();
+			}
+			else
+			{
+				mp_msg_dlg = new CDialog_Event_Msg( st_msg.mstr_event_msg[0], st_msg.mstr_event_msg[1], st_msg.mstr_event_msg[2]);
+				//2017.0201
+				//mp_msg_dlg = new CDialog_Event_Msg;
+				mp_msg_dlg->Create();
+				mp_msg_dlg->ShowWindow(SW_SHOW);
+			}
+			g_ioMgr.set_out_bit(st_io.o_Buzzer2, IO_ON);
+			
 		}
-		else
+		else if (wParam == CTL_NO)
 		{
-			mp_msg_dlg = new CDialog_Event_Msg( st_msg.mstr_event_msg[0], st_msg.mstr_event_msg[1], st_msg.mstr_event_msg[2]);
-			//2017.0201
-			//mp_msg_dlg = new CDialog_Event_Msg;
-			mp_msg_dlg->Create();
-			mp_msg_dlg->ShowWindow(SW_SHOW);
+			for (i = 0; i < 3; i++)
+			{
+				st_msg.mstr_event_msg[i] = "";
+			}
+			
+			if (mp_msg_dlg != NULL && IsWindow(mp_msg_dlg->m_hWnd))
+			{
+				mp_msg_dlg->ShowWindow(SW_HIDE);
+				mp_msg_dlg->DestroyWindow();
+				delete mp_msg_dlg;
+				mp_msg_dlg = NULL;
+			}
+			
+			g_ioMgr.set_out_bit(st_io.o_Buzzer2, CTL_OFF);
 		}
-		g_ioMgr.set_out_bit(st_io.o_Buzzer2, IO_ON);
-		
 	}
-	else if (wParam == CTL_NO)
+	else if( lParam == 1)//2017.0422
 	{
-		for (i = 0; i < 3; i++)
+		if (wParam == CTL_YES)
 		{
-			st_msg.mstr_event_msg[i] = "";
+			if (mp_lotend_dlg != NULL && IsWindow(mp_lotend_dlg->m_hWnd))
+			{
+				mp_lotend_dlg->SetFocus();	// 대화상자를 활성화
+			}
+			else
+			{
+				mp_lotend_dlg = new CDialog_Lot_End();
+				mp_lotend_dlg->Create();
+				mp_lotend_dlg->ShowWindow(SW_SHOW);
+			}
+			g_ioMgr.set_out_bit(st_io.o_Buzzer3, IO_ON);
+			
 		}
-		
-		if (mp_msg_dlg != NULL && IsWindow(mp_msg_dlg->m_hWnd))
-		{
-			mp_msg_dlg->ShowWindow(SW_HIDE);
-			mp_msg_dlg->DestroyWindow();
-			delete mp_msg_dlg;
-			mp_msg_dlg = NULL;
+		else if (wParam == CTL_NO)
+		{			
+			if (mp_lotend_dlg != NULL && IsWindow(mp_lotend_dlg->m_hWnd))
+			{
+				mp_lotend_dlg->ShowWindow(SW_HIDE);
+				mp_lotend_dlg->DestroyWindow();
+				delete mp_lotend_dlg;
+				mp_lotend_dlg = NULL;
+			}
+			
+			g_ioMgr.set_out_bit(st_io.o_Buzzer3, CTL_OFF);
 		}
-		
-		g_ioMgr.set_out_bit(st_io.o_Buzzer2, CTL_OFF);
 	}
 	
 	return 0;
@@ -2040,10 +2131,6 @@ LONG CMainFrame::OnCommunication(WPARAM port, LPARAM ch)
 	if (port == LOT_BARCODE_PORT)
 	{
 // 		OnMain_Lot_Barcode(port, ch);     // 수신된 바코드 리더기 데이터 처리 함수
-<<<<<<< HEAD:Handler_820_20120109/MainFrm.cpp
-=======
-		//kwlee 2017.0412
->>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/MainFrm.cpp
 		OnMain_Device_Barcode(ch);
 	}
 	else
@@ -2057,11 +2144,8 @@ LONG CMainFrame::OnCommunication(WPARAM port, LPARAM ch)
 // ******************************************************************************
 void CMainFrame::OnMain_Device_Barcode(CString strData)
 {
-<<<<<<< HEAD:Handler_820_20120109/MainFrm.cpp
-=======
 	CString strTemp;
-	int nTmp;
->>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/MainFrm.cpp
+// 	int nTmp;
 	if (strData == _T(""))
 	{
 // 		m_strBarcode[m_nBarcodeCount] = _T("BARCODE ERROR");
@@ -2072,19 +2156,19 @@ void CMainFrame::OnMain_Device_Barcode(CString strData)
 	{
 	//	if (m_nBarcodeCount >= 100) return;
 		//kwlee 2017.0412
-		st_sync.nCarrierBcr_Req = CTL_READY; 
-<<<<<<< HEAD:Handler_820_20120109/MainFrm.cpp
-		st_msg.mstr_barcode += strData; 
-=======
 		//kwlee 2017.0413
 		//st_msg.mstr_barcode += strData; 
-		strTemp += strData; 
-		if (strTemp.Find("-") != -1)
-		{		
-			nTmp = strTemp.Find("-");
-			st_msg.mstr_barcode = strTemp.Mid(nTmp+1,2);
+// 		strTemp += strData; 
+// 		if (strTemp.Find("-") != -1)
+// 		{		
+// 			nTmp = strTemp.Find("-");
+// 			st_msg.mstr_barcode = strTemp.Mid(nTmp+1,2);
+		// 		}
+		st_msg.mstr_barcode += strData;
+		if( strData == 0x0d)
+		{
+			st_sync.nCarrierBcr_Req = CTL_READY;
 		}
->>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/MainFrm.cpp
 		///
 		//m_strBarcode[m_nBarcodeCount]	= strData;
 	//	m_nBarcodeCount++;
@@ -2093,18 +2177,18 @@ void CMainFrame::OnMain_Device_Barcode(CString strData)
 	
 	if (st_handler.cwnd_list != NULL)  
 	{
-		sprintf(st_msg.c_normal_msg, strData);
-		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
+		if( st_sync.nCarrierBcr_Req == CTL_READY)
+		{
+			sprintf(st_msg.c_normal_msg, "%s", st_msg.mstr_barcode);
+			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
+		}
 	}
 }
 
-<<<<<<< HEAD:Handler_820_20120109/MainFrm.cpp
-=======
 
 
 
 
->>>>>>> 03c9121054aa9555b02a1f7854d5a71699174b8b:Handler_820_20120109/MainFrm.cpp
 
 // ******************************************************************************
 // RS-232C 시리얼 포트 이벤트 설정 함수                                          
@@ -2162,7 +2246,7 @@ void CMainFrame::OnMain_Snd_Serial(WPARAM wParam, LPARAM lParam)
 {
 	int n_serial_chk;  // 데이터 송신 플래그
 	
-	char buf[1024];
+	char buf[256];
 	
 	// **************************************************************************
 	// 송신 데이터 임시 저장 변수 초기화                                         
@@ -2196,7 +2280,12 @@ void CMainFrame::OnMain_Snd_Serial(WPARAM wParam, LPARAM lParam)
 	// **************************************************************************
 	
 	st_serial.comm_snd[wParam -1] = st_serial.str_snd[wParam -1];  
-	sprintf(buf, st_serial.str_snd[wParam -1]);  // 송신 데이터 설정
+
+	if( wParam == 3)
+		memcpy( buf, st_serial.bBuff, sizeof(st_serial.bBuff) );
+		//sprintf(buf,"%s",st_serial.bBuff);  // 송신 데이터 설정
+	else
+		sprintf(buf, st_serial.str_snd[wParam -1]);  // 송신 데이터 설정
 	
 	// **************************************************************************
 	// 입력된 송신 데이터 시리얼 포트를 통해 전송한다                            
@@ -2421,7 +2510,9 @@ void CMainFrame::OnMain_Create_Device()
 	
 	if(finder.FindFile(m_str_load_file))
 	{
-		st_other.str_fallacy_msg = _T("[DEVICE] 파일명 입력 에러입니다. 동일 파일명이 존재합니다.");
+		//st_other.str_fallacy_msg = _T("[DEVICE] 파일명 입력 에러입니다. 동일 파일명이 존재합니다.");
+		//kwlee 2017.0421
+		st_other.str_confirm_msg = _T("[DEVICE] 파일명 입력 에러입니다. 동일 파일명이 존재합니다.");
 		msg_dlg.DoModal();
 	}
 	else

@@ -94,10 +94,6 @@ void CScreen_Motor_Speed::OnInitialUpdate()
 {
 	CFormView::OnInitialUpdate();
 
-// 	mp_msg_dlg = new CDialog_Event_Msg;
-// 	mp_msg_dlg->Create();
-// 	mp_msg_dlg->SetParent(this);
-	
 	// **************************************************************************
 	// 컨트롤에 설정할 폰트 생성한다                                             
 	// **************************************************************************
@@ -350,10 +346,10 @@ void CScreen_Motor_Speed::OnBtnMsApply()
 	int n_response;  // 대화 상자 리턴 플래그
 
 	//Start_www_tipssoft_com();			// 2014.12.24 - Bredmin.
-
 	CDialog_Select  select_dlg;
-
-	st_msg.mstr_confirm_msg = _T("Motor Speed : Setting Data Apply!");
+	//st_msg.mstr_confirm_msg = _T("Motor Speed : Setting Data Apply!");
+	//kwlee 2017.0424
+	st_other.str_confirm_msg = _T("Motor Speed : Setting Data Apply!");
 	n_response = select_dlg.DoModal();
 	//Stop_www_tipssoft_com();			// 2014.12.24 - Bredmin.
 

@@ -35,6 +35,8 @@ public:
 	CString OnGet_File_Name();
 	void OnBasic_Data_Save();
 	void OnBasic_Data_Load();
+	void OnDaily_Count_Save();
+
 	void On_Teach_Data_Save();
 	void On_Teach_Data_Load();
 	void OnMaintenance_Data_Save();

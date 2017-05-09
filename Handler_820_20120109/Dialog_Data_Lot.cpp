@@ -159,14 +159,12 @@ void CDialog_Data_Lot::OnInit_LotInfo()
 
 	GridData( IDC_CUSTOM_LOT_INFO, 2, 1, "LOT NO" );
 	GridData( IDC_CUSTOM_LOT_INFO, 3, 1, "PART NO" );
-	GridData( IDC_CUSTOM_LOT_INFO, 4, 1, "NEW_LOT_IN PASS (BPC)" );
+	GridData( IDC_CUSTOM_LOT_INFO, 4, 1, "NEW_LOT_IN PASS(NEXT)" );
 	GridData( IDC_CUSTOM_LOT_INFO, 5, 1, "START TIME" );
 	GridData( IDC_CUSTOM_LOT_INFO, 6, 1, "LAST MODULE" );
-	GridData( IDC_CUSTOM_LOT_INFO, 7, 1, "R_PROPERTY END" ); //2013,0910
-//	GridData( IDC_CUSTOM_LOT_INFO, 7, 1, "BYPASS" );
-//	GridData( IDC_CUSTOM_LOT_INFO, 8, 1, "COK TYPE" );
+	GridData( IDC_CUSTOM_LOT_INFO, 7, 1, "LOT TOTAL" ); //2013,0910
 	GridData( IDC_CUSTOM_LOT_INFO, 8, 1, "BYPASS" );
-	GridData( IDC_CUSTOM_LOT_INFO, 9, 1, "COK TYPE" );
+	GridData( IDC_CUSTOM_LOT_INFO, 9, 1, "DVC TYPE" );
 
 	//2016.0112
 	GridData( IDC_CUSTOM_LOT_INFO, 10, 1, "TIME OUT" );
@@ -191,7 +189,7 @@ void CDialog_Data_Lot::OnDisplay_Lot()
 	GridColor( IDC_CUSTOM_LOT_LIST, 4, 1, WHITE_C, BLACK_C );	GridData( IDC_CUSTOM_LOT_LIST, 4, 1, "" );
 	GridColor( IDC_CUSTOM_LOT_LIST, 5, 1, WHITE_C, BLACK_C );	GridData( IDC_CUSTOM_LOT_LIST, 5, 1, "" );
 	GridColor( IDC_CUSTOM_LOT_LIST, 6, 1, WHITE_C, BLACK_C );	GridData( IDC_CUSTOM_LOT_LIST, 6, 1, "" );
-	GridColor( IDC_CUSTOM_LOT_LIST, 7, 1, WHITE_C, BLACK_C );	GridData( IDC_CUSTOM_LOT_LIST, 7, 1, "" );//2013,0910
+	GridColor( IDC_CUSTOM_LOT_LIST, 7, 1, WHITE_C, BLACK_C );	GridData( IDC_CUSTOM_LOT_LIST, 7, 1, "" );
 	GridColor( IDC_CUSTOM_LOT_LIST, 10, 3, WHITE_C, BLACK_C );  GridData( IDC_CUSTOM_LOT_LIST, 10, 3, "" );
 	GridColor( IDC_CUSTOM_LOT_LIST, 10, 4, WHITE_C, BLACK_C );  GridData( IDC_CUSTOM_LOT_LIST, 10, 4, "" );
 
@@ -210,6 +208,8 @@ void CDialog_Data_Lot::OnDisplay_Lot()
 
 void CDialog_Data_Lot::OnDisplay_LotInfo()
 {
+	CString strTimeout="", strTmp="";
+
 	if( m_nSelectedLotIdx < 0 ||
 		m_nSelectedLotIdx >= g_lotMgr.GetLotCount() )
 	{
@@ -232,22 +232,21 @@ void CDialog_Data_Lot::OnDisplay_LotInfo()
 	GridData( IDC_CUSTOM_LOT_INFO, 4, 2, g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetStrNewLotInPass() );
 	GridData( IDC_CUSTOM_LOT_INFO, 5, 2, g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetTimeStart() );
 	GridData( IDC_CUSTOM_LOT_INFO, 6, 2, g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetStrLastModule() );
-	GridData( IDC_CUSTOM_LOT_INFO, 7, 2, g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetStrRProtyModule() ); //2013,0910
-//	GridData( IDC_CUSTOM_LOT_INFO, 7, 2, g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetStrBypass() );
-	GridData( IDC_CUSTOM_LOT_INFO, 8, 2, g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetStrBypass() );//2013,0910
+	if( g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetTotLotCount() <= 0 )
+		g_lotMgr.GetLotAt(m_nSelectedLotIdx).SetLotCount(0);
+	strTmp.Format("%d", g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetTotLotCount());
+	GridData( IDC_CUSTOM_LOT_INFO, 7, 2, strTmp );
+	GridData( IDC_CUSTOM_LOT_INFO, 8, 2, g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetStrBypass() );
 	GridData( IDC_CUSTOM_LOT_INFO, 10, 2, g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetAutoTimeOut());
 
-	//2016.0112
-	CString strTimeout;
 	strTimeout.Format("%d", g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetTimeOutCnt());
 	GridData( IDC_CUSTOM_LOT_INFO, 10, 3, strTimeout);
 	strTimeout.Format("%d sec", g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetTimeOut());
 	GridData( IDC_CUSTOM_LOT_INFO, 10, 4, strTimeout);
 
 	CString strCokType;
-	strCokType.Format( "%d", g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetCokType() + 1 );
-//	GridData( IDC_CUSTOM_LOT_INFO, 8, 2, strCokType );
-	GridData( IDC_CUSTOM_LOT_INFO, 9, 2, strCokType );//2013,0910
+	strCokType.Format( "%s", g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetDvcType());
+	GridData( IDC_CUSTOM_LOT_INFO, 9, 2, strCokType );
 
 	if( st_handler.cwnd_main )
 		st_handler.cwnd_main->PostMessage(WM_WORK_END, MAIN_LOTINFO, 0);
@@ -403,9 +402,66 @@ void CDialog_Data_Lot::OnCellClick( WPARAM wParam, LPARAM lParam )
 
 		switch( lpcc->Row )
 		{
+		case 7:
+			{
+
+				if( m_nSelectedLotIdx < 0 ||
+					m_nSelectedLotIdx >= g_lotMgr.GetLotCount() )
+					return;
+				
+				CString mstr_temp;  // 저장할 정보 임시 저장 변수 
+				int mn_lotcount;
+				
+				TSpread *Grid = (TSpread*)GetDlgItem(IDC_CUSTOM_LOT_INFO);
+				char strGet[256];
+				sprintf(strGet, "%d", g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetTotLotCount());
+				Grid->GetData( 7, 10, strGet );
+				
+				mn_lotcount = atoi(strGet);						
+				
+				CRect r;
+				m_btn_update.GetWindowRect(&r);
+				mstr_temp = KeyPad.GetNumEditString_I(1, 1000, mn_lotcount, mstr_temp, &r);
+				
+				int nTemp = 0;
+				nTemp = atoi(mstr_temp);
+				if(  nTemp < 1 || nTemp > 1000 ) return;
+				
+				g_lotMgr.GetLotAt(m_nSelectedLotIdx).SetLotCount( nTemp );
+				
+				GridData( IDC_CUSTOM_LOT_INFO, lpcc->Row, 2, mstr_temp );
+			}
+			break;
+
+
+			//DVCTYPE
+		case 9:
+			{
+				lpcc->Col = 2;
+				CString strData;
+				TSpread *Grid = (TSpread*)GetDlgItem(IDC_CUSTOM_LOT_INFO);
+				
+				char strGet[16];
+				Grid->GetData( lpcc->Col, lpcc->Row, strGet );
+				
+				strData = strGet;
+				if( strData == "SFF" )
+				{
+					GridData( IDC_CUSTOM_LOT_INFO, lpcc->Row, lpcc->Col, "TFF" );
+				}
+				else
+				{
+					GridData( IDC_CUSTOM_LOT_INFO, lpcc->Row, lpcc->Col, "SFF" );
+				}
+				
+				Grid = NULL;
+				delete Grid;
+			}
+			break;
+				
+
 		case 4:
 		case 6:
-		case 7:
 		case 8:
 		case 10:
 			{
@@ -486,6 +542,7 @@ void CDialog_Data_Lot::OnCellClick( WPARAM wParam, LPARAM lParam )
 
 						return;
 					}
+
 				}
 				//2016.0112
 				if( lpcc->Col == 3 || lpcc->Col == 4 ) lpcc->Col = 2;
@@ -508,10 +565,7 @@ void CDialog_Data_Lot::OnCellClick( WPARAM wParam, LPARAM lParam )
 				Grid = NULL;
 				delete Grid;
 			}
-			
-				
-		
-		
+			break;
 		}
 	}
 }
@@ -532,6 +586,7 @@ void CDialog_Data_Lot::OnBtnCreate()
 		sprintf(st_msg.c_normal_msg, "[LOT] LOT Create.");
 		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 동작 실패 출력 요청
 	}
+	OnDisplay_Lot();
 }
 
 LRESULT CDialog_Data_Lot::OnDraw_Data_Lot( WPARAM wParam,LPARAM lParam )
@@ -571,6 +626,9 @@ void CDialog_Data_Lot::OnBtnDelete()
 		sprintf(st_msg.c_normal_msg, "[LOT] LOT Delete.");
 		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 동작 실패 출력 요청
 	}
+
+	OnDisplay_Lot();
+	OnDisplay_LotInfo();
 }
 
 void CDialog_Data_Lot::OnBtnUp() 
@@ -627,10 +685,11 @@ void CDialog_Data_Lot::OnBtnUpdate()
 	Grid->GetData( 2, 3, strGet );	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetPartID( strGet );
 	Grid->GetData( 2, 4, strGet );	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetNewLotInPass( (strcmp( strGet, "YES" ) == 0) );
 	Grid->GetData( 2, 6, strGet );	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetLastModule( strGet );
-	Grid->GetData( 2, 7, strGet );	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetRProtyModule( strGet );
-//	Grid->GetData( 2, 7, strGet );	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetByPass( strGet );
-	Grid->GetData( 2, 8, strGet );	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetByPass( strGet );//2013,0910
-	Grid->GetData( 2, 10, strGet );	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetAutoTimeOut( strGet );//2016.0112
+	Grid->GetData( 2, 7, strGet );	
+	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetLotCount( atoi(strGet) );
+	Grid->GetData( 2, 8, strGet );	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetByPass( strGet );
+	Grid->GetData( 2, 9, strGet );	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetDvcType( strGet );
+	Grid->GetData( 2, 10, strGet );	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).SetAutoTimeOut( strGet );
 	//2016.0202
 	if( st_basic.n_auto_timeout_mode == CTL_YES )
 	{
@@ -653,21 +712,27 @@ void CDialog_Data_Lot::OnBtnUpdate()
 
 	g_lotMgr.GetLotAt( m_nSelectedLotIdx ).CalcCokType();
 
+	if( g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetDvcType() != "SFF" && 
+		g_lotMgr.GetLotAt(m_nSelectedLotIdx).GetDvcType() != "TFF" )
+	{
+		AfxMessageBox("DVC 타입이 설정되지 않았습니다.");
+	}
+
 	OnDisplay_Lot();
 	OnDisplay_LotInfo();
 }
 
 void CDialog_Data_Lot::OnBtnNewLotIn() 
 {
-	// TODO: Add your control notification handler code here
 	if( g_lotMgr.GetLotCount() > 0 )
 	{
-		// bpc로 전달.
 		if( m_nSelectedLotIdx >= 0 )
 		{
-//			g_client_bpc.SetNewLotInID( g_lotMgr.GetLotIDAt(m_nSelectedLotIdx) );
+			st_work.n_DataYes[0] = "YES";
+			st_work.n_DataYes[1].Format("%d", m_nSelectedLotIdx);
 		}
 	}
+
 }
 
 void CDialog_Data_Lot::OnBtnNetLot() 

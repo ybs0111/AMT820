@@ -176,9 +176,9 @@ void CScreen_Wait_Time::OnWaitTime_Data_Set()
 
 	for(i=0; i<mn_wait_time_cnt; i++)
 	{
-		m_iOnWait[i][1]		= st_time.m_iWaitTime[i][1];
-		m_iOffWait[i][1]		= st_time.m_iWaitTime[i][0];
-		m_iLimit[i][1]			= st_time.m_iLimitTime[i];
+		m_iOnWait[i][1]			= st_wait.nOnWaitTime[i];
+		m_iOffWait[i][1]		= st_wait.nOffWaitTime[i];
+		m_iLimit[i][1]			= st_wait.nLimitWaitTime[i];
 	}
 	
 	OnWaitTime_Data_BackUp();
@@ -261,9 +261,9 @@ void CScreen_Wait_Time::OnWaitTime_Data_Apply()
 
 	for( i = 0; i < MAX_WAIT_TIME_NUM; i++ )
 	{
-		st_time.m_iWaitTime[i][1] = m_iOnWait[i][1];
-		st_time.m_iWaitTime[i][0] = m_iOffWait[i][1];
-		st_time.m_iLimitTime[i] = m_iLimit[i][1];
+		st_wait.nOnWaitTime[i]    = m_iOnWait[i][1];
+		st_wait.nOffWaitTime[i]   = m_iOffWait[i][1];
+		st_wait.nLimitWaitTime[i] = m_iLimit[i][1];
 	}
 }
 

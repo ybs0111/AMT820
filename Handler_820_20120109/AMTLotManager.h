@@ -88,6 +88,9 @@ public:
 
 	int GetTotLotCount() { return m_nDvcLotCount; }
 
+	CString GetDvcType() { return m_strDvcType; }
+	void SetDvcType( CString strType) { m_strDvcType = strType; }
+
 
 protected:
 	CString m_strLotID;
@@ -120,6 +123,8 @@ protected:
 	int m_nCntBin[BIN_MAX];
 
 	int m_nEachTimeout[20];
+
+	CString m_strDvcType;
 };
 
 

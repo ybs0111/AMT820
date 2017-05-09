@@ -95,7 +95,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		{
 			m_npBuff_Info[i] = CTL_YES;			 
 		}
-		Run_LdPicker.Set_Loader_Buffer_Align_OnOff(IO_OFF);
+		Set_Loader_Buffer_Align_OnOff(IO_OFF);
 		for(i = 0; i < st_recipe.nLdBuffer_Num; i++)
 		{
 			st_buffer_info[THD_LD_ALIGN_BUFF].st_pcb_info[i].nYesNo = CTL_NO;
@@ -105,15 +105,15 @@ void CRun_DvcLdBuffer::OnRunMove()
 		break;
 
 	case 400:
-		nRet_1 = Run_LdPicker.Chk_Loader_Buffer_Align_OnOff( IO_OFF );
+		nRet_1 = Chk_Loader_Buffer_Align_OnOff( IO_OFF );
 
 		if(nRet_1 == RET_GOOD)
 		{
-			mn_RunStep = 320;
+			mn_RunStep = 500;
 		}
 		else if(nRet_1 == RET_ERROR)
 		{			 
-			CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5001, dWARNING, m_strAlarmCode);
 			mn_RunStep = 300;
 		}
 		break;
@@ -121,28 +121,29 @@ void CRun_DvcLdBuffer::OnRunMove()
 	case 500:
 		if( g_lotMgr.GetLotCount() > 0 )
 		{
-			if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
+			if( ( g_lotMgr.GetLotAt(0).GetStrLastModule() != "YES" ) && g_lotMgr.GetLotAt(0).GetTotLotCount() > 0 && g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
 			{
 				//load plate에 자재 요청
 				st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ;
 				st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = WORK_PICK;
 				m_nFindLotNo_Flag = 0;
+				mn_RunStep = 900;
 			}
 			else if( g_lotMgr.GetLotCount() >= 2 )
 			{
-				if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
+				if( g_lotMgr.GetLotAt(1).GetTotLotCount() > 0 && g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
 				{
 					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ;
 					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = WORK_PICK;
 
 					m_nFindLotNo_Flag = 1;
+					mn_RunStep = 900;
 				}
 				else
 				{
 					return;
 				}
 			}
-			mn_RunStep = 900;
 		}
 		break;
 
@@ -159,7 +160,15 @@ void CRun_DvcLdBuffer::OnRunMove()
 		//    동작중에 로드 언로드가 동시, 로딩만 인지 미리 계산후 동작하는게 좋다.
 		////////////////////////////////////////////////////////////////////////////
 	case 1000:
-		if(st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] == CTL_REQ && st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][1] == WORK_PLACE)  
+		if( st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_LOAD_WORK_RBT] == LOTEND)
+		{
+			st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_NO;
+			st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = CTL_NO;
+			st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_LD_ALIGN_BUFF] = LOTEND;
+			mn_RunStep = 0;
+		}
+		else if(st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][0] == CTL_REQ && 
+			st_sync.nLdWorkRbt_Dvc_Req[THD_LD_ALIGN_BUFF][1] == WORK_PLACE)  
 		{
 			mn_RunStep = 1100; 
 		}
@@ -181,7 +190,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		{//자재가 남아있다면, 소켓 오프등으로 남아있는 자재이니 이떄는 테슽 로봇이 요청한 대로 바로 집을 수 있게 처리한다  
 
 			mn_RunStep = 3000; 
-			//CTL_Lib.Alarm_Error_Occurrence(m_nRunStep, dWARNING, Func.m_strAlarmCode);
+			//CTL_Lib.Alarm_Error_Occurrence(5002, dWARNING, Func.m_strAlarmCode);
 		}
 		break;
 
@@ -194,7 +203,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{//자재가 남아있다면 에러 
-			CTL_Lib.Alarm_Error_Occurrence(3100, dWARNING, Func.m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5003, dWARNING, Func.m_strAlarmCode);
 		}			 
 		break;
 
@@ -311,7 +320,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		break;
 
 	case 2300:
-		nRet_1 = Run_LdPicker.Chk_Loader_Buffer_Align_OnOff( IO_ON );
+		nRet_1 = Chk_Loader_Buffer_Align_OnOff( IO_ON );
 
 		if(nRet_1 == RET_GOOD)
 		{
@@ -319,7 +328,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{			 
-			CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5004, dWARNING, m_strAlarmCode);
 			mn_RunStep = 2200;
 		}
 		break;
@@ -334,7 +343,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 		{
 			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
-			CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5005, dWARNING, m_strAlarmCode);
 			break;
 		} 
 		mn_RunStep = 2320;
@@ -354,7 +363,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{			 
-			CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5006, dWARNING, m_strAlarmCode);
 			mn_RunStep = 2320;
 		}
 		break;
@@ -369,7 +378,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 		{
 			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
-			CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5007, dWARNING, m_strAlarmCode);
 			break;
 		} 
 		mn_RunStep = 2400;
@@ -394,7 +403,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1== RET_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(3120, dWARNING, Func.m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5008, dWARNING, Func.m_strAlarmCode);
 		} 
 		break;
 
@@ -422,7 +431,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
 		{
 			m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
-			CTL_Lib.Alarm_Error_Occurrence(1239, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5009, dWARNING, m_strAlarmCode);
 			break;
 		} 
 		mn_RunStep = 3200;
@@ -456,7 +465,7 @@ void CRun_DvcLdBuffer::OnRunMove()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{			 
-			CTL_Lib.Alarm_Error_Occurrence(3520, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(5010, dWARNING, m_strAlarmCode);
 			mn_RunStep = 3210;
 		}
 		break;
@@ -515,12 +524,14 @@ int CRun_DvcLdBuffer::Chk_Loader_Buffer_Align_OnOff( int OnOff )
 
 	if (OnOff == IO_OFF)
 	{
-		if (m_bClampOnOffFlag == false )//&&	g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_OFF)	== IO_OFF )
+		if (m_bClampOnOffFlag == false && g_ioMgr.get_in_bit(st_io.i_Loader_Align_Forward_Check, IO_OFF) == IO_OFF &&
+			g_ioMgr.get_in_bit(st_io.i_Loader_Align_Backward_Check, IO_ON) == IO_ON )
 		{
 			m_bClampOnOffFlag		= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true)// &&	 g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk, IO_OFF) == IO_OFF )
+		else if (m_bClampOnOffFlag == true && g_ioMgr.get_in_bit(st_io.i_Loader_Align_Forward_Check, IO_OFF) == IO_OFF &&
+			g_ioMgr.get_in_bit(st_io.i_Loader_Align_Backward_Check, IO_ON) == IO_ON )
 		{
 			m_dwClampOnOff[1] = GetCurrentTime();
 			m_dwClampOnOff[2] = m_dwClampOnOff[1] - m_dwClampOnOff[0];
@@ -558,12 +569,14 @@ int CRun_DvcLdBuffer::Chk_Loader_Buffer_Align_OnOff( int OnOff )
 	}
 	else
 	{
-		if (m_bClampOnOffFlag == false)// &&	g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk,	IO_ON)	== IO_ON )
+		if (m_bClampOnOffFlag == false && g_ioMgr.get_in_bit(st_io.i_Loader_Align_Forward_Check, IO_ON)	== IO_ON &&
+			g_ioMgr.get_in_bit(st_io.i_Loader_Align_Backward_Check, IO_OFF)	== IO_OFF )
 		{
 			m_bClampOnOffFlag			= true;
 			m_dwClampOnOff[0]	= GetCurrentTime();
 		}
-		else if (m_bClampOnOffFlag == true) //&&		 g_ioMgr.get_in_bit(st_io.i_LdUldPickDvcChk, IO_ON)	== IO_ON )
+		else if (m_bClampOnOffFlag == true && g_ioMgr.get_in_bit(st_io.i_Loader_Align_Forward_Check, IO_ON)	== IO_ON &&
+			g_ioMgr.get_in_bit(st_io.i_Loader_Align_Backward_Check, IO_OFF) == IO_OFF )
 		{
 			m_dwClampOnOff[1]	= GetCurrentTime();
 			m_dwClampOnOff[2]	= m_dwClampOnOff[1] - m_dwClampOnOff[0];

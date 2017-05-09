@@ -1,4 +1,4 @@
 // Microsoft Developer Studio generated Help ID include file.
 // Used by HANDLER.rc
 //
-#define HIDC_MSG_REJECT_RETEST          0x8082049d    // IDD_SCREEN_MAIN
+#define HIDC_GROUP_TOP_INFO             0x8082035b    // IDD_SCREEN_MAIN

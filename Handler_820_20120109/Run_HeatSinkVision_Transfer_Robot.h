@@ -25,7 +25,6 @@ public:
 	int mn_RunHsStep;
 	int mn_RunVisStep;
 	int mn_RunDispensorStep;
-	int mn_RunBuffStep;
 	int mn_PickStep;
 	int mn_PlaceStep;
 	int mn_MoveStep;
@@ -34,6 +33,7 @@ public:
 	int mn_InitStep;
 	int mn_BufferPos;
 	int mn_MoveMeasureStep;
+	int mn_RunBuffStep;
 	
 	int m_nRobot_X;
 	int m_nRobot_Y;
@@ -139,9 +139,9 @@ public:
 	void RunMoveHeatSink();
 	void RunMoveVision();
 	void RunMoveDispensor();
-	void RunMoveBuffDispensor();
 	void RunInit();
-	
+	void RunMoveBuffDispensor();
+
 	int Process_Measure_Vision();
 	int Process_Dvc_Pickup(int nMode, int nWork_Site);
 	int Process_Dvc_Place(int nMode, int nWork_Site, int nPos);

@@ -248,9 +248,6 @@ void CDialog_LotStart::OnCellClick( WPARAM wParam, LPARAM lParam )
 				Grid = NULL;
 				delete Grid;
 			}
-			
-				
-		
 		
 		}
 	}

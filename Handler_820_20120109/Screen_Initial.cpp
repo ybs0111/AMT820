@@ -185,6 +185,8 @@ void CScreen_Initial::OnTimer(UINT nIDEvent)
 			if (st_handler.cwnd_list != NULL)
 			{
 				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG); 
+				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, MACHINE_INFO); 
+				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, DEVICE_INFO);
 			}
 			st_handler.n_mode_manual = YES;
 			
@@ -224,8 +226,9 @@ void CScreen_Initial::OnTimer(UINT nIDEvent)
 			
 //			st_other.str_fallacy_msg = _T("Initialization completion");
 			Func.OnSet_IO_Port_Stop(); 
-			st_other.str_fallacy_msg = _T("장비 초기화 완료");
-			
+			//st_other.str_fallacy_msg = _T("장비 초기화 완료");
+			//kwlee 2017.0421
+			st_other.str_confirm_msg = _T("장비 초기화 완료");
 			n_response = msg_dlg.DoModal();
 			
 			::PostMessage(st_handler.hWnd, WM_FORM_CHANGE, 1, 1);  // 메인 화면 전환 
@@ -236,7 +239,12 @@ void CScreen_Initial::OnTimer(UINT nIDEvent)
 			
 			st_other.str_abnormal_msg = _T("[초 기 화] 장비 초기화 실패");
 			sprintf(st_msg.c_abnormal_msg, st_other.str_abnormal_msg);
-			if (st_handler.cwnd_list != NULL)  st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG); 
+			if (st_handler.cwnd_list != NULL)
+			{
+				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG); 
+				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, MACHINE_INFO); 
+				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, DEVICE_INFO); 
+			}
 			
 			st_handler.n_mode_manual = YES;			// 시작은 메뉴얼 모드이다.
 
@@ -390,15 +398,18 @@ void CScreen_Initial::OnInitial_Change_Status(int n_status)
 
 void CScreen_Initial::OnInitial_Step_Clear()
 {
-	int i=0;
+	int i=0,j=0;
 
 	ml_init_step = 0;			// 초기화 진행 스텝 정보 저장 변수 초기화 
 	mn_motor_init_count = 0;
 	mn_pos_step = 0;					// 프로그레서 위치 정보 초기화
 	
-	for(i=0; i<30; i++)
+	for(j=0; i<2; j++)
 	{
-		st_sync.nLotEndFlag[i] = NO; // lot end 여부를 판가름 한다 YES이면 해당 쓰레드 LOT END
+		for(i=0; i<30; i++)
+		{
+			st_sync.nLotEndFlag[j][i] = NO; // lot end 여부를 판가름 한다 YES이면 해당 쓰레드 LOT END
+		}
 	}
 
 	for(i=0; i<MAX_MOTOR; i++)
@@ -576,18 +587,28 @@ int CScreen_Initial::OnInitial_Init_Excution()
 
 bool CScreen_Initial::ChkInitReady()
 {
+	::Sleep(100);
 	if (g_ioMgr.get_in_bit(st_io.i_MC2_Check, IO_ON) == IO_OFF || g_ioMgr.get_in_bit(st_io.i_MC3_Check, IO_ON) == IO_OFF)
 	{
 		st_handler.mstrSelectMessage = "Check MC2 or MC3.";
 		st_handler.mnSelectMessage = 0;
 		::PostMessage(st_handler.hWnd, WM_MAINFRAME_WORK, 1001, 0);		
 		return false;
-	}	
+	}
+
+	if( st_work.mn_machine_mode != MACHINE_AUTO )
+	{
+		//801400 0 A "AUTO_SWITCHCHECK_ERROR."
+		st_handler.mstrSelectMessage = "AUTO_SWITCHCHECK_ERROR.";
+		st_handler.mnSelectMessage = 0;
+		::PostMessage(st_handler.hWnd, WM_MAINFRAME_WORK, 1001, 0);		
+		return false;
+	}
 
 	
-	if(Func.DoorOpenCheckSpot() != RET_GOOD)
+	if(Func.DoorOpenCheckSpot() != CTLBD_RET_GOOD)
 	{		
-		st_handler.mstrSelectMessage.Format("%d door open", (atoi(alarm.mstr_code) & 0x01) + 1 );
+		st_handler.mstrSelectMessage.Format("Door#%d open", (atoi(alarm.mstr_code) & 0x01) + 1 );
 		st_handler.mnSelectMessage = 0;
 		::PostMessage(st_handler.hWnd, WM_MAINFRAME_WORK, 1001, 0);		
 		return false;
@@ -629,7 +650,7 @@ void CScreen_Initial::EIS_ErrMsg()
 	if (st_handler.mnSelectMessage == 1 )					// YES
 	{
 		g_ioMgr.set_out_bit(st_io.o_Buzzer1, IO_OFF);
-		ml_init_step = 200;
+		ml_init_step = 0;
 		mn_pos_step = 0;
 	}
 	else if( st_handler.mnSelectMessage == 2 )
@@ -644,7 +665,7 @@ void CScreen_Initial::EIS_InitIO()
 	
 	if (Ret != TRUE)  
 	{//900003 1 A "IO_BOARD_INITIALIZATIN_ERROR."
-		CTL_Lib.Alarm_Error_Occurrence(700, CTL_dWARNING, "900003");
+		CTL_Lib.Alarm_Error_Occurrence(501, CTL_dWARNING, "900003");
 		
 		ml_init_step = 0;						// 초기화 진행 스텝 정보 초기화 
 		mn_init_flag = RET_ERROR;				// 초기화 작업 에러 플래그 설정
@@ -673,7 +694,7 @@ void CScreen_Initial::EIS_Motor()
 	
 	if (Ret != BD_GOOD )
 	{//900002 1 A "MOTOR_BOARD_INITIALIZATION_CHECK_ERROR."
-		CTL_Lib.Alarm_Error_Occurrence(701, CTL_dWARNING, "900002");
+		CTL_Lib.Alarm_Error_Occurrence(502, CTL_dWARNING, "900002");
 		
 		ml_init_step = 0;						// 초기화 진행 스텝 정보 초기화 
 		mn_init_flag = RET_ERROR;				// 초기화 작업 에러 플래그 설정 

@@ -8,6 +8,8 @@
 #include "FastechPublic_IO.h"
 #include "DataAPI.h"
 #include <nb30.h>
+#include "Run_Device_Carrier_Robot.h"
+#include "SrcPart/APartHandler.h"
 
 typedef struct _ASTAT_ 
 { 
@@ -39,6 +41,8 @@ ASTAT Adapter;
 #include "Alg_Mysql.h"
 #include "Dialog_Motor_Part.h"
 #include "IO_Manager.h"
+#include "AMTLotManager.h"
+#include "SrcPart/APartHandler.h"
 
 CMyBasicData     mcls_p_basic;		// 기본 셋팅 정보 로딩 및 저장 클래스
 
@@ -56,8 +60,7 @@ CPublic_Function::CPublic_Function()
 {
 //	int i;
 	m_pInternetFile = NULL;
-	nLightCurtainMutingOnStep = 0;
-	nLightCurtainMutingOffStep = 0;
+
 }
 
 CPublic_Function::~CPublic_Function()
@@ -157,9 +160,9 @@ int CPublic_Function::DoorOpenCheck()
 
 void CPublic_Function::OnSet_IO_Port_Stop()
 {
-	if ( st_work.mn_run_status == dSTOP )
-		return;
-	
+// 	if ( st_work.mn_run_status == dSTOP )
+// 		return;
+
 	st_work.mn_run_status = dSTOP;
 	COMI.mn_run_status = dSTOP;
 	
@@ -173,8 +176,8 @@ void CPublic_Function::OnSet_IO_Port_Stop()
 
 	g_ioMgr.set_out_bit(st_io.o_Safety_Door_Lock_Release, IO_ON);
 
-	sprintf(st_msg.c_normal_msg, "[Button] STOP.");
-	if (st_handler.cwnd_list != NULL)  st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
+// 	sprintf(st_msg.c_normal_msg, "[Button] STOP.");
+// 	if (st_handler.cwnd_list != NULL)  st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
 
 	Func.On_LogFile_Add( LOG_TOTAL, "[Button] STOP." );
 
@@ -184,9 +187,8 @@ void CPublic_Function::OnSet_IO_Port_Stop()
 	{
 		/////////스타트 시작시 뮤팅 시작 ..
 		st_handler.n_MutingOn = 1;//파워오프 O
-		Func.nLightCurtainMutingOnStep = 0;
+		g_handler.nLightCurtainMutingOnStep = 0;
 		st_handler.n_HeatSinkMutingOn = 1;
-		//Func.nLightCurtainHeatSinkMutingOnStep = 0;
 	}
 
 	CString mstr_temp = "";
@@ -518,6 +520,14 @@ void CPublic_Function::On_LogFile_Add(int n_msg_select, CString str_msg)
 		mstr_file_name += mstr_cur_day; 
 		mstr_create_file = st_path.mstr_interface + mstr_file_name;
 		break;
+
+	case LOG_LOT_PRO:
+		mstr_file_name = "LOT" + mstr_cur_year;
+		mstr_file_name += mstr_cur_month; 
+		mstr_file_name += mstr_cur_day; 
+		mstr_create_file = st_path.str_daily_data_path + mstr_file_name;
+		break;
+
 	case 99:						// 전체 메세지.
 		mstr_file_name = "TOT" + mstr_cur_year;
 		mstr_file_name += mstr_cur_month; 
@@ -562,6 +572,13 @@ void CPublic_Function::On_LogFile_Add(int n_msg_select, CString str_msg)
 			mstr_file_name += mstr_cur_month; 
 			mstr_file_name += mstr_cur_day; 
 			mstr_create_file = st_path.mstr_interface + mstr_file_name;
+			break;
+
+		case LOG_LOT_PRO:
+			mstr_file_name = "LOT" + mstr_cur_year;
+			mstr_file_name += mstr_cur_month; 
+			mstr_file_name += mstr_cur_day; 
+			mstr_create_file = st_path.str_daily_data_path + mstr_file_name;
 			break;
 
 		case 99:						// 전체 메세지.
@@ -825,14 +842,14 @@ void CPublic_Function::OnSet_IO_Port_Run()
 	
 	g_ioMgr.set_out_bit(st_io.o_Start_SwitchLamp,	IO_ON);
 	g_ioMgr.set_out_bit(st_io.o_Stop_SwitchLamp,	IO_OFF);
-	g_ioMgr.set_out_bit(st_io.o_Dispenser_1_Liquide_On_Sol, IO_ON);
-	g_ioMgr.set_out_bit(st_io.o_Dispenser_1_Liquide_Off_Sol, IO_OFF);
+// 	g_ioMgr.set_out_bit(st_io.o_Dispenser_1_Liquide_On_Sol, IO_ON);
+// 	g_ioMgr.set_out_bit(st_io.o_Dispenser_1_Liquide_Off_Sol, IO_OFF);
 
 	// 도어를 잠근다.
 	g_ioMgr.set_out_bit( st_io.o_Safety_Door_Lock_Release, IO_OFF );
 	
-	sprintf(st_msg.c_normal_msg, "[Button] RUN.");
-	if (st_handler.cwnd_list != NULL)  st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
+// 	sprintf(st_msg.c_normal_msg, "[Button] RUN.");
+// 	if (st_handler.cwnd_list != NULL)  st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
 
 	Func.On_LogFile_Add( LOG_TOTAL, "[Button] RUN." );
 
@@ -843,7 +860,6 @@ void CPublic_Function::OnSet_IO_Port_Run()
 
 
 	st_handler.n_MutingOff = 1;//파워오프 O
-	Func.nLightCurtainMutingOffStep = 0;
 	//st_handler.n_HeatSinkMutingOff = 1; //no use
 	//Func.nLightCurtainHeatSinkMutingOffStep = 0;//no use
 	st_handler.nHeatSinkLightCurtainFlag = 0;
@@ -1039,10 +1055,47 @@ void CPublic_Function::OnDayDataCheck()
 
 void CPublic_Function::OnDayDataReset()
 {
+	CString mstr_temp;
+// 	int k,j;
+	
 	st_handler.m_tDR = 0;
-	st_handler.m_tDS = 0;
 	st_handler.m_tDJ = 0;
 	st_handler.m_tDM = 0;
+	st_handler.m_tDS = 0;
+	st_handler.m_tDRef = 0;
+// 	st_handler.m_tDRdown = 0;
+// 	for ( k = 0; k < 10; k++)
+// 	{
+// 		for ( j = 0; j < 2; j++)
+// 		{
+// 			st_handler.m_tDtest[j][k] = 0;
+// 			st_handler.m_tDSokOff[j][k] = 0;
+// 			st_handler.m_tDInStandby[j][k] = 0;
+// 			st_handler.m_tDOutStandby[j][k] = 0;
+// 		}
+// 	}
+	
+	mstr_temp.Format("%d",st_handler.m_tDR);
+	:: WritePrivateProfileString("BasicData", "Daily_Run_Time", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+	mstr_temp.Format("%d",st_handler.m_tDS);
+	:: WritePrivateProfileString("BasicData", "Daily_Stop_Time", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+	mstr_temp.Format("%d",st_handler.m_tDJ);
+	:: WritePrivateProfileString("BasicData", "Daily_Alarm_Time", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+	mstr_temp.Format("%d",st_handler.m_tDM);
+	:: WritePrivateProfileString("BasicData", "Daily_Maint_Time", LPCTSTR(mstr_temp), st_path.mstr_basic);
+	
+
+	
+	g_lotMgr.ClearCountData();
+	g_handler.ClearAlarmCnt();
+	
+	if (st_handler.cwnd_main != NULL)
+	{
+		st_handler.cwnd_main->PostMessage(WM_WORK_END, MAIN_COUNTINFO, 0);
+	}
 }
 
 BOOL CPublic_Function::CreateFolder(LPCTSTR szPath)
@@ -1082,7 +1135,7 @@ void CPublic_Function::OnSet_Door_Open()
 	if (st_handler.n_mode_manual == YES)
 	{
 		//도어 오픈
-		g_ioMgr.set_out_bit(st_io.o_Safety_Door_Lock_Release, IO_OFF);
+		g_ioMgr.set_out_bit(st_io.o_Safety_Door_Lock_Release, IO_ON);
 //		g_ioMgr.set_out_bit(st_io.o_left_door_lock_cyl, IO_OFF);
 //		g_ioMgr.set_out_bit(st_io.o_right_door_lock_cyl, IO_OFF);
 	}
@@ -1091,7 +1144,7 @@ void CPublic_Function::OnSet_Door_Open()
 void CPublic_Function::OnSet_Door_Close()
 {
 	//도어 락
-	g_ioMgr.set_out_bit(st_io.o_Safety_Door_Lock_Release, IO_ON);
+	g_ioMgr.set_out_bit(st_io.o_Safety_Door_Lock_Release, IO_OFF);
 //	g_ioMgr.set_out_bit(st_io.o_left_door_lock_cyl, IO_ON);
 //	g_ioMgr.set_out_bit(st_io.o_right_door_lock_cyl, IO_ON);
 }
@@ -1732,7 +1785,7 @@ int CPublic_Function::Check_BufferStatus(int nBufferMode, int nSite, int nYesNo,
 			if(nCurrent_BufferInfo[i] == CTL_YES) //CTL_YES: 피커 정보가 디바이스가 있다, CTL_NO:피커 정보가 디바이스가 없다
 			{			
 
-				if(nBufferStatus[i] == IO_OFF || npBufferOutputStatus[i] == IO_ON)//james 2016.0919 CTL_NO)
+				if(nBufferStatus[i] == IO_OFF || npBufferOutputStatus[i] == CTL_NO)
 				{	//error   //감지 안됨 에러 					
 					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, nIO_Num_Info[i]); //on check error 
 					nFuncRet = RET_ERROR;
@@ -2360,7 +2413,7 @@ int  CPublic_Function::Check_PickerStatus(int nPickerMode, int nSite, int nYesNo
 			if( st_basic.n_mode_device == WITHOUT_DVC )
 				nIO_Num_Info[i] = st_io.i_Loader_Transfer_Clamp_On_Check;				
 			else
-				nIO_Num_Info[i] = st_io.i_Loader_Transfer_Left_Exist_Check;  
+				nIO_Num_Info[i] = st_io.i_Loader_Transfer_Clamp_On_Check;  
 
 			nIO_Output_Num_Info[i] = st_io.o_Loader_Transfer_Clamp_On_Sol; 
 			if(nPickerMode == 0)
@@ -2378,7 +2431,7 @@ int  CPublic_Function::Check_PickerStatus(int nPickerMode, int nSite, int nYesNo
 		nPara_Num = PICKER_PARA;
 		for(i = 0; i < nPara_Num; i++)
 		{
-			nIO_Num_Info[i] = st_io.i_Transfer1_Device_Check;
+			nIO_Num_Info[i] = st_io.i_Unloader_Transfer_Device_Check;
 			nIO_Output_Num_Info[i] = st_io.o_Transfer1_Clamp_Forward_Sol; 
 			if(nPickerMode == 0)
 			{
@@ -2816,8 +2869,8 @@ int  CPublic_Function::Check_PickerStatus(int nPickerMode, int nSite, int nYesNo
 						}
 					}
 					else if(nSite == THD_HEATSINK_PRBT )
-					{
-						if(npPickerStatus[i] == IO_ON && npPickerOutputStatus[i] == IO_ON)
+					{//if(npPickerStatus[i] == IO_ON && npPickerOutputStatus[i] == IO_ON)
+						if(npPickerStatus[i] == IO_ON && npPickerOutputStatus[i] == IO_ON)//2017.0420
 						{	//error   //감지됨 에러 	//실린더가 ON(forward)
 							m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, nIO_Num_Info[i]); //on check error 
 							nFuncRet = RET_ERROR;
@@ -2872,7 +2925,7 @@ int  CPublic_Function::Check_PickerStatus(int nPickerMode, int nSite, int nYesNo
 			{
 				if(nSite == THD_LOAD_WORK_RBT)
 				{ 
-					if(npPickerStatus[i] == IO_OFF && npPickerOutputStatus[i] == IO_OFF)
+					if(npPickerStatus[i] == IO_ON || npPickerOutputStatus[i] == IO_ON)
 					{	//error   //감지 안됨 에러 
 						m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, nIO_Num_Info[i]); //on check error 
 						nFuncRet = RET_ERROR;
@@ -2896,8 +2949,8 @@ int  CPublic_Function::Check_PickerStatus(int nPickerMode, int nSite, int nYesNo
 				}
 				else if(nSite == THD_UNLOAD_WORK_RBT)
 				{
-					if(npPickerStatus[i] == IO_OFF)
-					{	//error   //감지 안됨 에러 
+					if(npPickerStatus[i] == IO_ON)
+					{	//error   //감지 됨 에러 
 						m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, nIO_Num_Info[i]); //on check error 
 						nFuncRet = RET_ERROR;
 					}
@@ -2928,7 +2981,7 @@ int  CPublic_Function::Check_PickerStatus(int nPickerMode, int nSite, int nYesNo
 				}
 				else if( nSite == THD_PLACE_CARRIER_DVC)
 				{
-					if(npPickerStatus[i] == IO_OFF)
+					if(npPickerStatus[i] == IO_ON)
 					{	//error   //감지 안됨 에러 
 						m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, nIO_Num_Info[i]); //on check error 
 						nFuncRet = RET_ERROR;
@@ -3054,12 +3107,11 @@ int CPublic_Function::Find_TrayWork_Pos(int nMode, int nSite, int nDVCYesNO, int
 			}
 			break;
 
-		case THD_UNLD_ALIGN_BUFF:
+		case THD_ULD_ALIGN_BUFF:
 			nFirstY = 0;  nFirstX = 0;	
 			for(i = 0; i < st_recipe.nLdBuffer_Num; i++)
 			{
-				if(st_buffer_info[nSite].st_pcb_info[i].nYesNo == nDVCYesNO && st_buffer_info[nSite].st_pcb_info[i].nEnable == CTL_YES
-					&& (st_buffer_info[nSite].st_pcb_info[i].strLotNo == str_LotNo || str_LotNo == "0") ) //nDVCYesNO == CTL_NO 조건에 충족한 정보만 체크, 사용가능한 소켓에만 작업가능
+				if(st_buffer_info[nSite].st_pcb_info[i].nYesNo == nDVCYesNO)
 				{
 					if(nFlag == CTL_NO)
 					{
@@ -3076,13 +3128,13 @@ int CPublic_Function::Find_TrayWork_Pos(int nMode, int nSite, int nDVCYesNO, int
 
 			for ( i = 0 ; i < st_recipe.nCarrierBuffer_Num; i++ )//TOP1 MID 2 BTM 3
 			{
-				if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_skip_flag[i] != CTL_YES)
+				if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_skip_flag[i] != CTL_YES)
 				{
 					//if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_idbuffer[i] != CTL_YES )//나중에 바꿔야한다
 					//{
 						if( nDVCYesNO == CTL_NO )//디바이스 Place
 						{
-							if( nRobotSite == THD_LOAD_WORK_RBT && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[i] == nDVCYesNO )
+							if( nRobotSite == THD_LOAD_WORK_RBT && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i] == nDVCYesNO )
 							{
 								if(nFlag == CTL_NO)
 								{
@@ -3095,8 +3147,8 @@ int CPublic_Function::Find_TrayWork_Pos(int nMode, int nSite, int nDVCYesNO, int
 						}
 						else//디바이스 Pick //if( nSite == THD_UNLOAD_WORK_RBT && nDVCYesNO == CTL_YES )
 						{
-							if( nRobotSite == THD_UNLOAD_WORK_RBT && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[i] == nDVCYesNO && /*st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_lot_id*/
-								st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nBin[i] != BIN_LDBUFFERBIN )
+							if( nRobotSite == THD_UNLOAD_WORK_RBT && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i] == nDVCYesNO && /*st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_lot_id*/
+								st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] != BIN_CDIMM )
 							{
 								if(nFlag == CTL_NO)
 								{
@@ -3123,7 +3175,7 @@ int CPublic_Function::Find_TrayWork_Pos(int nMode, int nSite, int nDVCYesNO, int
 				{
 					for(x = nFirstX; x < st_recipe.nHsTrayX; x++) //X 방향 정보 
 					{ 
-						if(st_tray_info[nSite].st_pcb_info[y][x].nYesNo == nDVCYesNO )
+						if(st_tray_info[nSite].st_dvc_info[m][y][x].nYesNo == nDVCYesNO )
 						{
 							if(nFlag == CTL_NO)
 							{
@@ -3232,7 +3284,8 @@ int CPublic_Function::Find_TrayWork_Pos(int nMode, int nSite, int nDVCYesNO, int
 			for(i = 0; i < 3/*st_recipe.nLdBuffer_Num*/; i++)
 			{
 				if( st_basic.n_mode_jig == WITHOUT_JIG ) st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].n_exist[i] = nDVCYesNO;
-				if( st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].n_exist[i] == nDVCYesNO)// &&	st_carrier_buff_info[nSite].n_skip_flag[i] == CTL_YES )
+				if( st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].n_exist[i] == CTL_YES && 
+					st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_EPOXY)// &&	st_carrier_buff_info[nSite].n_skip_flag[i] == CTL_YES )
 				{
 					if(nFlag == CTL_NO)
 					{
@@ -3254,7 +3307,7 @@ int CPublic_Function::Check_Robot_Buffer_Clash( int nRbtTHDSite, int BuffTHDSite
 {//int nBuffStartPos 의 의미는 Buffer, Test site socket의 피커기준 버퍼등의 시작 번호이다 
 	int nFuncRet = RET_GOOD;
 	int i, nRet[4]={0,};
-	int nPara_Num = MAX_SITE_INFO;
+	int nPara_Num = st_recipe.nCarrierBuffer_Num;
 	int nPos=0;
 	int nFisrtPicker=0;
 
@@ -3280,10 +3333,10 @@ int CPublic_Function::Check_Robot_Buffer_Clash( int nRbtTHDSite, int BuffTHDSite
 			else if(BuffTHDSite == THD_LDULD_CARRIER_BUFF)
 			{
 				if(nBuffStartPos > i) continue; //버퍼 번호 순서로 작업할 영역보다 큰 위치 순서에 자재 있으면 충돌하다 // 방지해야 함 
-				if(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[i] == CTL_YES)  
+				if(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i] == CTL_YES)  
 				{	//에러 , 버퍼의 디바이스와 피커의 자재가 충돌 함
 					nErrorInfoStatus[i] = CTL_YES; //에러 정보 셋팅
-					m_strAlarmCode.Format(_T("8%d500%d"), IO_ON,st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[i]);//error 
+					m_strAlarmCode.Format(_T("8%d500%d"), IO_ON,st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i]);//error 
 					nFuncRet = RET_ERROR; 
 				} 
 			}
@@ -3294,7 +3347,7 @@ int CPublic_Function::Check_Robot_Buffer_Clash( int nRbtTHDSite, int BuffTHDSite
 		nFisrtPicker=0;
 		for(i = 0; i < nPara_Num; i++)
 		{
-			if(BuffTHDSite == THD_UNLD_ALIGN_BUFF)
+			if(BuffTHDSite == THD_ULD_ALIGN_BUFF)
 			{
 				if(nBuffStartPos > i) continue; //버퍼 번호 순서로 작업할 영역보다 큰 위치 순서에 자재 있으면 충돌하다 // 방지해야 함 
 				if(st_buffer_info[BuffTHDSite].st_pcb_info[i].nYesNo == CTL_NO)  
@@ -3315,7 +3368,8 @@ int CPublic_Function::Calculate_MovePos_Find(int nMode, int nMotNum, int nSite, 
 {
 	//n_workpos[2]:[0]:x, [1]:y , n_refnum = 작업 시작할 피커 번호, 작업위치 지정 번호   
 	double dBasicPos=0, dVarMveGapVal=0, dCompleteMveVal=0; 
-	int nX=0, nY=0, workpoint=0;
+	int nX=0, nY=0, workpoint=0, nID = 0;
+// 	char Jcode[10];
 
 	switch (nMotNum)
 	{
@@ -3364,6 +3418,7 @@ int CPublic_Function::Calculate_MovePos_Find(int nMode, int nMotNum, int nSite, 
 		else if(nSite == THD_ULD_ALIGN_BUFF)
 		{	
 			dBasicPos = st_motor[nMotNum].md_pos[P_UNLOADER_TRANSFER_Y_ZIGPLACE_POS];
+			dCompleteMveVal =  dBasicPos;
 		}		
 		break;
 
@@ -3411,11 +3466,11 @@ int CPublic_Function::Calculate_MovePos_Find(int nMode, int nMotNum, int nSite, 
 			SaveHeatSinkBoxPos();
 			if( npFindWorkPosYXCPB[4] == 0 )//tray1
 			{
-				dBasicPos = st_work.d_Heatsink1Xpos[npFindWorkPosYXCPB[2]];
+				dBasicPos = st_work.d_Heatsink1Xpos[npFindWorkPosYXCPB[0]+(st_recipe.nHsTrayX*npFindWorkPosYXCPB[1])];
 			}
 			else//tray2
 			{
-				dBasicPos = st_work.d_Heatsink2Xpos[npFindWorkPosYXCPB[2]];
+				dBasicPos = st_work.d_Heatsink2Xpos[npFindWorkPosYXCPB[0]+(st_recipe.nHsTrayX*npFindWorkPosYXCPB[1])];
 			}
 			dCompleteMveVal =  dBasicPos;
 		}
@@ -3434,16 +3489,37 @@ int CPublic_Function::Calculate_MovePos_Find(int nMode, int nMotNum, int nSite, 
 			if( nWorkPart == TOP )
 			{//COMM nuber get teachPos
 				dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_X_PLACE_TOPPOS];
+				nID = atoi(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[TOP]);
+				nID = nID -1;
+				if( nID >= 0)
+					dBasicPos = st_BoatTeaching[nID].m_dPos_x[TOP];
+				else
+					dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_X_PLACE_TOPPOS];
+
 				dCompleteMveVal =  dBasicPos;
 			}
 			else if( nWorkPart == MIDDLE )
 			{
 				dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_X_PLACE_MIDPOS];
+				nID = atoi(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[MIDDLE]);
+				nID = nID -1;
+				if( nID >= 0)
+					dBasicPos = st_BoatTeaching[nID].m_dPos_x[MIDDLE];
+				else
+					dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_X_PLACE_MIDPOS];
+
 				dCompleteMveVal =  dBasicPos;
 			}
 			else// if( nWorkPart == BTM )
 			{
 				dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_X_PLACE_BOTPOS];
+				nID = atoi(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[BTM]);
+				nID = nID -1;
+				if( nID >= 0)
+					dBasicPos = st_BoatTeaching[nID].m_dPos_x[BTM];
+				else
+					dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_X_PLACE_BOTPOS];
+
 				dCompleteMveVal =  dBasicPos;
 			}
 		}
@@ -3455,11 +3531,11 @@ int CPublic_Function::Calculate_MovePos_Find(int nMode, int nMotNum, int nSite, 
 			SaveHeatSinkBoxPos();
 			if( npFindWorkPosYXCPB[4] == 0 )//tray1
 			{
-				dBasicPos = st_work.d_Heatsink1Ypos[npFindWorkPosYXCPB[2]];
+				dBasicPos = st_work.d_Heatsink1Ypos[npFindWorkPosYXCPB[0]+(st_recipe.nHsTrayX*npFindWorkPosYXCPB[1])];
 			}
 			else//tray2
 			{
-				dBasicPos = st_work.d_Heatsink2Ypos[npFindWorkPosYXCPB[2]];
+				dBasicPos = st_work.d_Heatsink2Ypos[npFindWorkPosYXCPB[0]+(st_recipe.nHsTrayX*npFindWorkPosYXCPB[1])];
 			}
 			dCompleteMveVal =  dBasicPos;
 		}
@@ -3478,16 +3554,37 @@ int CPublic_Function::Calculate_MovePos_Find(int nMode, int nMotNum, int nSite, 
 			if( nWorkPart == TOP )
 			{
 				dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_Y_PLACE_TOPPOS];
+				nID = atoi(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[TOP]);
+				nID = nID -1;
+				if( nID >= 0)
+					dBasicPos = st_BoatTeaching[nID].m_dPos_y[TOP];
+				else
+					dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_Y_PLACE_TOPPOS];
+
 				dCompleteMveVal =  dBasicPos;
 			}
 			else if( nWorkPart == MIDDLE )
 			{
 				dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_Y_PLACE_MIDPOS];
+				nID = atoi(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[MIDDLE]);
+				nID = nID -1;
+				if( nID >= 0)
+					dBasicPos = st_BoatTeaching[nID].m_dPos_y[MIDDLE];
+				else
+					dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_Y_PLACE_MIDPOS];
+
 				dCompleteMveVal =  dBasicPos;
 			}
 			else// if( nWorkPart == BTM )
 			{
 				dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_Y_PLACE_BOTPOS];
+				nID = atoi(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[BTM]);
+				nID = nID -1;
+				if( nID >= 0)
+					dBasicPos = st_BoatTeaching[nID].m_dPos_y[BTM];
+				else
+					dBasicPos = st_motor[nMotNum].md_pos[P_HEATSINK_TRANSFER_Y_PLACE_BOTPOS];
+
 				dCompleteMveVal =  dBasicPos;
 			}
 		}
@@ -3646,41 +3743,42 @@ int CPublic_Function::Data_Exchange_PickPlace(int nPickPlace, int nJobCnt, int n
 		{
 			if(nWorkSite ==THD_LDULD_CARRIER_BUFF )
 			{
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nYesNo				= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[npWorkPos[1]];
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBin				= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nBin[npWorkPos[1]];
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetestCnt			= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nRetestCnt[npWorkPos[1]];
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetest			    = st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nRetest[npWorkPos[1]];
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBinNum				= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nBinNum[npWorkPos[1]];
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBdNum				= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nBdNum[npWorkPos[1]];
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nScrCode				= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nScrCode[npWorkPos[1]];
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strLotNo.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_lot_id[npWorkPos[1]]);
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strSerialNo.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chCSerialNo[npWorkPos[1]]);
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strBarcode.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chBarcode[npWorkPos[1]]);
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPartNo.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_part_num[npWorkPos[1]]);
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strArrNo.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chArrNo[npWorkPos[1]]);
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPPID.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chPPID[npWorkPos[1]]);
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPSID.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chPSID[npWorkPos[1]]);
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strWWN.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chWWN[npWorkPos[1]]);
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strCSerialNo.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_lot_id[npWorkPos[1]]);
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nYesNo				= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[npWorkPos[1]];
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBin				= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[npWorkPos[1]];
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetestCnt			= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nRetestCnt[npWorkPos[1]];
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetest			    = st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nRetest[npWorkPos[1]];
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBinNum				= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[npWorkPos[1]];
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBdNum				= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBdNum[npWorkPos[1]];
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nScrCode				= st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nScrCode[npWorkPos[1]];
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strLotNo.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[npWorkPos[1]]);
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strSerialNo.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chCSerialNo[npWorkPos[1]]);
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strBarcode.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[npWorkPos[1]]);
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPartNo.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_part_num[npWorkPos[1]]);
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strArrNo.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chArrNo[npWorkPos[1]]);
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPPID.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chPPID[npWorkPos[1]]);
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPSID.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chPSID[npWorkPos[1]]);
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strWWN.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chWWN[npWorkPos[1]]);
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strCSerialNo.Format( "%s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[npWorkPos[1]]);
 				//////////////////////
 				//data clear
 				/////////////////////////
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].nYesNo = CTL_NO;
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].nBin = -1;
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].nRetestCnt = 0;
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].nRetest = 0;
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].nBinNum = -1;//현재빈만 사용 
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].nBdNum  = -1;
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].nScrCode = -1;
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].strLotNo = _T("");
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].strSerialNo = _T("");
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].strBarcode = _T("");
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].strPartNo = _T("");
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].strArrNo = _T("");
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].strPPID = _T("");
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].strPSID = _T("");
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].strWWN = _T("");
-				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].strCSerialNo = _T("");
+//				memset(&st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE]));
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[npWorkPos[1]] = CTL_NO;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[npWorkPos[1]] = -1;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nRetestCnt[npWorkPos[1]] = 0;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nRetest[npWorkPos[1]] = 0;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[npWorkPos[1]] = -1;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBdNum[npWorkPos[1]] = -1;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nScrCode[npWorkPos[1]] = -1;
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[npWorkPos[1]]);
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chCSerialNo[npWorkPos[1]]);
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[npWorkPos[1]]);
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_part_num[npWorkPos[1]]);
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chArrNo[npWorkPos[1]]);
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chPPID[npWorkPos[1]]);
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chPSID[npWorkPos[1]]);
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chWWN[npWorkPos[1]]);
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[npWorkPos[1]]);
 			}
 		}
 		else if(nRobotSite == THD_HEATSINK_PRBT)
@@ -3732,43 +3830,43 @@ int CPublic_Function::Data_Exchange_PickPlace(int nPickPlace, int nJobCnt, int n
 			//////////////////////////////
 			if(nWorkSite == THD_LD_HEATSINK_BUFF)
 			{
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nYesNo				= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nYesNo;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBin				= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nBin;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetestCnt			= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nRetestCnt;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetest				= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nRetest;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBinNum				= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nBinNum;//현재빈만 사용 
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBdNum				= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nBdNum ;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nScrCode			= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nScrCode;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strLotNo			= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strLotNo;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strSerialNo			= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strSerialNo;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strBarcode			= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strBarcode;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPartNo			= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strPartNo;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strArrNo			= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strArrNo;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPPID				= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strPPID;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPSID				= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strPSID;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strWWN				= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strWWN;
-				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strCSerialNo		= st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strCSerialNo;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nYesNo				= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nYesNo;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBin				= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nBin;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetestCnt			= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nRetestCnt;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetest				= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nRetest;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBinNum				= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nBinNum;//현재빈만 사용 
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBdNum				= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nBdNum ;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nScrCode			= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nScrCode;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strLotNo			= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strLotNo;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strSerialNo			= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strSerialNo;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strBarcode			= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strBarcode;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPartNo			= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strPartNo;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strArrNo			= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strArrNo;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPPID				= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strPPID;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPSID				= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strPSID;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strWWN				= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strWWN;
+				st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strCSerialNo		= st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strCSerialNo;
 
 				//////////////////////
 				//data clear
 				/////////////////////////
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nYesNo = CTL_NO;
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nBin = -1;
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nRetestCnt = 0;
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nRetest = 0;
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nBinNum = -1;//현재빈만 사용 
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nRetestCnt = -1;
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nBdNum  = -1;
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].nScrCode = -1;
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strLotNo = _T("");
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strSerialNo = _T("");
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strBarcode = _T("");
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strPartNo = _T("");
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strArrNo = _T("");
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strPPID = _T("");
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strPSID = _T("");
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strWWN = _T("");
-				st_tray_info[nWorkSite].st_pcb_info[npWorkPos[1]][npWorkPos[0]].strCSerialNo = _T("");
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nYesNo = CTL_NO;
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nBin = -1;
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nRetestCnt = 0;
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nRetest = 0;
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nBinNum = -1;//현재빈만 사용 
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nRetestCnt = -1;
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nBdNum  = -1;
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].nScrCode = -1;
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strLotNo = _T("");
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strSerialNo = _T("");
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strBarcode = _T("");
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strPartNo = _T("");
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strArrNo = _T("");
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strPPID = _T("");
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strPSID = _T("");
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strWWN = _T("");
+				st_tray_info[nWorkSite].st_dvc_info[npWorkPos[4]][npWorkPos[1]][npWorkPos[0]].strCSerialNo = _T("");
 			}
 			else if(nWorkSite == THD_PICK_HEATSINK_DVC)
 			{		
@@ -3910,23 +4008,23 @@ int CPublic_Function::Data_Exchange_PickPlace(int nPickPlace, int nJobCnt, int n
 			}
 			else if(nWorkSite == THD_LDULD_CARRIER_BUFF)
 			{
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_exist[npWorkPos[1]]				= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nYesNo;
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nBin[npWorkPos[1]]				= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBin;
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nRetestCnt[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetestCnt;
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nRetest[npWorkPos[1]]				= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetest;
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nBinNum[npWorkPos[1]]				= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBinNum;//현재빈만 사용 
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nBdNum[npWorkPos[1]]				= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBdNum ;
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nScrCode[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nScrCode;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[npWorkPos[1]]				= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nYesNo;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[npWorkPos[1]]	= BIN_CDIMM;//			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBin;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nRetestCnt[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetestCnt;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nRetest[npWorkPos[1]]				= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetest;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[npWorkPos[1]]				= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBinNum;//현재빈만 사용 
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBdNum[npWorkPos[1]]				= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBdNum ;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nScrCode[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nScrCode;
 
-				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_lot_id[npWorkPos[1]], "%s", st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strLotNo );
-				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chBarcode[npWorkPos[1]], "%s", st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strBarcode );
-				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chSerialNo[nRobotSite], "%s", st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strSerialNo );
-				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_part_num[npWorkPos[1]], "%s",  st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPartNo );
-				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chArrNo[npWorkPos[1]], "%s",  st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strArrNo );
-				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chPPID[npWorkPos[1]], "%s", st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPPID );
-				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chPSID[npWorkPos[1]], "%s",  st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPSID );
-				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chWWN[npWorkPos[1]], "%s",  st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strWWN );
-				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_chCSerialNo[npWorkPos[1]], "%s",  st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strCSerialNo );
+				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[npWorkPos[1]], "%s", st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strLotNo );
+				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[npWorkPos[1]], "%s", st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strBarcode );
+				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chSerialNo[nRobotSite], "%s", st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strSerialNo );
+				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_part_num[npWorkPos[1]], "%s",  st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPartNo );
+				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chArrNo[npWorkPos[1]], "%s",  st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strArrNo );
+				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chPPID[npWorkPos[1]], "%s", st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPPID );
+				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chPSID[npWorkPos[1]], "%s",  st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strPSID );
+				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chWWN[npWorkPos[1]], "%s",  st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strWWN );
+				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chCSerialNo[npWorkPos[1]], "%s",  st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strCSerialNo );
 				//////////////////////
 				//data clear
 				/////////////////////////
@@ -3950,13 +4048,13 @@ int CPublic_Function::Data_Exchange_PickPlace(int nPickPlace, int nJobCnt, int n
 		}
 		else if(nRobotSite == THD_UNLOAD_WORK_RBT)
 		{
-			if(nWorkSite == THD_UNLD_ALIGN_BUFF )
+			if(nWorkSite == THD_ULD_ALIGN_BUFF )
 			{//피커는 정보가 클리어되고, 트레이는 정보를 가진다  	
 			}
 			///////////////////////////////	 
 			//data exchange
 			//////////////////////////////
-			if(nWorkSite == THD_UNLD_ALIGN_BUFF)
+			if(nWorkSite == THD_ULD_ALIGN_BUFF)
 			{
 				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].nYesNo			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nYesNo;
 				st_buffer_info[nWorkSite].st_pcb_info[npWorkPos[0]].nBin			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBin;
@@ -4001,12 +4099,12 @@ int CPublic_Function::Data_Exchange_PickPlace(int nPickPlace, int nJobCnt, int n
 			if( nWorkSite == THD_PLACE_CARRIER_DVC)
 			{		
 				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].n_exist[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nYesNo;
-				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[npWorkPos[1]]				= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBin;
-				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nRetestCnt[npWorkPos[1]]		= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetestCnt;
-				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nRetest[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetest;
-				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBinNum[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBinNum;//현재빈만 사용 
-				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBdNum[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBdNum ;
-				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nScrCode[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nScrCode;
+				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[npWorkPos[1]]				= BIN_HEATSINK;// //			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBin;
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nRetestCnt[npWorkPos[1]]		= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetestCnt;
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nRetest[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nRetest;
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBinNum[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBinNum;//현재빈만 사용 
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBdNum[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nBdNum ;
+// 				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nScrCode[npWorkPos[1]]			= st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].nScrCode;
 				
 // 				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_lot_id[npWorkPos[1]], "%s", st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strLotNo );
 // 				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[npWorkPos[1]], "%s", st_picker[nRobotSite].st_pcb_info[npWorkPos[3]].strBarcode );
@@ -4498,6 +4596,7 @@ int CPublic_Function::Check_Carrier_MoveUp_Enable( int nMode)
 //3 .Mode = 2 밀고 복귀상태
 int CPublic_Function::Check_BeforeMoveUnPressRbt( int nMode )
 {
+	return RET_GOOD;
 	int nFuncRet = RET_ERROR;
 	int nRet[40]= {0,};
 
@@ -4644,7 +4743,7 @@ void CPublic_Function::VppmSet()
 
 	double  fTemp ;
 
-	if(st_basic.n_mode_7387 == 0)
+	if(st_basic.n_3874InspectMode == CTL_YES)
 		fTemp = (st_recipe.fDispenserVppmA/60);
 	else
 		fTemp = 0;
@@ -4697,12 +4796,12 @@ void CPublic_Function::SaveHeatSinkBoxPos()
 	st_work.d_Y_Box1Deg = ((st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRANSFER_X_HEATSINK_BOX_1_4]
 	- st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRANSFER_X_HEATSINK_BOX_1_1]) / (st_recipe.nHsTrayY - 1));
 
-	if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
-	{
-		st_other.str_normal_msg.Format("1.nHeatSinkColCount=%d, nHeatSinkRowCount = %d, d_X_Box1Pos = %f, d_Y_Box1Pos = %f", 
-			st_recipe.nHsTrayX, st_recipe.nHsTrayY, st_work.d_X_Box1Pos, st_work.d_Y_Box1Pos);
-		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 동작 실패 출력 요청
-	}
+// 	if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
+// 	{
+// 		st_other.str_normal_msg.Format("1.nHeatSinkColCount=%d, nHeatSinkRowCount = %d, d_X_Box1Pos = %f, d_Y_Box1Pos = %f", 
+// 			st_recipe.nHsTrayX, st_recipe.nHsTrayY, st_work.d_X_Box1Pos, st_work.d_Y_Box1Pos);
+// 		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 동작 실패 출력 요청
+// 	}
 
 	for ( i = 0; i < st_recipe.nHsTrayX ; i++)
 	{
@@ -4748,89 +4847,6 @@ void CPublic_Function::SaveHeatSinkBoxPos()
 }
 ////
 
-void CPublic_Function::Set_Light_Curtain_Muting_On()	
-{
-	switch(nLightCurtainMutingOnStep)
-	{
-	case 0:
-		if(st_handler.n_MutingOn == 1)
-		{
-			FAS_IO.Set_Out_Bit(st_io.o_Loading_On_Release, IO_ON);
-			lLightCurtainMutingOnTime[0] = GetCurrentTime();
-			nLightCurtainMutingOnStep = 10;
-		}
-		break;
-		
-	case 10:
-		lLightCurtainMutingOnTime[1] = GetCurrentTime();
-		lLightCurtainMutingOnTime[2] = lLightCurtainMutingOnTime[1] - lLightCurtainMutingOnTime[0];
-		
-		if(lLightCurtainMutingOnTime[2] > 1000) //1초 
-		{
-			g_ioMgr.set_out_bit(st_io.o_Loading_On_Release, IO_OFF);
-			lLightCurtainMutingOnTime[0] = GetCurrentTime();
-			nLightCurtainMutingOnStep = 0;
-			st_handler.n_MutingOn = 0;
-		}
-		break;
-	}
-}
-
-void CPublic_Function::Set_Light_Curtain_Muting_Off()	
-{
-	switch(nLightCurtainMutingOffStep)
-	{
-	case 0:
-		if(st_handler.n_MutingOff == 1)
-		{
-			FAS_IO.Set_Out_Bit(st_io.o_Loading_Off_Release, IO_ON);
-			lLightCurtainMutingOffTime[0] = GetCurrentTime();
-			nLightCurtainMutingOffStep = 10;
-		}
-		break;
-		
-	case 10:
-		lLightCurtainMutingOffTime[1] = GetCurrentTime();
-		lLightCurtainMutingOffTime[2] = lLightCurtainMutingOffTime[1] - lLightCurtainMutingOffTime[0];
-		
-		if(lLightCurtainMutingOffTime[2] > 1000) //1초 
-		{
-			g_ioMgr.set_out_bit(st_io.o_Loading_Off_Release, IO_OFF);
-			lLightCurtainMutingOffTime[0] = GetCurrentTime();
-			nLightCurtainMutingOffStep = 0;
-			st_handler.n_MutingOff = 0;
-		}
-		break;
-	}
-}
-
-void CPublic_Function::Case_Assembly_Able_Check()
-{
-	st_handler.n_InterfaceConnectOK = 1;
-	
-	if(g_ioMgr.get_in_bit(st_io.i_Interface_Input_1, IO_ON) == IO_ON && st_handler.n_InterfaceConnectOK == 1)
-	{
-		//		st_inspect.n_InterfaceConnectOK = 0;
-		st_handler.n_CaseAssemblyUnloadingAbleOn = 1;
-		st_handler.nInterLockTimeCheck = GetTickCount();
-	}
-	else
-	{
-		st_handler.n_CaseAssemblyUnloadingAbleOn = 0;
-	}
-}
-
-void CPublic_Function::Case_Assembly_Place_Check()
-{
-	if(g_ioMgr.get_in_bit(st_io.i_Interface_Input_3, IO_ON) == IO_ON)
-	{
-		st_handler.n_HSLowerPlaceAbleCheck = 1;
-	}
-	else
-	{
-		st_handler.n_HSLowerPlaceAbleCheck = 0;
-	}
-}
 //kwlee 2017.0412
 void CPublic_Function::OnBcrReader() //input bcr reader
 {
@@ -4839,7 +4855,8 @@ void CPublic_Function::OnBcrReader() //input bcr reader
 	// 	st_sync.n_barcode_read_serial_num[0][CTL_LEFT] = 0;
 	// 	st_sync.n_barcode_read_serial_num[0][CTL_RIGHT] = 0;
 	st_sync.n_barcode_read_serial_num[0][0] = -1;
-	st_work.strBarcodeRecive = "";//수신 메세지 초기화
+// 	st_work.strBarcodeRecive = "";//수신 메세지 초기화
+	st_msg.mstr_barcode = "";
 	
 	strBcrCommand.Format("%cLON%c", 0x02, 0x03);//바코드 리더기 읽기 시작 명령
 	st_serial.str_snd[BCR_PORT -1] = strBcrCommand;
@@ -4852,22 +4869,6 @@ void CPublic_Function::OnBcrReader() //input bcr reader
 		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 동작 실패 출력 요청
 	}
 	
-}
-void CPublic_Function::HS_Able_Signal(int OnOff)
-{
-	switch(OnOff)
-	{
-	case ON:
-		g_ioMgr.set_out_bit(st_io.o_Interface_Output_1, IO_ON);
-		st_handler.n_HSAbleOn = 1;
-		st_handler.nInterLockTimeCheck = GetTickCount();
-		break;
-		
-	case OFF:
-		g_ioMgr.set_out_bit(st_io.o_Interface_Output_1, IO_OFF);
-		st_handler.n_HSAbleOn = 0;
-		break;
-	}
 }
 
 BOOL CPublic_Function::SendLocalMsg(RCV_STRUCT msg)
@@ -5027,7 +5028,6 @@ BOOL CPublic_Function::SendInspectOsDisable()
 	msg.nDetailInfo = 0;
 	return SendLocalMsg(msg);
 }
-
 
 void CPublic_Function::OnCycleTime(int nMode, CString strLotNo, CString strPartNo, DWORD dwTime1, DWORD dwTime2, DWORD dwTime3)
 {

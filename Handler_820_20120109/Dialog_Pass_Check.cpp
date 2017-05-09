@@ -292,12 +292,12 @@ void CDialog_Pass_Check::OnOK()
 				((CEdit*)GetDlgItem(IDC_EDIT_PASS_CHK_DATA))->SetWindowText(mstr_pass_chk);
 				((CEdit*)GetDlgItem(IDC_EDIT_PASS_CHK_DATA))->SetFocus();
 
-				if (st_handler.cwnd_list != NULL)
-				{
-					st_other.str_abnormal_msg = "Invalid Password.";
-					sprintf(st_msg.c_abnormal_msg, st_other.str_abnormal_msg);
-					st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
-				}
+// 				if (st_handler.cwnd_list != NULL)
+// 				{
+// 					st_other.str_abnormal_msg = "Invalid Password.";
+// 					sprintf(st_msg.c_abnormal_msg, st_other.str_abnormal_msg);
+// 					st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
+// 				}
 				return;
 			}
 

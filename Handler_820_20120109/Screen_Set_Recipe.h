@@ -37,12 +37,37 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Set_Recipe)
 	enum { IDD = IDD_SCREEN_SET_RECIPE };
+	CXPGroupBox	m_group_data_setting;
+	CXPGroupBox	m_group_epoxt_limit_usecnt;
+	CGradientStatic	m_msg_HsRub_Y_Offset;
+	CGradientStatic	m_msg_HsRub_X_Offset;
+	CEXDigitST	m_dgt_HsRub_Y_Offset;
+	CEXDigitST	m_dgt_HsRub_X_Offset;
+	CEXDigitST	m_dgt_Epoxy_UseCnt;
 	CXPGroupBox	m_group_DispenserVppmA;
 	CEXDigitST	m_dgt_DispenserVppmA;
 	CMacButton	m_btn_recipe_cancel;
 	CMacButton	m_btn_recipe_apply;
 	CXPGroupBox	m_group_size_setting;
 	CXPGroupBox	m_group_pitch_data;
+	CXPGroupBox	m_group_Carrier_Move;
+	CGradientStatic	m_msg_Distance;
+	CGradientStatic	m_msg_Offset_30;
+	CGradientStatic	m_msg_Offset_20;
+	CGradientStatic	m_msg_Offset_10;
+	CGradientStatic	m_msg_Offset;
+	CEXDigitST	m_dgt_Offset_Dis;
+	CEXDigitST	m_dgt_Offset_30;
+	CEXDigitST	m_dgt_Offset_20;
+	CEXDigitST	m_dgt_Offset_10;
+	CEXDigitST	m_dgt_Offset;
+	
+	CXPGroupBox	m_group_TrayNum;
+	CXPGroupBox	m_group_Carrier_buff;
+	CXPGroupBox	m_group_Buffer_Num;
+	CEXDigitST	m_dgt_tray_num;
+	CEXDigitST	m_dgt_Ld_Buffer_Num;
+	CEXDigitST	m_dgt_Carrier_Buff_Num;
 	//}}AFX_DATA
 
 // Attributes
@@ -113,11 +138,28 @@ public:
 	
 	int m_nTrayY[2];						// tray Y Á¤º¸.......
 	int m_nTrayX[2];	
-	
+	//kwlee 2017.0416
+	double	dHSCarrierSpreadMoveOffset[2];
+	double	dHSCarrierSpreadMoveDistance[2];
+	double	dHeatSinkCarrierSpreadMove1Offset[2];
+	double	dHeatSinkCarrierSpreadMove2Offset[2];
+	double	dHeatSinkCarrierSpreadMove3Offset[2];
+
+	double	m_dHeatsinkRubXOffset[2];
+	double	m_dHeatsinkRubYOffset[2];
+	int		m_nEpoxyLimitUseCont[2];
+
 	GridControlAlg	m_p_grid;
 	TSpread			*m_grid_operate;
+
+	//kwlee 2017.0421
+	int m_nLdBufferNum[2];
+	int m_nTrayNum[2];
+	int m_nCarrierBufferNum[2];
 // Operations
 public:
+	void OnSetRecipe_Label();
+
 	void OnSetRecipe_EditBox_Set();
 	void OnSetRecipe_Button_Set();
 	BOOL AddItem(int nIndex, WIN32_FIND_DATA *pfd);
@@ -172,6 +214,18 @@ protected:
 	afx_msg void OnBtnRecipeCancle();
 	afx_msg void OnUserControl();
 	afx_msg void OnDgtDispenservppma();
+	afx_msg void OnDgtOffset();
+	afx_msg void OnDgtOffset10();
+	afx_msg void OnDgtOffset20();
+	afx_msg void OnDgtOffset30();
+	afx_msg void OnDgtOffsetDis();
+	afx_msg void OnDgtEpoxyUsecnt();
+	afx_msg void OnDgtHsRubXOffset();
+	afx_msg void OnDgtHsRubYOffset();
+	afx_msg void OnDgtLdBufferNum();
+	afx_msg void OnDgtTrayNum();
+	afx_msg void OnDgtCarrierBuffNum();
+	afx_msg void OnButtonReset();
 	//}}AFX_MSG
 	afx_msg void OnCellClick(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnSetRecipe_Work_Info_Display(WPARAM wParam,LPARAM lParam);

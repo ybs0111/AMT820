@@ -27,6 +27,7 @@
 #include "Run_UldPicker.h"
 #include "Run_Epoxy_Transfer_Robot.h"
 #include "Run_Motors.h"
+#include "SrcPart/APartHandler.h"
 // ******************************************************************************
 
 #include "MyJamData.h"  // 알람 출력 정보 로딩 및 알람 메시지 저장 클래스 
@@ -94,8 +95,12 @@ UINT OnThread_Handler_Check(LPVOID lParam)  // m_Thread[10]
 		Run_Handler_Check.ButtonCheck_BuzzerOff();
 		Run_Handler_Check.ButtonCheck_Auto();
 		Run_Handler_Check.ButtonCheck_Manual();
+		Run_Handler_Check.ButtonSendData();
+		g_handler.Thread_Run();
 // 		Run_Handler_Check.HandlerCheck_Safety();
 // 		Run_Handler_Check.StackerMutingCheck();
+
+
 
 	    Sleep(0);
 		sing.Unlock();

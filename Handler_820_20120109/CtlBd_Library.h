@@ -47,6 +47,7 @@ public:
 	int mn_alarm_type;	//알람의 종류를 셋팅[예)operator error 인지, maint 성 error 인지 셋팅]
 	int mn_alarm_count; //알람 카운트 여부 셋팅 [0:카운트하지 않음, 1:카운트 함]
 	int mn_jampos; //jam 이 발생한 위치의 정보를 저장한다 
+	int m_nMcEmg;
 
 	DWORD m_dwUntil_Wait[100][3];
 

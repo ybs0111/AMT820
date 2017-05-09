@@ -283,12 +283,16 @@ void CDialog_KeyPad::OnOK()
 	{
 		if (atol(mstr_new_val) > atol(st_msg.mstr_pad_high_limit))
 		{
-			st_msg.str_fallacy_msg = _T("Setting Data is Over then Limit!");
+			//st_msg.str_fallacy_msg = _T("Setting Data is Over then Limit!");
+			//kwlee 2017.0421
+			st_other.str_confirm_msg = _T("Setting Data is Over then Limit!");
 			n_error_flag = TRUE;
 		}
 		else if (atol(mstr_new_val) < atol(st_msg.mstr_pad_low_limit))
 		{
-			st_msg.str_fallacy_msg = _T("Setting Data is Lower then Limit!");
+			//st_msg.str_fallacy_msg = _T("Setting Data is Lower then Limit!");
+			//kwlee 2017.0421
+			st_other.str_confirm_msg = _T("Setting Data is Lower then Limit!");
 			n_error_flag = TRUE;
 		}
 

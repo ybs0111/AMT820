@@ -18,7 +18,7 @@ public:
 	int HomeCheck_Mot(int n_Axis, int n_HomeMode, int n_TimeOut);
 	int Get_MotPower(int n_Axis);
 	double Get_MotCurrentPos(int n_Axis);
-
+	
 	long _cmmSxIsDone(long Axis, long *IsDone);
 	long _cmmCfgSetSpeedPattern_T(long Axis, long SpeedMode, double WorkSpeed, double Accel, double Decel);
 	long _cmmSxSetSpeedRatio(long Axis, long SpeedMode, double VelRatio, double AccRatio, double DecRatio);	// check
@@ -27,6 +27,8 @@ public:
 
 	long _cmmIxIsDone( long MapIndex, long *IsDone );
 	long _cmmIxLineToStart(long MapIndex, double* PosList);
+	
+	
 
 public:
 	void OnMain_Motor_Setting();

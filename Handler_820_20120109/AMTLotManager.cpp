@@ -28,10 +28,12 @@ ALot::ALot()
 	m_nCntInput[PRIME] = 0;
 	m_nCntPass[PRIME] = 0;
 	m_nCntFail[PRIME] = 0;
+	m_nCntHsInput[PRIME] = 0;
 
 	m_nCntInput[CUM] = 0;
 	m_nCntPass[CUM] = 0;
 	m_nCntFail[CUM] = 0;
+	m_nCntHsInput[CUM] = 0;
 
 	for( int i=0; i<BIN_MAX; i++ )
 	{
@@ -59,10 +61,12 @@ ALot::ALot( CString strLotID, CString strPartID )
 	m_nCntInput[PRIME] = 0;
 	m_nCntPass[PRIME] = 0;
 	m_nCntFail[PRIME] = 0;
+	m_nCntHsInput[PRIME] = 0;
 
 	m_nCntInput[CUM] = 0;
 	m_nCntPass[CUM] = 0;
 	m_nCntFail[CUM] = 0;
+	m_nCntHsInput[CUM] = 0;
 
 	for( int i=0; i<BIN_MAX; i++ )
 	{
@@ -159,10 +163,13 @@ AMTLotManager::AMTLotManager()
 	m_nCntInput[PRIME] = AMTRegistry::RegReadInt( REG_KEY_COUNT, REG_VAL_COUNT_INPUT_PRIME );
 	m_nCntPass[PRIME] = AMTRegistry::RegReadInt( REG_KEY_COUNT, REG_VAL_COUNT_PASS_PRIME );
 	m_nCntFail[PRIME] = AMTRegistry::RegReadInt( REG_KEY_COUNT, REG_VAL_COUNT_FAIL_PRIME );
+	m_nCntHsInput[PRIME] = AMTRegistry::RegReadInt( REG_KEY_COUNT, REG_VAL_HSCOUNT_INPUT_PRIME );
+
 
 	m_nCntInput[CUM] = AMTRegistry::RegReadInt( REG_KEY_COUNT, REG_VAL_COUNT_INPUT_CUM );
 	m_nCntPass[CUM] = AMTRegistry::RegReadInt( REG_KEY_COUNT, REG_VAL_COUNT_PASS_CUM );
 	m_nCntFail[CUM] = AMTRegistry::RegReadInt( REG_KEY_COUNT, REG_VAL_COUNT_FAIL_CUM );
+	m_nCntHsInput[CUM] = AMTRegistry::RegReadInt( REG_KEY_COUNT, REG_VAL_HSCOUNT_INPUT_CUM );
 
 	for( int i=0; i<BIN_MAX; i++ )
 	{
@@ -336,8 +343,8 @@ void AMTLotManager::AddLot( CString strLotID, CString strPartID )
 
 	m_vecLot.push_back( lot );
 
-//	if( st_handler.cwnd_data_lot )
-//		st_handler.cwnd_data_lot->PostMessage( WM_DRAW_DATA_LOT );
+	if( st_handler.cwnd_data_lot )
+		st_handler.cwnd_data_lot->PostMessage( WM_DRAW_DATA_LOT );
 }
 
 void AMTLotManager::DeleteLot( int iIdx )
@@ -350,8 +357,8 @@ void AMTLotManager::DeleteLot( int iIdx )
 
 	m_vecLot.erase(it);
 
-//	if( st_handler.cwnd_data_lot )
-//		st_handler.cwnd_data_lot->PostMessage( WM_DRAW_DATA_LOT );
+	if( st_handler.cwnd_data_lot )
+		st_handler.cwnd_data_lot->PostMessage( WM_DRAW_DATA_LOT );
 }
 
 void AMTLotManager::ClearCountData()
@@ -359,10 +366,12 @@ void AMTLotManager::ClearCountData()
 	m_nCntInput[PRIME] = 0;
 	m_nCntPass[PRIME] = 0;
 	m_nCntFail[PRIME] = 0;
+	m_nCntHsInput[PRIME] = 0;
 
 	m_nCntInput[CUM] = 0;
 	m_nCntPass[CUM] = 0;
 	m_nCntFail[CUM] = 0;
+	m_nCntHsInput[CUM] = 0;
 
 	for( int i=0; i<BIN_MAX; i++ )
 	{
@@ -372,10 +381,12 @@ void AMTLotManager::ClearCountData()
 	AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_COUNT_INPUT_PRIME, 0 );
 	AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_COUNT_PASS_PRIME, 0 );
 	AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_COUNT_FAIL_PRIME, 0 );
+	AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_HSCOUNT_INPUT_PRIME, 0 );
 
 	AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_COUNT_INPUT_CUM, 0 );
 	AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_COUNT_PASS_CUM, 0 );
 	AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_COUNT_FAIL_CUM, 0 );
+	AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_HSCOUNT_INPUT_CUM, 0 );
 
 	for( i=0; i<BIN_MAX; i++ )
 	{

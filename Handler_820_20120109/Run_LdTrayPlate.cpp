@@ -78,7 +78,7 @@ void CRun_LdTrayPlate::RunInit()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(4000, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8001, dWARNING, m_strAlarmCode);
 				mn_InitStep = 900;
 			}
 			break;
@@ -122,27 +122,28 @@ void CRun_LdTrayPlate::RunMove()
 			m_nFindLotNo_Flag = -1;
 			if( g_lotMgr.GetLotCount() > 0 )
 			{
-				if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
+				if( ( g_lotMgr.GetLotAt(0).GetStrLastModule() != "YES") && g_lotMgr.GetLotAt(0).GetTotLotCount() > 0 && g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
 				{
 					//load plate에 자재 요청
 					m_nFindLotNo_Flag = 0;
 					m_strLotNo = g_lotMgr.GetLotAt(0).GetLotID();
 					m_strPartNo = g_lotMgr.GetLotAt(0).GetPartID();
+					mn_RunStep = 200;
 				}
 				else if( g_lotMgr.GetLotCount() >= 2 )
 				{
-					if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
+					if( ( g_lotMgr.GetLotAt(1).GetStrLastModule() != "YES") && g_lotMgr.GetLotAt(1).GetTotLotCount() > 0 && g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
 					{
 						m_nFindLotNo_Flag = 1;
 						m_strLotNo = g_lotMgr.GetLotAt(1).GetLotID();
 						m_strPartNo = g_lotMgr.GetLotAt(1).GetPartID();
+						mn_RunStep = 200;
 					}
 					else
 					{
 						return;
 					}
 				}
-				mn_RunStep = 200;
 			}
 			break;
 
@@ -152,12 +153,24 @@ void CRun_LdTrayPlate::RunMove()
 			{
 				//930001 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR"
 				m_strAlarmCode.Format(_T("930001"));
-				CTL_Lib.Alarm_Error_Occurrence(21001, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8002, dWARNING, m_strAlarmCode);
 				mn_RunStep = 100;
 			}
 			else 
 			{
-				mn_RunStep = 300;
+				if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetLotID() == st_tray_info[THD_LD_STACKER].strLotNo )
+				{					
+					if( st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_LOAD_WORK_RBT] == LOTEND)//g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES")
+					{
+						Set_Tray_Guide_Clamp_ForBackward(IO_OFF);
+						st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_LD_TRAY_PLATE] = LOTEND;
+						mn_RunStep = 9000;
+					}
+				}
+				else
+				{
+					mn_RunStep = 300;
+				}
 			} 
 			break;
 
@@ -174,7 +187,7 @@ void CRun_LdTrayPlate::RunMove()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1101, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8003, dWARNING, m_strAlarmCode);
 				mn_RunStep = 300;
 			}
 			break;
@@ -208,12 +221,13 @@ void CRun_LdTrayPlate::RunMove()
 			nRet_1 = COMI.Get_MotIOSensor(M_TRAY1_Z, MOT_SENS_SD); 	
 			if(nRet_1 == BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
 			{
+				st_handler.n_partial_lotend = 0;
 				mn_RunStep = 2100;
 			}
 			else 
 			{
 				m_strAlarmCode.Format(_T("910002")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-				CTL_Lib.Alarm_Error_Occurrence(5530, dWARNING, m_strAlarmCode); 
+				CTL_Lib.Alarm_Error_Occurrence(8004, dWARNING, m_strAlarmCode); 
 			}
 			break;
 
@@ -226,12 +240,43 @@ void CRun_LdTrayPlate::RunMove()
 			nRet_1 = Chk_Tray_Guide_Clamp_ForBackward(IO_ON );
 			if(nRet_1 == RET_GOOD)
 			{
-				mn_RunStep = 2200;
+				mn_RunStep = 2120;
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(1101, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8605, dWARNING, m_strAlarmCode);
 				mn_RunStep = 2100;
+			}
+			break;
+
+		case 2120:
+			st_handler.n_partial_lotend++;
+			if( st_basic.n_count_retry < st_handler.n_partial_lotend)
+			{
+				st_handler.n_partial_lotend = 0;
+				mn_RunStep = 2200;
+			}
+			else
+			{
+				mn_RunStep = 2130;
+			}
+			break;
+
+		case 2130:
+			Set_Tray_Guide_Clamp_ForBackward(IO_OFF); 
+			mn_RunStep = 2140;
+			break;
+			
+		case 2140:
+			nRet_1 = Chk_Tray_Guide_Clamp_ForBackward(IO_OFF );
+			if(nRet_1 == RET_GOOD)
+			{
+				mn_RunStep = 2100;
+			}
+			else if(nRet_1 == RET_ERROR)
+			{
+				CTL_Lib.Alarm_Error_Occurrence(8607, dWARNING, m_strAlarmCode);
+				mn_RunStep = 2130;
 			}
 			break;
 
@@ -245,7 +290,7 @@ void CRun_LdTrayPlate::RunMove()
 			else 
 			{
 				m_strAlarmCode.Format(_T("900001")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-				CTL_Lib.Alarm_Error_Occurrence(5550, dWARNING, m_strAlarmCode);			 
+				CTL_Lib.Alarm_Error_Occurrence(8006, dWARNING, m_strAlarmCode);			 
 			} 
 			break;
 
@@ -262,7 +307,7 @@ void CRun_LdTrayPlate::RunMove()
 					else 
 					{
 						m_strAlarmCode.Format(_T("910002")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-						CTL_Lib.Alarm_Error_Occurrence(5560, dWARNING, m_strAlarmCode);			 
+						CTL_Lib.Alarm_Error_Occurrence(8007, dWARNING, m_strAlarmCode);			 
 					} 					
 				}
 				else //if(st_tray_info[THD_LD_TRAY_PLATE].nTrayExist == CTL_NO)
@@ -271,7 +316,7 @@ void CRun_LdTrayPlate::RunMove()
 					if(nRet_1 == BD_GOOD)
 					{
 						m_strAlarmCode.Format(_T("910002")); //910002 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-						CTL_Lib.Alarm_Error_Occurrence(5570, dWARNING, m_strAlarmCode); 
+						CTL_Lib.Alarm_Error_Occurrence(8008, dWARNING, m_strAlarmCode); 
 					}
 					else 
 					{
@@ -282,9 +327,11 @@ void CRun_LdTrayPlate::RunMove()
 			else
 			{
 				if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetLotID() == st_tray_info[THD_LD_STACKER].strLotNo )
-				{
-					if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES")
+				{					
+					if( st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_LOAD_WORK_RBT] == LOTEND)//g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES")
 					{
+						Set_Tray_Guide_Clamp_ForBackward(IO_OFF);
+						st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_LD_TRAY_PLATE] = LOTEND;
 						mn_RunStep = 9000;
 					}
 				}		 
@@ -295,7 +342,6 @@ void CRun_LdTrayPlate::RunMove()
 			nRet_1 = Func.Find_TrayWork_Pos(0, THD_LD_TRAY_PLATE, CTL_YES, m_npFindWorkPosYXCPB, THD_LOAD_WORK_RBT, m_strLotNo);
 			if(nRet_1 == RET_GOOD) //작업 가능한 자재가 있다
 			{
-				// jtkim 20160831
 				for (x=0; x<st_recipe.nTrayX; x++)
 				{
 					for (y=0; y<st_recipe.nTrayY; y++)
@@ -328,46 +374,50 @@ void CRun_LdTrayPlate::RunMove()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(5580, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8009, dWARNING, m_strAlarmCode);
 				mn_RunStep = 6000;
 			}
 			break; 
 
 			//load plate 트레이 교체를 요청 
 		case 6100:			
-			st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ; //트레이 교체를 요청 
-			st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = WORK_PICK; //트레이 집어가라 요청 
-			mn_RunStep = 6200;
+			if( st_sync.nWorkTransfer_Req[THD_EMPTY_STACKER][0] == CTL_CLEAR )
+			{
+				st_sync.nWorkTransfer_Req[THD_LD_TRAY_PLATE][0] = CTL_REQ; //트레이 교체를 요청 
+				st_sync.nWorkTransfer_Req[THD_LD_TRAY_PLATE][1] = WORK_PICK; //트레이 집어가라 요청 
+				mn_RunStep = 6200;
+			}
 			break;
 
 		case 6200:
-			if(st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] == CTL_READY) //트랜스퍼가 트레이를 집고 셋팅 
+			if(st_sync.nWorkTransfer_Req[THD_LD_TRAY_PLATE][0] == CTL_READY) //트랜스퍼가 트레이를 집고 셋팅 
 			{
 				nRet_1 = COMI.Get_MotIOSensor(M_TRAY1_Z, MOT_SENS_SD); 	
-				if(nRet_1 == BD_ERROR) //트레이가 감지 안된 상태 
+				if(nRet_1 == BD_GOOD)//BD_ERROR) //트레이가 감지 안된 상태 
 				{
-					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][0] = CTL_CLEAR;
-					st_sync.nLdWorkRbt_Dvc_Req[THD_LD_TRAY_PLATE][1] = CTL_CLEAR; 
+					st_sync.nWorkTransfer_Req[THD_LD_TRAY_PLATE][0] = CTL_FREE;
+					st_sync.nWorkTransfer_Req[THD_LD_TRAY_PLATE][1] = CTL_CLEAR; 
 					mn_RunStep = 6300;
 				}
 				else 
 				{
 					m_strAlarmCode.Format(_T("910003")); //910003 1 A "LOAD_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-					CTL_Lib.Alarm_Error_Occurrence(5590, dWARNING, m_strAlarmCode);			 
+					CTL_Lib.Alarm_Error_Occurrence(8010, dWARNING, m_strAlarmCode);			 
 				} 
 			}
 			break;
 
 		case 6300:
-			if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetLotID() == st_tray_info[THD_LD_STACKER].strLotNo)
-			{
-				if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES" )
-				{
-					mn_RunStep = 9000;
-					break;
-				}
-			}
-			mn_RunStep = 1000; //스태커에 트레이 공급을 요청위해 처음으로 간다 
+			// 			if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetLotID() == st_tray_info[THD_LD_STACKER].strLotNo)
+			// 			{
+			// 				if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES" )
+			// 				{
+			// 					mn_RunStep = 9000;
+			// 					break;
+			// 				}
+			// 			}
+			if( st_sync.nWorkTransfer_Req[THD_LD_TRAY_PLATE][0] == CTL_CLEAR)
+				mn_RunStep = 1000; //스태커에 트레이 공급을 요청위해 처음으로 간다 
 			break;
 
 		case 9000:
@@ -383,20 +433,20 @@ void CRun_LdTrayPlate::RunMove()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(5580, dWARNING, m_strAlarmCode);
+				CTL_Lib.Alarm_Error_Occurrence(8011, dWARNING, m_strAlarmCode);
 				mn_RunStep = 9000;
 			}
 			break; 
 
 		case 9100:
-			if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetLotID() == st_tray_info[THD_LD_STACKER].strLotNo)
-			{
-				if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES" )
-				{
+// 			if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetLotID() == st_tray_info[THD_LD_STACKER].strLotNo)
+// 			{
+// 				if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES" )
+// 				{
 					mn_RunStep = 0;
 					break;
-				}
-			}		
+// 				}
+// 			}		
 			break; 
 
 		default:

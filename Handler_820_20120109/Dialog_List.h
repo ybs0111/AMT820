@@ -55,11 +55,17 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CDialog_List)
 	enum { IDD = IDD_DIALOG_LIST };
+	CGradientStatic	m_msg_eqp_id;
+	CGradientStatic	m_msg_device_name;
+	CNewLabel	m_label_eqp_id;
+	CNewLabel	m_label_device_name;
+	CNewLabel	m_label_ftp;
+	CGradientStatic	m_msg_ftp;
 	CEdit	m_edit_list_msg;
 	CGradientStatic	m_data_machine;
 	CGradientStatic	m_data_device_name;
 	CNewLabel	m_msg_machine;
-	CNewLabel	m_msg_device_name;
+//	CNewLabel	m_msg_device_name;
 	CColorListBox	m_list_data;
 	CClockST	m_list_clock;
 	//}}AFX_DATA
@@ -112,6 +118,7 @@ protected:
 	//{{AFX_MSG(CDialog_List)
 	afx_msg void OnTimer(UINT nIDEvent);
 	virtual BOOL OnInitDialogBar();
+	afx_msg void OnSelchangeListData();
 	//}}AFX_MSG
 	afx_msg LRESULT OnListDataUpdate(WPARAM wParam,LPARAM lParam) ;  // 수신 메시지 리스트 박스 컨트롤에 추가 메시지 선언
 	DECLARE_MESSAGE_MAP()

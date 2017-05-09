@@ -31,6 +31,7 @@ public:
 	void OnTitle_7387_Mode_Display(int n_device);
 	void OnTitle_3874_Mode_Display(int n_device);
 	void OnTitle_Barcode_Mode_Display(int n_device);
+	void OnTitle_NextMachine_Mode_Display(int n_device);
 	CDialog_Title();   // standard constructor
 
 // Dialog Data

@@ -40,6 +40,7 @@ CRun_EmptyStacker_Elvator::~CRun_EmptyStacker_Elvator()
 void CRun_EmptyStacker_Elvator::Thread_Run()
 {
 
+
 	switch( st_work.mn_run_status)
 	{
 	case dINIT:
@@ -69,7 +70,7 @@ void CRun_EmptyStacker_Elvator::RunInit()
 
 	if( st_handler.mn_init_state[INIT_EMPTYSTACKER_ELV] != CTL_NO ) return;
 
-	st_handler.mn_init_state[INIT_EMPTYSTACKER_ELV] = CTL_YES;
+// 	st_handler.mn_init_state[INIT_EMPTYSTACKER_ELV] = CTL_YES;
 
 	switch(mn_InitStep)
 	{
@@ -82,7 +83,7 @@ void CRun_EmptyStacker_Elvator::RunInit()
 		if( nRet_1 == IO_OFF )
 		{
 			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_unloading_stacker_tray1_type_chk);
-			CTL_Lib.Alarm_Error_Occurrence(3001, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(3501, dWARNING, m_strAlarmCode);
 		}
 		else
 		{
@@ -103,14 +104,15 @@ void CRun_EmptyStacker_Elvator::RunInit()
 		}
 		else if(nRet_1 == RET_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(3002, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(3502, dWARNING, m_strAlarmCode);
 			mn_InitStep = 900;
 		}
 		break;
 		
 	case 300:
-		COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_EN, cmFALSE);    //cmSD_EN=14 //cmFALSE = 0 SD 비활성, cmTRUE = 1 SD 활성 	
-		COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_LATCH, cmTRUE);//16
+// 		COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_EN, cmFALSE);    //cmSD_EN=14 //cmFALSE = 0 SD 비활성, cmTRUE = 1 SD 활성 	
+// 		COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_LATCH, cmTRUE);//16
+		CTL_Lib.SD_Sensor_Enable(0, m_nAxisNum, CTL_NO);
 		mn_InitStep = 310;
 		break;
 		
@@ -123,7 +125,7 @@ void CRun_EmptyStacker_Elvator::RunInit()
 		else if( nRet_1 == BD_ERROR)
 		{
 			mn_InitStep = 900;
-			CTL_Lib.Alarm_Error_Occurrence( 3003, dWARNING, COMI.mc_alarmcode);
+			CTL_Lib.Alarm_Error_Occurrence( 3503, dWARNING, COMI.mc_alarmcode);
 		}
 		break;
 		
@@ -132,7 +134,7 @@ void CRun_EmptyStacker_Elvator::RunInit()
 		if(nRet_1 == BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
 		{//910012 1 A "EMPTY_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
 			m_strAlarmCode.Format(_T("910012"));
-			CTL_Lib.Alarm_Error_Occurrence(3004, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(3504, dWARNING, m_strAlarmCode);
 			mn_InitStep = 900;
 		}
 		else if(nRet_1 == BD_ERROR)//로더 플레이드에 트레이가 감지 되지않은 상태 
@@ -146,7 +148,7 @@ void CRun_EmptyStacker_Elvator::RunInit()
 		if( nRet_1 == IO_ON)
 		{
 			m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_Unloading_Stacker_Tray_Limit_Check);
-			CTL_Lib.Alarm_Error_Occurrence(3005, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(3505, dWARNING, m_strAlarmCode);
 			mn_RunStep = 900;
 		}
 		else
@@ -187,27 +189,28 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		m_nFindLotNo_Flag = -1;
 		if( g_lotMgr.GetLotCount() > 0 )
 		{
-			if( g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
+			if( ( g_lotMgr.GetLotAt(0).GetStrLastModule() != "YES") && g_lotMgr.GetLotAt(0).GetTotLotCount() > 0 && g_lotMgr.GetLotAt(0).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(0).GetTotLotCount() )
 			{
 				//load plate에 자재 요청
 				m_nFindLotNo_Flag = 0;
 				m_strLotNo = g_lotMgr.GetLotAt(0).GetLotID();
 				m_strPartNo = g_lotMgr.GetLotAt(0).GetPartID();
+				mn_RunStep = 10;
 			}
 			else if( g_lotMgr.GetLotCount() >= 2 )
 			{
-				if( g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
+				if( ( g_lotMgr.GetLotAt(1).GetStrLastModule() != "YES") && g_lotMgr.GetLotAt(1).GetTotLotCount() > 0 && g_lotMgr.GetLotAt(1).GetPassCnt(PRIME) < g_lotMgr.GetLotAt(1).GetTotLotCount() )
 				{
 					m_nFindLotNo_Flag = 1;
 					m_strLotNo = g_lotMgr.GetLotAt(1).GetLotID();
 					m_strPartNo = g_lotMgr.GetLotAt(1).GetPartID();
+					mn_RunStep = 10;
 				}
 				else
 				{
 					return;
 				}
 			}
-			mn_RunStep = 10;
 		}
 		break;
 
@@ -224,20 +227,20 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-			CTL_Lib.Alarm_Error_Occurrence(6050, dWARNING, alarm.mstr_code);
+			CTL_Lib.Alarm_Error_Occurrence(3506, dWARNING, alarm.mstr_code);
 			mn_RunStep = 10;
 		}
 		break; 
 
 	case 100:
 		nRet_1 = Ready_Stacker_Move_Check(0);
-		if( 	nRet_1 == RET_GOOD )
+		if( nRet_1 == RET_GOOD )
 		{
 			mn_RunStep = 200;
 		}
 		else if( nRet_1 == RET_ERROR )
 		{
-			CTL_Lib.Alarm_Error_Occurrence(2100, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(3507, dWARNING, m_strAlarmCode);
 		}
 		break;
 
@@ -246,7 +249,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		if(nRet_1 == BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
 		{
 			m_strAlarmCode.Format(_T("910102")); //910102 1 A "EMPTY_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-			CTL_Lib.Alarm_Error_Occurrence(6060, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(3601, dWARNING, m_strAlarmCode);
 		}
 		else if(nRet_1 == BD_ERROR)//로더 플레이드에 트레이가 감지 되지않은 상태 
 		{
@@ -266,7 +269,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-			CTL_Lib.Alarm_Error_Occurrence(6050, dWARNING, alarm.mstr_code);
+			CTL_Lib.Alarm_Error_Occurrence(3602, dWARNING, alarm.mstr_code);
 			mn_RunStep = 300;
 		}
 		break; 
@@ -278,7 +281,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 			mn_RunStep = 500;
 			break;
 			//m_strAlarmCode.Format(_T("910103")); //910103 1 A "EMPTY_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-			//CTL_Lib.Alarm_Error_Occurrence(4100, dWARNING, m_strAlarmCode);
+			//CTL_Lib.Alarm_Error_Occurrence(3603, dWARNING, m_strAlarmCode);
 		}
 		else if(nRet_1 == BD_ERROR)
 		{
@@ -302,7 +305,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Unloading_Stacker_Tray_Exist_Check);  
 			else
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Unloading_Stacker_Tray_Ready_Check);  
-			CTL_Lib.Alarm_Error_Occurrence(4110, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(3604, dWARNING, m_strAlarmCode);
 		}
 		break;
 
@@ -310,35 +313,40 @@ void CRun_EmptyStacker_Elvator::RunMove()
 	// empty stacker와 연관하여 작업하는 영역
 	//////////////////////////////////////////////////////////////////////////////////
 	case 1000:
-			if(st_sync.nWorkTransfer_Req[THD_EMPTY_STACKER][0] == CTL_REQ) //트랜스퍼에서 empty stacker에 빈 트레이를 놓게 요청
+		if(st_sync.nWorkTransfer_Req[THD_EMPTY_STACKER][0] == CTL_REQ) //트랜스퍼에서 empty stacker에 빈 트레이를 놓게 요청
+		{
+			if(st_sync.nWorkTransfer_Req[THD_EMPTY_STACKER][1] == WORK_PLACE)
 			{
-				if(st_sync.nWorkTransfer_Req[THD_EMPTY_STACKER][1] == WORK_PLACE)
+				mn_RunStep = 2000;
+			}						
+		}	
+		else
+		{
+// 			if(m_nFindLotNo_Flag == 0 )//LOT_CURR
+// 			{
+				if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES" &&
+					st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_WORK_TRANSFER] == LOTEND &&
+					st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_EMPTY_STACKER] != LOTEND)
 				{
-					mn_RunStep = 2000;
-				}						
-			}	
-			else
-			{
-				if(m_nFindLotNo_Flag == 0 )//LOT_CURR
-				{
-					if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES" &&
-						st_sync.nLotEndFlag[THD_WORK_TRANSFER] == dLOTEND &&
-						st_sync.nLotEndFlag[THD_EMPTY_STACKER] != dLOTEND)
-					{
-						mn_RunStep = 9000;
-					}
+					mn_RunStep = 9000;
 				}
-				else if(m_nFindLotNo_Flag == 1 ) //LOT_NEXT
+// 			}
+// 			else if(m_nFindLotNo_Flag == 1 ) //LOT_NEXT
+// 			{
+// 				if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES" &&
+// 					st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_WORK_TRANSFER] == dLOTEND &&
+// 					st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_EMPTY_STACKER] != dLOTEND)
+// 				{
+// 					mn_RunStep = 9000;
+// 				}
+// 			}
+
+				if( g_lotMgr.GetLotCount() <= 0)
 				{
-					if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES" &&
-						st_sync.nLotEndFlag[THD_WORK_TRANSFER] == dLOTEND &&
-						st_sync.nLotEndFlag[THD_EMPTY_STACKER] != dLOTEND)
-					{
-						mn_RunStep = 9000;
-					}
+					mn_RunStep = 9000;
 				}
-			}
-			break;
+		}
+		break;
 
 	case 1100:
 		nRet_1 = CTL_Lib.Elevator_Job_Move_Pos(0, m_nAxisNum,  P_ELV_RECEIVE_OFFSET); //트레이를 트랜스퍼에서 받는다 
@@ -346,7 +354,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		if(nRet_1 == RET_GOOD)
 		{
 			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Unloading_Stacker_Tray_Exist_Check); 
-			CTL_Lib.Alarm_Error_Occurrence(4130, dWARNING, m_strAlarmCode); 
+			CTL_Lib.Alarm_Error_Occurrence(3605, dWARNING, m_strAlarmCode); 
 
 			mn_RunStep = 1000;
 		}
@@ -380,7 +388,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		break;
 
 	case 3200:
-		nRet_1 = CTL_Lib.Elevator_Job_Move_Pos(0, m_nAxisNum,  P_ELV_SUPPLY_OFFSET); //트레이를 트랜스퍼에서 받는다 
+		nRet_1 = CTL_Lib.Elevator_Job_Move_Pos(0, m_nAxisNum,  P_ELV_RECEIVE_OFFSET); //트레이를 트랜스퍼에서 받는다 
 
 		if(nRet_1 == RET_GOOD)
 		{
@@ -407,7 +415,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 					{
 						m_nRetry = 0;
 						m_strAlarmCode.Format(_T("900004")); //900001 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR" //kwlee 2016.0902 "900000" ->"900004"
-						CTL_Lib.Alarm_Error_Occurrence(4180, dWARNING, m_strAlarmCode); 
+						CTL_Lib.Alarm_Error_Occurrence(3607, dWARNING, m_strAlarmCode); 
 					}
 					mn_RunStep = 3200;
 
@@ -429,7 +437,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 
 			if (nRet_1 == BD_GOOD) //좌측으로 이동  
 			{			
-				st_sync.nLotEndFlag[THD_EMPTY_STACKER] = dLOTEND;
+				st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_EMPTY_STACKER] = LOTEND;
 				mn_RunStep = 0;
 			}
 			else if (nRet_1 == BD_RETRY)
@@ -438,7 +446,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-				CTL_Lib.Alarm_Error_Occurrence(4200, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(3608, dWARNING, alarm.mstr_code);
 				mn_RunStep = 9100;
 			}
 			break; 

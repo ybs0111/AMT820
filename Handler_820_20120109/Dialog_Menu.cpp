@@ -112,7 +112,7 @@ void CDialog_Menu::OnCreate_Menu_ListBox()
 		m_list_menu.AddString(_T("Operation"), 0);
 		m_list_menu.AddString(_T("Work"), 1);
 		m_list_menu.AddString(_T("Alarm"), 2);
-		m_list_menu.AddString(_T("Step"), 3);
+		m_list_menu.AddString(_T("Boat Teaching"), 3); //kwlee 2017.0421 Step -> Boat Teaching
 		m_list_menu.AddString(_T("WaitTime"), 4); //kwlee 2017.0406
 		m_list_menu.AddString(_T("Recipe"), 5); //kwlee 2017.0407
 	}
@@ -200,7 +200,9 @@ void CDialog_Menu::OnMenu_ID_Sending(CString str_selected_menu)
 	{
 		::PostMessage(st_handler.hWnd, WM_FORM_CHANGE, 6, 3);
 	}
-	else if (str_selected_menu == "Step")
+	//else if (str_selected_menu == "Step")
+	//kwlee 2017.0421
+	else if (str_selected_menu == "Boat Teaching")
 	{
 		::PostMessage(st_handler.hWnd, WM_FORM_CHANGE, 6, 4);
 	}

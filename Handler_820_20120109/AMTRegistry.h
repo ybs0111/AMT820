@@ -10,17 +10,17 @@
 #endif // _MSC_VER > 1000
 
 #include <string>
-#define REG_KEY_TIME				"Software\\AMT\\AMT8520\\TIME\\"
+#define REG_KEY_TIME				"Software\\AMT\\AMT820\\TIME\\"
 #define REG_VAL_TIME				"DAILY"
 
-#define REG_KEY_COK					"Software\\AMT\\AMT8520\\COK\\"
+#define REG_KEY_COK					"Software\\AMT\\AMT820\\COK\\"
 #define REG_VAL_ROBOT_COK			"ROBOT_COK"
 
 #define REG_VAL_ITEM_CNT			"ITEM_CNT"
 #define REG_VAL_SITE_COK			"SITE"
 #define REG_VAL_HIFIX_POS			"HIFIX"
 
-#define REG_KEY_COUNT				"Software\\AMT\\AMT8520\\COUNT\\"
+#define REG_KEY_COUNT				"Software\\AMT\\AMT820\\COUNT\\"
 #define REG_VAL_HSCOUNT_INPUT_PRIME	"HSINPUT_PRIME"
 #define REG_VAL_COUNT_INPUT_PRIME	"INPUT_PRIME"
 #define REG_VAL_COUNT_PASS_PRIME	"PASS_PRIME"
@@ -34,18 +34,20 @@
 #define REG_VAL_COUNT_TS			"TS"
 
 #define REG_VAL_COUNT_ALARM			"ALARM"
+#define REG_VAL_COUNT_EPOXY			"EPOXYCNT"
+#define REG_VAL_TIME_HARDNESS		"HARDNESSTIME"
 
 
-#define REG_KEY_BIN					"Software\\AMT\\AMT8520\\BIN\\"
+#define REG_KEY_BIN					"Software\\AMT\\AMT820\\BIN\\"
 #define REG_VAL_TS_BIN_HISTORY		"TS_BIN_HISTORY"
 
-#define REG_KEY_TEACH				"Software\\AMT\\AMT8520\\TEACH\\"
+#define REG_KEY_TEACH				"Software\\AMT\\AMT820\\TEACH\\"
 
-#define REG_KEY_USE_SOCKET			"Software\\AMT\\AMT8520\\USE_SOCKET\\"
-#define REG_KEY_SOCKET_CAUSE		"Software\\AMT\\AMT8520\\SOCKET_CAUSE\\"
+#define REG_KEY_USE_SOCKET			"Software\\AMT\\AMT820\\USE_SOCKET\\"
+#define REG_KEY_SOCKET_CAUSE		"Software\\AMT\\AMT820\\SOCKET_CAUSE\\"
 #define REG_VAL_SOCKET_TS			"CSOCKET"
 
-#define REG_KEY_RECIPE				"Software\\AMT\\AMT8520\\RECIPE\\"
+#define REG_KEY_RECIPE				"Software\\AMT\\AMT820\\RECIPE\\"
 #define REG_VAL_ID					"ID"
 
 

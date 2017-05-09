@@ -12,12 +12,23 @@
 
 // 
 // #ifndef PASCAL
-// #define PASCAL						__stdcall
+// #define PASCAL						__stdcztall
 // #endif	// PASCAL
 // 
 // #ifndef EXPORT
 // #define EXPORT
 // #endif	// EXPORT
+enum 
+{ 
+	STOP		= 0,
+	RUN			= 1,
+	ALARM		= 2,
+	LOTEND		= 3,
+	INIT		= 4,
+	WARNING		= 5,
+	LOCK		= 6,
+	SELFCHECK	= 7
+};
 
 enum ENUM_INIT_SITE
 {
@@ -54,6 +65,7 @@ enum LOG_TYPE
 	LOG_MOTOR,
 	LOG_DISABLE,
 	LOG_TEST,
+	LOG_LOT_PRO,
 	LOG_TOTAL = 99
 };
 
@@ -78,8 +90,11 @@ enum SAFETY_FLAG
 #define MAX_SITE_INFO		10
 #define MACHINE_MANUAL			0
 #define MACHINE_AUTO			1
-
-
+#define CLS_REAR              0 //kwlee 2017.0417
+//kwlee 2017.0420               
+#define MAX_BCR_CNT          12 
+#define MAX_BOAT_CNT          3 
+#define MAX_BOAT_GRID_CNT     38
 // *****************************************************************************
 //////////vision camera
 #define MEASURE_RESULT_RCV_7387		0
@@ -254,14 +269,14 @@ enum ENUM_WM_MESSAGE
 // *****************************************************************************
 //  Main Screen 출력용 메세지 정의                                              
 // *****************************************************************************
-#define MAIN_TIMEINFO		9
-#define MAIN_COUNTINFO		10
-#define MAIN_LOTINFO		21
-#define MAIN_CYCLETIME		22
-#define MAIN_FTPDOWN        23
-//kwlee 2017.0413
-#define MAIN_TOP_INFO       24
-#define MAIN_BTM_INFO       25
+#define MAIN_TIMEINFO		60
+#define MAIN_COUNTINFO		61
+#define MAIN_LOTINFO		62
+#define MAIN_CYCLETIME		63
+#define MAIN_FTPDOWN        64
+//kwlee 2017.0414
+#define MAIN_TOP_INFO       65
+#define MAIN_BTM_INFO       66
 // *****************************************************************************
 
 
@@ -279,6 +294,7 @@ enum ENUM_WM_MESSAGE
 #define MODE_7387           8
 #define MODE_3874           9
 #define MODE_BCR           10
+#define NEXTMACHINE_MODE   11
 // *****************************************************************************
 
 // *****************************************************************************
@@ -380,12 +396,12 @@ enum ENUM_WM_MESSAGE
 // RS-232C 시리얼 통신 시 사용되는 메시지 정의                                   
 // -> MAX_PORT : 기본 포트 2개로 구성되어 있다						             
 // *************************************************************************
-#define MAX_PORT				10	// 생성할 시리얼 포트 갯수
+#define MAX_PORT				3	// 생성할 시리얼 포트 갯수
 #define COM_ERROR				-1	// 에러 메시지
 #define LOT_BARCODE_PORT		1		// 현재 BCR READ 포트 번호
 #define DEVICE_BARCODE_PORT		2		// 현재 BCR READ 포트 번호
 
-#define BCR_PORT	        2 //kwlee 201704.12
+#define BCR_PORT	        1 //kwlee 201704.12
 #define COM_PORT			0
 #define COM_BAUDRATE		1
 #define COM_DATA			2
@@ -787,6 +803,10 @@ enum ENUM_WM_MESSAGE
 #define ULD_MOVING_SAFETY				2
 #define MOVING_NOT_SAFETY				3
 
+#define HEATSINK_MOVIMG_SAFETY			1
+#define EPOXY_MOVIMG_SAFETY				2
+#define FREE_HS_EPOXY_SAFETY			3
+
 //kwlee 2017.0411
 // 0 : 제어->검사 , 1 : 경화액 도포 불량 , 2: 점 불량 , 3: 선 두께 불량, 4: 중심점 편심 
 // 5: 삐침 불량 , 6 : 모양 불량 7, 선 짧음 , 8:  heatSink MisAlign
@@ -815,6 +835,7 @@ enum PICKER_PICKPLACE_INFO
 // I/O 동작 대기 시간 및 리미트 시간 저장 구조체 선언                            
 // *************************************************************************
 #define MAX_WAIT_TIME 40
+
 
 enum WAIT_TIME
 {
@@ -851,7 +872,7 @@ enum THREAD_SYNC_VARIBLE_SITE_INFO  //위치별 트레이 존재 유무를 위치별로 정의해 
 	THD_LD_TRAY_PLATE,
 	THD_LD_ALIGN_BUFF,
 	THD_ULD_ALIGN_BUFF,
-	THD_UNLD_ALIGN_BUFF,
+// 	THD_UNLD_ALIGN_BUFF,
 	THD_LDULD_CARRIER_BUFF,
 	THD_UNPRESS_RBT,
 	THD_EPOXY_RBT,//	THD_BILLIARD,RBT,
@@ -913,6 +934,8 @@ struct st_handler_param
 
 	CWnd *cwnd_motorAxis;
 	CWnd *cwnd_motor_with_io;
+	CWnd *cwnd_lot_end;
+	CWnd *cwnd_teachAxis;
 
 	CWnd* cwnd_data_lot;
 	CWnd* cwnd_data_testsite;
@@ -1276,6 +1299,14 @@ struct st_handler_param
 	int	nHeatSinkLightCurtainFlag;
 	int n_HeatSinkMutingOn;
 
+	DWORD m_dwEpoxyCleanWaitTime[3];
+	int	 m_nEpoxyCleanAlarm;
+
+	int m_nAssemblyAble;
+
+	DWORD m_dwHardnessUseWaitTime[3];
+	int m_nHardnessUseTime;
+
 };
 extern  st_handler_param  st_handler;
 // *****************************************************************************
@@ -1323,6 +1354,8 @@ struct st_serial_param
 	int n_serial_data[10];
 	int n_serial_parity[10];
 	int n_serial_stop[10];
+
+	BYTE	bBuff[256];
 };
 extern  st_serial_param  st_serial;
 // *************************************************************************
@@ -1546,12 +1579,6 @@ struct st_basic_param
 	double dEpoxyXLineOffSet;
 	double dEpoxyYLineOffSet;
 	
-	double dHSCarrierSpreadMoveOffset;
-	double dHSCarrierSpreadMoveDistance;
-	double dHeatSinkCarrierSpreadMove1Offset;
-	double dHeatSinkCarrierSpreadMove2Offset;
-	double dHeatSinkCarrierSpreadMove3Offset;
-	
 	int n_rubb_count;
 	int n_Light_Curtain_Mode;
 	int n_mode_case_assembly;
@@ -1561,6 +1588,8 @@ struct st_basic_param
 	int n_3874InspectAlarmSkipMode; //kwlee 2017.0411
 	int n7387AlarmCount;
 	int n_3874InspectMode;
+	int n_EPoxyCleanTime;//epoxy clean 시간
+	int n_HardnessUseTime;//경화제 시용시간
 };
 extern  st_basic_param  st_basic;
 // ******************************************************************************
@@ -1893,6 +1922,7 @@ struct st_work_param
 	// **************************************************************************
 	int mn_run_status;  // 장비 동작 상태 정보 저장 변수 (O:STOP   1:RUN    2:ALARM    3:MAINT    4:INIT)
 	int mn_run_EpoxyStatus;
+	int mn_run_HeatSinkStatus;
 	// **************************************************************************
 	int mn_tl_status;					// 타워램프 상태 정보 저장 변수 (O:STOP 1:RUN(IN PCB) 2:ALARM 3:MAINT 4:INIT 5:RUN(NO PCB))
 
@@ -1988,6 +2018,8 @@ struct st_work_param
 
 	//EPOXY
 	int nEpoxyBiliardThreadRunMode;
+	int nHeatSinkRubThreadRunMode;
+	int nEpoxySuspendingMode;
 	int nJigEpoxyWorkCount;
 
 	CTimeSpan m_boardtime[TESTSIZE][SITEMAINBOARD];
@@ -2008,6 +2040,9 @@ struct st_work_param
 	//kwlee 2017.0406
 	int n_barcode_recive;
 	CString strBarcodeRecive;
+
+	int n_OnlyCarrierMove;
+	CString n_DataYes[10];
 };
 extern  st_work_param  st_work;
 
@@ -2076,7 +2111,7 @@ extern  st_other_param  st_other;
 // *************************************************************************
 struct st_sync_param
 {
-	int nLotEndFlag[30];			// lot end 여부를 판가름 한다 YES이면 해당 쓰레드 LOT END
+	int nLotEndFlag[2][30];			// lot end 여부를 판가름 한다 YES이면 해당 쓰레드 LOT END
 	int n_init_flag[20];
 
 	int nLdUldSateyflag;
@@ -2143,6 +2178,7 @@ extern st_sync_param	st_sync;
 #define YELLOW_D				RGB(128, 128, 0)
 #define YELLOW_L				RGB(255, 255, 193)
 #define GREEN_C					RGB(0,255,0)
+#define GREEN_B					RGB(0,255,64)
 #define GREEN_L					RGB(150,255,150)
 #define GREEN_D					RGB(0,100,20)
 #define DSERBLE_BC				RGB(210,210,230)
@@ -2166,7 +2202,9 @@ extern st_sync_param	st_sync;
 #define YELLOW_GC				0xFFFF
 #define TEST_BC					RGB(194, 231, 150)
 #define IN_BC					RGB(204, 153, 255)
-#define GRAY					RGB(90, 80, 80)
+#define PINK_D					RGB(252, 233, 218)
+#define COL_PUPLE				RGB(204,102,204)
+
 #define DVC_READY_C				RGB(153, 153, 255)
 #define DVC_LOAD_C				RGB(239, 214, 198)
 #define DVC_NOVIDEO_C			RGB(0,100,20)
@@ -2176,6 +2214,7 @@ extern st_sync_param	st_sync;
 #define DVC_START_C				RGB(150, 255, 150)
 #define DVC_NO_C				RGB(128, 128, 0)
 
+#define GRAY					RGB(90, 80, 80)                     
 #define THICKNESS_FAIL			RGB(255,255,0)
 #define LENGTH_FAIL				RGB(0xFF, 0x68, 0x20)
 #define BARCODE_FAIL			RGB(255, 0, 0)
@@ -2276,6 +2315,8 @@ struct st_client_param
 
 	char		ch_rev[1024];	// 수신내용....
 	char		ch_send[1024];  // 송신내용....
+
+	int			n_DataYes;
 };
 extern st_client_param st_client[10];
 
@@ -2326,6 +2367,15 @@ struct st_serial_info
 };
 extern struct st_serial_info rs_232;
 
+//kwlee 2017.0420
+struct st_BoatTeaching_param 
+{
+	double m_dPos_x[3];
+	double m_dPos_y[3];
+	double m_dPos_z[3];	
+	
+} ;
+extern st_BoatTeaching_param st_BoatTeaching[MAX_BCR_CNT];
 
 struct st_time_database
 {
@@ -2733,6 +2783,17 @@ struct tagRECIPE_INFO
 	double nRubHSRunSpeed;
 
 	int fDispenserVppmA;
+	
+	//kwlee 2017.0416
+	double dHSCarrierSpreadMoveOffset;
+	double dHSCarrierSpreadMoveDistance;
+	double dHeatSinkCarrierSpreadMove1Offset;
+	double dHeatSinkCarrierSpreadMove2Offset;
+	double dHeatSinkCarrierSpreadMove3Offset;
+	
+	double dHeatsinkRubXOffset;
+	double dHeatsinkRubYOffset;
+	int	nEpoxyUseLimitCont;//Epoxy 사용 횟수
 };
 extern tagRECIPE_INFO	st_recipe;
 
@@ -3075,51 +3136,76 @@ enum HEATSINK_INSPECT_Z
 
 
 //Buffer_Info 3개의 사이트
-#define MAX_SHIFT_DATA_NUM		12 //최대 데이타 
+#define MAX_SHIFT_DATA_NUM		19 //최대 데이타 
 //TOP : 7개 사이트  [7][3]
 //BTM : 7개 사이트  [7][3]
 
-#define TOP			0
-#define MIDDLE		1
-#define BTM			2
+#define TOP				0
+#define MIDDLE			1
+#define BTM				2
 
 //BIN_VALUE -> 0:Load_bin 1:Epoxy bin 2: Heat_sink bin 3:Vision_bin 4: 자재 없음
 #define  BIN_CDIMM		1
 #define  BIN_EPOXY		2
 #define  BIN_HEATSINK	3
 #define  BIN_VISION		4
-#define  BIN_GOOD		5
+#define  BIN_GOOD		5 //kwlee 2017.0414
+#define  BIN_FAIL		6
+
+// #define  TOPSHIFT_BUFF_LOADER_RECEIVE				0
+// #define  TOPSHIFT_BUFF_INPUT_LOADER					1			
+// #define  TOPSHIFT_BUFF_EPOXY						2					
+// #define  TOPSHIFT_BUFF_WAIT_INDEX					3				
+// #define  TOPSHIFT_BUFF_HEATSINK_VISION				4			
+// #define  TOPSHIFT_BUFF_OUTSEND						5					
+// #define  TOPSHIFT_BUFF_UNLOADER						6					
+// #define  BTMSHIFT_BUFF_DOWN,
+// #define  BTMSHIFT_BUFF_DOWNFORWARD,
+// #define  BTMSHIFT_BUFF_HEATSINK_DOWN,
+// #define  BTMSHIFT_BUFF_INDEX_DOWN,
+// #define  BTMSHIFT_BUFF_EPOXY_DOWN,
+// #define  BTMSHIFT_BUFF_INPUT_DOWN,
+// #define  BTMSHIFT_BUFF_LOADER_DOWN,
+// #define  TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE,	
+// #define  TOPSHIFT_DATA_TEMP_CHECK,
+// #define  TOPSHIFT_IDBUFF_SEALING_SITE_ALL_CHK,
+// #define  BTMSHIFT_DATA_TEMP_CHECK,
+// #define	BTMSHIFT_IDBUFF_SEALING_SITE_ALL_CHK,
 
 
-enum carrier_top_buffer_move_info_shift //carrier buffer가 이동하면서 각각의 정보를 유지 및 생성하면서 쉬프트한다 
-{
-	TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE = 0,
-	
-	TOPSHIFT_BUFF_LOADER_RECEIVE,		//Loader에 carrier를 공급한 상태 또는 초기화 후 맨처음 상태
-	TOPSHIFT_BUFF_INPUT_LOADER ,				//Epoxy 전 상태
-	TOPSHIFT_BUFF_EPOXY,							//EPOXY
-	TOPSHIFT_BUFF_WAIT_INDEX,					//Heatsink vison 대기 상태
-	TOPSHIFT_BUFF_HEATSINK_VISION,			//Heatsink vision 상태
-	TOPSHIFT_BUFF_OUTSEND,								//send 전상태
-	TOPSHIFT_BUFF_UNLOADER,							//Unload 상태
 
-	TOPSHIFT_DATA_TEMP_CHECK,
-	TOPSHIFT_IDBUFF_SEALING_SITE_ALL_CHK
-};
+// enum carrier_top_buffer_move_info_shift //carrier buffer가 이동하면서 각각의 정보를 유지 및 생성하면서 쉬프트한다 
+// {
+// 	TOPSHIFT_BUFF_LOADER_RECEIVE		= 0,		//Loader에 carrier를 공급한 상태 또는 초기화 후 맨처음 상태
+// 	TOPSHIFT_BUFF_INPUT_LOADER ,				//Epoxy 전 상태
+// 	TOPSHIFT_BUFF_EPOXY,							//EPOXY
+// 	TOPSHIFT_BUFF_WAIT_INDEX,					//Heatsink vison 대기 상태
+// 	TOPSHIFT_BUFF_HEATSINK_VISION,			//Heatsink vision 상태
+// 	TOPSHIFT_BUFF_OUTSEND,								//send 전상태
+// 	TOPSHIFT_BUFF_UNLOADER,							//Unload 상태
+// 	
+// 	
+// 	TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE = 16,
+// 	
+// 	
+// 	TOPSHIFT_DATA_TEMP_CHECK,
+// 	TOPSHIFT_IDBUFF_SEALING_SITE_ALL_CHK
+// };
+// 
+// enum carrier_btm_buffer_move_info_shift
+// {
+// 	BTMSHIFT_BUFF_DOWN					= 7,
+// 	BTMSHIFT_BUFF_DOWNFORWARD,
+// 	BTMSHIFT_BUFF_HEATSINK_DOWN,
+// 	BTMSHIFT_BUFF_INDEX_DOWN,
+// 	BTMSHIFT_BUFF_EPOXY_DOWN,
+// 	BTMSHIFT_BUFF_INPUT_DOWN,
+// 	BTMSHIFT_BUFF_LOADER_DOWN,
+// 	
+// 	BTMSHIFT_DATA_TEMP_CHECK,
+// 	BTMSHIFT_IDBUFF_SEALING_SITE_ALL_CHK
+// };
 
-enum carrier_btm_buffer_move_info_shift
-{
-	BTMSHIFT_BUFF_DOWN,
-	BTMSHIFT_BUFF_DOWNFORWARD,
-	BTMSHIFT_BUFF_HEATSINK_DOWN,
-	BTMSHIFT_BUFF_INDEX_DOWN,
-	BTMSHIFT_BUFF_EPOXY_DOWN,
-	BTMSHIFT_BUFF_INPUT_DOWN,
-	BTMSHIFT_BUFF_LOADER_DOWN,
-
-	BTMSHIFT_DATA_TEMP_CHECK,
-	BTMSHIFT_IDBUFF_SEALING_SITE_ALL_CHK
-};
 
 struct st_carrier_buffer_info_param
 { 

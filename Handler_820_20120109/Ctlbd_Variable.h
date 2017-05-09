@@ -129,6 +129,7 @@ enum IO_METHOD_INFO  //robot site 정보
 #define CTL_DVC_SKIP		2		//피커 정보를 스킵할 때 사용 
 #define CTL_END				3		//어떤 조건의 작업을 모두 완료한 상태 //091026 추가 
 
+
 //#define CTL_READY			2		//어떤 조건을 요청한 후 상대방이 준비를 완료한 상태  
 
 //Find function return value

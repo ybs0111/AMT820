@@ -1,5 +1,5 @@
-#if !defined(AFX_SCREEN_LIST_STEP_H__801DB059_9152_4298_BDEC_105AD9743B11__INCLUDED_)
-#define AFX_SCREEN_LIST_STEP_H__801DB059_9152_4298_BDEC_105AD9743B11__INCLUDED_
+#if !defined(AFX_SCREEN_LIST_STEP_H__801DB059_9152_4298_BDEC_105AD9743B12_INCLUDED_)
+#define AFX_SCREEN_LIST_STEP_H__801DB059_9152_4298_BDEC_105AD9743B12_INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -31,16 +31,16 @@
 #include <afxext.h>
 #endif
 
-class CScreen_List_Step : public CFormView
+class CScreen_List_BoatTeacing : public CFormView
 {
 public:
-	CScreen_List_Step();           // protected constructor used by dynamic creation
-	DECLARE_DYNCREATE(CScreen_List_Step)
+	CScreen_List_BoatTeacing();           // protected constructor used by dynamic creation
+	DECLARE_DYNCREATE(CScreen_List_BoatTeacing)
 
 // Form Data
 public:
 	//{{AFX_DATA(CScreen_List_Step)
-	enum { IDD = IDD_SCREEN_LIST_STEP };
+	enum { IDD = IDD_SCREEN_LIST_BOAT_TEACHING };
 	CNewLabel	m_msg_thread_11;
 	CGradientStatic	m_data_thread_11;
 	CNewLabel	m_msg_thread_9;
@@ -65,6 +65,25 @@ public:
 	CGradientStatic	m_data_thread_2;
 	CGradientStatic	m_data_thread_1;
 	CXPButton	m_btn_step_save;
+	//kwlee 2017.0422
+	CButtonST	m_btn_right_X;
+	CButtonST	m_btn_left_X;
+	CButtonST	m_btn_home_X;
+	CButtonST	m_btn_emg_X;
+
+	CButtonST	m_btn_right_Y;
+	CButtonST	m_btn_left_Y;
+	CButtonST	m_btn_home_Y;
+	CButtonST	m_btn_emg_Y;
+
+	CButtonST	m_btn_right_Z;
+	CButtonST	m_btn_left_Z;
+	CButtonST	m_btn_home_Z;
+	CButtonST	m_btn_emg_Z;
+
+	CXPGroupBox m_group_X_Pos;
+	CXPGroupBox m_group_Y_Pos;
+	CXPGroupBox m_group_Z_Pos;
 	//}}AFX_DATA
 
 // Attributes
@@ -93,6 +112,36 @@ public:
 	CString mstr_thread_9;
 	CString mstr_thread_10;
 	CString mstr_thread_11;
+
+	//kwlee 2017.0420
+	double m_dBoatPos_X[2][12][3]; //2 : DATA, 12 : BCR, 3 : TOP/MID/BTM
+	double m_dBoatPos_Y[2][12][3]; //2 : DATA, 12 : BCR, 3 : TOP/MID/BTM
+	double m_dBoatPos_Z[2][12][3]; //2 : DATA, 12 : BCR, 3 : TOP/MID/BTM
+
+	int m_nAxis;
+	int m_nCmdRow;
+	int m_nCmdCol;
+	
+	//kwlee 2017.0421
+	int m_nBcrNum;
+	int m_nPos;
+	int m_n_move_mode_X;
+	int m_n_move_mode_Y;
+	int m_n_move_mode_Z;
+
+	TSpread			*m_grid_Boat_pos_X;
+	TSpread			*m_grid_Boat_pos_Y;
+	TSpread			*m_grid_Boat_pos_Z;
+	
+	//kwlee 2017.0422
+	TSpread			*m_grid_Boat_info_X;
+	TSpread			*m_grid_Boat_info_Y;
+	TSpread			*m_grid_Boat_info_Z;
+	GridControlAlg	m_p_grid;
+
+	double m_d_data_x;
+	double m_d_data_y;
+	double m_d_data_z;
 	/* ************************************************************************** */
 
 // Operations
@@ -107,8 +156,24 @@ public:
 	void OnList_Step_Data_Display();
 	void OnList_Step_Data_Set();
 	void OnList_Step_Lable_Set();
-	void OnList_Step_GroupBox_Set();
+	void OnList_Step_GroupBox_Set(); 
+	
+	//kwlee 2017.0420
+	void OnDataInit();
+	void MotorCompletion(int nPos,int nrow,int ncol);
+	void OnInitGridPos_X();
+	void OnInitGridPos_Y();
+	void OninitGridPos_Z();
+		
+	//kwlee 2017.0422
+	void OnInitGrid_X_info();
+	void OnInitGrid_Y_info();
+	void OnInitGrid_Z_info();
+	void OnInit_Button();
 
+	void Motor_X_PositionCheck();
+	void Motor_Y_PositionCheck();
+	void Motor_Z_PositionCheck();
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CScreen_List_Step)
@@ -121,7 +186,7 @@ public:
 
 // Implementation
 protected:
-	virtual ~CScreen_List_Step();
+	virtual ~CScreen_List_BoatTeacing();
 #ifdef _DEBUG
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
@@ -131,7 +196,20 @@ protected:
 	//{{AFX_MSG(CScreen_List_Step)
 	afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnBtnStepSave();
+	//kwlee 2017.0422
+	afx_msg void OnBtnEmg_X();
+	afx_msg void OnBtnHome_X();
+
+	afx_msg void OnBtnEmg_Y();
+	afx_msg void OnBtnHome_Y();
+
+	afx_msg void OnBtnEmg_Z();
+	afx_msg void OnBtnHome_Z();
 	//}}AFX_MSG
+	afx_msg void OnCellClick(WPARAM wParam, LPARAM lParam);
+	afx_msg LRESULT OnMotorCompletion(WPARAM wParam,LPARAM lParam);
+	LONG OnUserLButtonDown(WPARAM wParam, LPARAM lParam);
+	LONG OnUserLButtonUp(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 };
 
@@ -140,4 +218,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_SCREEN_LIST_STEP_H__801DB059_9152_4298_BDEC_105AD9743B11__INCLUDED_)
+#endif // !defined(AFX_SCREEN_LIST_STEP_H__801DB059_9152_4298_BDEC_105AD9743B12_INCLUDED_)

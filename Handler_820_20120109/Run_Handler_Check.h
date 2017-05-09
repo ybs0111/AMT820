@@ -23,6 +23,7 @@ public:
 	int SoundStep;
 	int mn_autostep;
 	int mn_manualstep;
+	int mn_send_step;
 	int FrontDoorStep;
 	int n_emo_chk;
 	int n_air_chk;
@@ -34,6 +35,7 @@ public:
 	DWORD m_dwSafetyWaitTime[3];
 	DWORD m_dwAutoWaitTime[3];
 	DWORD m_dwManualWaitTime[3];
+	DWORD m_dwNetWorkWaitTime[3];
 
 public:
 	void ButtonCheck_BuzzerOff();
@@ -46,6 +48,7 @@ public:
 	void ButtonCheck_Auto();
 	void ButtonCheck_Manual();
 	void StackerMutingCheck();
+	void ButtonSendData();
 
 	CRun_Handler_Check();
 	virtual ~CRun_Handler_Check();

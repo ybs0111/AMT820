@@ -291,7 +291,9 @@ LONG WINAPI UnHandledExceptionFilter(struct _EXCEPTION_POINTERS *exceptionInfo)
 int DoModal_Msg( CString strMsg )
 {
 	CDialog_Message msg_dlg;
-	st_msg.str_fallacy_msg = strMsg;
+	//st_msg.str_fallacy_msg = strMsg;
+	//kwlee 2017.0421
+	st_other.str_confirm_msg = strMsg;
 				
 	return msg_dlg.DoModal();
 }

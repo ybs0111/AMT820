@@ -127,6 +127,7 @@ struct st_io_param
 	int	i_Press_PIN_Guide_Backward_Check;
 	int i_Press_Carrier_Holder_Up_Check;
 	int i_Press_Carrier_Holder_Down_Check;
+	int i_Epoxy_Y_Axis_Safety_Check;
 
 	int	i_Transfer1_Clamp_Forward_Check;				///PS0502
 	int	i_Transfer1_Clamp_Backward_Check;				///PS0503

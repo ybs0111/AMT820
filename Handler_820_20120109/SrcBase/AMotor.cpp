@@ -258,6 +258,10 @@ void AMotor::_finish_manual()
 		{
 			st_handler.cwnd_motorAxis->PostMessage( WM_MOTOR_COMPLETION, m_MotMoveMode, 0 );
 		}
+		if( st_handler.cwnd_teachAxis )
+		{
+			st_handler.cwnd_teachAxis->PostMessage( WM_MOTOR_COMPLETION, m_MotMoveMode, 0 );
+		}
 
 //		if( st_handler.cwnd_visionteaching )
 //		{

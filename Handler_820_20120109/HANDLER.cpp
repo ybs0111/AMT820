@@ -131,6 +131,22 @@ BOOL CHANDLERApp::InitInstance()
 	m_pMainWnd->ShowWindow(SW_SHOWMAXIMIZED);
 	m_pMainWnd->UpdateWindow();
 
+
+	//////////////////////////////////////////////////////////////////////////
+	//Func.CaseAssemblyConnect();
+	WORD         wTotalBoard , wInitialCode;
+	wInitialCode=PIODA_DriverInit();
+	if( wInitialCode!=PIODA_NoError )
+	{
+		//      MessageBox(hwnd,"No PIO-DA4/DA8/DA16 card in this system !!!","PIO Card Error",MB_OK);
+	}
+	
+	wTotalBoard = PIODA_SearchCard(&wTotalBoard,PIO_DA);
+	if( wTotalBoard==0 )
+	{
+		////
+	}
+	//////////////////////////////////////////////////////////////////////////
 	return TRUE;
 }
 

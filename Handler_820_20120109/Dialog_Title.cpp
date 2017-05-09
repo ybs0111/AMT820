@@ -175,6 +175,10 @@ LRESULT CDialog_Title::OnStatusDataUpdate(WPARAM wParam,LPARAM lParam)
 	{
 		OnTitle_Interface_Mode_Display(mn_change);
 	}
+	else if(wParam == NEXTMACHINE_MODE)	// Next Machine Mode
+	{
+		OnTitle_NextMachine_Mode_Display(mn_change);
+	}
 	else if(wParam == MODEL_MODE)
 	{
 
@@ -242,10 +246,16 @@ void CDialog_Title::OnTitle_Form_Name_Change(int nViewID)
 			mstr_form_name += _T("\n");
 			mstr_form_name += _T(" Screen: Alarm");
 			break;
-		case IDW_SCREEN_LIST_STEP :
+// 		case IDW_SCREEN_LIST_STEP :
+// 			mstr_form_name = _T(" Menu: List");
+// 			mstr_form_name += _T("\n");
+// 			mstr_form_name += _T(" Screen: Step");
+// 			break;
+			//kwlee 2017.0421
+		case IDW_SCREEN_LIST_BOATTEACING :
 			mstr_form_name = _T(" Menu: List");
 			mstr_form_name += _T("\n");
-			mstr_form_name += _T(" Screen: Step");
+			mstr_form_name += _T(" Screen: Boat Teaching");
 			break;
 		case IDW_SCREEN_LIST_DATA_VIEW:
 			mstr_form_name = _T(" Menu: List");
@@ -491,19 +501,44 @@ void CDialog_Title::OnTitle_Interface_Mode_Display(int ninterface)
 			break;
 	}
 */	
-	switch(ninterface)
-	{
-		case 0:
-			m_msg_interface_mode_info.SetColor(RGB(255,0,0));
-			str_interface = _T("자동 콘베어");
-			break;	
-		case 1:
-			m_msg_interface_mode_info.SetColor(RGB(0,0,255));
-			str_interface = _T("수동 콘베어");
-			break;
-	}
+// 	switch(ninterface)
+// 	{
+// 		case 0:
+// 			m_msg_interface_mode_info.SetColor(RGB(255,0,0));
+// 			str_interface = _T("자동 콘베어");
+// 			break;	
+// 		case 1:
+// 			m_msg_interface_mode_info.SetColor(RGB(0,0,255));
+// 			str_interface = _T("수동 콘베어");
+// 			break;
+// 	}
+// 
+// 	m_msg_interface_mode_info.SetWindowText(_T(str_interface));
+}
 
-	m_msg_interface_mode_info.SetWindowText(_T(str_interface));
+void CDialog_Title::OnTitle_NextMachine_Mode_Display(int n_device)
+{
+	CString str_device;   // 임시 저장 변수
+	
+	switch(n_device)
+	{
+	case NOT_USE:
+		m_msg_interface_mode_info.SetColor(RGB(255,0,0));
+		str_device = _T("체결기비사용");
+		break;
+		
+	case USE:
+		m_msg_interface_mode_info.SetColor(RGB(0,0,255));
+		str_device = _T("체결기사용");
+		break;
+		
+	default:
+		m_msg_interface_mode_info.SetColor(RGB(255,0,0));
+		str_device = _T("ERROR");
+		break;
+	}
+	
+	m_msg_interface_mode_info.SetWindowText(_T(str_device));
 }
 
 BOOL CDialog_Title::DestroyWindow() 

@@ -87,7 +87,7 @@ public:
 	int mn_errormsg_debug_mode; //에러 메세지 출력방법 => 0:사용안함 , 1:사용
 	int mn_simulation_mode;		//가상 동작을 사용시 사용  => 0:사용안함 , 1:사용  
 
-	int mn_max_move_limit_time;	//모터 동작 리미트시간 설정
+	int mn_max_move_limit_time[BD_MAX_MOTOR];	//모터 동작 리미트시간 설정
 	int mn_max_home_limit_time; //홈 체크 리미트 시간 설정 
 
 	int mn_run_status;			//장비 가동상태 정보를 받아온다 	

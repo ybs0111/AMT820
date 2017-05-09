@@ -10,6 +10,8 @@
 #include "FastechPublic_IO.h"			// Cylinder 동작 Class
 #include "ComizoaPublic.h"
 #include "IO_Manager.h"
+#include "AMTLotManager.h"
+#include "SrcPart/APartHandler.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -30,6 +32,7 @@ CRun_Handler_Check::CRun_Handler_Check()
 	n_air_chk = FALSE;
 	mn_autostep = 0;
 	mn_manualstep = 0;
+	mn_send_step = 0;
 }
 
 CRun_Handler_Check::~CRun_Handler_Check()
@@ -165,7 +168,7 @@ void CRun_Handler_Check::ButtonCheck_Start()
 		}
 	
 		// Air 감지 센서를 확인한다.
-		if (g_ioMgr.get_in_bit( st_io.i_Main_Air1_Check, IO_OFF) == IO_OFF || g_ioMgr.get_in_bit( st_io.i_Main_Air2_Check, IO_OFF) == IO_OFF)
+		if (g_ioMgr.get_in_bit( st_io.i_Main_Air1_Check, IO_OFF) == IO_ON || g_ioMgr.get_in_bit( st_io.i_Main_Air2_Check, IO_OFF) == IO_ON)
 		{
 			Func.OnSet_IO_Port_Sound(IO_ON);
 //			st_msg.mstr_abnormal_msg = _T("[AIR CHECK] Though supply Air, become Run.");
@@ -311,6 +314,17 @@ void CRun_Handler_Check::ButtonCheck_Start()
 		break;
 
 	case 1000:
+		if( st_work.mn_machine_mode != MACHINE_AUTO )
+		{
+			//801400 0 A "AUTO_SWITCHCHECK_ERROR."
+			CTL_Lib.Alarm_Error_Occurrence(3003, dWARNING, "801400");
+			StartStep = 0;
+			break;
+		}
+
+
+
+
 		Func.OnSet_IO_Port_Run();									// 장비 상태 : 동작 상태인 경우 I/O 출력 내보내는 함수
 		alarm.mn_emo_alarm = FALSE;
 		n_emo_chk = FALSE;
@@ -342,7 +356,7 @@ void CRun_Handler_Check::ButtonCheck_Stop()
 		if (g_ioMgr.get_in_bit(st_io.i_Stop_SwitchCheck, IO_ON) == IO_ON && st_work.mn_run_status != dSTOP)
 		{
 			// 만일 Start Button이 같이 눌렸다면 동작되지 않는다.
-			if (g_ioMgr.Get_In_Bit(st_io.i_Stop_SwitchCheck) == TRUE)
+			if (g_ioMgr.Get_In_Bit(st_io.i_Start_SwitchCheck) == TRUE)
 			{
 				break;
 			}
@@ -368,16 +382,17 @@ void CRun_Handler_Check::ButtonCheck_Stop()
 	case 200: 
 		SwitchWaitTime[1] = GetCurrentTime();
 		SwitchWaitTime[2] = SwitchWaitTime[1] - SwitchWaitTime[0];
+		if(SwitchWaitTime[2] <= 0)
+		{
+			SwitchWaitTime[0] = GetCurrentTime();
+			break;
+		}
 		
 		if(SwitchWaitTime[2] > 50 && g_ioMgr.get_in_bit(st_io.i_Stop_SwitchCheck, IO_OFF) == IO_OFF)
 		{
 			SwitchWaitTime[0] = GetCurrentTime();
 			StopStep = 300;
 		}//2012,1220
-		else if(SwitchWaitTime[2] < 0)
-		{
-			SwitchWaitTime[0] = GetCurrentTime();
-		}
 		else if (g_ioMgr.get_in_bit(st_io.i_Stop_SwitchCheck, IO_OFF) == IO_OFF)
 		{
 			StopStep = 0;
@@ -498,12 +513,12 @@ void CRun_Handler_Check::ButtonCheck_Reset()
 				if (alarm.mn_reset_status == YES)
 				{
 					alarm.mn_reset_status = NO;
-					st_other.str_normal_msg = _T("[JAM RESET] JAM RESET.");
-					sprintf(st_msg.c_normal_msg, st_other.str_normal_msg);
-					if (st_handler.cwnd_list != NULL)
-					{
-						st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
-					}
+// 					st_other.str_normal_msg = _T("[JAM RESET] JAM RESET.");
+// 					sprintf(st_msg.c_normal_msg, st_other.str_normal_msg);
+// 					if (st_handler.cwnd_list != NULL)
+// 					{
+// 						st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
+// 					}
 //					g_ioMgr.Set_Out_Bit(st_io.o_AlarmClear_SwitchLamp, IO_OFF);
 					g_ioMgr.set_out_bit(st_io.o_AlarmClear_SwitchLamp, IO_OFF);
 					if(st_work.mn_run_status != dRUN)
@@ -511,16 +526,18 @@ void CRun_Handler_Check::ButtonCheck_Reset()
 						Func.OnSet_IO_Port_Stop();
 					}
 					Func.OnSet_IO_Port_Sound(IO_OFF);
+					g_ioMgr.set_out_bit(st_io.o_AlarmClear_SwitchLamp, IO_OFF);
 				}
 				else
 				{
-					st_other.str_normal_msg = _T("[SOUND] OFF.");
-					sprintf(st_msg.c_normal_msg, st_other.str_normal_msg);
-					if (st_handler.cwnd_list != NULL)
-					{
-						st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
-					}
+// 					st_other.str_normal_msg = _T("[SOUND] OFF.");
+// 					sprintf(st_msg.c_normal_msg, st_other.str_normal_msg);
+// 					if (st_handler.cwnd_list != NULL)
+// 					{
+// 						st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
+// 					}
 					Func.OnSet_IO_Port_Sound(IO_OFF);
+					g_ioMgr.set_out_bit(st_io.o_AlarmClear_SwitchLamp, IO_OFF);
 				}
 				ResetStep = 0;
 			}
@@ -729,8 +746,8 @@ void CRun_Handler_Check::HandlerCheck_Safety()
 	//////MutingCheck
 	if(st_basic.n_Light_Curtain_Mode == 0)
 	{
-		Func.Set_Light_Curtain_Muting_On();	//Light Curtain Muting On
-		Func.Set_Light_Curtain_Muting_Off();	//Light Curtain Muting On
+		g_handler.Set_Light_Curtain_Muting_On();	//Light Curtain Muting On
+		g_handler.Set_Light_Curtain_Muting_Off();	//Light Curtain Muting On
 // 		PublicFunction.Set_Light_Curtain_Muting_On_HeatSink();
 // 		PublicFunction.Set_Light_Curtain_Muting_Off_HeatSink();
 	}
@@ -764,8 +781,8 @@ void CRun_Handler_Check::HsInterfaceChk()
 	//INTERLOCK
 	if(st_basic.n_mode_case_assembly == 0)
 	{
-		Func.Case_Assembly_Able_Check();
-		Func.Case_Assembly_Place_Check();
+		g_handler.Case_Assembly_Able_Check();
+		g_handler.Case_Assembly_Place_Check();
 	}
 	else
 	{
@@ -821,7 +838,7 @@ void CRun_Handler_Check::HsInterfaceChk()
 void CRun_Handler_Check::ButtonCheck_Auto()
 {
 	int nRet;
-	if(st_work.mn_run_status == dRUN)			return;
+	if(st_work.mn_run_status == dRUN)				return;
 	if(st_handler.n_system_lock != FALSE)			return; // 현재 시스템 Lock 상태인 경우 리턴 
 	if(st_work.mn_machine_mode	== MACHINE_AUTO)	return;
 
@@ -840,14 +857,19 @@ void CRun_Handler_Check::ButtonCheck_Auto()
 			{
 				m_dwAutoWaitTime[1] = GetTickCount();
 				m_dwAutoWaitTime[2] = m_dwAutoWaitTime[1] - m_dwAutoWaitTime[0];
-
-				if(m_dwAutoWaitTime[2] > 2000)
+				if(m_dwAutoWaitTime[2] <= 0) m_dwAutoWaitTime[0] = GetTickCount();
+				if(m_dwAutoWaitTime[2] > 500)
 				{
 					mn_autostep = 200;
 				}
 			}
 			else
 			{
+				alarm.n_alarm_assign_section = 3003; 
+				alarm.mn_type_mode = CTL_dWARNING; 
+				st_work.mn_run_status = CTL_dWARNING;
+				//801400 0 A "AUTO_SWITCHCHECK_ERROR."
+				CTL_Lib.Alarm_Error_Occurrence(3003, dWARNING, "801400");
 				mn_autostep = 0;
 			}
 			break;
@@ -867,7 +889,9 @@ void CRun_Handler_Check::ButtonCheck_Auto()
 				alarm.n_alarm_assign_section = 3003; 
 				alarm.mn_type_mode = CTL_dWARNING; 
 				st_work.mn_run_status = CTL_dWARNING;
-				mn_autostep = 300;
+// 				//801400 0 A "AUTO_SWITCHCHECK_ERROR."
+// 				CTL_Lib.Alarm_Error_Occurrence(3003, dWARNING, "801400");
+				mn_autostep = 0;
 			}
 			break;
 
@@ -912,7 +936,6 @@ void CRun_Handler_Check::ButtonCheck_Manual()
 			}
 			else
 			{
-
 				mn_manualstep = 0;
 			}
 			break;
@@ -923,6 +946,116 @@ void CRun_Handler_Check::ButtonCheck_Manual()
 			Func.OnSet_IO_Port_Stop();
 			mn_manualstep = 0;
 			break;
+	}
+}
+
+void CRun_Handler_Check::ButtonSendData()
+{
+	int nRet = 0, nLot = 0, nType = 0;
+	CString strSendData = "";
+// 	if(st_work.mn_run_status != dRUN)		    	return;
+	if(st_handler.n_system_lock != FALSE)			return; // 현재 시스템 Lock 상태인 경우 리턴 
+
+	switch(mn_send_step)
+	{
+	case 0:
+		if( st_work.n_DataYes[0] == "YES")
+		{
+			mn_send_step = 100;
+		}
+		break;
+
+	case 100:
+		st_client[0].str_ip = "10.0.0.1";
+		st_client[0].n_port = 20000;
+
+// 		if (st_client[0].n_connect == YES)
+// 		{
+// 			mn_send_step = 200;
+// 		}
+// 		else
+// 		{
+			::SendMessage( st_handler.hWnd, WM_CLIENT_MSG_1, CLIENT_CONNECT, 0 );
+			m_dwNetWorkWaitTime[0] = GetCurrentTime();
+			mn_send_step = 110;
+// 		}
+		break;
+
+	case 110:
+		if(st_client[0].n_connect == YES )
+		{
+			mn_send_step = 200;
+		}
+		else
+		{
+			m_dwNetWorkWaitTime[1] = GetCurrentTime();
+			m_dwNetWorkWaitTime[2] = m_dwNetWorkWaitTime[1] - m_dwNetWorkWaitTime[0];
+			if( m_dwNetWorkWaitTime[2] <= 0 ) m_dwNetWorkWaitTime[0] = GetCurrentTime();
+			
+			if( m_dwNetWorkWaitTime[2] > 5000 )
+			{
+				::SendMessage( st_handler.hWnd, WM_CLIENT_MSG_1, CLIENT_CLOSE, 0 );
+				m_dwNetWorkWaitTime[0] = GetCurrentTime();
+				mn_send_step = 120;
+			}
+		}
+		break;
+
+	case 120:
+		m_dwNetWorkWaitTime[1] = GetCurrentTime();
+		m_dwNetWorkWaitTime[2] = m_dwNetWorkWaitTime[1] - m_dwNetWorkWaitTime[0];
+		
+		if (m_dwNetWorkWaitTime[2] <= 0)
+		{
+			m_dwNetWorkWaitTime[0] = GetCurrentTime();
+			break;
+		}
+		
+		if (m_dwNetWorkWaitTime[2] > 5000)
+		{
+			mn_send_step = 100;
+		}
+		break;
+
+	case 200:
+		if( g_lotMgr.GetLotAt(0).GetDvcType() == "SFF") nType = 1;
+		else if( g_lotMgr.GetLotAt(0).GetDvcType()  == "TFF") nType = 2;
+		else nType = -1;
+		strSendData.Format( "%s,%ld,%ld,%s,%s,%d,%s,%ld,%ld,%s,%s,%d,", g_lotMgr.GetLotAt(0).GetLotID(), g_lotMgr.GetLotAt(0).GetTotLotCount(), 
+			g_lotMgr.GetLotAt(0).GetPassCnt(PRIME),g_lotMgr.GetLotAt(0).GetStrLastModule(), g_lotMgr.GetLotAt(0).GetPartID(), 
+			nType, g_lotMgr.GetLotAt(1).GetLotID(), g_lotMgr.GetLotAt(1).GetTotLotCount(), 
+			g_lotMgr.GetLotAt(1).GetPassCnt(PRIME),g_lotMgr.GetLotAt(1).GetStrLastModule(),g_lotMgr.GetLotAt(1).GetPartID(), 
+			nType);
+		
+		sprintf(st_client[0].ch_send, "%s", strSendData);
+		::SendMessage( st_handler.hWnd, WM_CLIENT_MSG_1, CLIENT_SEND, 0 );
+		m_dwNetWorkWaitTime[0] = GetCurrentTime();
+		mn_send_step = 300;
+
+	case 300:
+		if( st_client[0].n_rev_info == YES )
+		{
+			st_work.n_DataYes[0] = "NO";
+			mn_send_step = 0;
+			break;
+		}
+		m_dwNetWorkWaitTime[1] = GetCurrentTime();
+		m_dwNetWorkWaitTime[2] = m_dwNetWorkWaitTime[1] - m_dwNetWorkWaitTime[0];
+		
+		if (m_dwNetWorkWaitTime[2] <= 0)
+		{
+			m_dwNetWorkWaitTime[0] = GetCurrentTime();
+			break;
+		}
+		
+		if (m_dwNetWorkWaitTime[2] > 5000)
+		{
+			st_work.n_DataYes[0] = "NO";
+			mn_send_step = 0;
+		}
+
+		break;
+
 	}
 }
 
@@ -949,7 +1082,7 @@ void CRun_Handler_Check::StackerMutingCheck()
 	{
 		/////////스타트 시작시 뮤팅 시작 ..
 		st_handler.n_MutingOn = 1;//파워오프 O
-		Func.nLightCurtainMutingOnStep = 0;
+		g_handler.nLightCurtainMutingOnStep = 0;
 		st_handler.n_HeatSinkMutingOn = 1;
 		//Func.nLightCurtainHeatSinkMutingOnStep = 0;
 		
