@@ -28,6 +28,7 @@ Class16=CDialog_Infor
 Class17=CDialog_Keyboard
 Class18=CDialog_KeyPad
 Class19=CDialog_List
+<<<<<<< HEAD
 Class20=CDialog_Lot_End
 Class21=CDialog_LotStart
 Class22=CDialog_Manual_Move
@@ -166,6 +167,142 @@ Resource43=IDD_DIALOG_KEYBOARD
 Resource44=IDD_SCREEN_LIST_BOAT_TEACHING
 Class110=CDeviceEditdlg
 Resource45=IDD_DIALOG_TRAY
+=======
+Class20=CDialog_LotStart
+Class21=CDialog_Manual_Move
+Class22=CDialog_Memo
+Class23=CDialog_Menu
+Class24=CDialog_Message
+Class25=CDialog_Motor_Axis_1
+Class26=CDialog_Motor_Axis_Tab
+Class27=CDialog_Motor_Part
+Class28=CDialog_Part_IO
+Class29=CDialog_Pass_Change
+Class30=CDialog_Pass_Check
+Class31=CDialog_Select
+Class32=CDialog_Select_Retest
+Class33=CDialog_SelectDevice
+Class34=CDialog_Skip
+Class35=CDialog_Test
+Class36=CDialog_Title
+Class37=CDigit
+Class38=CEditEx
+Class39=CEXDigitST
+Class40=CFloatST
+Class41=CFPSDatePickerCtrl
+Class42=CFPSDateTimeButtonCtrl
+Class43=CFPSDateTimeCtrl
+Class44=CFPSDateTimePopupCtrl
+Class45=CFPSMiniCalendarCtrl
+Class46=CFPSMiniCalendarListCtrl
+Class47=CGradientStatic
+Class48=CComboEdit
+Class49=CInPlaceList
+Class50=CGridCtrl
+Class51=CGridDropTarget
+Class52=CHANDLERApp
+Class53=CAboutDlg
+Class54=CHANDLERDoc
+Class55=CHANDLERView
+Class56=CInitDialogBar
+Class57=CInPlaceEdit
+Class58=CKeyView
+Class59=CLegendText
+Class60=CLegendWnd
+Class61=CListBoxST
+Class62=CMacButton
+Class63=CMacCheckBox
+Class64=CMacRadioButton
+Class65=CMacMoreButton
+Class66=CMainFrame
+Class67=CMatrixStatic
+Class68=CNewLabel
+Class69=CPictureEx
+Class70=CPopupWindow
+Class71=CPPToolTip
+Class72=CPreviewRect
+Class73=CScreen_Administrator
+Class74=CScreen_Basic
+Class75=CScreen_Initial
+Class76=CScreen_IO_Map
+Class77=CScreen_List_Alarm
+Class78=CScreen_List_Error
+Class79=CScreen_List_Operation
+Class80=CScreen_List_Step
+Class81=CScreen_List_Work
+Class82=CScreen_Lock
+Class83=CScreen_Main
+Class84=CScreen_Motor
+Class85=CScreen_Motor_Speed
+Class86=CScreen_Pgm_Info
+Class87=CScreen_Set_Maintenance
+Class88=CScreen_Set_Recipe
+Class89=CScreen_Wait_Time
+Class90=CServerItem
+Class91=CServerSocket
+Class92=CShape
+Class93=CStarWarsCtrl
+Class94=CStaticButton
+Class95=CSuperProgressCtrl
+Class96=CTextToolBar
+Class97=CTitleTip
+Class98=CTitleWnd
+Class99=CTreeOptionsCtrl
+Class100=CTreeOptionsCombo
+Class101=CTreeOptionsEdit
+Class102=CTrueColorToolBar
+Class103=CUniButtonEx
+Class104=CVLabel
+Class105=CXPButton
+Class106=CXPGroupBox
+Class107=CxShadeButton
+Class108=CxSkinButton
+
+ResourceCount=43
+Resource1=IDD_DIALOG_PASS_CHANGE
+Resource2=IDD_SCREEN_LIST_ALARM
+Resource3=IDD_SCREEN_ADMINISTRATOR
+Resource4=IDD_DIALOG_SELECT
+Resource5=IDR_EMPTY
+Resource6=IDD_DIALOG_DATA_LOT
+Resource7=IDD_SCREEN_SET_MAINTENANCE
+Resource8=IDD_DIALOG_MANUAL_MOVE
+Resource9=IDD_SCREEN_WAIT_TIME
+Resource10=IDD_SCREEN_INITIAL
+Resource11=IDD_DIALOG_LOT_START
+Resource12=IDR_MAINFRAME
+Resource13=IDD_SCREEN_WAITTIME
+Resource14=IDD_DIALOG_PASS_CHECK
+Resource15=IDD_DIALOG_ALARM
+Resource16=IDD_SCREEN_LOCK
+Resource17=IDD_DIALOG_COLOR
+Resource18=IDD_DIALOG_MESSAGE
+Resource19=IDD_DIALOG_MENU
+Resource20=IDD_SCREEN_SET_RECIPE
+Resource21=IDD_DIALOG_ABOUT
+Resource22=IDD_DIALOG_INFOR
+Resource23=IDD_SCREEN_WORK_INFO
+Resource24=IDD_SCREEN_LIST_ERROR
+Resource25=IDD_SCREEN_PGM_INFO
+Resource26=IDD_SCREEN_LIST_STEP
+Resource27=IDD_DIALOG_KEYBOARD
+Resource28=IDD_SCREEN_MOTOR_SPEED
+Resource29=IDD_DIALOG_EXIT
+Resource30=IDD_SCREEN_LIST_WORK
+Resource31=IDD_SCREEN_BASIC
+Resource32=IDD_DIALOG_KEYPAD
+Resource33=IDD_DIALOG_LIST
+Resource34=IDD_MOTOR_PART
+Resource35=IDD_DIALOG_MEMO
+Resource36=IDD_DIALOG_PART_IO
+Resource37=IDD_MOTOR_AXIS_1
+Resource38=IDD_SCREEN_MAIN
+Resource39=IDD_DIALOG_TITLE
+Resource40=IDD_SCREEN_IO_MAP
+Resource41=IDD_SCREEN_LIST_OPERATION
+Resource42=IDD_DIALOG_EVENT_MSG
+Resource43=IDD_SCREEN_MOTOR
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 [CLS:CBitmapSlider]
 Type=0
@@ -301,6 +438,12 @@ Type=0
 BaseClass=CDialog
 HeaderFile=Dialog_Manual_Move.h
 ImplementationFile=Dialog_Manual_Move.cpp
+<<<<<<< HEAD
+=======
+LastObject=CDialog_Manual_Move
+Filter=D
+VirtualFilter=dWC
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 [CLS:CDialog_Memo]
 Type=0
@@ -679,7 +822,11 @@ HeaderFile=Screen_Main.h
 ImplementationFile=Screen_Main.cpp
 Filter=D
 VirtualFilter=VWC
+<<<<<<< HEAD
 LastObject=IDC_GROUP_TOP_INFO
+=======
+LastObject=IDC_CHECK1
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 [CLS:CScreen_Motor]
 Type=0
@@ -704,6 +851,12 @@ Type=0
 BaseClass=CFormView
 HeaderFile=Screen_Set_Maintenance.h
 ImplementationFile=Screen_Set_Maintenance.cpp
+<<<<<<< HEAD
+=======
+Filter=D
+VirtualFilter=VWC
+LastObject=IDC_EDIT_CPORT_REAR_CLIENT
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 [CLS:CScreen_Set_Recipe]
 Type=0
@@ -712,6 +865,10 @@ HeaderFile=Screen_Set_Recipe.h
 ImplementationFile=Screen_Set_Recipe.cpp
 Filter=D
 VirtualFilter=VWC
+<<<<<<< HEAD
+=======
+LastObject=IDC_GROUP_EPOXY_USECNT
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 [CLS:CScreen_Wait_Time]
 Type=0
@@ -1378,7 +1535,11 @@ ControlCount=0
 [DLG:IDD_SCREEN_BASIC]
 Type=1
 Class=CScreen_Basic
+<<<<<<< HEAD
 ControlCount=46
+=======
+ControlCount=40
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 Control1=IDC_BTN_BASIC_CREATE,button,1342242816
 Control2=IDC_BTN_BASIC_APPLY,button,1342242816
 Control3=IDC_BTN_BASIC_CANCEL,button,1342242816
@@ -1392,19 +1553,34 @@ Control10=IDC_RADIO_TYPE1,button,1208090633
 Control11=IDC_RADIO_TYPE2,button,1208090633
 Control12=IDC_EDIT_DEVICE_TYPE,edit,1350633601
 Control13=IDC_CUSTOM_OPERATE2,fpSpread70,1350631424
+<<<<<<< HEAD
 Control14=IDC_GROUP_EPOXY_OFFSET,button,1073741831
 Control15=IDC_DGT_EPOXY_X,static,1073877761
 Control16=IDC_DGT_EPOXY_Y,static,1073877761
 Control17=IDC_MSG_EPOXY_X,static,1073877505
 Control18=IDC_MSG_XPOXY_Y,static,1073877505
+=======
+Control14=IDC_GROUP_EPOXY_OFFSET,button,1342177287
+Control15=IDC_DGT_EPOXY_X,static,1342313217
+Control16=IDC_DGT_EPOXY_Y,static,1342313217
+Control17=IDC_MSG_EPOXY_X,static,1342312961
+Control18=IDC_MSG_XPOXY_Y,static,1342312961
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 Control19=IDC_GROUP_EPOXY_SCREW_CNT,button,1207959559
 Control20=IDC_DGT_EPOXY_SCREW_CNT,static,1208095489
 Control21=IDC_GROUP_PARTIAL_CNT,button,1342177287
 Control22=IDC_DGT_PARTIAL_CNT,static,1342313217
+<<<<<<< HEAD
 Control23=IDC_GROUP_ELV_PARTIAL_CNT,button,1073741831
 Control24=IDC_DGT_ELV_PARTIAL_CNT,static,1073877761
 Control25=IDC_GROUP_7387_ALARM_CNT,button,1073741831
 Control26=IDC_DGT_7387_ALARM_CNT,static,1073877761
+=======
+Control23=IDC_GROUP_ELV_PARTIAL_CNT,button,1342177287
+Control24=IDC_DGT_ELV_PARTIAL_CNT,static,1342313217
+Control25=IDC_GROUP_7387_ALARM_CNT,button,1342177287
+Control26=IDC_DGT_7387_ALARM_CNT,static,1342313217
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 Control27=IDC_GROUP_RUBB_CNT,button,1342177287
 Control28=IDC_DGT_RUBB,static,1342313217
 Control29=IDC_GROUP_RETRY_CNT,button,1342177287
@@ -1419,12 +1595,15 @@ Control37=IDC_GROUP_TRAY_X,button,1207959559
 Control38=IDC_DGT_TRAY_X,static,1208095489
 Control39=IDC_GROUP_DISPENSERVPPMA,button,1207959559
 Control40=IDC_DGT_DISPENSERVPPMA,static,1208095489
+<<<<<<< HEAD
 Control41=IDC_GROUP_EPOXY_CLEAN_TIME,button,1342177287
 Control42=IDC_DGT_EPOXY_CLEAN_TIME,static,1342313217
 Control43=IDC_BUTTON_CLEAN_RESET,button,1342242816
 Control44=IDC_GROUP_HARDNESS_TIME,button,1342177287
 Control45=IDC_DGT_HARDNESS_TIME,static,1342313217
 Control46=IDC_BUTTON_HARDNESS_RESET,button,1342242816
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 [DLG:IDD_SCREEN_INITIAL]
 Type=1
@@ -1600,7 +1779,11 @@ Control3=IDC_BTN_UNLOCK,button,1342275584
 [DLG:IDD_SCREEN_MAIN]
 Type=1
 Class=CScreen_Main
+<<<<<<< HEAD
 ControlCount=57
+=======
+ControlCount=41
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 Control1=IDC_GROUP_TIME_INFO,button,1342177287
 Control2=IDC_CUSTOM_LOT_INFO,fpSpread70,1342242816
 Control3=IDC_CUSTOM_DAILY_YIELD_INFO,fpSpread70,1342242816
@@ -1632,6 +1815,7 @@ Control28=IDC_CUSTOM_BTM_INFO,fpSpread70,1342242816
 Control29=IDC_CUSTOM_BIN_REFERNCE,fpSpread70,1342242816
 Control30=IDC_GROUP_BTM_INFO,button,1342177287
 Control31=IDC_GROUP_TOP_INFO,button,1342177287
+<<<<<<< HEAD
 Control32=IDC_BTN_LOADER_RCV,button,1073807360
 Control33=IDC_BTN_INPUT_LOADER,button,1073807360
 Control34=IDC_BTN_EPOXY,button,1073807360
@@ -1658,6 +1842,18 @@ Control54=IDC_CUSTOM_HEATSINK,fpSpread70,1350631424
 Control55=IDC_CUSTOM_DEVICE,fpSpread70,1350631424
 Control56=IDC_GROUP_HEATSINK,button,1342177287
 Control57=IDC_GROUP_DEVICE,button,1342177287
+=======
+Control32=IDC_BTN_LOADER_RCV,button,1342242816
+Control33=IDC_BTN_INPUT_LOADER,button,1342242816
+Control34=IDC_BTN_EPOXY,button,1342242816
+Control35=IDC_BTN_WAIT_INDEX,button,1342242816
+Control36=IDC_BTN_HEATSINK_VISION,button,1342242816
+Control37=IDC_OUT_SEND,button,1342242816
+Control38=IDC_BTN_UNLOADER,button,1342242816
+Control39=IDC_CHECK1,button,1342242819
+Control40=IDC_HARDNESS_OUT,button,1342242816
+Control41=IDC_EPOXY_OUT,button,1342242816
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 [DLG:IDD_SCREEN_MOTOR]
 Type=1
@@ -1790,14 +1986,23 @@ Control71=IDC_COMBO_PORT_2,combobox,1344339971
 Control72=IDC_COMBO_DATA_2,combobox,1344339971
 Control73=IDC_COMBO_STOP_4,combobox,1344339971
 Control74=IDC_COMBO_PARITY_4,combobox,1344339971
+<<<<<<< HEAD
 Control75=IDC_BTN_PITCH_SERIAL_APPLY,button,1342242816
 Control76=IDC_BTN_PITCH_SERIAL_CONNECT,button,1342242816
+=======
+Control75=IDC_BTN_SERIAL_APPLY_4,button,1342242816
+Control76=IDC_BTN_SERIAL_CONNECT_4,button,1342242816
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 Control77=IDC_COMBO_RATE_4,combobox,1344339971
 
 [DLG:IDD_SCREEN_SET_RECIPE]
 Type=1
 Class=CScreen_Set_Recipe
+<<<<<<< HEAD
 ControlCount=34
+=======
+ControlCount=27
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 Control1=IDC_GROUP_SIZE_SETTING,button,1207959559
 Control2=IDC_CUSTOM_SIZE,fpSpread70,1208025088
 Control3=IDC_CUSTOM_PITCH,fpSpread70,1208025088
@@ -1825,6 +2030,7 @@ Control24=IDC_MSG_X_RUBB_OFFSET,static,1342312961
 Control25=IDC_MSG_Y_RUBB_OFFSET,static,1342312961
 Control26=IDC_GROUP_EPOXY_USECNT,button,1342177287
 Control27=IDC_DGT_EPOXY_USECNT,static,1342313217
+<<<<<<< HEAD
 Control28=IDC_GROUP_BUFFER_NUM,button,1342177287
 Control29=IDC_DGT_LD_BUFFER_NUM,static,1342313217
 Control30=IDC_GROUP_TRAY_NUM,button,1342177287
@@ -1832,6 +2038,8 @@ Control31=IDC_DGT_TRAY_NUM,static,1342313217
 Control32=IDC_GROUP_CARRIER_BUFFER,button,1342177287
 Control33=IDC_DGT_CARRIER_BUFF_NUM,static,1342313217
 Control34=IDC_BUTTON_RESET,button,1342242816
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 [DLG:IDD_SCREEN_WAIT_TIME]
 Type=1

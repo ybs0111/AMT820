@@ -49,8 +49,11 @@ CRun_Device_Carrier_Robot::CRun_Device_Carrier_Robot()
 		}
 	}
 
+<<<<<<< HEAD
 	m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
 
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 }
 
 CRun_Device_Carrier_Robot::~CRun_Device_Carrier_Robot()
@@ -288,13 +291,17 @@ void CRun_Device_Carrier_Robot::RunInit()
 		if( nRet_1 == RET_GOOD && nRet_2 == RET_GOOD )
 		{
 			mn_InitStep = 1000;
+<<<<<<< HEAD
 			mn_InitStep = 830;
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( nRet_1 == RET_ERROR || nRet_2 == RET_ERROR )
 		{
 			CTL_Lib.Alarm_Error_Occurrence( 11002, dWARNING, m_strAlarmCode);
 			mn_InitStep = 900;
 		}
+<<<<<<< HEAD
 		break;
 
 	case 830:
@@ -367,6 +374,8 @@ void CRun_Device_Carrier_Robot::RunInit()
 		{
 			mn_InitStep = 830;
 		}
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		break;
 
 	case 900:
@@ -382,6 +391,7 @@ void CRun_Device_Carrier_Robot::RunInit()
 			st_sync.nCarrierSateyflag[i] = RET_GOOD;
 		}
 
+<<<<<<< HEAD
 // 		st_work.n_OnlyCarrierMove = CTL_NO;
 // 		st_basic.n_mode_device = WITHOUT_DVC;
 // 		st_basic.n_mode_bcr = CTL_YES;
@@ -390,6 +400,15 @@ void CRun_Device_Carrier_Robot::RunInit()
 // 		COMI.mn_runspeed_rate = 70;
 
 		m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
+=======
+		st_work.n_OnlyCarrierMove = CTL_YES;
+		st_basic.n_mode_device = WITHOUT_DVC;
+		st_basic.n_mode_bcr = CTL_YES;
+		st_basic.n_mode_7387 = CTL_NO;
+		st_basic.n_mode_jig = WITH_JIG;
+		COMI.mn_runspeed_rate = 70;
+
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		mn_InitStep = 0;
 		mn_RunMove = -1;
 		break;
@@ -413,6 +432,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 		break;
 
 	case 0:		
+<<<<<<< HEAD
 		m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 		mn_RunMove = 10;
 		break;
@@ -427,6 +447,17 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 			mn_RunMove = 100;
+=======
+		mn_RunMove = 100;
+		break;
+		//일단 한번 밀고 하자
+
+	case 100://top 한칸 민다
+		nRet_1 = CarrierTopForward(2);//무조건 민다
+		if( nRet_1 == RET_GOOD )
+		{
+			mn_RunMove = 110;
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( nRet_1 == IO_ON && nRet_3 == IO_ON)//rtm 일단 민다 그리고 다운 
 		{
@@ -448,6 +479,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 		}
 		break;
 
+<<<<<<< HEAD
 	case 20:
 		if( CarrierBtmForwrad() == RET_GOOD )//하단 이동
 		{
@@ -543,6 +575,53 @@ void CRun_Device_Carrier_Robot::RunMove()
 			{
 				m_nTransferJobFlag[1] = CTL_YES;
 			}
+=======
+	case 110:
+		nRet_1 = Check_Carrier_Move_Enable(1);
+		if( nRet_1 == RET_GOOD )//한칸 민 상태
+		{
+			mn_RunMove = 120;
+		}
+		break;
+
+	case 120:
+		nRet_1 = CarrierMoveDown();
+		if( nRet_1 == RET_GOOD )
+		{
+			mn_RunMove = 130;
+		}
+		break;
+		
+	case 130:
+		nRet_1 = Check_Carrier_Move_Enable(2);
+		if(  nRet_1 == RET_GOOD )
+		{
+			mn_RunMove = 140;
+		}
+		break;
+		
+	case 140:
+		nRet_1 = CarrierMoveUp();
+		if( nRet_1 == RET_GOOD )
+		{
+			mn_RunMove = 150;
+		}
+		break;
+		
+	case 150:
+		nRet_1 = Check_Carrier_Move_Enable(3);
+		if( nRet_1 == RET_GOOD )//한칸 UP 상태
+		{
+			mn_RunMove = 160;
+		}
+		break;
+		
+	case 160:
+		nRet_1 = CarrierBtmForwrad();
+		if( nRet_1 == RET_GOOD )//하단 이동
+		{
+			mn_RunMove = 1000;
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 
 		if( m_nTransferJobFlag[0] == CTL_YES && m_nTransferJobFlag[1] == CTL_YES)
@@ -588,7 +667,11 @@ void CRun_Device_Carrier_Robot::RunMove()
 
 
 	case 1000:		
+<<<<<<< HEAD
 		if( g_lotMgr.GetLotCount() > 0 || st_work.n_OnlyCarrierMove == CTL_YES)
+=======
+		if( g_lotMgr.GetLotCount() > 0 )
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		{
 			mn_retry_cnt = 0;
 			mn_RunMove = 1100;
@@ -623,6 +706,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 				st_sync.nCarrierBcr_Req = CTL_REQ;
 			}
 			mn_RunMove = 1200;
+<<<<<<< HEAD
 		}
 		break;
 		
@@ -702,15 +786,41 @@ void CRun_Device_Carrier_Robot::RunMove()
 		break;
 
 	case 1460:
+=======
+		}
+		break;
+		
+	case 1200:
+		if (st_sync.nCarrierBcr_Req == CTL_FREE)
+		{
+			st_sync.nCarrierBcr_Req = CTL_NO;
+			mn_RunMove = 1300;
+		}
+		break;
+		
+	case 1300:
+		if( Func.Check_RunAllSafety() == RET_GOOD )
+		{
+			mn_RunMove = 1400;
+		}
+		break;
+
+	case 1400:
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		if( CheckCarrierType() == RET_GOOD )
 		{
 			mn_RunMove = 3000;
 			if( st_work.n_OnlyCarrierMove == CTL_YES)//CArrier 무한루프
+<<<<<<< HEAD
 			{
 				m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 				mn_RunMove = 2000;
 			}
 			
+=======
+				mn_RunMove = 2000;
+
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( CheckCarrierType() == RET_ERROR )
 		{
@@ -718,7 +828,11 @@ void CRun_Device_Carrier_Robot::RunMove()
 			mn_RunMove = 1500;
 		}
 		break;
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	case 1500:
 		m_dwWaitTime[1] = GetCurrentTime();
 		m_dwWaitTime[2] = m_dwWaitTime[1] - m_dwWaitTime[0];
@@ -727,10 +841,14 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			mn_RunMove = 3000;//작업공간이다.
 			if( st_work.n_OnlyCarrierMove == CTL_YES)//CArrier 무한루프
+<<<<<<< HEAD
 			{
 				m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 				mn_RunMove = 2000;
 			}
+=======
+				mn_RunMove = 2000;
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else
 		{
@@ -738,7 +856,10 @@ void CRun_Device_Carrier_Robot::RunMove()
 			{
 				if( CheckCarrierType() == RET_ERROR )
 				{
+<<<<<<< HEAD
 					m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 					mn_RunMove = 2000;//작업공간이 아니라서 한바퀴 돌아야 한다,
 				}
 				else
@@ -765,6 +886,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 // 		break;
 
 	case 2000://top 한칸 민다
+<<<<<<< HEAD
 // 		nRet_1 = CarrierTopForward(1);
 // 		if( nRet_1 == RET_GOOD )
 // 		{
@@ -807,6 +929,21 @@ void CRun_Device_Carrier_Robot::RunMove()
 			mn_RunMove = 2110;
 		}
 
+=======
+		nRet_1 = CarrierTopForward(1);
+		if( nRet_1 == RET_GOOD )
+		{
+			mn_RunMove = 2100;
+		}
+		break;
+		
+	case 2100:
+		nRet_1 = Check_Carrier_Move_Enable(1);
+		if( nRet_1 == RET_GOOD )//한칸 민 상태
+		{
+			mn_RunMove = 2110;
+		}
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		break;
 
 	case 2110://데이타 이동값 
@@ -819,13 +956,18 @@ void CRun_Device_Carrier_Robot::RunMove()
 		if( nRet_1 == RET_GOOD )
 		{
 			Top_ShiftCarrierDataMoveRbt( 1, TOPSHIFT_BUFF_LOADER_RECEIVE );//clear
+<<<<<<< HEAD
 			m_nTransferJobFlag[0]=m_nTransferJobFlag[1]=CTL_NO;
 			mn_RunMove = 2200;
 			mn_RunMove = 2130;
+=======
+			mn_RunMove = 2200;
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( nRet_1 == RET_ERROR )
 		{
 			CTL_Lib.Alarm_Error_Occurrence( 11201, dWARNING, mc_jamcode);
+<<<<<<< HEAD
 		}
 		break;
 
@@ -845,6 +987,8 @@ void CRun_Device_Carrier_Robot::RunMove()
 		else if( nRet_1 == RET_ERROR )
 		{
 			CTL_Lib.Alarm_Error_Occurrence(11289, dWARNING, mc_jamcode);
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
@@ -853,6 +997,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			break;
 		}
+<<<<<<< HEAD
 
 // 		if( CarrierMoveDown() == RET_GOOD )
 // 		{
@@ -880,6 +1025,11 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 			mn_RunMove = 2220;
+=======
+		if( CarrierMoveDown() == RET_GOOD )
+		{
+			mn_RunMove = 2210;
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
@@ -902,7 +1052,10 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			Top_ShiftCarrierDataMoveRbt( 1, TOPSHIFT_BUFF_UNLOADER );//clear
 			mn_RunMove = 2240;
+<<<<<<< HEAD
 			mn_RunMove = 2250;
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( nRet_1 == RET_ERROR )
 		{
@@ -940,7 +1093,10 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			Btm_ShiftCarrierDataMoveRbt( 1, BTMSHIFT_BUFF_LOADER_DOWN );//clear
 			mn_RunMove = 2280;
+<<<<<<< HEAD
 			mn_RunMove = 1000;
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( nRet_1 == RET_ERROR )
 		{
@@ -1034,6 +1190,10 @@ void CRun_Device_Carrier_Robot::RunMove()
 					return;
 				}
 			}
+<<<<<<< HEAD
+=======
+			mn_RunMove = 3100;
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
@@ -1050,14 +1210,22 @@ void CRun_Device_Carrier_Robot::RunMove()
 			{
 // 				if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_idbuffer[i] != CTL_YES )
 // 				{
+<<<<<<< HEAD
 					if( ( g_lotMgr.GetLotAt(m_nFindLotNo_Flag[0][0]).GetStrLastModule() != "YES" && m_nFindLotNo_Flag[0][0] >= 0 ) || 
 						( g_lotMgr.GetLotAt(m_nFindLotNo_Flag[0][0]).GetStrLastModule() != "YES" && m_nFindLotNo_Flag[1][0] >= 1 ) )//LOAD 자재가 있는가?
+=======
+					if( m_nFindLotNo_Flag[0][0] >= 0 || m_nFindLotNo_Flag[1][0] >= 1)//LOAD 자재가 있는가?
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 					{
 						if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i] != CTL_YES )
 						{
 							mn_BufferPos = i;
 							mn_RunMove = 4000;//LOAD하자
+<<<<<<< HEAD
 // 							m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
+=======
+							m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 							return;
 						}
 					}
@@ -1150,6 +1318,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 		break;
 
 	case 4100:
+<<<<<<< HEAD
 		if( st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_FREE && st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] == CTL_FREE &&
 			/*st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_PRBT][0] == CTL_NO && */st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][0] == CTL_FREE )
 		{
@@ -1159,11 +1328,20 @@ void CRun_Device_Carrier_Robot::RunMove()
 
 			m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 			mn_RunMove = 2000;
+=======
+		if( st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] == CTL_NO && st_sync.nCarrierRbt_Dvc_Req[THD_EPOXY_RBT][0] == CTL_NO &&
+			st_sync.nCarrierRbt_Dvc_Req[THD_HEATSINK_PRBT][0] == CTL_NO && st_sync.nCarrierRbt_Dvc_Req[THD_VISION_RBT][0] == CTL_NO )
+		{
+			mn_RunMove = 3100;
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
 	case 5000:
+<<<<<<< HEAD
 		//unpress 동작
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][0] = CTL_REQ;
 		st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][1] = WORK_PICK;
 		st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][2] = mn_BufferPos;//Buffer position
@@ -1173,6 +1351,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 	case 5100:
 		if( st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][0] == CTL_READY )
 		{
+<<<<<<< HEAD
 // 			m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
 			mn_RunMove = 5200;
 		}
@@ -1207,6 +1386,8 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][0] = CTL_NO;
 			st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][1] = CTL_NO;
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			mn_RunMove = 3100;
 		}
 		break;
@@ -1446,7 +1627,11 @@ int CRun_Device_Carrier_Robot::CarrierMoveDown()
 // 			{
 // 				nRetryCyl[1] = 0;
 // 				strTmp.Format("8%d%04d", IO_OFF, st_io.i_Slide_Guide_X1_Backward_Check);
+<<<<<<< HEAD
 				CTL_Lib.Alarm_Error_Occurrence(11199, dWARNING, "810308");
+=======
+// 				CTL_Lib.Alarm_Error_Occurrence(11100, dWARNING, strTmp);
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 // 			}
 			mn_RunDownStep = 100;
 		}
@@ -2781,8 +2966,13 @@ int CRun_Device_Carrier_Robot::Btm_Carrierbuffer_sensor_flag_status_check(int n_
 								{
 									nRet_1 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Up_Check, IO_OFF);//down 쪽 미는곳
 									nRet_2 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_ON);//down 쪽 미는곳
+<<<<<<< HEAD
 									//nRet_2 = IO_ON;//2017.0416 센서 없음
 									//st_var.n_btm_carrier_buffer_io_status_read_chk_data[i] = CTL_YES;//2017.0416 센서 없음
+=======
+									nRet_2 = IO_ON;//2017.0416 센서 없음
+									st_var.n_btm_carrier_buffer_io_status_read_chk_data[i] = CTL_YES;//2017.0416 센서 없음
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 									if(nRet_1 == IO_OFF && nRet_2 == IO_ON && st_var.n_btm_carrier_buffer_io_status_read_chk_data[i] == CTL_YES)
 										continue;
 									sprintf(mc_jamcode, "81%04d", st_io.i_Carrier_Z_1_Down_Check );
@@ -2791,8 +2981,13 @@ int CRun_Device_Carrier_Robot::Btm_Carrierbuffer_sensor_flag_status_check(int n_
 								{
 									nRet_1 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_OFF);//load 쪽 Up하는곳
 									nRet_2 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_OFF);
+<<<<<<< HEAD
 									//nRet_1 = IO_ON;//2017.0416 센서 없음
 									//st_var.n_btm_carrier_buffer_io_status_read_chk_data[i] = CTL_YES;////2017.0416 센서 없음
+=======
+									nRet_1 = IO_ON;//2017.0416 센서 없음
+									st_var.n_btm_carrier_buffer_io_status_read_chk_data[i] = CTL_YES;////2017.0416 센서 없음
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 									if(nRet_1 == IO_ON && nRet_2 == IO_OFF && st_var.n_btm_carrier_buffer_io_status_read_chk_data[i] == CTL_YES)
 										continue;
 									sprintf(mc_jamcode, "80%04d", st_io.i_Carrier_Z_2_Down_Check );
@@ -2819,17 +3014,29 @@ int CRun_Device_Carrier_Robot::Btm_Carrierbuffer_sensor_flag_status_check(int n_
 							{
 								if(i == 0)
 								{
+<<<<<<< HEAD
 									nRet_1 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_ON);
 									if(nRet_1 == IO_ON && st_var.n_btm_carrier_buffer_io_status_read_chk_data[i] == CTL_YES)
+=======
+									nRet_1 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_OFF);
+									if(nRet_1 == IO_OFF && st_var.n_top_carrier_buffer_io_status_read_chk_data[i] == CTL_NO)
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 										continue;
 									sprintf(mc_jamcode, "81%04d", st_io.i_Carrier_Z_1_Down_Check );
 								}
 								else
 								{
+<<<<<<< HEAD
 									nRet_1 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_OFF);
 									//nRet_1 = IO_ON;//2017.0416 센서 오류
 									//st_var.n_top_carrier_buffer_io_status_read_chk_data[i] = CTL_YES;
 									if(nRet_1 == IO_OFF && st_var.n_btm_carrier_buffer_io_status_read_chk_data[i] == CTL_NO)
+=======
+									nRet_1 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_ON);
+									nRet_1 = IO_ON;//2017.0416 센서 오류
+									st_var.n_top_carrier_buffer_io_status_read_chk_data[i] = CTL_YES;
+									if(nRet_1 == IO_ON && st_var.n_top_carrier_buffer_io_status_read_chk_data[i] == CTL_YES)
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 										continue;
 									sprintf(mc_jamcode, "80%04d", st_io.i_Carrier_Z_2_Down_Check );
 								}
@@ -3293,7 +3500,7 @@ int CRun_Device_Carrier_Robot::CarrierBtmForwrad()
 		case 1000:
 			//N Y Y Y Y Y Y
 			//Y Y Y Y Y Y N
-			nRet_1 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_ON);//하단 지그체크
+			nRet_1 = IO_ON;//g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_ON);//하단 지그체크
 			nRet_2 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_OFF);
 			if( nRet_1 == IO_ON ^ nRet_2 == IO_ON)
 			{
@@ -3333,7 +3540,7 @@ int CRun_Device_Carrier_Robot::CarrierBtmForwrad()
 			break;
 
 		case 3000:
-			nRet_1 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_OFF);//하단 지그체크
+			nRet_1 = IO_OFF;//g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_OFF);//하단 지그체크
 			nRet_2 = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_ON);
 			if( nRet_1 == IO_ON ^ nRet_2 == IO_ON)
 			{
@@ -3342,7 +3549,11 @@ int CRun_Device_Carrier_Robot::CarrierBtmForwrad()
 			else
 			{
 				if( nRet_1 == IO_OFF ) strTmp.Format("8%d%04d", IO_ON, st_io.i_Carrier_Z_1_Down_Check);
+<<<<<<< HEAD
 				else                   strTmp.Format("8%d%04d", IO_OFF, st_io.i_Carrier_Z_2_Down_Check);
+=======
+				else                          strTmp.Format("8%d%04d", IO_OFF, st_io.i_Carrier_Z_2_Down_Check);
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 				CTL_Lib.Alarm_Error_Occurrence(11102, dWARNING, strTmp);
 			}
 			break;
@@ -3395,7 +3606,11 @@ int CRun_Device_Carrier_Robot::CarrierTopForward( int nMode )
 	switch( mn_RunTopFwdStep)
 	{
 		case 0:
+<<<<<<< HEAD
 			if( nMode < 0 || nMode > 3 )
+=======
+			if( nMode < 0 || nMode > 2 )
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			{//902000 1 A "THERE_IS_NO_MODE_IN_CARRIER_TOP_FORWARD."
 				CTL_Lib.Alarm_Error_Occurrence(11201, dWARNING, "902000");
 				nFuncRet = RET_ERROR;
@@ -3698,18 +3913,30 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 	if( nMode == 0)// 초기 상태
 	{
 		nRet[14] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Up_Check, IO_OFF);	
+<<<<<<< HEAD
 		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_ON);	
 		nRet[16] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Up_Check, IO_ON);	
 		nRet[17] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_OFF);
 // 		nRet[16] = IO_ON;//2017.0416 센서 오류
 // 		nRet[17] = IO_ON;//2017.0416 센서 오류
+=======
+// 		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_OFF);	
+		nRet[16] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Up_Check, IO_ON);	
+		nRet[17] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_ON);
+		nRet[16] = IO_ON;//2017.0416 센서 오류
+		nRet[17] = IO_ON;//2017.0416 센서 오류
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		if( st_basic.n_mode_jig == WITHOUT_JIG )
 		{
 			nRet[14] = IO_OFF; nRet[15] = IO_OFF; nRet[16] = IO_ON;	nRet[17] = IO_ON;
 		}
 		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_OFF && nRet[3] == IO_ON && nRet[4] == IO_ON && nRet[5] == IO_OFF && 
 			nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_OFF && nRet[9] == IO_ON && nRet[10] == IO_ON && nRet[11] == IO_OFF && 
+<<<<<<< HEAD
 			nRet[12] == IO_ON && nRet[13] == IO_OFF && nRet[14] == IO_OFF && nRet[15] == IO_ON && nRet[16] == IO_ON && nRet[17] == IO_OFF )
+=======
+			nRet[12] == IO_ON && nRet[13] == IO_OFF && nRet[14] == IO_OFF/* && nRet[15] == IO_OFF*/ && nRet[16] == IO_ON && nRet[17] == IO_ON )
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		{
 			nFuncRet = RET_GOOD;
 		}
@@ -3730,7 +3957,11 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 			else if( nRet[12] == IO_OFF ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_2_Forward_Check);
 			else if( nRet[13] == IO_ON ) stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_2_Backward_Check);
 			else if( nRet[14] == IO_ON ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Up_Check);
+<<<<<<< HEAD
 			else if( nRet[15] == IO_OFF ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Down_Check);
+=======
+// 			else if( nRet[15] == IO_ON ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Down_Check);
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			else if( nRet[16] == IO_OFF ) stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Up_Check);
 			else/* if( nRet[17] != IO_ON )*/ stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Down_Check);
 
@@ -3740,10 +3971,14 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 	else if ( nMode == 1 )//상단 민 상태
 	{
 		nRet[14] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Up_Check, IO_ON);	
-		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_OFF);	
+// 		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_OFF);	
 		nRet[16] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Up_Check, IO_OFF);	
 		nRet[17] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_ON);
+<<<<<<< HEAD
 // 		nRet[17] = IO_ON;//2017.0416 센서 오류
+=======
+		nRet[17] = IO_ON;//2017.0416 센서 오류
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 		if( st_basic.n_mode_jig == WITHOUT_JIG )
 		{
@@ -3751,7 +3986,11 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 		}	
 		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_OFF && nRet[3] == IO_ON && nRet[4] == IO_ON && nRet[5] == IO_OFF && 
 			nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_OFF && nRet[9] == IO_ON && nRet[10] == IO_ON && nRet[11] == IO_OFF && 
+<<<<<<< HEAD
 			nRet[12] == IO_ON && nRet[13] == IO_OFF && nRet[14] == IO_ON && nRet[16] == IO_OFF && nRet[17] == IO_ON )
+=======
+			nRet[12] == IO_ON && nRet[13] == IO_OFF && nRet[14] == IO_ON /*&& nRet[15] == IO_OFF*/ && nRet[16] == IO_OFF && nRet[17] == IO_ON )
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		{
 			nFuncRet = RET_GOOD;
 		}
@@ -3772,7 +4011,11 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 			else if( nRet[12] == IO_OFF ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_2_Forward_Check);
 			else if( nRet[13] == IO_ON ) stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_2_Backward_Check);
 			else if( nRet[14] == IO_OFF ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Up_Check);
+<<<<<<< HEAD
 			else if( nRet[15] == IO_ON ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Down_Check);
+=======
+// 			else if( nRet[15] == IO_ON ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Down_Check);
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			else if( nRet[16] == IO_ON ) stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Up_Check);
 			else/* if( nRet[17] != IO_ON )*/ stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Down_Check);
 			CTL_Lib.Alarm_Error_Occurrence(11302, dWARNING, stralarm);
@@ -3781,7 +4024,7 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 	else if( nMode == 2 )//2 상단 다운 상태
 	{
 		nRet[14] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Up_Check, IO_OFF);	
-		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_ON);	
+// 		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_ON);	
 		nRet[16] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Up_Check, IO_OFF);	
 		nRet[17] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_ON);
 		if( st_basic.n_mode_jig == WITHOUT_JIG )
@@ -3791,7 +4034,11 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 		nRet[17] = IO_ON;
 		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_OFF && nRet[3] == IO_ON && nRet[4] == IO_ON && nRet[5] == IO_OFF && 
 			nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_OFF && nRet[9] == IO_ON && nRet[10] == IO_ON && nRet[11] == IO_OFF && 
+<<<<<<< HEAD
 			nRet[12] == IO_ON && nRet[13] == IO_OFF && nRet[14] == IO_OFF && nRet[15] == IO_ON && nRet[16] == IO_OFF && nRet[17] == IO_ON )
+=======
+			nRet[12] == IO_ON && nRet[13] == IO_OFF && nRet[14] == IO_OFF /*&& nRet[15] == IO_ON*/ && nRet[16] == IO_OFF && nRet[17] == IO_ON )
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		{
 			nFuncRet = RET_GOOD;
 		}
@@ -3812,7 +4059,11 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 			else if( nRet[12] == IO_OFF ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_2_Forward_Check);
 			else if( nRet[13] == IO_ON ) stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_2_Backward_Check);
 			else if( nRet[14] == IO_ON ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Up_Check);
+<<<<<<< HEAD
 			else if( nRet[15] == IO_OFF ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Down_Check);
+=======
+// 			else if( nRet[15] == IO_OFF ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Down_Check);
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			else if( nRet[16] == IO_ON ) stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Up_Check);
 			else/* if( nRet[17] != IO_ON )*/ stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Down_Check);
 			CTL_Lib.Alarm_Error_Occurrence(11303, dWARNING, stralarm);
@@ -3821,7 +4072,7 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 	else if(nMode == 3)//3 한다 업 상태
 	{
 		nRet[14] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Up_Check, IO_OFF);	
-		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_ON);	
+// 		nRet[15] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_1_Down_Check, IO_ON);	
 		nRet[16] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Up_Check, IO_ON);	
 		nRet[17] = g_ioMgr.get_in_bit(st_io.i_Carrier_Z_2_Down_Check, IO_OFF);
 		if( st_basic.n_mode_jig == WITHOUT_JIG )
@@ -3830,6 +4081,7 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 		}
 		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_OFF && nRet[3] == IO_ON && nRet[4] == IO_ON && nRet[5] == IO_OFF && 
 			nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_OFF && nRet[9] == IO_ON && nRet[10] == IO_ON && nRet[11] == IO_OFF && 
+<<<<<<< HEAD
 			nRet[12] == IO_ON && nRet[13] == IO_OFF && nRet[14] == IO_OFF && nRet[15] == IO_ON && nRet[16] == IO_ON && nRet[17] == IO_OFF )
 		{
 			nFuncRet = RET_GOOD;
@@ -3873,6 +4125,9 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_OFF && nRet[3] == IO_ON && nRet[4] == IO_ON && nRet[5] == IO_OFF && 
 			nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_OFF && nRet[9] == IO_ON && nRet[10] == IO_ON && nRet[11] == IO_OFF && 
 			nRet[12] == IO_ON && nRet[13] == IO_OFF && nRet[14] == IO_ON && nRet[15] == IO_OFF && nRet[16] == IO_OFF && nRet[17] == IO_ON )
+=======
+			nRet[12] == IO_ON && nRet[13] == IO_OFF && nRet[14] == IO_OFF/* && nRet[15] == IO_ON*/ && nRet[16] == IO_ON && nRet[17] == IO_OFF )
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		{
 			nFuncRet = RET_GOOD;
 		}
@@ -3892,16 +4147,29 @@ int CRun_Device_Carrier_Robot::Check_Carrier_Move_Enable( int nMode)
 			else if( nRet[11] == IO_ON ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_1_Backward_Check);
 			else if( nRet[12] == IO_OFF ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_2_Forward_Check);
 			else if( nRet[13] == IO_ON ) stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_2_Backward_Check);
+<<<<<<< HEAD
 			else if( nRet[14] == IO_OFF ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Up_Check);
 			else if( nRet[15] == IO_ON ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Down_Check);
 			else if( nRet[16] == IO_ON ) stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Up_Check);
 			else/* if( nRet[17] != IO_ON )*/ stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Down_Check);
 			CTL_Lib.Alarm_Error_Occurrence(11302, dWARNING, stralarm);
+=======
+			else if( nRet[14] == IO_ON ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Up_Check);
+// 			else if( nRet[15] == IO_ON ) stralarm.Format("8%d%04d",IO_OFF,st_io.i_Carrier_Z_1_Down_Check);
+			else if( nRet[16] == IO_OFF ) stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Up_Check);
+			else/* if( nRet[17] != IO_ON )*/ stralarm.Format("8%d%04d",IO_ON,st_io.i_Carrier_Z_2_Down_Check);
+
+			CTL_Lib.Alarm_Error_Occurrence(11304, dWARNING, stralarm);
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 	}
 	else
 	{
+<<<<<<< HEAD
 		CTL_Lib.Alarm_Error_Occurrence(11394, dWARNING, "931004");
+=======
+		CTL_Lib.Alarm_Error_Occurrence(11304, dWARNING, "931004");
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	}
 
 	return nFuncRet;

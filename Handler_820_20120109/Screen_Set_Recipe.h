@@ -61,6 +61,7 @@ public:
 	CEXDigitST	m_dgt_Offset_20;
 	CEXDigitST	m_dgt_Offset_10;
 	CEXDigitST	m_dgt_Offset;
+<<<<<<< HEAD
 	
 	CXPGroupBox	m_group_TrayNum;
 	CXPGroupBox	m_group_Carrier_buff;
@@ -68,6 +69,8 @@ public:
 	CEXDigitST	m_dgt_tray_num;
 	CEXDigitST	m_dgt_Ld_Buffer_Num;
 	CEXDigitST	m_dgt_Carrier_Buff_Num;
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	//}}AFX_DATA
 
 // Attributes
@@ -222,10 +225,13 @@ protected:
 	afx_msg void OnDgtEpoxyUsecnt();
 	afx_msg void OnDgtHsRubXOffset();
 	afx_msg void OnDgtHsRubYOffset();
+<<<<<<< HEAD
 	afx_msg void OnDgtLdBufferNum();
 	afx_msg void OnDgtTrayNum();
 	afx_msg void OnDgtCarrierBuffNum();
 	afx_msg void OnButtonReset();
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	//}}AFX_MSG
 	afx_msg void OnCellClick(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnSetRecipe_Work_Info_Display(WPARAM wParam,LPARAM lParam);

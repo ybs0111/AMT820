@@ -157,7 +157,11 @@ protected:
 	afx_msg void OnToolbarDropDown(NMTOOLBAR* pnmtb, LRESULT* plRes);	// 텍스트 툴바 드롭다운 메시지 선언 
 	afx_msg LRESULT OnMainframe_Work(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnCommand_Client_1(WPARAM wParam, LPARAM lParam); //kwlee 2017.0411 
+<<<<<<< HEAD
 	afx_msg LRESULT OnCommand_Server_1(WPARAM wParam, LPARAM lParam);
+=======
+//	afx_msg LRESULT OnCommand_Server_1(WPARAM wParam, LPARAM lParam);
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	afx_msg LONG OnCommunication(UINT, LONG);							// RS-232C 시리얼 포트 제어 메시지
 	afx_msg LONG OnCommunicationEvent(UINT, LONG);						// RS-232C 시리얼 포트 이벤트 설정 메시지
 	afx_msg LRESULT OnDataSend(WPARAM wParam, LPARAM lParam);			// RS-232C 시리얼 포트 통한 데이터 송신 메시지

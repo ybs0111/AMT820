@@ -34,8 +34,11 @@
 #include "Dialog_Pass_Check.h"
 #include "IO_Manager.h"
 #include "Run_Device_Carrier_Robot.h"
+<<<<<<< HEAD
 #include "SrcPart/APartHandler.h"
 #include "DeviceEditdlg.h"
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -87,6 +90,7 @@ void CScreen_Main::DoDataExchange(CDataExchange* pDX)
 {
 	CFormView::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CScreen_Main)
+<<<<<<< HEAD
 	DDX_Control(pDX, IDC_GROUP_TOP_INFO, m_group_Top_Info);
 	DDX_Control(pDX, IDC_GROUP_HEATSINK, m_group_HeatSink);
 	DDX_Control(pDX, IDC_GROUP_DEVICE, m_group_Device);
@@ -118,6 +122,9 @@ void CScreen_Main::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX,IDC_CUSTOM_BTM_INFO,m_grid_Info_Btm); //kwlee 2017.0428
 	DDX_Control(pDX,IDC_CUSTOM_HEATSINK,m_grid_Info_HeatSink); //kwlee 2017.0428
 	DDX_Control(pDX,IDC_CUSTOM_DEVICE,m_grid_Info_Device); //kwlee 2017.0428
+=======
+	DDX_Control(pDX, IDC_CHECK1, m_changeTop_Btm);
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	//}}AFX_DATA_MAP
 }
 
@@ -130,6 +137,7 @@ BEGIN_MESSAGE_MAP(CScreen_Main, CFormView)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_TRAY2_LOCK, OnTray2Lock)
 	ON_BN_CLICKED(IDC_TRAY2_UNLOCK, OnTray2Unlock)
+<<<<<<< HEAD
 	ON_BN_CLICKED(IDC_TRAY1_LOCK, OnTray1Lock) 
 	ON_BN_CLICKED(IDC_TRAY1_UNLOCK, OnTray1Unlock)
 	ON_BN_CLICKED(IDC_CHECK1, OnCheck1)
@@ -142,6 +150,11 @@ BEGIN_MESSAGE_MAP(CScreen_Main, CFormView)
 	ON_BN_CLICKED(IDC_EPOXY_OUT2, OnEpoxyOut2)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAN_RESET, OnButtonCleanReset)
 	ON_BN_CLICKED(IDC_BUTTON_HARDNESS_RESET, OnButtonHardnessReset)
+=======
+	ON_BN_CLICKED(IDC_TRAY1_LOCK, OnTray1Lock)
+	ON_BN_CLICKED(IDC_TRAY1_UNLOCK, OnTray1Unlock)
+	ON_BN_CLICKED(IDC_CHECK1, OnCheck1)
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_WORK_END, OnMain_Work_Info_Display)  // 테스트 결과 정보 화면에 출력하기 위한 사용자 정의 메시지 추가 
 	ON_MESSAGE(SSM_CLICK  , OnCellClick) //kwlee 2017.0425
@@ -882,6 +895,7 @@ LRESULT CScreen_Main::OnMain_Work_Info_Display(WPARAM wParam,LPARAM lParam)
 
 	switch(wParam)
 	{
+<<<<<<< HEAD
 		case MAIN_TIMEINFO:
 			OnMain_Time_Display(lParam);
 			break;
@@ -897,8 +911,91 @@ LRESULT CScreen_Main::OnMain_Work_Info_Display(WPARAM wParam,LPARAM lParam)
 		//kwlee 2017.0416
 		case TOPSHIFT_BUFF_LOADER_RECEIVE:
 			OnMainTop_Loader_Recive_Info();
+=======
+		case MAIN_LOTINFO:
+			OnMain_Display_Lot_Info();
+			break;
+		//kwlee 2017.0416
+		case TOPSHIFT_BUFF_LOADER_RECEIVE:
+			OnMainTop_Loader_Recive_Info();
 			break;
 
+		case TOPSHIFT_BUFF_INPUT_LOADER:
+			OnMainTop_Input_Loader_Info();
+			break;
+
+		case TOPSHIFT_BUFF_EPOXY:
+			OnMainTop_Epoxy_Info();
+			break;
+
+		case TOPSHIFT_BUFF_WAIT_INDEX:
+			OnMainTop_Wait_Index_Info();
+			break;
+
+		case TOPSHIFT_BUFF_HEATSINK_VISION:
+			OnMainTop_Hs_Vision_Info();
+			break;
+
+		case TOPSHIFT_BUFF_OUTSEND:
+			OnMainTop_OutSend_Info();
+			break;
+
+		case TOPSHIFT_BUFF_UNLOADER:
+			OnMainTop_Unloader_Info();
+			break;
+			
+			//kwlee 2017.0416
+		case BTMSHIFT_BUFF_DOWN:
+			OnMainBtm_Down_Info();
+			break;
+			
+		case BTMSHIFT_BUFF_DOWNFORWARD:
+			OnMainBtm_DownForward_Info();
+			break;
+			
+		case BTMSHIFT_BUFF_HEATSINK_DOWN:
+			OnMainBtm_Hs_Down_Info();
+			break;
+			
+		case BTMSHIFT_BUFF_INDEX_DOWN:
+			OnMainBtm_Index_Down_Info();
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
+			break;
+			
+		case BTMSHIFT_BUFF_EPOXY_DOWN:
+			OnMainBtm_Epoxy_Down_Info();
+			break;
+			
+		case BTMSHIFT_BUFF_INPUT_DOWN:
+			OnMainBtm_Input_Down_Info();
+			break;
+			
+		case BTMSHIFT_BUFF_LOADER_DOWN:
+			OnMainBtm_Loader_Down_Info();
+			break;
+			////
+	}
+	return 0 ;
+}
+
+void CScreen_Main::OnMainWork_Loader_Set()
+{
+/*	int iResponse, i;  // 대화 상자에 대한 리턴 값 저장 변수
+int iYear, iMonth, iDay;				// 년, 월, 일 저장 변수
+CString str_cur_hour, str_cur_min, str_cur_sec;
+CString str_year, str_month, str_day;	// 문자형 년, 월, 일 저장 변수
+CString str_lot_day, str_lot_time, str_machine_status;
+char chr_buf[20];
+
+  CDialog_Infor select_dlg;
+	CDialog_Message msg_dlg;*/
+	//	CDialog_Retest_Set retest_dlg;
+}
+
+void CScreen_Main::OnMain_Count()
+{
+
+<<<<<<< HEAD
 		case TOPSHIFT_BUFF_INPUT_LOADER:
 			OnMainTop_Input_Loader_Info();
 			break;
@@ -954,25 +1051,7 @@ LRESULT CScreen_Main::OnMain_Work_Info_Display(WPARAM wParam,LPARAM lParam)
 			////
 	}
 	return 0 ;
-}
-
-void CScreen_Main::OnMainWork_Loader_Set()
-{
-/*	int iResponse, i;  // 대화 상자에 대한 리턴 값 저장 변수
-int iYear, iMonth, iDay;				// 년, 월, 일 저장 변수
-CString str_cur_hour, str_cur_min, str_cur_sec;
-CString str_year, str_month, str_day;	// 문자형 년, 월, 일 저장 변수
-CString str_lot_day, str_lot_time, str_machine_status;
-char chr_buf[20];
-
-  CDialog_Infor select_dlg;
-	CDialog_Message msg_dlg;*/
-	//	CDialog_Retest_Set retest_dlg;
-}
-
-void CScreen_Main::OnMain_Count()
-{
-
+=======
 }
 
 void CScreen_Main::OnMain_Loader_Display()
@@ -990,6 +1069,604 @@ void CScreen_Main::OnMain_Button_Set()
 	//m_btn_run.SetButtonColor(1);
 }
 
+void CScreen_Main::OnLotOpen() 
+{
+	CDialog_Data_Lot dlg;
+	dlg.DoModal();
+}
+//kwlee 2017.0414
+//kwlee 2017.0414
+void CScreen_Main::OnMainTop_Loader_Recive_Info()
+{
+
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+	
+	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+
+	for (int i = 0; i<3; i++)
+	{
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[i]);
+
+		if(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i] == CTL_YES)
+		{
+
+			if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_CDIMM)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, BLUE, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_EPOXY)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, NOR_L, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_HEATSINK)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, BLUE_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_VISION)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, GREEN_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);	
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_GOOD)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, OK_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_FAIL)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, NG_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_NONE)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, GRAY, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+			}
+		}
+		m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Top, i+2, 7, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+
+	}
+	Invalidate(FALSE);
+}
+
+void CScreen_Main::OnMainTop_Input_Loader_Info()
+{
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+	
+	for (int i = 0; i<3; i++)
+	{
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].c_chBarcode[i]);
+
+		if( st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER ].n_exist[i] == CTL_YES)
+		{
+			if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_CDIMM)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, BLUE, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2,6 ,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_EPOXY)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, NOR_L, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_HEATSINK)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, BLUE_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_VISION)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, GREEN_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);	
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_GOOD)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, OK_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_FAIL)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, NG_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_NONE)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, GRAY, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+			}
+		}
+		m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Top, i+2, 6, GRAY, WHITE_C);	
+		m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+
+	}
+	Invalidate(FALSE);
+}
+
+void CScreen_Main::OnMainTop_Epoxy_Info()
+{
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+	
+	for (int i = 0; i<3; i++)
+	{
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_chBarcode[i]);
+
+		if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[i] == CTL_YES )
+		{
+			if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_CDIMM)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, BLUE, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 5 ,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_EPOXY)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, NOR_L, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_HEATSINK)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, BLUE_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_VISION)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, GREEN_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);	
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_GOOD)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, OK_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_FAIL)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, NG_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_NONE)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, GRAY, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+			}
+		}
+		m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Top, i+2, 5, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+	
+	}
+	Invalidate(FALSE);
+}
+void CScreen_Main::OnMainTop_Wait_Index_Info()
+{
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+	
+	for (int i = 0; i<3; i++)
+	{
+		
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_chBarcode[i]);
+
+		if( st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX ].n_exist[i] == CTL_YES)
+		{
+
+			if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_CDIMM)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, BLUE, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 4 ,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_EPOXY)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, NOR_L, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_HEATSINK)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, BLUE_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_VISION)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, GREEN_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);	
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_GOOD)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, OK_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_FAIL)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, NG_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_NONE)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, GRAY, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+			}
+		}
+		m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Top, i+2, 4, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+			
+		
+	}
+	Invalidate(FALSE);
+}
+void CScreen_Main::OnMainTop_Hs_Vision_Info()
+{
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+	
+	for (int i = 0; i<3; i++)
+	{
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[i]);
+
+		if( st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION ].n_exist[i] == CTL_YES )
+		{
+			if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_CDIMM)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, BLUE, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 3 ,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_EPOXY)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, NOR_L, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_HEATSINK)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, BLUE_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_VISION)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, GREEN_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);	
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_GOOD)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, OK_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_FAIL)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, NG_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_NONE)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, GRAY, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+			}
+		}
+		m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Top, i+2, 3, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+			
+		
+	}
+	Invalidate(FALSE);
+}
+
+void CScreen_Main::OnMainTop_OutSend_Info()
+{
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+
+	for (int i = 0; i<3; i++)
+	{
+		
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_chBarcode[i]);
+		
+		if( st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND ].n_exist[i] == CTL_YES )
+		{
+			if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_CDIMM)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, BLUE, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 2 ,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_EPOXY)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, NOR_L, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_HEATSINK)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, BLUE_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_VISION)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, GREEN_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);	
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_GOOD)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, OK_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_FAIL)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, NG_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_NONE)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, GRAY, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);
+			}
+		}
+		m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Top, i+2, 2, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);	
+	}
+	Invalidate(FALSE);
+}
+
+void CScreen_Main::OnMainTop_Unloader_Info()
+{
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+	for (int i = 0; i<3; i++)
+	{	
+		
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_chBarcode[i]);
+
+		if( st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER ].n_exist[i] == CTL_YES)
+		{
+			if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_CDIMM)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, BLUE, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 1 ,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_EPOXY)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, NOR_L, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_HEATSINK)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, BLUE_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_VISION)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, GREEN_D, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);	
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_GOOD)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, OK_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_FAIL)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, NG_C, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+			}
+			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_NONE)
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, GRAY, YELLOW_C);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+			}
+			else
+			{
+				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, DVC_UNLOAD_C, BLACK);
+				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+			}
+		}
+		m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Top, i+2, 1, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+
+	}
+	Invalidate(FALSE);
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
+}
+//////
+
+//kwlee 2017.0416
+void CScreen_Main::OnMainBtm_Down_Info()
+{
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+
+	m_grid_Btm = (TSpread*)GetDlgItem(IDC_CUSTOM_BTM_INFO);
+
+	for (int i = 0; i<3; i++)
+	{
+		
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].c_chBarcode[i]);
+
+		if(st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].n_exist[i] == CTL_YES) 
+			
+		{
+			m_pGrid.GridCellFont(m_grid_Btm, i+2, 1, "MS Sans Serif", 10);
+ 			m_pGrid.GridCellColor(m_grid_Btm, i+2, 1, DVC_UNLOAD_C, BLACK);
+			m_pGrid.GridCellText(m_grid_Btm, i+2, 1,strTemp[i]);
+		}
+		m_pGrid.GridCellFont(m_grid_Btm, i+2, 1, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Btm, i+2, 1, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Btm, i+2, 1,strTemp[i]);
+			
+		
+	}
+	Invalidate(FALSE);
+}
+
+void CScreen_Main::OnMainBtm_DownForward_Info()
+{
+	
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+	m_grid_Btm = (TSpread*)GetDlgItem(IDC_CUSTOM_BTM_INFO);
+	
+	for (int i = 0; i<3; i++)
+	{
+		
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].c_chBarcode[i]);
+
+		if(st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].n_exist[i] == CTL_YES)
+		{
+			m_pGrid.GridCellFont(m_grid_Btm, i+2, 2, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Btm, i+2, 2, DVC_UNLOAD_C, BLACK);
+			m_pGrid.GridCellText(m_grid_Btm, i+2, 2,strTemp[i]);
+		}
+		m_pGrid.GridCellFont(m_grid_Btm, i+2, 2, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Btm, i+2, 2, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Btm, i+2, 2,strTemp[i]);
+	}
+	Invalidate(FALSE);
+}
+
+void CScreen_Main::OnMainBtm_Hs_Down_Info()
+{	
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+	m_grid_Btm = (TSpread*)GetDlgItem(IDC_CUSTOM_BTM_INFO);
+	
+	for (int i = 0; i<3; i++)
+	{
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].c_chBarcode[i]);
+
+		if(st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].n_exist[i] == CTL_YES)
+		{
+			m_pGrid.GridCellFont(m_grid_Btm, i+2, 3, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Btm, i+2, 3, DVC_UNLOAD_C, BLACK);
+			m_pGrid.GridCellText(m_grid_Btm, i+2, 3,strTemp[i]);
+		}
+		m_pGrid.GridCellFont(m_grid_Btm, i+2, 3, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Btm, i+2, 3, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Btm, i+2, 3,strTemp[i]);
+	}
+	Invalidate(FALSE);
+}
+
+void CScreen_Main::OnMainBtm_Index_Down_Info()
+{
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+	
+	m_grid_Btm = (TSpread*)GetDlgItem(IDC_CUSTOM_BTM_INFO);
+	
+	for (int i = 0; i<3; i++)
+	{
+
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].c_chBarcode[i]);
+
+		if(st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].n_exist[i] == CTL_YES)
+		{
+			m_pGrid.GridCellFont(m_grid_Btm, i+2, 4, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Btm, i+2, 4, DVC_UNLOAD_C, BLACK);
+			m_pGrid.GridCellText(m_grid_Btm, i+2, 4,strTemp[i]);
+		}
+		m_pGrid.GridCellFont(m_grid_Btm, i+2, 4, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Btm, i+2, 4, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Btm, i+2, 4,strTemp[i]);
+	}
+	Invalidate(FALSE);
+}
+
+void CScreen_Main::OnMainBtm_Epoxy_Down_Info()
+{
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+
+	m_grid_Btm = (TSpread*)GetDlgItem(IDC_CUSTOM_BTM_INFO);
+	
+	for (int i = 0; i<3; i++)
+	{
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].c_chBarcode[i]);
+
+		if(st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].n_exist[i] == CTL_YES)
+		{
+			m_pGrid.GridCellFont(m_grid_Btm, i+2, 5, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Btm, i+2, 5, DVC_UNLOAD_C, BLACK);
+			m_pGrid.GridCellText(m_grid_Btm, i+2, 5,strTemp[i]);
+		}
+		m_pGrid.GridCellFont(m_grid_Btm, i+2, 5, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Btm, i+2, 5, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Btm, i+2, 5,strTemp[i]);
+	}
+	Invalidate(FALSE);
+}
+
+<<<<<<< HEAD
 // #include "Dialog_Lot_End.h"
 void CScreen_Main::OnLotOpen() 
 {
@@ -1001,6 +1678,60 @@ void CScreen_Main::OnLotOpen()
 }
 //kwlee 2017.0414
 void CScreen_Main::OnMainTop_Loader_Recive_Info()
+=======
+void CScreen_Main::OnMainBtm_Input_Down_Info()
+{
+	
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+	m_grid_Btm = (TSpread*)GetDlgItem(IDC_CUSTOM_BTM_INFO);
+	
+	for (int i = 0; i<3; i++)
+	{
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].c_chBarcode[i]);
+
+		if(st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].n_exist[i] == CTL_YES)
+		{
+			m_pGrid.GridCellFont(m_grid_Btm, i+2, 6, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Btm, i+2, 6, DVC_UNLOAD_C, BLACK);
+			m_pGrid.GridCellText(m_grid_Btm, i+2, 6,strTemp[i]);
+		}
+		m_pGrid.GridCellFont(m_grid_Btm, i+2, 6, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Btm, i+2, 6, GRAY, WHITE_C);	
+		m_pGrid.GridCellText(m_grid_Btm, i+2, 6,strTemp[i]);
+	}
+	Invalidate(FALSE);
+}
+
+void CScreen_Main::OnMainBtm_Loader_Down_Info()
+{
+	CString strTemp[4];
+	int nTmp[4] = {0,};
+
+	m_grid_Btm = (TSpread*)GetDlgItem(IDC_CUSTOM_BTM_INFO);
+	
+	for (int i = 0; i<3; i++)
+	{
+		
+		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].c_chBarcode[i]);
+
+		if(st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].n_exist[i] == CTL_YES)
+		{
+			m_pGrid.GridCellFont(m_grid_Btm, i+2, 7, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Btm, i+2, 7, DVC_UNLOAD_C, BLACK);
+			m_pGrid.GridCellText(m_grid_Btm, i+2, 7,strTemp[i]);
+		}
+		m_pGrid.GridCellFont(m_grid_Btm, i+2, 7, "MS Sans Serif", 10);
+		m_pGrid.GridCellColor(m_grid_Btm, i+2, 7, GRAY, WHITE_C);
+		m_pGrid.GridCellText(m_grid_Btm, i+2, 7,strTemp[i]);
+	}
+	Invalidate(FALSE);
+}
+////////
+
+void CScreen_Main::OnMain_Display_Lot_Info()
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 {
 // 	SS_CELLTYPE CellType;
 // 
@@ -1078,8 +1809,34 @@ void CScreen_Main::OnMainTop_Loader_Recive_Info()
 // 
 // 	Invalidate(FALSE);
 
+<<<<<<< HEAD
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
+=======
+	if( g_lotMgr.GetLotCount() > 0 )
+	{
+		GridData(IDC_CUSTOM_LOT_INFO, 1, 2, g_lotMgr.GetLotIDAt( 0 ) );
+		GridData(IDC_CUSTOM_LOT_INFO, 2, 2, g_lotMgr.GetLotAt(0).GetPartID() );
+		GridData(IDC_CUSTOM_LOT_INFO, 3, 2, g_lotMgr.GetLotAt(0).GetStrLastModule());
+		GridData(IDC_CUSTOM_LOT_INFO, 4, 2, g_lotMgr.GetLotAt(0).GetStrRProtyModule());
+		GridData(IDC_CUSTOM_LOT_INFO, 5, 2, g_lotMgr.GetLotAt(0).GetStrBypass());
+	}
+	else
+	{
+		GridData(IDC_CUSTOM_LOT_INFO, 1, 2, "" );
+		GridData(IDC_CUSTOM_LOT_INFO, 2, 2, "" );
+		GridData(IDC_CUSTOM_LOT_INFO, 3, 2, "");
+		GridData(IDC_CUSTOM_LOT_INFO, 4, 2, "");
+		GridData(IDC_CUSTOM_LOT_INFO, 5, 2, "");
+	}
+
+	if( g_lotMgr.GetLotCount() > 1 )
+	{
+		GridData( IDC_CUSTOM_B_LOT_INFO, 1, 2, g_lotMgr.GetLotIDAt( 1 ) );
+		GridData( IDC_CUSTOM_B_LOT_INFO, 2, 2, g_lotMgr.GetLotAt( 1 ).GetPartID() );
+	}
+	else
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	{
 	 // 		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[i]);
 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[i],
@@ -1140,6 +1897,7 @@ void CScreen_Main::OnMainTop_Loader_Recive_Info()
  	}
 }
 
+<<<<<<< HEAD
 void CScreen_Main::OnMainTop_Input_Loader_Info()
 {
 	CString strTemp[4];
@@ -1269,6 +2027,171 @@ void CScreen_Main::OnMainTop_Input_Loader_Info()
 }
 
 void CScreen_Main::OnMainTop_Epoxy_Info()
+=======
+
+
+void CScreen_Main::OnInitTopGrid()
+{
+	int   i, j;
+	int	  max_row, max_col;
+	CString str_tmp;
+	
+	max_row = 4;
+	max_col = 7;
+	
+	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+	
+	m_pGrid.GridReset(m_grid_Top);
+	// 대문자 
+	m_pGrid.GridCellSelectDisplay(m_grid_Top, TRUE);
+	m_pGrid.GridRowHeader(m_grid_Top, FALSE);
+	m_pGrid.GridColHeader(m_grid_Top, FALSE);
+	m_pGrid.GridHorizontal(m_grid_Top, FALSE);
+	m_pGrid.GridVertical(m_grid_Top, FALSE);
+	m_pGrid.GridAutoSize(m_grid_Top, FALSE);
+	//m_pGrid.GridAutoSize(m_grid_Top, FALSE);
+	m_pGrid.GridCellRows(m_grid_Top, max_row);
+	m_pGrid.GridCellCols(m_grid_Top, max_col);
+	
+	for(i=0; i<max_row+1; i++)
+	{
+		
+		if (i == 0)
+		{
+			m_pGrid.GridCellHeight(m_grid_Top, i, 30);	 
+		}
+		else
+		{
+			m_pGrid.GridCellHeight(m_grid_Top, i+ 1, 50);	 
+		}
+		for(j=0; j<max_col+1; j++)
+		{
+			
+			m_pGrid.GridCellWidth_L(m_grid_Top, j, 18);
+			m_pGrid.GridCellFont(m_grid_Top, i, j, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Top, i, j, GRAY, YELLOW_C);
+		}
+		
+	}
+	
+// 	m_pGrid.GridCellMerge(m_grid_Top, 1, 1, 1, 2);
+ 	m_pGrid.GridCellFont(m_grid_Top, 1, 1, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Top, 1, 1, BLUE, YELLOW_C);
+ 	m_pGrid.GridCellText(m_grid_Top, 1, 1, "Unload");
+
+// 	m_pGrid.GridCellMerge(m_grid_Top, 2, 1, 1, 2);
+ 	m_pGrid.GridCellFont(m_grid_Top, 1, 2, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Top, 1, 2, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Top, 1, 2, "OutSend");
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Top, 3, 1, 1, 2);
+ 	m_pGrid.GridCellFont(m_grid_Top, 1, 3, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Top, 1, 3, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Top, 1, 3, "Hs Vsion");
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Top, 4, 1, 1, 2);
+ 	m_pGrid.GridCellFont(m_grid_Top, 1, 4, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Top, 1, 4, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Top, 1, 4, "Wait index");
+
+	m_pGrid.GridCellFont(m_grid_Top, 1, 5, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Top, 1, 5, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Top, 1, 5, "Epoxy");
+
+	m_pGrid.GridCellFont(m_grid_Top, 1, 6, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Top, 1, 6, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Top, 1, 6, "Input Load");
+
+	m_pGrid.GridCellFont(m_grid_Top, 1, 7, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Top, 1, 7, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Top, 1, 7, "Load");
+
+	
+	Invalidate(FALSE);
+}
+
+
+void CScreen_Main::OnInitBTMGrid()
+{
+	int   i, j;
+	int	  max_row, max_col;
+	CString str_tmp;
+	
+	max_row = 4;
+	max_col = 7;
+	
+	m_grid_Btm = (TSpread*)GetDlgItem(IDC_CUSTOM_BTM_INFO);
+	
+	m_pGrid.GridReset(m_grid_Btm);
+	// 대문자 
+//	m_pGrid.GridCellSelectDisplay(m_grid_Btm, TRUE);
+	m_pGrid.GridRowHeader(m_grid_Btm, FALSE);
+	m_pGrid.GridColHeader(m_grid_Btm, FALSE);
+	m_pGrid.GridHorizontal(m_grid_Btm, FALSE);
+	m_pGrid.GridVertical(m_grid_Btm, FALSE);
+	//m_pGrid.GridAutoSize(m_grid_Btm, FALSE);
+	m_pGrid.GridAutoSize(m_grid_Btm, FALSE);
+	m_pGrid.GridCellRows(m_grid_Btm, max_row);
+	m_pGrid.GridCellCols(m_grid_Btm, max_col);
+		
+	for(i=0; i<max_row+1; i++)
+	{
+		
+		if (i == 0)
+		{
+			m_pGrid.GridCellHeight_L(m_grid_Btm, i, 30);
+		}
+		else
+		{
+			m_pGrid.GridCellHeight_L(m_grid_Btm, i+ 1, 50);
+		}
+		
+		 
+
+		for(j=0; j<max_col+1; j++)
+		{
+			m_pGrid.GridCellWidth_L(m_grid_Btm, j, 18);
+			/*m_pGrid.GridCellMerge(m_grid_Top, i, j, 1, 2);*/
+			m_pGrid.GridCellFont(m_grid_Btm, i, j, "MS Sans Serif", 10);
+			m_pGrid.GridCellColor(m_grid_Btm, i, j, GRAY, YELLOW_C);	
+		}
+	}
+	
+// 	m_pGrid.GridCellMerge(m_grid_Btm, 1, 1, 1, 2);
+	m_pGrid.GridCellFont(m_grid_Btm, 1, 1, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Btm, 1, 1, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Btm, 1, 1, "Loader Down");
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Btm, 2, 1, 1, 2);
+ 	m_pGrid.GridCellFont(m_grid_Btm, 1, 2, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Btm, 1, 2, BLUE, YELLOW_C);
+ 	m_pGrid.GridCellText(m_grid_Btm, 1, 2, "Input Down");
+
+// 	m_pGrid.GridCellMerge(m_grid_Btm, 3, 1, 1, 2);
+	m_pGrid.GridCellFont(m_grid_Btm, 1, 3, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Btm, 1, 3, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Btm, 1, 3, "Epoxy Down");
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Btm, 4, 1, 1, 2);
+	m_pGrid.GridCellFont(m_grid_Btm, 1, 4, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Btm, 1, 4, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Btm, 1, 4, "Index Down");
+
+	m_pGrid.GridCellFont(m_grid_Btm, 1, 5, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Btm, 1, 5, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Btm, 1, 5, "Hs Down");
+
+	m_pGrid.GridCellFont(m_grid_Btm, 1, 6, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Btm, 1, 6, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Btm, 1, 6, "Down Fwd");
+
+	m_pGrid.GridCellFont(m_grid_Btm, 1, 7, "MS Sans Serif", 10);
+ 	m_pGrid.GridCellColor(m_grid_Btm, 1, 7, BLUE, YELLOW_C);
+	m_pGrid.GridCellText(m_grid_Btm, 1, 7, "Buff Down");
+	Invalidate(FALSE);
+}
+void CScreen_Main::OnInitGridRef()
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 {
 
 	CString strTemp[4];
@@ -3295,54 +4218,86 @@ void CScreen_Main::OnInitGridRef()
 	m_pGrid.GridCellFont(m_grid_Ref, 1, 1, "MS Sans Serif", 10);
 	m_pGrid.GridCellColor(m_grid_Ref, 1, 1, OK_C, BLACK);
 	m_pGrid.GridCellText(m_grid_Ref, 1, 1, "PASS");
+<<<<<<< HEAD
 	m_pGrid.GridCellControlStatic( m_grid_Ref, 1, 1);
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	m_pGrid.GridCellFont(m_grid_Ref, 1, 2, "MS Sans Serif", 10);
 	m_pGrid.GridCellColor(m_grid_Ref, 1, 2, NG_C, WHITE_C);
 	m_pGrid.GridCellText(m_grid_Ref, 1, 2, "FAIL");
+<<<<<<< HEAD
 	m_pGrid.GridCellControlStatic( m_grid_Ref, 1, 2);
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	m_pGrid.GridCellFont(m_grid_Ref, 1, 3, "MS Sans Serif", 10);
 	m_pGrid.GridCellColor(m_grid_Ref, 1, 3, GRAY, WHITE_C);
 	m_pGrid.GridCellText(m_grid_Ref, 1, 3, "DVC_NO");
+<<<<<<< HEAD
 	m_pGrid.GridCellControlStatic( m_grid_Ref, 1, 3);
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	m_pGrid.GridCellFont(m_grid_Ref, 1, 4, "MS Sans Serif", 10);
 	m_pGrid.GridCellColor(m_grid_Ref, 1,4, DVC_UNLOAD_C, BLACK);
 	m_pGrid.GridCellText(m_grid_Ref, 1, 4, "UNLOAD");
+<<<<<<< HEAD
 	m_pGrid.GridCellControlStatic( m_grid_Ref, 1, 4);
+=======
+
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 	m_pGrid.GridCellFont(m_grid_Ref, 1, 5, "MS Sans Serif", 10);
 	m_pGrid.GridCellColor(m_grid_Ref, 1,5, GREEN_D, WHITE_C);
 	m_pGrid.GridCellText(m_grid_Ref, 1, 5, "HS INSP");
+<<<<<<< HEAD
 	m_pGrid.GridCellControlStatic( m_grid_Ref, 1, 5);
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	m_pGrid.GridCellFont(m_grid_Ref, 1, 6, "MS Sans Serif", 10);
 	m_pGrid.GridCellColor(m_grid_Ref, 1,6, BLUE_D, WHITE_C);
 	m_pGrid.GridCellText(m_grid_Ref, 1, 6, "HEAT SINK");
+<<<<<<< HEAD
 	m_pGrid.GridCellControlStatic( m_grid_Ref, 1, 6);
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 	m_pGrid.GridCellFont(m_grid_Ref, 1, 7, "MS Sans Serif", 10);
 	m_pGrid.GridCellColor(m_grid_Ref, 1,7, ORANGE_C, WHITE_C);
 	m_pGrid.GridCellText(m_grid_Ref, 1, 7, "EPOXY INSP");
+<<<<<<< HEAD
 	m_pGrid.GridCellControlStatic( m_grid_Ref, 1, 7);
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	m_pGrid.GridCellFont(m_grid_Ref, 1, 8, "MS Sans Serif", 10);
 	m_pGrid.GridCellColor(m_grid_Ref, 1,8, NOR_L, BLACK);
 	m_pGrid.GridCellText(m_grid_Ref, 1, 8, "EPOXY");
+<<<<<<< HEAD
 	m_pGrid.GridCellControlStatic( m_grid_Ref, 1, 8);
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	//m_pGrid.GridCellMerge(m_grid_Btm, 1, 1, 1, 2);
 	m_pGrid.GridCellFont(m_grid_Ref, 1, 9, "MS Sans Serif", 10);
 	m_pGrid.GridCellColor(m_grid_Ref, 1, 9, SKY_C, BLACK);
 	m_pGrid.GridCellText(m_grid_Ref, 1, 9, "READY");//! khj[20101012]
+<<<<<<< HEAD
 	m_pGrid.GridCellControlStatic( m_grid_Ref, 1, 9);
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	m_pGrid.GridCellFont(m_grid_Ref, 1, 10, "MS Sans Serif", 10);
 	m_pGrid.GridCellColor(m_grid_Ref, 1, 10, BLUE, WHITE_C);
 	m_pGrid.GridCellText(m_grid_Ref, 1, 10, "LOAD");
+<<<<<<< HEAD
 	m_pGrid.GridCellControlStatic( m_grid_Ref, 1, 10);
 
+=======
+		
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	Invalidate(FALSE);
 }
 
@@ -4043,6 +4998,7 @@ void CScreen_Main::OnButtonCleanReset()
 	}	
 }
 
+<<<<<<< HEAD
 void CScreen_Main::OnButtonHardnessReset() 
 {
 	if(st_work.mn_run_status == dRUN) return;
@@ -4060,4 +5016,36 @@ void CScreen_Main::OnButtonHardnessReset()
 			st_handler.cwnd_list->PostMessage( WM_LIST_DATA, 0, NORMAL_MSG);
 		}
 	}		
+=======
+
+void CScreen_Main::OnTray2Lock() 
+{
+	g_ioMgr.set_out_bit( st_io.o_Unloading_Stacker_Tray_Lock_Sol, IO_ON );
+	g_ioMgr.set_out_bit( st_io.o_Unloading_Stacker_Tray_Unlock_Sol, IO_OFF );
+}
+
+void CScreen_Main::OnTray2Unlock() 
+{
+	g_ioMgr.set_out_bit( st_io.o_Unloading_Stacker_Tray_Lock_Sol, IO_OFF );
+	g_ioMgr.set_out_bit( st_io.o_Unloading_Stacker_Tray_Unlock_Sol, IO_ON );	
+}
+
+void CScreen_Main::OnTray1Lock() 
+{
+	g_ioMgr.set_out_bit( st_io.o_Loading_Stacker_Tray_Lock_Sol, IO_ON );
+	g_ioMgr.set_out_bit( st_io.o_Loading_Stacker_Tray_Unlock_Sol, IO_OFF );
+}
+
+void CScreen_Main::OnTray1Unlock() 
+{
+	g_ioMgr.set_out_bit( st_io.o_Loading_Stacker_Tray_Lock_Sol, IO_OFF );
+	g_ioMgr.set_out_bit( st_io.o_Loading_Stacker_Tray_Unlock_Sol, IO_ON );
+}
+
+void CScreen_Main::OnCheck1() 
+{
+// 	if (m_changeTop_Btm.GetCheck() == TRUE)	mn_buzzer_mode[1] = TRUE;
+// 	else
+	
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 }

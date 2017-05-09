@@ -43,7 +43,7 @@ void CRun_EmptyTrayTransfer::Thread_Run()
 		break;
 
 	case dRUN:
-		RunMove();
+// 		RunMove();
 		break;
 
 	case dSTOP:

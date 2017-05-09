@@ -244,6 +244,7 @@ void CRun_LdTrayPlate::RunMove()
 			}
 			else if(nRet_1 == RET_ERROR)
 			{
+<<<<<<< HEAD
 				CTL_Lib.Alarm_Error_Occurrence(8605, dWARNING, m_strAlarmCode);
 				mn_RunStep = 2100;
 			}
@@ -271,6 +272,9 @@ void CRun_LdTrayPlate::RunMove()
 			nRet_1 = Chk_Tray_Guide_Clamp_ForBackward(IO_OFF );
 			if(nRet_1 == RET_GOOD)
 			{
+=======
+				CTL_Lib.Alarm_Error_Occurrence(80051101, dWARNING, m_strAlarmCode);
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 				mn_RunStep = 2100;
 			}
 			else if(nRet_1 == RET_ERROR)

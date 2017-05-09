@@ -844,7 +844,10 @@
 #define IDC_BTN_MAIN_X_READ4            1038
 #define IDC_GROUP_RUN_SPEED             1038
 #define IDC_GROUP_EPOXY_USECNT          1038
+<<<<<<< HEAD
 #define IDC_BTN_DVC_ALL_YES             1038
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 #define IDC_BTN_PASS_CHK_T              1039
 #define IDC_RADIO_ULD_TR                1039
 #define IDC_RADIO_BASE_LOWER            1039
@@ -5045,12 +5048,18 @@
 #define IDC_IO_TR_L                     3677
 #define IDC_BTN_SERIAL_CONNECT_2        3677
 #define IDC_BTN_SERIAL_APPLY_4          3677
+<<<<<<< HEAD
 #define IDC_BTN_PITCH_SERIAL_APPLY      3677
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 #define IDC_IO_MAIN_ROBOT               3678
 #define IDC_MSG_LOT_ID_DATA             3678
 #define IDC_MSG_STOP_3                  3678
 #define IDC_BTN_SERIAL_CONNECT_4        3678
+<<<<<<< HEAD
 #define IDC_BTN_PITCH_SERIAL_CONNECT    3678
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 #define IDC_IO_TR_R                     3679
 #define IDC_MSG_OPER_ID                 3679
 #define IDC_MSG_PARITY_3                3679
@@ -5242,15 +5251,21 @@
 #define IDC_COMBO_MOVE_EPOXY            3807
 #define IDC_CHECK1                      3807
 #define IDC_BTN_INIT                    3808
+<<<<<<< HEAD
 #define IDC_LABEL_UNLOAD                3808
 #define IDC_BTN_CLAMP                   3809
 #define IDC_LABEL_LOAD                  3809
 #define IDC_BTN_CLAMP_CO                3810
 #define IDC_LABEL_DISP_PLACE            3810
+=======
+#define IDC_BTN_CLAMP                   3809
+#define IDC_BTN_CLAMP_CO                3810
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 #define IDC_BTN_TORQUE                  3811
 #define IDC_BTN_HEATSINK_VISION         3811
 #define IDC_OUT_SEND                    3812
 #define IDC_BTN_UNLOADER                3813
+<<<<<<< HEAD
 #define IDC_LABEL_DISP_PICK             3814
 #define IDC_CHECK_ONLYCARRIER           3815
 #define IDC_CUSTOM_BOAT_PART_X          3816
@@ -5275,6 +5290,10 @@
 #define IDC_EPOXY_OUT                   3829
 #define IDC_EPOXY_SAFETY                3830
 #define IDC_EPOXY_OUT2                  3831
+=======
+#define IDC_HARDNESS_OUT                3828
+#define IDC_EPOXY_OUT                   3829
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 #define ID_EMPTY                        32771
 #define ID_MAIN                         32772
 #define ID_BASIC                        32773
@@ -5330,7 +5349,11 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        548
 #define _APS_NEXT_COMMAND_VALUE         32818
+<<<<<<< HEAD
 #define _APS_NEXT_CONTROL_VALUE         3824
+=======
+#define _APS_NEXT_CONTROL_VALUE         3808
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 #define _APS_NEXT_SYMED_VALUE           117
 #endif
 #endif

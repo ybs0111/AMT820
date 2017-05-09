@@ -68,16 +68,28 @@ void CScreen_Basic::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_DGT_RUBB, m_dgt_Rubb);
 	DDX_Control(pDX, IDC_DGT_PICK_RETRY_CNT, m_dgt_Pick_Retry_Cnt);
 	DDX_Control(pDX, IDC_DGT_PARTIAL_CNT, m_dgt_Partial_Cnt);
+<<<<<<< HEAD
+=======
+	
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	DDX_Control(pDX, IDC_DGT_EPOXY_Y, m_dgt_Epoxy_Y);
 	DDX_Control(pDX, IDC_DGT_EPOXY_X, m_dgt_Epoxy_X);
 	DDX_Control(pDX, IDC_DGT_ELV_PARTIAL_CNT, m_dgt_Elv_Partial_Cnt);
 	DDX_Control(pDX, IDC_DGT_7387_ALARM_CNT, m_dgt_7387_Alarm_Cnt);
 	DDX_Control(pDX, IDC_MSG_XPOXY_Y, m_msg_Epoxy_Y);
+<<<<<<< HEAD
+=======
+	
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	DDX_Control(pDX, IDC_MSG_EPOXY_X, m_msg_Epoxy_X);
 	DDX_Control(pDX, IDC_GROUP_RUBB_CNT, m_group_Rubb_Cnt);
 	DDX_Control(pDX, IDC_GROUP_PARTIAL_CNT, m_group_Patial_Cnt);
 	DDX_Control(pDX, IDC_GROUP_EPOXY_OFFSET, m_group_Epoxy_Offset);
 	DDX_Control(pDX, IDC_GROUP_ELV_PARTIAL_CNT, m_group_Elv_Partial_Cnt);
+<<<<<<< HEAD
+=======
+	
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	DDX_Control(pDX, IDC_GROUP_7387_ALARM_CNT, m_group_7387_Alarm_Cnt);
 	DDX_Control(pDX, IDC_BTN_DELETE, m_btn_delete);
 	DDX_Control(pDX, IDC_BTN_BASIC_CREATE, m_btn_create);
@@ -98,6 +110,10 @@ BEGIN_MESSAGE_MAP(CScreen_Basic, CFormView)
 	ON_BN_CLICKED(IDC_BTN_DELETE, OnBtnDelete)
 	ON_BN_CLICKED(IDC_DGT_EPOXY_X, OnDgtEpoxyX)
 	ON_BN_CLICKED(IDC_DGT_EPOXY_Y, OnDgtEpoxyY)
+<<<<<<< HEAD
+=======
+	
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	ON_BN_CLICKED(IDC_DGT_RUBB, OnDgtRubb)
 	ON_BN_CLICKED(IDC_DGT_7387_ALARM_CNT, OnDgt7387AlarmCnt)
 	ON_BN_CLICKED(IDC_DGT_ELV_PARTIAL_CNT, OnDgtElvPartialCnt)
@@ -844,9 +860,13 @@ void CScreen_Basic::OnBasic_Data_Set()
 	m_n7387AlarmCount[1]							= 	st_basic.n7387AlarmCount;					
 	n_rubb_count[1]									= 	st_basic.n_rubb_count;						
 	dEpoxyXLineOffSet[1]							= 	st_basic.dEpoxyXLineOffSet;					
+<<<<<<< HEAD
 	dEpoxyYLineOffSet[1]							= 	st_basic.dEpoxyYLineOffSet;	
 	m_nEPoxyCleanTime[1]							=	st_basic.n_EPoxyCleanTime;
 	m_nHardnessUseTime[1]							=   st_basic.n_HardnessUseTime;
+=======
+	dEpoxyYLineOffSet[1]							= 	st_basic.dEpoxyYLineOffSet;					
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	m_n_count_retry[1]								= 	st_basic.n_count_retry;
 
@@ -1060,8 +1080,11 @@ int CScreen_Basic::Data_Comparison()
 	if(n_rubb_count[0]						!= n_rubb_count[1])					return RET_ERROR;
 	if(dEpoxyXLineOffSet[0]					!= dEpoxyXLineOffSet[1])			return RET_ERROR;
 	if(dEpoxyYLineOffSet[0]					!= dEpoxyYLineOffSet[1])			return RET_ERROR;
+<<<<<<< HEAD
 	if(m_nEPoxyCleanTime[0]					!= m_nEPoxyCleanTime[1])			return RET_ERROR;
 	if(m_nHardnessUseTime[0]				!= m_nHardnessUseTime[1])			return RET_ERROR;
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	
 	//kwlee 2017.0406
@@ -1114,8 +1137,11 @@ void CScreen_Basic::Data_Recovery()
 	n_rubb_count[1]							= n_rubb_count[0];
 	dEpoxyXLineOffSet[1]					= dEpoxyXLineOffSet[0];
 	dEpoxyYLineOffSet[1]					= dEpoxyYLineOffSet[0];
+<<<<<<< HEAD
 	m_nEPoxyCleanTime[1]					= m_nEPoxyCleanTime[0];
 	m_nHardnessUseTime[1]					= m_nHardnessUseTime[0];
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	m_n_count_retry[1]						= m_n_count_retry[0];
 
@@ -1508,6 +1534,7 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	}
 	
 	if(m_n_count_retry[0] != m_n_count_retry[1])
+<<<<<<< HEAD
 	{
 		str_msg.Format( "[BASIC] Retry Count Change %d -> %d", m_n_count_retry[0], m_n_count_retry[1]);
 		Func.On_LogFile_Add(0, str_msg);
@@ -1520,6 +1547,8 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	}
 
 	if(m_nHardnessUseTime[0] != m_nHardnessUseTime[1])
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	{
 		str_msg.Format( "[BASIC] Hardness Use Time Change %d -> %d", m_nHardnessUseTime[0], m_nHardnessUseTime[1]);
 		Func.On_LogFile_Add(0, str_msg);
@@ -2311,6 +2340,7 @@ void CScreen_Basic::OnDgtEpoxyY()
 }
 
 
+<<<<<<< HEAD
 void CScreen_Basic::OnDgtEpoxyCleanTime() 
 {	
 	CString mstr_temp;
@@ -2328,6 +2358,8 @@ void CScreen_Basic::OnDgtEpoxyCleanTime()
 	m_dgt_epoxy_clean_time.SetValue( m_nEPoxyCleanTime[1]);
 }
 
+=======
+>>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 void CScreen_Basic::OnDgtRubb() 
 {
