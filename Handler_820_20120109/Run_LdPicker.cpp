@@ -56,7 +56,7 @@ void CRun_LdPicker::Thread_Run()
 		break;
 
 	case dRUN:
-// 		RunMove();
+		RunMove();
 		break;
 
 	case dSTOP:
@@ -1412,13 +1412,8 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 				//CTL_Lib.Alarm_Error_Occurrence(1205, dWARNING, alarm.mstr_code);
-<<<<<<< HEAD
 				//				COMI.Set_MotStop(0, m_nRobot_Y);
 				mn_Place_Step = 2010;
-=======
-//				COMI.Set_MotStop(0, m_nRobot_Y);
-				mn_Place_Step = 2000;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			}
 			break; 	
 
@@ -1762,7 +1757,6 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				{
 					mn_Place_Step = 4020;
 				}
-<<<<<<< HEAD
 				else
 				{
 					m_dwWaitUntil[1] = GetCurrentTime();
@@ -1777,11 +1771,6 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 					mn_Place_Step = 4015;
 				}
 			}
-=======
-				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(1219, dWARNING, m_strAlarmCode);
-			} 
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			break; 
 
 		case 4015:
@@ -1815,11 +1804,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 				CTL_Lib.Alarm_Error_Occurrence(1220, dWARNING, alarm.mstr_code);
-<<<<<<< HEAD
 				mn_Place_Step = 4020;	
-=======
-				mn_Place_Step = 4000;	
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			}
 			break;
 

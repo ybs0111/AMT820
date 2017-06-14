@@ -4293,11 +4293,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 
 			
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio );
-<<<<<<< HEAD
 			//nRet_2 = COMI.Start_JogMove(m_nRobot_S, PLUS);// cmmSxVMoveStart(m_nRobot_S, PLUS);
-=======
-			nRet_2 = COMI.Start_JogMove(m_nRobot_S, PLUS);// cmmSxVMoveStart(m_nRobot_S, PLUS);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 			if( nRet_1 == BD_GOOD) 
 			{
@@ -4732,10 +4728,7 @@ int CDialog_Manual_Move::Move_EpoxyTransfer()
 			{
 				mn_BufferPos = 0;
 				m_move_step[m_nAxisNum] = 4000;
-<<<<<<< HEAD
 				st_handler.m_nEpoxyCleanAlarm = CTL_NO;
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			}
 		}
 		else
@@ -4754,10 +4747,7 @@ int CDialog_Manual_Move::Move_EpoxyTransfer()
 				{
 					m_move_step[m_nAxisNum] = 2000;
 				}
-<<<<<<< HEAD
 				st_handler.m_nEpoxyCleanAlarm = CTL_NO;
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			}
 			else if( nRet_1 == RET_ERROR)
 			{
@@ -5782,7 +5772,6 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 				CTL_Lib.Alarm_Error_Occurrence(10714, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 2920;
 			}
-<<<<<<< HEAD
 			break;
 
 		case 2930:
@@ -5799,24 +5788,6 @@ int CDialog_Manual_Move::Move_VisionTransfer()
 			}
 			break;
 
-=======
-			break;
-
-		case 2930:
-			Run_HeatSinkVision_Transfer_Robot.Set_Device_Carrier_Camera_Y_Press_UpDown(IO_OFF);
-			m_move_step[m_nAxisNum] = 2940;
-			break;
-			
-		case 2940:
-			nRet_1 = Run_HeatSinkVision_Transfer_Robot.Chk_Device_Carrier_Camera_Y_Press_UpDown( IO_OFF);
-			if( nRet_1 == IO_ON )
-			{
-				m_move_step[m_nAxisNum] = 0;
-				nFunRet = RET_GOOD;
-			}
-			break;
-
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 		case 5000:
 			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_VisY, st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_PRESS_START_POS] + (m_nVisCarriorPos*1), COMI.mn_runspeed_rate);
@@ -8340,10 +8311,7 @@ int CDialog_Manual_Move::Move_CleanEpoxy()
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 				CTL_Lib.Alarm_Error_Occurrence(10929, dWARNING, alarm.mstr_code);
 				m_move_step[m_nAxisNum] = 0;
-<<<<<<< HEAD
 				nFunRet = RET_ERROR;
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			}
 			break;
 
@@ -8362,11 +8330,7 @@ int CDialog_Manual_Move::Move_CleanEpoxy()
 			break;
 
 		case 200:
-<<<<<<< HEAD
 			nRet_1 = Run_Epoxy_Transfer_Robot.Robot_Move_Safety_Zone( 0, 0, 0 );
-=======
-			nRet_1 = Robot_Move_Safety_Zone( 0, 0, 0 );
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			if( nRet_1 == RET_GOOD )
 			{
 				m_move_step[m_nAxisNum] = 100;
@@ -8378,11 +8342,7 @@ int CDialog_Manual_Move::Move_CleanEpoxy()
 			break;
 
 		case 1100:			
-<<<<<<< HEAD
 			nRet_1 = Run_Epoxy_Transfer_Robot.Robot_Move_Safety_Zone( 2, 0, 0 );
-=======
-			nRet_1 = Robot_Move_Safety_Zone( 2, 0, 0 );
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			if( nRet_1 == RET_GOOD )
 			{
 				mn_MoveStep = 0;
@@ -8458,11 +8418,7 @@ int CDialog_Manual_Move::Move_EpoxyOut()
 	switch(m_move_step[m_nAxisNum])
 	{
 	case 0:
-<<<<<<< HEAD
  		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobotZ, st_motor[m_nRobotZ].md_pos[P_EPOXY_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
-=======
-		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobotZ, st_motor[m_nRobotZ].md_pos[P_EPOXY_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		if (nRet_1 == BD_GOOD) //좌측으로 이동
 		{
 			Func.VppmSet();
@@ -8480,7 +8436,6 @@ int CDialog_Manual_Move::Move_EpoxyOut()
 		break;
 
 	case 100:
-<<<<<<< HEAD
 //  		nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobotS, st_recipe.nEpoxyDotScrewCount, st_recipe.nEpoxyRunSpeed);
 		//nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobotS, -10 , st_recipe.nEpoxyRunSpeed);
 		nRet_1 = COMI.Start_JogMove( m_nRobotS, PLUS );
@@ -8488,12 +8443,6 @@ int CDialog_Manual_Move::Move_EpoxyOut()
 		if( nRet_1 == CTL_YES )
 		{
 // 			COMI.Set_MotStop( 0 , m_nRobotS);
-=======
- 		nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nRobotS, st_recipe.nEpoxyDotScrewCount, st_recipe.nEpoxyRunSpeed);
-		//nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobotS, -10 , st_recipe.nEpoxyRunSpeed);
-		if( nRet_1 == CTL_YES )
-		{
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			m_dwWaitTime[0] = GetCurrentTime();
 			m_move_step[m_nAxisNum] = 200;
 		}
@@ -8501,11 +8450,7 @@ int CDialog_Manual_Move::Move_EpoxyOut()
 		{
 			m_move_step[m_nAxisNum] = 100;
 		}
-<<<<<<< HEAD
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-=======
-		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		{
 			CTL_Lib.Alarm_Error_Occurrence(10931, dWARNING, alarm.mstr_code);
 			m_move_step[m_nAxisNum] = 100;
@@ -8514,7 +8459,6 @@ int CDialog_Manual_Move::Move_EpoxyOut()
 		
 	case 200:
 		//nRet_1 = CTL_YES;
-<<<<<<< HEAD
 		m_dwWaitTime[1] = GetCurrentTime();
 		m_dwWaitTime[2] = m_dwWaitTime[1] - m_dwWaitTime[0];
 		if( m_dwWaitTime[2]  <= 0 )  m_dwWaitTime[0] = GetCurrentTime();
@@ -8541,19 +8485,12 @@ int CDialog_Manual_Move::Move_EpoxyOut()
 		{
 			COMI.Set_MotStop( 0 , m_nRobotS);
 			Func.VppmOff();
-=======
-		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobotS, st_recipe.nEpoxyDotScrewCount -2 , st_recipe.nEpoxyRunSpeed);
-		if( nRet_1 == CTL_YES )
-		{
-// 			Func.VppmOff();
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 			double dCurrPos = 0.0;// g_comiMgr.Get_MotCurrentPos(m_nRobotS);
 		
 			cmmStSetPosition(m_nRobotS, cmCNT_COMM, (double)0);
 			cmmStSetPosition(m_nRobotS, cmCNT_FEED, (double)0);
 
-<<<<<<< HEAD
 
 			m_move_step[m_nAxisNum] = 300;
 		}
@@ -8565,18 +8502,6 @@ int CDialog_Manual_Move::Move_EpoxyOut()
 		{
 			CTL_Lib.Alarm_Error_Occurrence(10932, dWARNING, alarm.mstr_code);
 			m_move_step[m_nAxisNum] = 220;
-=======
-			m_move_step[m_nAxisNum] = 100;
-		}
-		else if( nRet_1 == BD_RETRY )
-		{
-			m_move_step[m_nAxisNum] = 200;
-		}
-		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
-		{
-			CTL_Lib.Alarm_Error_Occurrence(10932, dWARNING, alarm.mstr_code);
-			m_move_step[m_nAxisNum] = 200;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 

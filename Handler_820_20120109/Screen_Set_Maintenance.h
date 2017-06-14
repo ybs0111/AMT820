@@ -277,11 +277,8 @@ protected:
 	afx_msg void OnBtnCipSetRearClient();
 	afx_msg void OnBtnCportSetRearClient();
 	afx_msg void OnBtnCntRearClient();
-<<<<<<< HEAD
 	afx_msg void OnBtnPitchSerialApply();
 	afx_msg void OnBtnPitchSerialConnect();
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	//}}AFX_MSG
 	afx_msg void OnRLampClick(UINT);
 	afx_msg void OnYLampClick(UINT);

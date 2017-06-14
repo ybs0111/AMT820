@@ -74,14 +74,10 @@ void CRun_UldPicker::Thread_Run()
 			break;
 
 		case dRUN:
-<<<<<<< HEAD
 			nRet_1 = g_ioMgr.get_in_bit(st_io.i_case_assembler_status, IO_ON);
 			if( nRet_1 != IO_ON ) break;
 
 			RunMove();
-=======
-// 			RunMove();
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			break;
 
 		case dSTOP:
@@ -1343,11 +1339,7 @@ int CRun_UldPicker::Process_DVC_Place( int nMode, int nWorkSite, CString strLotN
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 			CTL_Lib.Alarm_Error_Occurrence(4205, dWARNING, alarm.mstr_code);
-<<<<<<< HEAD
 			mn_Place_Step = 2100;
-=======
-			mn_Place_Step = 2200;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break; 	
 
@@ -2223,16 +2215,12 @@ int CRun_UldPicker::Move_ReadySafeyXY()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-<<<<<<< HEAD
 				m_nPickRetry_Cnt++;
 				if( m_nPickRetry_Cnt > st_basic.n_count_retry )
 				{
 					m_nPickRetry_Cnt = 0;
 					CTL_Lib.Alarm_Error_Occurrence(4401, dWARNING, alarm.mstr_code);
 				}
-=======
-				CTL_Lib.Alarm_Error_Occurrence(4401, dWARNING, alarm.mstr_code);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 				mn_MoveStep = 1000;
 			}
 			break;
@@ -2258,7 +2246,6 @@ int CRun_UldPicker::Move_ReadySafeyXY()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-<<<<<<< HEAD
 				m_nPickRetry_Cnt++;
 				if( m_nPickRetry_Cnt > st_basic.n_count_retry )
 				{
@@ -2266,10 +2253,6 @@ int CRun_UldPicker::Move_ReadySafeyXY()
 					CTL_Lib.Alarm_Error_Occurrence(4402, dWARNING, alarm.mstr_code);
 				}
 				mn_MoveStep = 100;
-=======
-				CTL_Lib.Alarm_Error_Occurrence(4402, dWARNING, alarm.mstr_code);
-				mn_RunSafetyStep = 1100;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			}
 			break;
 

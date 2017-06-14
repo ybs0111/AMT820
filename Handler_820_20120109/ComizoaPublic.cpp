@@ -85,15 +85,11 @@ CComizoaPublic::CComizoaPublic()
 	for(i=0; i<8; i++)  ml_IxIndexNumber[i] = i;  //최대 8개의 IxIndexMap를 가질 수 있다 
 	
 	//2011.1024 
-<<<<<<< HEAD
 	for ( i = 0; i < BD_MAX_MOTOR; i++)
 	{
 		mn_max_move_limit_time[i] = 10000; //1분
 	}
 	mn_max_move_limit_time[M_HEATSINK_PICKER_PITCH] = 2000;
-=======
-	mn_max_move_limit_time = 15000; //1분
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	mn_max_home_limit_time = 60000; //1분 
 	mn_max_retry_cnt = 3;
 

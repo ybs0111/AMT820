@@ -134,7 +134,7 @@ BEGIN_MESSAGE_MAP(CScreen_Set_Maintenance, CFormView)
 	ON_EN_SETFOCUS(IDC_EDIT_EQUIP_ID, OnSetfocusEditEquipId)
 	ON_BN_CLICKED(IDC_DGT_CHANGE_TIME, OnDgtChangeTime)
 	ON_BN_CLICKED(IDC_BTN_STEP_SAVE, OnBtnStepSave)
-	ON_BN_CLICKED(IDC_BTN_SERIAL_CONNECT_2, OnBtnSerialConnect2)
+//	ON_BN_CLICKED(IDC_BTN_SERIAL_CONNECT_2, OnBtnSerialConnect2)
 	ON_BN_CLICKED(IDC_BTN_SERIAL_APPLY_1, OnBtnSerialApply1)
 	ON_BN_CLICKED(IDC_BTN_SERIAL_CONNECT_1, OnBtnSerialConnect1)
 	ON_BN_CLICKED(IDC_BTN_BCR1, OnBtnBcr1)
@@ -145,11 +145,8 @@ BEGIN_MESSAGE_MAP(CScreen_Set_Maintenance, CFormView)
 	ON_BN_CLICKED(IDC_BTN_CIP_SET_REAR_CLIENT, OnBtnCipSetRearClient)
 	ON_BN_CLICKED(IDC_BTN_CPORT_SET_REAR_CLIENT, OnBtnCportSetRearClient)
 	ON_BN_CLICKED(IDC_BTN_CNT_REAR_CLIENT, OnBtnCntRearClient)
-<<<<<<< HEAD
 	ON_BN_CLICKED(IDC_BTN_PITCH_SERIAL_APPLY, OnBtnPitchSerialApply)
 	ON_BN_CLICKED(IDC_BTN_PITCH_SERIAL_CONNECT, OnBtnPitchSerialConnect)
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	//}}AFX_MSG_MAP
 	ON_COMMAND_RANGE(ID_LAMP_RLAMP, ID_LAMP_RLAMP+SELFCHECK, OnRLampClick)
 	ON_COMMAND_RANGE(ID_LAMP_YLAMP, ID_LAMP_YLAMP+SELFCHECK, OnYLampClick)
@@ -754,16 +751,12 @@ void CScreen_Set_Maintenance::OnMaintenance_Data_Set()
 	m_cb_data_1.SetCurSel(m_n_data[0][1]);
 	m_cb_parity_1.SetCurSel(m_n_parity[0][1]);
 	m_cb_stop_1.SetCurSel(m_n_stop[0][1]);
-<<<<<<< HEAD
 	
 	m_cb_port_2.SetCurSel(m_n_port[1][1]);
 	m_cb_rate_2.SetCurSel(m_n_rate[1][1]);
 	m_cb_data_2.SetCurSel(m_n_data[1][1]);
 	m_cb_parity_2.SetCurSel(m_n_parity[1][1]);
 	m_cb_stop_2.SetCurSel(m_n_stop[1][1]);
-=======
-
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 	////kwlee 2017.0417
 	sscanf( (LPCSTR)st_client[CLS_REAR].str_ip, "%d.%d.%d.%d", &dwTmp[0], &dwTmp[1], &dwTmp[2], &dwTmp[3] );
@@ -2305,7 +2298,6 @@ void CScreen_Set_Maintenance::OnBtnCipSetRearClient()
 
 
 	m_cip_rear_client.GetAddress( nField[0], nField[1], nField[2], nField[3] );
-<<<<<<< HEAD
 	
 	CString strip;
 	strip.Format( "%d.%d.%d.%d", nField[0], nField[1], nField[2], nField[3] );
@@ -2395,13 +2387,13 @@ void CScreen_Set_Maintenance::OnBtnPitchSerialApply()
 	
 	UpdateData(TRUE);
 	int i = 1;
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
-	CString strip;
-	strip.Format( "%d.%d.%d.%d", nField[0], nField[1], nField[2], nField[3] );
+	m_n_port[i][1]			= m_cb_port_2.GetCurSel();
+	m_n_rate[i][1]			= m_cb_rate_2.GetCurSel();
+	m_n_data[i][1]			= m_cb_data_2.GetCurSel();
+	m_n_stop[i][1]			= m_cb_stop_2.GetCurSel();
+	m_n_parity[i][1]	    = m_cb_parity_2.GetCurSel();
 	
-<<<<<<< HEAD
 	rs_232.n_serial_port[i]		= ConverterToData(COM_PORT, m_n_port[i][1]);
 	rs_232.n_serial_baudrate[i] = ConverterToData(COM_BAUDRATE, m_n_rate[i][1]);
 	rs_232.n_serial_data[i]     = ConverterToData(COM_DATA, m_n_data[i][1]);
@@ -2410,92 +2402,12 @@ void CScreen_Set_Maintenance::OnBtnPitchSerialApply()
 }
 
 void CScreen_Set_Maintenance::OnBtnPitchSerialConnect() 
-=======
-	st_msg.mstr_keypad_msg = "Assembler Server IP를 입력하세요.";
-	if (g_local.GetLocalType() != LOCAL_KOR)	st_msg.mstr_keypad_msg = _T("Enter the IP Next Step APCT");
-	
-	if (strip.IsEmpty())
-	{
-		(st_other.str_typing_msg).Empty();  // 키보드 대화 상자에 출력할 정보 저장 변수 초기화 
-	}
-	else 
-	{
-		strip.MakeUpper();
-		strip.TrimLeft(' ');               
-		strip.TrimRight(' ');
-		
-		st_other.str_typing_msg = strip;
-	}
-	
-	CDialog_Keyboard keyboard_dlg;
-	int n_response = keyboard_dlg.DoModal();
-	
-	if (n_response == IDOK)
-	{
-		strip = st_other.str_typing_msg;
-		
-		strip.MakeUpper();
-		strip.TrimLeft(' ');               
-		strip.TrimRight(' ');
-		
-// 		sscanf( (LPCSTR)strip, "%d.%d.%d.%d", &nField[0], &nField[1], &nField[2], &nField[3] );
-// 		m_cip_rear_client.SetAddress(nField[0], nField[1], nField[2], nField[3]);
-		
-		sscanf( (LPCSTR)strip, "%d.%d.%d.%d", &dwTmp[0], &dwTmp[1], &dwTmp[2], &dwTmp[3] );
-		dwRtn = (dwTmp[0] << 24) + (dwTmp[1] << 16) + (dwTmp[2] << 8) + dwTmp[3];
-		m_cip_rear_client.SetAddress( dwRtn );
-
-		st_client[CLS_REAR].str_ip = strip;
-		:: WritePrivateProfileString("BASIC", "CIP_REAR", LPCTSTR(strip), st_path.mstr_basic);
-
-	}
-}
-
-void CScreen_Set_Maintenance::OnBtnCportSetRearClient() 
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 {
-	// TODO: Add your control notification handler code here
-	CString strport;
-	((CEdit*)GetDlgItem(IDC_EDIT_CPORT_REAR_CLIENT))->GetWindowText(strport);
-	strport.TrimLeft(' ');	
-	strport.TrimRight(' ');
+	int i = 1;
 	
-<<<<<<< HEAD
 	st_serial.str_port_chk[i] = "NOT FOUND";
 	st_handler.mnSerial_Port_Creating[i] = CTL_NO;
 	
 	::PostMessage(st_handler.hWnd, WM_SERIAL_PORT, CTL_YES, rs_232.n_serial_port[i]);
 		
-=======
-	st_msg.mstr_keypad_msg = _T("Rear APCT port Setting");
-	
-	st_msg.mstr_keypad_val = strport;
-	
-	st_msg.mstr_pad_high_limit = "99999";
-	st_msg.mstr_pad_low_limit = "0";
-	
-	st_msg.mn_dot_use = FALSE;
-	
-	CRect r;
-	
-	m_btn_cport_set_rear_client.GetWindowRect(&r);
-	
-	CDialog_KeyPad pad_dlg;
-	pad_dlg.m_ptRef = CPoint(r.right, r.top);
-	
-	if (pad_dlg.DoModal() == IDOK)
-	{
-		strport = st_msg.mstr_keypad_val;	
-		((CEdit*)GetDlgItem(IDC_EDIT_CPORT_REAR_CLIENT))->SetWindowText(strport);
-		
-		st_client[CLS_REAR].n_port = atoi(strport);
-		:: WritePrivateProfileString("BASIC", "CPORT_REAR", LPCTSTR(strport), st_path.mstr_basic);
-	}
-}
-
-void CScreen_Set_Maintenance::OnBtnCntRearClient() 
-{
-	// TODO: Add your control notification handler code here
-	::PostMessage(st_handler.hWnd, WM_CLIENT_MSG_1, CLIENT_CONNECT, CLS_REAR);	
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 }

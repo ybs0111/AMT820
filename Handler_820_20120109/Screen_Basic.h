@@ -63,29 +63,17 @@ public:
 	CEXDigitST	m_dgt_Rubb;
 	CEXDigitST	m_dgt_Pick_Retry_Cnt;
 	CEXDigitST	m_dgt_Partial_Cnt;
-<<<<<<< HEAD
-=======
-	
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	CEXDigitST	m_dgt_Epoxy_Y;
 	CEXDigitST	m_dgt_Epoxy_X;
 	CEXDigitST	m_dgt_Elv_Partial_Cnt;
 	CEXDigitST	m_dgt_7387_Alarm_Cnt;
 	CGradientStatic	m_msg_Epoxy_Y;
-<<<<<<< HEAD
-=======
-	
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	CGradientStatic	m_msg_Epoxy_X;
 	CXPGroupBox	m_group_Rubb_Cnt;
 	CXPGroupBox	m_group_Pick_Retry_Cnt;
 	CXPGroupBox	m_group_Patial_Cnt;
 	CXPGroupBox	m_group_Epoxy_Offset;
 	CXPGroupBox	m_group_Elv_Partial_Cnt;
-<<<<<<< HEAD
-=======
-	
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	CXPGroupBox	m_group_7387_Alarm_Cnt;
 	CButtonST	m_btn_delete;
 	CButtonST	m_btn_create;
@@ -133,10 +121,6 @@ public:
 	int				m_nHardnessUseTime[2];
 	
 	
-<<<<<<< HEAD
-=======
-	
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	//kwlee 2017.0406
 	double	m_dLoaderTransferTrayDeviceGap[2];
 	DWORD m_dSatbleTime[2];

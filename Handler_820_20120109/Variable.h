@@ -91,14 +91,10 @@ enum SAFETY_FLAG
 #define MACHINE_MANUAL			0
 #define MACHINE_AUTO			1
 #define CLS_REAR              0 //kwlee 2017.0417
-<<<<<<< HEAD
 //kwlee 2017.0420               
 #define MAX_BCR_CNT          12 
 #define MAX_BOAT_CNT          3 
 #define MAX_BOAT_GRID_CNT     38
-=======
-               
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 // *****************************************************************************
 //////////vision camera
 #define MEASURE_RESULT_RCV_7387		0
@@ -273,7 +269,6 @@ enum ENUM_WM_MESSAGE
 // *****************************************************************************
 //  Main Screen 출력용 메세지 정의                                              
 // *****************************************************************************
-<<<<<<< HEAD
 #define MAIN_TIMEINFO		60
 #define MAIN_COUNTINFO		61
 #define MAIN_LOTINFO		62
@@ -282,16 +277,6 @@ enum ENUM_WM_MESSAGE
 //kwlee 2017.0414
 #define MAIN_TOP_INFO       65
 #define MAIN_BTM_INFO       66
-=======
-#define MAIN_TIMEINFO		9
-#define MAIN_COUNTINFO		10
-#define MAIN_LOTINFO		21
-#define MAIN_CYCLETIME		22
-#define MAIN_FTPDOWN        23
-//kwlee 2017.0414
-#define MAIN_TOP_INFO        24
-#define MAIN_BTM_INFO        25
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 // *****************************************************************************
 
 
@@ -2057,10 +2042,7 @@ struct st_work_param
 	CString strBarcodeRecive;
 
 	int n_OnlyCarrierMove;
-<<<<<<< HEAD
 	CString n_DataYes[10];
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 };
 extern  st_work_param  st_work;
 
@@ -2220,11 +2202,8 @@ extern st_sync_param	st_sync;
 #define YELLOW_GC				0xFFFF
 #define TEST_BC					RGB(194, 231, 150)
 #define IN_BC					RGB(204, 153, 255)
-<<<<<<< HEAD
 #define PINK_D					RGB(252, 233, 218)
 #define COL_PUPLE				RGB(204,102,204)
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 #define DVC_READY_C				RGB(153, 153, 255)
 #define DVC_LOAD_C				RGB(239, 214, 198)

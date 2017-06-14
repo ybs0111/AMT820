@@ -42,7 +42,6 @@
 
 
 
-<<<<<<< HEAD
 #define WM_CDIMM_UI			 787
 #define WM_EPOXY_MOVE_CLEAN  788
 #define WM_EPOXY_MOVE_SAFETY 789
@@ -50,8 +49,6 @@
 #define WM_HARDNEDD_OUT		 791
 #define WM_EPOXY_OUT		 792
 
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 class AModule;
 /////////////////////////////////////////////////////////////////////////////
 // CScreen_Main form view
@@ -74,7 +71,6 @@ public:
 public:
 	//{{AFX_DATA(CScreen_Main)
 	enum { IDD = IDD_SCREEN_MAIN };
-<<<<<<< HEAD
 	CXPGroupBox	m_group_Top_Info;
 	CXPGroupBox	m_group_HeatSink;
 	CXPGroupBox	m_group_Device;
@@ -103,8 +99,6 @@ public:
 	CNewLabel	m_disp_place;
 	CNewLabel	m_disp_pick;
 	CNewLabel	m_uld_buffer;
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	CButtonST	m_changeTop_Btm;
 	//}}AFX_DATA
 
@@ -214,24 +208,6 @@ public:
 	void OnMainBtm_Loader_Down_Info();
 	
 
-	void OnMainTop_Loader_Recive_Info();
-	void OnMainTop_Input_Loader_Info();
-	void OnMainTop_Epoxy_Info();
-	void OnMainTop_Wait_Index_Info();
-	void OnMainTop_Hs_Vision_Info();
-	void OnMainTop_OutSend_Info();
-	void OnMainTop_Unloader_Info();
-	
-	//void OnMainBtmGrid_Info();
-	void OnMainBtm_Down_Info();
-	void OnMainBtm_DownForward_Info();
-	void OnMainBtm_Hs_Down_Info();
-	void OnMainBtm_Index_Down_Info();
-	void OnMainBtm_Epoxy_Down_Info();
-	void OnMainBtm_Input_Down_Info();
-	void OnMainBtm_Loader_Down_Info();
-	
-
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CScreen_Main)
@@ -261,7 +237,6 @@ protected:
 	afx_msg void OnTray1Lock();
 	afx_msg void OnTray1Unlock();
 	afx_msg void OnCheck1();
-<<<<<<< HEAD
 	afx_msg void OnLabelUnload();
 	afx_msg void OnCheckOnlycarrier();
 	afx_msg void OnEpoxyCleanOutPosMove();
@@ -271,8 +246,6 @@ protected:
 	afx_msg void OnEpoxyOut2();
 	afx_msg void OnButtonCleanReset();
 	afx_msg void OnButtonHardnessReset();
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	//}}AFX_MSG
 	afx_msg LRESULT OnMain_Work_Info_Display(WPARAM wParam,LPARAM lParam);  // 테스트 결과 정보 화면에 출력하기 위한 사용자 정의 메시지 추가 
 	afx_msg void OnCellClick(WPARAM wParam, LPARAM lParam); //kwlee 2017.0425

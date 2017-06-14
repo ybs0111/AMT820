@@ -148,11 +148,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_MAINFRAME_WORK, OnMainframe_Work)
 	ON_MESSAGE(WM_FORM_CHANGE, OnViewChangeMode)					// Post Message에 대한 화면 전환 사용자 사용자 정의 메시지 선언 
 	ON_MESSAGE(WM_CLIENT_MSG_1, OnCommand_Client_1)							// Network관련된 작업을 담당한다.
-<<<<<<< HEAD
 	ON_MESSAGE(WM_SERVER_MSG_1, OnCommand_Server_1)							// Network관련된 작업을 담당한다.
-=======
-//	ON_MESSAGE(WM_SERVER_MSG_1, OnCommand_Server_1)							// Network관련된 작업을 담당한다.
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	ON_MESSAGE(WM_COMM_DATA, OnCommunication)						// RS-232C 시리얼 포트 제어 메시지
 	ON_MESSAGE(WM_COMM_EVENT, OnCommunicationEvent)					// RS-232C 시리얼 포트 이벤트 설정 메시지
 	ON_MESSAGE(WM_DATA_SEND, OnDataSend)							// RS-232C 시리얼 포트 통한 데이터 송신 메시지
@@ -216,23 +212,6 @@ CMainFrame::CMainFrame()
 // 	st_recipe.nTrayX = 1;
 // 	st_recipe.nTrayY = 2;
 //	st_recipe.nCarrierBuffer_Num = 3;
-	st_recipe.nLdBuffer_Num = 1;
-	st_recipe.nTrayNum = 2;
-	st_recipe.nHsTrayY = 5;
-	st_recipe.nHsTrayX = 9;
-	st_recipe.nTrayX = 1;
-	st_recipe.nTrayY = 2;
-	st_recipe.nEpoxyRunSpeed = 20;
-	st_recipe.nEpoxyDotScrewCount = 20;
-	st_recipe.nEpoxyRunSpeed = 20;
-	st_recipe.dHSCarrierSpreadMoveOffset = 5.0;
-	st_basic.n_rubb_count = 3;
-	st_recipe.nRubHSRunSpeed = 10;
-	st_recipe.dTrayPitch_Y = 95;
-	st_recipe.nTrayX = 1;
-	st_recipe.nTrayY = 2;
-	st_recipe.nCarrierBuffer_Num = 3;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	
 	st_handler.n_mot_board_initial	= FALSE;
 	st_handler.n_load_state			= FALSE;
@@ -1690,175 +1669,6 @@ LRESULT CMainFrame::OnMainframe_Work(WPARAM wParam, LPARAM lParam)
 	
 	return 0;
 }
-//kwlee 2017.0414
-LRESULT CMainFrame::OnCommand_Client_1(WPARAM wParam, LPARAM lParam)
-{
-	CString sSnd, sRcv, sTmp;
-
-	int nStatus	= (int)wParam;
-	int nAddr	= (int)lParam;
-
-	switch(nStatus)
-	{
-	case CLIENT_CONNECT:
-		// DISCONNECT 시에 연결 작업 시도
-		if (st_client[nAddr].n_connect == CTL_NO)
-		{
-			m_p_client[nAddr] = new CClientSocket;  // 소켓 생성
-
-			// - Create(int n_address, CString str_ip, int n_port, int n_timeout);
-			if (m_p_client[nAddr]->Create(nAddr, st_client[nAddr].str_ip, st_client[nAddr].n_port))//, 1000))
-			{
-				st_client[nAddr].n_connect = CTL_YES;
-				sTmp.Format("Client_[%02d] Connect Success.. IP = %s , Port = %d", nAddr, st_client[nAddr].str_ip, st_client[nAddr].n_port);
-
-				if (st_handler.cwnd_list != NULL)
-				{
-					//sprintf( st_msg.mstr_barcode, "%s", sTmp);
-					st_msg.mstr_barcode.Format("%s", sTmp); 
-					//st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 메시지 출력 요청
-					Func.On_LogFile_Add(LOG_TOTAL, st_msg.mstr_barcode);
-				}
-// 				m_sLogMsg = sTmp;
-// 				cLOG.OnLogEvent(LOG_SOCKET_, m_sLogMsg);
-			}
-			else
-			{
-				// 생성한 소켓 인스턴스 해제
-				delete m_p_client[nAddr];
-				m_p_client[nAddr] = NULL;
-
-				st_client[nAddr].n_connect = CTL_NO;
-				sTmp.Format("Client_[%02d] Connect Fail.. IP = %s , Port = %d", nAddr, st_client[nAddr].str_ip, st_client[nAddr].n_port);
-
-				if (st_handler.cwnd_list != NULL)
-				{
-					//sprintf( st_msg.mstr_barcode, "%s", sTmp);
-					//st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);  // 메시지 출력 요청
-					st_msg.mstr_barcode.Format("%s", sTmp); 
-					Func.On_LogFile_Add(LOG_TOTAL, st_msg.mstr_barcode);
-				}
-// 				m_sLogMsg = sTmp;
-// 				cLOG.OnLogEvent(LOG_SOCKET_, m_sLogMsg);
-			}
-		}
-		break;
-
-	case CLIENT_CLOSE:
-		// 연결을 종료시킴
-		if (st_client[nAddr].n_connect == CTL_YES)
-		{
-			delete m_p_client[nAddr];
-			m_p_client[nAddr] = NULL;
-
-			st_client[nAddr].n_connect = CTL_NO;
-			sTmp.Format("Client_[%02d] Close.. IP = %s , Port = %d", nAddr, st_client[nAddr].str_ip, st_client[nAddr].n_port);
-
-			if (st_handler.cwnd_list != NULL)
-			{
-				//sprintf( st_msg.mstr_barcode, "%s", sTmp);
-				//st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 메시지 출력 요청
-				sprintf(st_msg.c_normal_msg, sTmp);
-				 st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
-			}
-// 			m_sLogMsg = sTmp;
-// 			cLOG.OnLogEvent(LOG_SOCKET_, m_sLogMsg);
-		}
-		break;
-
-	case CLIENT_SEND:
-		sSnd.Format("%s", st_client[nAddr].ch_send);
-
-		if (st_client[nAddr].n_connect == CTL_YES)
-		{
-			m_p_client[nAddr]->Send(sSnd, sSnd.GetLength(), 0);
-			sTmp.Format("Client_[%02d] Data Send    - %s", nAddr, sSnd);
-			Func.On_LogFile_Add(LOG_TOTAL, sSnd);
-
-			if (st_handler.cwnd_list != NULL)
-			{
-				//sprintf( st_msg.mstr_barcode, "%s", sTmp);
-				//st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 메시지 출력 요청
-				sprintf(st_msg.c_normal_msg, sTmp);
-				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
-			}
-			// 규이리 주석 처리 [2012.10.04]
-			/*
-			if (st_handler.cwnd_list != NULL)
-			{
-				sprintf(st_other.str_op_msg, sTmp);
-				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 메시지 출력 요청
-			}
-			*/
-// 			m_sLogMsg = sTmp;
-// 			cLOG.OnLogEvent(LOG_SOCKET_, m_sLogMsg);
-// 			Func.On_LogFile_Add(99, m_sLogMsg);
-// 			Func.On_LogFile_Add(LOG_TCPIP, m_sLogMsg);
-// 			if (st_handler.cwnd_list != NULL)
-// 			{
-// 				sprintf( st_msg.c_normal_msg, "%s", m_sLogMsg);
-// 				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 메시지 출력 요청
-// 			}
-		}
-		else
-		{
-			sTmp.Format("Client_[%02d] Not ConnectData Send - %s", nAddr, sSnd);
-			Func.On_LogFile_Add(99, sTmp);
-
-			if (st_handler.cwnd_list != NULL)
-			{
-				//sprintf( st_msg.mstr_barcode, "%s", sTmp);
-				//st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 메시지 출력 요청
-				sprintf(st_msg.c_normal_msg, sTmp);
-				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
-			}
-		}
-		break;
-
-	case CLIENT_REV:
-		// 수신된 데이터를 길이만큼 받아들임
-		sTmp.Format("%s", st_client[nAddr].ch_rev);
-		sRcv = sTmp.Mid(0, st_client[nAddr].n_rev_length);
-
-		Func.On_LogFile_Add(99, sTmp);
-		
-		if (st_handler.cwnd_list != NULL)
-		{
-			//sprintf( st_msg.mstr_barcode, "%s", sTmp);
-			//st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 메시지 출력 요청
-			sprintf(st_msg.c_normal_msg, sTmp);
-			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);
-		}
-//		
-// 		m_sLogMsg.Format("Client_[%02d] Data Receive - %s", nAddr, sRcv);
-// 		cLOG.OnLogEvent(LOG_SOCKET_, m_sLogMsg);
-
-// 		clsBcrFormatClient.OnDataReceive(sTmp);	// [MES->EQP] ¼o½AμE ¸Þ½AAo ±¸ºÐCI¿ⓒ A³¸®
-
-		//2014,1229
-		//evMes.OnDivide_FromMES(nAddr, sRcv);	// [MES->EQP] 수신된 메시지 구분하여 처리
-
-// 		Func.On_LogFile_Add(99, m_sLogMsg);
-// 		Func.On_LogFile_Add(LOG_TCPIP, m_sLogMsg);
-// 		if (st_handler.cwnd_list != NULL)
-// 		{
-// 			sprintf( st_msg.c_normal_msg, "%s", m_sLogMsg);
-// 			st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, NORMAL_MSG);  // 메시지 출력 요청
-// 		}
-		break;
-
-		// 규이리 추가 [2014.08.13]
-// 	case CLIENT_RECONNECT:
-// 		// DISCONNECT 시에 연결 작업 시도
-// 		if (st_client[nAddr].n_connect == CTL_NO)
-// 		{
-// 			SetTimer(TMR_MES_, 5000, NULL);
-// 		}
-// 		break;
-	}
-	return 0;
-}
-//
 
 void CMainFrame::OnMainFrame_SelectMessageDisplay()
 {
@@ -2318,7 +2128,7 @@ LONG CMainFrame::OnCommunication(WPARAM port, LPARAM ch)
 		return 0;
 	}
 
-	if (port == LOT_BARCODE_PORT || 1)
+	if (port == LOT_BARCODE_PORT)
 	{
 // 		OnMain_Lot_Barcode(port, ch);     // 수신된 바코드 리더기 데이터 처리 함수
 		OnMain_Device_Barcode(ch);
