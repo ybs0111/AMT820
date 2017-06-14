@@ -49,11 +49,8 @@ CRun_Device_Carrier_Robot::CRun_Device_Carrier_Robot()
 		}
 	}
 
-<<<<<<< HEAD
 	m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
 
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 }
 
 CRun_Device_Carrier_Robot::~CRun_Device_Carrier_Robot()
@@ -291,17 +288,13 @@ void CRun_Device_Carrier_Robot::RunInit()
 		if( nRet_1 == RET_GOOD && nRet_2 == RET_GOOD )
 		{
 			mn_InitStep = 1000;
-<<<<<<< HEAD
 			mn_InitStep = 830;
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( nRet_1 == RET_ERROR || nRet_2 == RET_ERROR )
 		{
 			CTL_Lib.Alarm_Error_Occurrence( 11002, dWARNING, m_strAlarmCode);
 			mn_InitStep = 900;
 		}
-<<<<<<< HEAD
 		break;
 
 	case 830:
@@ -374,8 +367,6 @@ void CRun_Device_Carrier_Robot::RunInit()
 		{
 			mn_InitStep = 830;
 		}
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		break;
 
 	case 900:
@@ -391,7 +382,6 @@ void CRun_Device_Carrier_Robot::RunInit()
 			st_sync.nCarrierSateyflag[i] = RET_GOOD;
 		}
 
-<<<<<<< HEAD
 // 		st_work.n_OnlyCarrierMove = CTL_NO;
 // 		st_basic.n_mode_device = WITHOUT_DVC;
 // 		st_basic.n_mode_bcr = CTL_YES;
@@ -400,15 +390,7 @@ void CRun_Device_Carrier_Robot::RunInit()
 // 		COMI.mn_runspeed_rate = 70;
 
 		m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
-=======
-		st_work.n_OnlyCarrierMove = CTL_YES;
-		st_basic.n_mode_device = WITHOUT_DVC;
-		st_basic.n_mode_bcr = CTL_YES;
-		st_basic.n_mode_7387 = CTL_NO;
-		st_basic.n_mode_jig = WITH_JIG;
-		COMI.mn_runspeed_rate = 70;
 
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		mn_InitStep = 0;
 		mn_RunMove = -1;
 		break;
@@ -432,7 +414,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 		break;
 
 	case 0:		
-<<<<<<< HEAD
 		m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 		mn_RunMove = 10;
 		break;
@@ -447,17 +428,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 			mn_RunMove = 100;
-=======
-		mn_RunMove = 100;
-		break;
-		//일단 한번 밀고 하자
-
-	case 100://top 한칸 민다
-		nRet_1 = CarrierTopForward(2);//무조건 민다
-		if( nRet_1 == RET_GOOD )
-		{
-			mn_RunMove = 110;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( nRet_1 == IO_ON && nRet_3 == IO_ON)//rtm 일단 민다 그리고 다운 
 		{
@@ -479,7 +449,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 		}
 		break;
 
-<<<<<<< HEAD
 	case 20:
 		if( CarrierBtmForwrad() == RET_GOOD )//하단 이동
 		{
@@ -575,53 +544,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 			{
 				m_nTransferJobFlag[1] = CTL_YES;
 			}
-=======
-	case 110:
-		nRet_1 = Check_Carrier_Move_Enable(1);
-		if( nRet_1 == RET_GOOD )//한칸 민 상태
-		{
-			mn_RunMove = 120;
-		}
-		break;
 
-	case 120:
-		nRet_1 = CarrierMoveDown();
-		if( nRet_1 == RET_GOOD )
-		{
-			mn_RunMove = 130;
-		}
-		break;
-		
-	case 130:
-		nRet_1 = Check_Carrier_Move_Enable(2);
-		if(  nRet_1 == RET_GOOD )
-		{
-			mn_RunMove = 140;
-		}
-		break;
-		
-	case 140:
-		nRet_1 = CarrierMoveUp();
-		if( nRet_1 == RET_GOOD )
-		{
-			mn_RunMove = 150;
-		}
-		break;
-		
-	case 150:
-		nRet_1 = Check_Carrier_Move_Enable(3);
-		if( nRet_1 == RET_GOOD )//한칸 UP 상태
-		{
-			mn_RunMove = 160;
-		}
-		break;
-		
-	case 160:
-		nRet_1 = CarrierBtmForwrad();
-		if( nRet_1 == RET_GOOD )//하단 이동
-		{
-			mn_RunMove = 1000;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 
 		if( m_nTransferJobFlag[0] == CTL_YES && m_nTransferJobFlag[1] == CTL_YES)
@@ -667,11 +590,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 
 
 	case 1000:		
-<<<<<<< HEAD
 		if( g_lotMgr.GetLotCount() > 0 || st_work.n_OnlyCarrierMove == CTL_YES)
-=======
-		if( g_lotMgr.GetLotCount() > 0 )
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		{
 			mn_retry_cnt = 0;
 			mn_RunMove = 1100;
@@ -706,7 +625,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 				st_sync.nCarrierBcr_Req = CTL_REQ;
 			}
 			mn_RunMove = 1200;
-<<<<<<< HEAD
 		}
 		break;
 		
@@ -786,41 +704,15 @@ void CRun_Device_Carrier_Robot::RunMove()
 		break;
 
 	case 1460:
-=======
-		}
-		break;
-		
-	case 1200:
-		if (st_sync.nCarrierBcr_Req == CTL_FREE)
-		{
-			st_sync.nCarrierBcr_Req = CTL_NO;
-			mn_RunMove = 1300;
-		}
-		break;
-		
-	case 1300:
-		if( Func.Check_RunAllSafety() == RET_GOOD )
-		{
-			mn_RunMove = 1400;
-		}
-		break;
-
-	case 1400:
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		if( CheckCarrierType() == RET_GOOD )
 		{
 			mn_RunMove = 3000;
 			if( st_work.n_OnlyCarrierMove == CTL_YES)//CArrier 무한루프
-<<<<<<< HEAD
 			{
 				m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 				mn_RunMove = 2000;
 			}
 			
-=======
-				mn_RunMove = 2000;
-
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( CheckCarrierType() == RET_ERROR )
 		{
@@ -828,11 +720,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 			mn_RunMove = 1500;
 		}
 		break;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	case 1500:
 		m_dwWaitTime[1] = GetCurrentTime();
 		m_dwWaitTime[2] = m_dwWaitTime[1] - m_dwWaitTime[0];
@@ -841,14 +729,10 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			mn_RunMove = 3000;//작업공간이다.
 			if( st_work.n_OnlyCarrierMove == CTL_YES)//CArrier 무한루프
-<<<<<<< HEAD
 			{
 				m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 				mn_RunMove = 2000;
 			}
-=======
-				mn_RunMove = 2000;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else
 		{
@@ -856,10 +740,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 			{
 				if( CheckCarrierType() == RET_ERROR )
 				{
-<<<<<<< HEAD
 					m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 					mn_RunMove = 2000;//작업공간이 아니라서 한바퀴 돌아야 한다,
 				}
 				else
@@ -886,7 +767,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 // 		break;
 
 	case 2000://top 한칸 민다
-<<<<<<< HEAD
 // 		nRet_1 = CarrierTopForward(1);
 // 		if( nRet_1 == RET_GOOD )
 // 		{
@@ -928,22 +808,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			mn_RunMove = 2110;
 		}
-
-=======
-		nRet_1 = CarrierTopForward(1);
-		if( nRet_1 == RET_GOOD )
-		{
-			mn_RunMove = 2100;
-		}
-		break;
-		
-	case 2100:
-		nRet_1 = Check_Carrier_Move_Enable(1);
-		if( nRet_1 == RET_GOOD )//한칸 민 상태
-		{
-			mn_RunMove = 2110;
-		}
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		break;
 
 	case 2110://데이타 이동값 
@@ -956,18 +820,13 @@ void CRun_Device_Carrier_Robot::RunMove()
 		if( nRet_1 == RET_GOOD )
 		{
 			Top_ShiftCarrierDataMoveRbt( 1, TOPSHIFT_BUFF_LOADER_RECEIVE );//clear
-<<<<<<< HEAD
 			m_nTransferJobFlag[0]=m_nTransferJobFlag[1]=CTL_NO;
 			mn_RunMove = 2200;
 			mn_RunMove = 2130;
-=======
-			mn_RunMove = 2200;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( nRet_1 == RET_ERROR )
 		{
 			CTL_Lib.Alarm_Error_Occurrence( 11201, dWARNING, mc_jamcode);
-<<<<<<< HEAD
 		}
 		break;
 
@@ -987,8 +846,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 		else if( nRet_1 == RET_ERROR )
 		{
 			CTL_Lib.Alarm_Error_Occurrence(11289, dWARNING, mc_jamcode);
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
@@ -997,7 +854,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			break;
 		}
-<<<<<<< HEAD
 
 // 		if( CarrierMoveDown() == RET_GOOD )
 // 		{
@@ -1025,11 +881,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 			mn_RunMove = 2220;
-=======
-		if( CarrierMoveDown() == RET_GOOD )
-		{
-			mn_RunMove = 2210;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
@@ -1052,10 +903,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			Top_ShiftCarrierDataMoveRbt( 1, TOPSHIFT_BUFF_UNLOADER );//clear
 			mn_RunMove = 2240;
-<<<<<<< HEAD
 			mn_RunMove = 2250;
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if( nRet_1 == RET_ERROR )
 		{
@@ -3549,11 +3397,7 @@ int CRun_Device_Carrier_Robot::CarrierBtmForwrad()
 			else
 			{
 				if( nRet_1 == IO_OFF ) strTmp.Format("8%d%04d", IO_ON, st_io.i_Carrier_Z_1_Down_Check);
-<<<<<<< HEAD
 				else                   strTmp.Format("8%d%04d", IO_OFF, st_io.i_Carrier_Z_2_Down_Check);
-=======
-				else                          strTmp.Format("8%d%04d", IO_OFF, st_io.i_Carrier_Z_2_Down_Check);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 				CTL_Lib.Alarm_Error_Occurrence(11102, dWARNING, strTmp);
 			}
 			break;
@@ -3606,11 +3450,7 @@ int CRun_Device_Carrier_Robot::CarrierTopForward( int nMode )
 	switch( mn_RunTopFwdStep)
 	{
 		case 0:
-<<<<<<< HEAD
 			if( nMode < 0 || nMode > 3 )
-=======
-			if( nMode < 0 || nMode > 2 )
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			{//902000 1 A "THERE_IS_NO_MODE_IN_CARRIER_TOP_FORWARD."
 				CTL_Lib.Alarm_Error_Occurrence(11201, dWARNING, "902000");
 				nFuncRet = RET_ERROR;

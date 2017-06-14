@@ -1,0 +1,68 @@
+회의록] AMT820 H/S 자동화 설비 2차 개선 협의 결과 공유 
+
+수신 : AMT社 송기영이사님, 김홍현부장님
+참조 : 수신처 외
+발신 : 삼성전자 박정현
+
+ 안녕하세요.
+
+ 금일 송기영이사님과 협의 된 내용 정리했습니다.
+
+ 협의내용과 향후 일정 공유 드리오니 참조해주시기 바라며, 
+
+ 이견이나 누락된 내용이 있으시면 회신 바랍니다.
+
+ 
+
+ ㅁ 협의일정 : 5/22 14:00~ 15:10 (송기영이사님)
+
+ ㅁ 협의내용 : ( ?? 값은 현장에서 추가 확인 예정임)
+
+    1. Carrier 위치 반복 정밀도 개선 
+
+      - H/S Attach 영역 Tension Bearing Blcok 2set (??kgf 이상 / 3mm 이상 도출) 
+
+      - H/S Attach 영역 Front 고정부 1set 추가 (Rear Cylinder 이동설치)
+
+      -    / /          Rear 고정 Cylinder 용량 증가 
+
+      - Barcode Read 고정 간섭 보완 (Tension Bearing)
+
+      - Carrier Limit Stopper (압쇼바 추가 필요)
+
+      - Sequence 변경 
+
+      - Carrier No. 고정
+
+      - Carrier 위치 재공정 아이마크 기능 추가 (H/S Attach 영역) 
+
+      - Carrier X Shift block Tension 추가 (??Kgf 이상)
+
+    2. Jig Pin 길이 5mm 키움 (Undercut)
+
+    3. Pocket PCB 고정 Pin 교체
+
+    4. Carrier위치 감지 Sensor 4ea 교체 및 고정부 보완
+
+    5. Dispenser Bearing 파손 조치 (Overhaul)
+
+ ㅁ 향후일정 : 
+
+    - Drawing 5/23 까지 확보 
+
+    - 견적서  5/25 까지 확보 (상기 내용 모두 포함해주세요)
+
+    - 품의진행 5/30 예상.
+
+ p.s : 1차 개선 시 치수 이상의 기구물 제작이 몇건 있었습니다.
+
+       2차 개선에서는 치수 이상으로 번거로움이 없도록 정확한 설계 부탁드립니다. 
+
+ 감사합니다. 
+
+
+자료유형  오피스자료  
+
+전송자    박정현 Senior Engineer (junghyun1.park@samsung.com)  
+
+등록일    2017/05/23 11:18:21 

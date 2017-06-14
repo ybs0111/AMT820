@@ -148,11 +148,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_MESSAGE(WM_MAINFRAME_WORK, OnMainframe_Work)
 	ON_MESSAGE(WM_FORM_CHANGE, OnViewChangeMode)					// Post Message에 대한 화면 전환 사용자 사용자 정의 메시지 선언 
 	ON_MESSAGE(WM_CLIENT_MSG_1, OnCommand_Client_1)							// Network관련된 작업을 담당한다.
-<<<<<<< HEAD
 	ON_MESSAGE(WM_SERVER_MSG_1, OnCommand_Server_1)							// Network관련된 작업을 담당한다.
-=======
-//	ON_MESSAGE(WM_SERVER_MSG_1, OnCommand_Server_1)							// Network관련된 작업을 담당한다.
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 	ON_MESSAGE(WM_COMM_DATA, OnCommunication)						// RS-232C 시리얼 포트 제어 메시지
 	ON_MESSAGE(WM_COMM_EVENT, OnCommunicationEvent)					// RS-232C 시리얼 포트 이벤트 설정 메시지
 	ON_MESSAGE(WM_DATA_SEND, OnDataSend)							// RS-232C 시리얼 포트 통한 데이터 송신 메시지

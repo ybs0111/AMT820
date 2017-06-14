@@ -9,10 +9,7 @@
 #include "DataAPI.h"
 #include <nb30.h>
 #include "Run_Device_Carrier_Robot.h"
-<<<<<<< HEAD
 #include "SrcPart/APartHandler.h"
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 typedef struct _ASTAT_ 
 { 
@@ -4746,11 +4743,7 @@ void CPublic_Function::VppmSet()
 
 	double  fTemp ;
 
-<<<<<<< HEAD
 	if(st_basic.n_3874InspectMode == CTL_YES)
-=======
-	if(st_basic.n_mode_7387 == CTL_YES)
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		fTemp = (st_recipe.fDispenserVppmA/60);
 	else
 		fTemp = 0;
