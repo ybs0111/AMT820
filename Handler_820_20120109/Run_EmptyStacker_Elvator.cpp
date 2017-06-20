@@ -48,7 +48,7 @@ void CRun_EmptyStacker_Elvator::Thread_Run()
 		break;
 
 	case dRUN:
-// 		RunMove();
+		RunMove();
 		break;
 
 	case dSTOP:
@@ -211,10 +211,6 @@ void CRun_EmptyStacker_Elvator::RunMove()
 					return;
 				}
 			}
-<<<<<<< HEAD
-=======
-			mn_RunStep = 10;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
@@ -231,11 +227,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-<<<<<<< HEAD
 			CTL_Lib.Alarm_Error_Occurrence(3506, dWARNING, alarm.mstr_code);
-=======
-			CTL_Lib.Alarm_Error_Occurrence(3100, dWARNING, alarm.mstr_code);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			mn_RunStep = 10;
 		}
 		break; 
@@ -248,11 +240,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		}
 		else if( nRet_1 == RET_ERROR )
 		{
-<<<<<<< HEAD
 			CTL_Lib.Alarm_Error_Occurrence(3507, dWARNING, m_strAlarmCode);
-=======
-			CTL_Lib.Alarm_Error_Occurrence(3101, dWARNING, m_strAlarmCode);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
@@ -261,11 +249,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		if(nRet_1 == BD_GOOD) //로더 플레이트에 트레이가 감지 된 상태 
 		{
 			m_strAlarmCode.Format(_T("910102")); //910102 1 A "EMPTY_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR."
-<<<<<<< HEAD
 			CTL_Lib.Alarm_Error_Occurrence(3601, dWARNING, m_strAlarmCode);
-=======
-			CTL_Lib.Alarm_Error_Occurrence(3102, dWARNING, m_strAlarmCode);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if(nRet_1 == BD_ERROR)//로더 플레이드에 트레이가 감지 되지않은 상태 
 		{
@@ -285,11 +269,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		}
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-<<<<<<< HEAD
 			CTL_Lib.Alarm_Error_Occurrence(3602, dWARNING, alarm.mstr_code);
-=======
-			CTL_Lib.Alarm_Error_Occurrence(3103, dWARNING, alarm.mstr_code);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			mn_RunStep = 300;
 		}
 		break; 
@@ -301,11 +281,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 			mn_RunStep = 500;
 			break;
 			//m_strAlarmCode.Format(_T("910103")); //910103 1 A "EMPTY_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-<<<<<<< HEAD
 			//CTL_Lib.Alarm_Error_Occurrence(3603, dWARNING, m_strAlarmCode);
-=======
-			//CTL_Lib.Alarm_Error_Occurrence(3104, dWARNING, m_strAlarmCode);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		else if(nRet_1 == BD_ERROR)
 		{
@@ -329,11 +305,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Unloading_Stacker_Tray_Exist_Check);  
 			else
 				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Unloading_Stacker_Tray_Ready_Check);  
-<<<<<<< HEAD
 			CTL_Lib.Alarm_Error_Occurrence(3604, dWARNING, m_strAlarmCode);
-=======
-			CTL_Lib.Alarm_Error_Occurrence(3105, dWARNING, m_strAlarmCode);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
@@ -382,11 +354,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 		if(nRet_1 == RET_GOOD)
 		{
 			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Unloading_Stacker_Tray_Exist_Check); 
-<<<<<<< HEAD
 			CTL_Lib.Alarm_Error_Occurrence(3605, dWARNING, m_strAlarmCode); 
-=======
-			CTL_Lib.Alarm_Error_Occurrence(3106, dWARNING, m_strAlarmCode); 
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 			mn_RunStep = 1000;
 		}
@@ -447,11 +415,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 					{
 						m_nRetry = 0;
 						m_strAlarmCode.Format(_T("900004")); //900001 1 0 "LOAD_STACKER_PLATE_SD_TRAY_ON_CHECK_ERROR" //kwlee 2016.0902 "900000" ->"900004"
-<<<<<<< HEAD
 						CTL_Lib.Alarm_Error_Occurrence(3607, dWARNING, m_strAlarmCode); 
-=======
-						CTL_Lib.Alarm_Error_Occurrence(3107, dWARNING, m_strAlarmCode); 
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 					}
 					mn_RunStep = 3200;
 
@@ -482,11 +446,7 @@ void CRun_EmptyStacker_Elvator::RunMove()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다  
-<<<<<<< HEAD
 				CTL_Lib.Alarm_Error_Occurrence(3608, dWARNING, alarm.mstr_code);
-=======
-				CTL_Lib.Alarm_Error_Occurrence(3108, dWARNING, alarm.mstr_code);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 				mn_RunStep = 9100;
 			}
 			break; 

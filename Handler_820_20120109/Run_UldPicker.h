@@ -88,7 +88,8 @@ public:
 
 	double m_dCurrentPos[100];
 	CString m_strAlarmCode;
-	DWORD m_dwWaitTime;
+	DWORD m_dwWaitTime[3];
+	BOOL m_bConnectAssemblyTimeOut;
 
 // Operations
 public:

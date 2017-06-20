@@ -45,11 +45,7 @@ void CRun_LdStacker_Elvator::Thread_Run()
 		break;
 
 	case dRUN:
-<<<<<<< HEAD
  		RunMove();
-=======
-// 		RunMove();
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		break;
 
 	case dSTOP:
@@ -206,10 +202,6 @@ void CRun_LdStacker_Elvator::RunMove()
 					return;
 				}
 			}
-<<<<<<< HEAD
-=======
-			mn_RunStep = 10;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() == "YES" &&
 			st_sync.nLotEndFlag[m_nFindLotNo_Flag][THD_WORK_TRANSFER] == LOTEND &&
@@ -222,11 +214,8 @@ void CRun_LdStacker_Elvator::RunMove()
 		break;
 
 	case 10:
-<<<<<<< HEAD
 		CTL_Lib.SD_Sensor_Enable(0, m_nAxisNum, CTL_NO); //sd sensor clear			
 		COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_MODE,cmFALSE);
-=======
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nAxisNum, st_motor[m_nAxisNum].md_pos[P_ELV_TRAY_Z_INITPOS], COMI.mn_runspeed_rate);  //트레이를 받을 위치로 미리 이동한다 
 		if (nRet_1 == BD_GOOD) //좌측으로 이동  
 		{
@@ -252,11 +241,7 @@ void CRun_LdStacker_Elvator::RunMove()
 		}
 		else if( nRet_1 == RET_ERROR )
 		{
-<<<<<<< HEAD
 // 			CTL_Lib.Alarm_Error_Occurrence(3101, dWARNING, m_strAlarmCode);
-=======
-			CTL_Lib.Alarm_Error_Occurrence(3101, dWARNING, m_strAlarmCode);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
@@ -371,7 +356,6 @@ void CRun_LdStacker_Elvator::RunMove()
 				//자재없음
 				sprintf(st_msg.c_abnormal_msg, "[LDSTACKER_ELV] There is no tray in load stacker elevator. Please check sensor.");
 				if (st_handler.cwnd_list != NULL)  st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
-<<<<<<< HEAD
 				if( g_lotMgr.GetLotAt(m_nFindLotNo_Flag).GetStrLastModule() != "YES" )
 				{
 					st_msg.mstr_event_msg[0] = "[LDSTACKER_ELV] There is no tray";
@@ -380,12 +364,6 @@ void CRun_LdStacker_Elvator::RunMove()
 				}
 				COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_EN, cmFALSE);
 				mn_RunStep = 1110;
-=======
-				m_dwWaitTime[0] = GetCurrentTime();
-				COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_EN, cmFALSE);
-				mn_RunStep = 1110;
-
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			}
 		}
 		break;
@@ -394,31 +372,6 @@ void CRun_LdStacker_Elvator::RunMove()
 		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_START, m_nAxisNum, st_motor[m_nAxisNum].md_pos[P_ELV_TRAY_Z_INITPOS], COMI.mn_runspeed_rate);
 		if (nRet_1 == BD_GOOD)
 		{
-			COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_EN, cmTRUE);			
-			mn_RunStep = 0;
-		}
-		else if (nRet_1 == BD_RETRY)
-		{				 
-			mn_RunStep = 1110;
-		}
-		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
-		{
-			CTL_Lib.Alarm_Error_Occurrence(3104, dWARNING, alarm.mstr_code);
-			mn_RunStep = 1110;
-		}
-		break;
-
-	case 1110:
-		nRet_1 = CTL_Lib.Single_Move(ONLY_MOVE_START, m_nAxisNum, st_motor[m_nAxisNum].md_pos[P_ELV_TRAY_Z_INITPOS], COMI.mn_runspeed_rate);
-		if (nRet_1 == BD_GOOD)
-		{
-			st_msg.mstr_event_msg[0] = "[LDSTACKER_ELV] There is no tray in load stacker elevator";
-			if( st_handler.cwnd_list != NULL )
-			{
-				sprintf(st_msg.c_abnormal_msg, "%s", st_msg.mstr_event_msg[0]);
-				st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
-			}
-			::PostMessage(st_handler.hWnd, WM_MAIN_EVENT, CTL_YES, 0);
 			COMI.Set_Motor_IO_Property(m_nAxisNum, cmSD_EN, cmTRUE);			
 			mn_RunStep = 0;
 		}
@@ -540,6 +493,7 @@ void CRun_LdStacker_Elvator::RunMove()
 		{
 			m_strAlarmCode.Format(_T("910003")); //910003 1 A "LOAD_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
 			CTL_Lib.Alarm_Error_Occurrence(3110, dWARNING, m_strAlarmCode);
+			mn_RunStep = 1000;
 			break;
 		}
 
@@ -558,7 +512,6 @@ void CRun_LdStacker_Elvator::RunMove()
 		break; 
 
 	case 5000://7000
-<<<<<<< HEAD
 		//last check end 
 // 		nRet_1 = g_ioMgr.get_in_bit(st_io.i_Loading_Stacker_Tray_Exist_Check, IO_OFF);
 // 		if(nRet_1 == IO_ON)
@@ -703,14 +656,7 @@ void CRun_LdStacker_Elvator::RunMove()
 		if(nRet_1 == BD_ERROR) //로더 플레이트에 트레이가 감지 된 상태 
 		{
 			m_strAlarmCode.Format(_T("910003")); //910003 1 A "LOAD_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-			CTL_Lib.Alarm_Error_Occurrence(3110, dWARNING, m_strAlarmCode);
-=======
-		nRet_1 = g_ioMgr.get_in_bit(st_io.i_Loading_Stacker_Tray_Exist_Check, IO_OFF);
-		if(nRet_1 == IO_ON)
-		{	
-			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Stacker_Tray_Exist_Check); 			
 			CTL_Lib.Alarm_Error_Occurrence(3111, dWARNING, m_strAlarmCode);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			break;
 		}
 		
@@ -745,11 +691,7 @@ void CRun_LdStacker_Elvator::RunMove()
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{ 
 			CTL_Lib.Alarm_Error_Occurrence(3112, dWARNING, alarm.mstr_code);
-<<<<<<< HEAD
 			mn_RunStep = 6000;
-=======
-			mn_RunStep = 5000;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 
@@ -766,11 +708,7 @@ void CRun_LdStacker_Elvator::RunMove()
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 		{ 
 			CTL_Lib.Alarm_Error_Occurrence(3113, dWARNING, alarm.mstr_code);
-<<<<<<< HEAD
 			mn_RunStep = 6010;
-=======
-			mn_RunStep = 5010;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break;
 

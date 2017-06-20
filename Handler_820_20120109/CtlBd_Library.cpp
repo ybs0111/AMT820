@@ -46,11 +46,13 @@ CCtlBd_Library CTL_Lib;
 int CCtlBd_Library::Alarm_Error_Occurrence(int n_jampos, int n_run_status, char c_alarmcode[10])
 {
 	int n_cur_num = -1;
+	CString strTemp = "";
 
 	CTL_Lib.mn_jampos = n_jampos;
 	CTL_Lib.mn_run_status = n_run_status;
 	COMI.mn_run_status = n_run_status;
 	st_work.mn_run_status = n_run_status;
+	strTemp = c_alarmcode;
 	alarm.mstr_code = c_alarmcode;
 	alarm.stl_cur_alarm_time = GetCurrentTime();
 
@@ -71,7 +73,7 @@ int CCtlBd_Library::Alarm_Error_Occurrence(int n_jampos, int n_run_status, char 
 	
 	if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
 	{
-		sprintf(st_msg.c_abnormal_msg, "[%d] [%s] [%s]", CTL_Lib.mn_jampos, alarm.mstr_code, st_alarm.mstr_cur_msg);
+		sprintf(st_msg.c_abnormal_msg, "[%d] [%s] [%s] [%s]", CTL_Lib.mn_jampos, alarm.mstr_code, st_alarm.mstr_cur_msg, strTemp);
 		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
 	}	
 
@@ -91,9 +93,11 @@ int CCtlBd_Library::Alarm_Error_Occurrence( int n_jampos, int n_run_status, CStr
 // 	//2013,0123
 // 	if(COMI.mn_run_status == dINIT) alarm.stl_a .stl_alarm_start_time = GetCurrentTime();
 	int n_cur_num = -1;
+	CString strTemp = "";
 	CTL_Lib.mn_jampos = n_jampos; //jam이 발생한 위치를 저장한다 
 	CTL_Lib.mn_run_status = n_run_status; //장비의 가동상태를 변경한다 
 	COMI.mn_run_status = n_run_status;
+	strTemp = strJamCode;
 	alarm.mstr_code = strJamCode;
 	st_work.mn_run_status = n_run_status;
 	alarm.stl_cur_alarm_time = GetCurrentTime();
@@ -109,7 +113,7 @@ int CCtlBd_Library::Alarm_Error_Occurrence( int n_jampos, int n_run_status, CStr
 	
 	if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
 	{
-		sprintf(st_msg.c_abnormal_msg, "[%d] [%s] [%s]", CTL_Lib.mn_jampos, alarm.mstr_code, st_alarm.mstr_cur_msg);
+		sprintf(st_msg.c_abnormal_msg, "[%d] [%s] [%s] [%s]", CTL_Lib.mn_jampos, alarm.mstr_code, st_alarm.mstr_cur_msg, strTemp);
 		st_handler.cwnd_list->PostMessage(WM_LIST_DATA, 0, ABNORMAL_MSG);
 	}
 	
@@ -1245,7 +1249,9 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 					//안전위치보다 20mm내려오면 충돌위치
 					if( COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_Y)  < ( st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_SAFETY] - 20 ) )
 					{
-						if( COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_X)  < ( st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY] + 10 ) )
+						//if( COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_X)  < ( st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY] + 10 ) )
+						//2017.0616
+						if( COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_X)  > ( st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY] - 100 ) )
 						{
 							COMI.Set_MotStop( 0, M_HEATSINK_TRANSFER_X);
 							COMI.Set_MotStop( 0, M_HEATSINK_TRANSFER_Y);
@@ -1631,7 +1637,6 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 						}
 					}
 				}
-
 			}
 			break;
 
@@ -1694,6 +1699,21 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 			}
 			break;
 
+		case M_UNLOADER_TRANSFER_Z:
+			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X ) > (st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_ZIGPLACE_POS] - COMI.md_allow_value[M_UNLOADER_TRANSFER_X]) && 
+				COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X ) < (st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_ZIGPLACE_POS] + COMI.md_allow_value[M_UNLOADER_TRANSFER_X]) )
+			{
+				if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_Y ) > (st_motor[M_UNLOADER_TRANSFER_Y].md_pos[P_UNLOADER_TRANSFER_Y_ZIGPLACE_POS] - COMI.md_allow_value[M_UNLOADER_TRANSFER_Y]) && 
+					COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_Y ) < (st_motor[M_UNLOADER_TRANSFER_Y].md_pos[P_UNLOADER_TRANSFER_Y_ZIGPLACE_POS] + COMI.md_allow_value[M_UNLOADER_TRANSFER_Y]) )
+				{
+					if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_Z ) > (st_motor[M_UNLOADER_TRANSFER_Z].md_pos[P_UNLOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[M_UNLOADER_TRANSFER_Z]))
+					{
+						//2017.0614 Case Assembly지그 동작그만 
+						g_ioMgr.set_out_bit(st_io.o_Interface_Output_1, IO_OFF);
+					}
+				}
+			}
+			break;
 
 	}
 
@@ -1895,7 +1915,7 @@ int CCtlBd_Library::Single_Move(int n_RunMethod, int n_MotNum, double d_MovePos,
 			break;
 		}
 		
-		mn_mot_retry_cnt[n_MotNum] = 10;
+		mn_mot_retry_cnt[n_MotNum] = 0;
 		mn_mot_max_retry_cnt = 3; 
 		mn_single_motmove_step[n_MotNum] = 100;
 		m_dwUntil_Wait[n_MotNum][0] = GetCurrentTime();

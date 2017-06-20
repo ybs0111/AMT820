@@ -126,7 +126,11 @@ public:
 	int nRetryCyl[4];
 
 	int m_Thread_Flag[4];
-
+	
+	//2017.0617
+	void Dvc_Carrier_Buffer_Event();
+	DWORD dwMonitorWaitTime[3];
+	
 public:
 	void Thread_Run();
 	void RunInit();

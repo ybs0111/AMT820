@@ -47,6 +47,9 @@ void CRun_UnPress_Robot::Thread_Run()
 			break;
 
 		case dSTOP:
+
+			CTL_Lib.mn_single_motmove_step[M_CARRIER_X] = 0;
+			CTL_Lib.mn_single_motmove_step[M_PRESS_Y] = 0;
 			break;
 
 		case dWARNING:
@@ -402,6 +405,8 @@ void CRun_UnPress_Robot::RunMove()
 						if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2] > (15*60*1000) )//15분 완료시간
 						{
 							st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] = BIN_GOOD;
+							//kwlee 2017.0614
+						//	st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_LOADER_RECEIVE, 0);
 						}
 						else
 						{
@@ -587,7 +592,6 @@ void CRun_UnPress_Robot::RunMove()
 			m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 			if( m_dwWaitUntil[2] <= 0 ) m_dwWaitUntil[0] = GetCurrentTime();
 			if( m_dwWaitUntil[2] < 500 ) break;
-
 			nRet[0] = g_ioMgr.get_in_bit( st_io.i_Press_Up_Check, IO_ON );
 			nRet[1] = g_ioMgr.get_in_bit( st_io.i_Press_Down_Check, IO_OFF );
 			nRet[2] = g_ioMgr.get_out_bit( st_io.o_Press_Up_Sol, IO_ON );
@@ -839,11 +843,7 @@ void CRun_UnPress_Robot::RunMove()
 				nRet[1] = g_ioMgr.get_in_bit( st_io.i_Press_Down_Check, IO_OFF );
 				nRet[2] = g_ioMgr.get_out_bit( st_io.o_Press_Up_Sol, IO_ON );
 				nRet[3] = g_ioMgr.get_out_bit( st_io.o_Press_Down_Sol, IO_OFF );
-<<<<<<< HEAD
 				if( nRet[0] == IO_OFF && nRet[1] == IO_ON && nRet[2] == IO_OFF && nRet[3] == IO_ON)
-=======
-				if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_ON && nRet[3] == IO_OFF)
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 				{
 					nRet_1 = Chk_Device_Carrier_Holder(ON);
 					if(nRet_1 == RET_GOOD)
@@ -858,20 +858,12 @@ void CRun_UnPress_Robot::RunMove()
 				}
 				else
 				{
-<<<<<<< HEAD
 					if( nRet[0] != IO_OFF || nRet[2] != IO_OFF)
-=======
-					if( nRet[0] != IO_ON || nRet[2] != IO_ON)
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 					{
 						strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_Up_Check);
 						CTL_Lib.Alarm_Error_Occurrence(7121, dWARNING, strTemp);
 					}
-<<<<<<< HEAD
 					else if( nRet[1] != IO_ON || nRet[3] != IO_ON)
-=======
-					else if( nRet[1] != IO_OFF || nRet[3] != IO_OFF)
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 					{
 						strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Down_Check);
 						CTL_Lib.Alarm_Error_Occurrence(7122, dWARNING, strTemp);
@@ -1060,7 +1052,6 @@ void CRun_UnPress_Robot::RunMove()
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
-<<<<<<< HEAD
 			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X) > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_INREADY_POS] + COMI.md_allow_value[M_EPOXY_TRANSFER_Y] ) )
 			{
 				break;
@@ -1074,21 +1065,6 @@ void CRun_UnPress_Robot::RunMove()
 // 			{
 // 				break;
 // 			}
-=======
-			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X) > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_INREADY_POS] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ) )
-			{
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_LOADER_TRANSFER_Y) > ( st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ) )
-			{
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_EPOXY_TRANSFER_X) < ( st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY] - st_motor[M_EPOXY_TRANSFER_X].mn_allow ) ||
-				COMI.Get_MotCurrentPos( M_EPOXY_TRANSFER_Y) > ( st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_SAFETY] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ))
-			{
-				break;
-			}
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 
 			if(  mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + COMI.md_allow_value[m_nPressAxisY] ) )
 			{
@@ -1100,11 +1076,7 @@ void CRun_UnPress_Robot::RunMove()
 			}	
 
 			m_dTargetPosX = st_motor[m_nPressAxisX].md_pos[P_CARRIER_X_PUSHER_DOWN];
-<<<<<<< HEAD
 			nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nPressAxisX, m_dTargetPosX, (COMI.mn_runspeed_rate*1.5));
-=======
-			nRet_1 = CTL_Lib.Single_Move( BOTH_MOVE_FINISH, m_nPressAxisX, m_dTargetPosX, COMI.mn_runspeed_rate);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
 				mn_RunStep = 3110;
@@ -1127,7 +1099,6 @@ void CRun_UnPress_Robot::RunMove()
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
-<<<<<<< HEAD
 			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X) > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_INREADY_POS] + COMI.md_allow_value[M_EPOXY_TRANSFER_Y] ) )
 			{
 				break;
@@ -1142,22 +1113,6 @@ void CRun_UnPress_Robot::RunMove()
 // 				break;
 // 			}
 			if( m_nTrayDeviceGap == 0 && ( mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + COMI.md_allow_value[m_nPressAxisY] ) ) )
-=======
-			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X) > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_INREADY_POS] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ) )
-			{
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_LOADER_TRANSFER_Y) > ( st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ) )
-			{
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_EPOXY_TRANSFER_X) < ( st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY] - st_motor[M_EPOXY_TRANSFER_X].mn_allow ) ||
-				COMI.Get_MotCurrentPos( M_EPOXY_TRANSFER_Y) > ( st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_SAFETY] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ))
-			{
-				break;
-			}
-			if( m_nTrayDeviceGap == 0 && ( mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) ) )
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS".
 				CTL_Lib.Alarm_Error_Occurrence(7132, dWARNING, "020008");
@@ -1177,7 +1132,6 @@ void CRun_UnPress_Robot::RunMove()
 			break;
 
 		case 3115:
-<<<<<<< HEAD
 			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X) > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_INREADY_POS] + COMI.md_allow_value[M_EPOXY_TRANSFER_Y] ) )
 			{
 				break;
@@ -1192,22 +1146,6 @@ void CRun_UnPress_Robot::RunMove()
 // 				break;
 // 			}
 			if( m_nTrayDeviceGap == 0 && ( mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + COMI.md_allow_value[m_nPressAxisY] ) ) )
-=======
-			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X) > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_INREADY_POS] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ) )
-			{
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_LOADER_TRANSFER_Y) > ( st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ) )
-			{
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_EPOXY_TRANSFER_X) < ( st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY] - st_motor[M_EPOXY_TRANSFER_X].mn_allow ) ||
-				COMI.Get_MotCurrentPos( M_EPOXY_TRANSFER_Y) > ( st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_SAFETY] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ))
-			{
-				break;
-			}
-			if( m_nTrayDeviceGap == 0 && ( mCurrPosY > ( st_motor[m_nPressAxisY].md_pos[P_PRESS_Y_INIT_POS] + st_motor[m_nPressAxisY].mn_allow ) ) )
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			{
 				//020008 1 0 "M_PRESS_Y_MOTOR_IS_NON_SAFETY_POS".
 				CTL_Lib.Alarm_Error_Occurrence(7132, dWARNING, "020008");
@@ -1260,7 +1198,6 @@ void CRun_UnPress_Robot::RunMove()
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
-<<<<<<< HEAD
 			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X) > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_INREADY_POS] + COMI.md_allow_value[M_EPOXY_TRANSFER_Y] ) )
 			{
 				break;
@@ -1280,18 +1217,6 @@ void CRun_UnPress_Robot::RunMove()
 				break;
 			}
 			if( COMI.Get_MotCurrentPos( M_HEATSINK_TRANSFER_Y) > ( st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS] + COMI.md_allow_value[M_HEATSINK_INSPECT_Y] ) )
-=======
-			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X) > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_INREADY_POS] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ) )
-			{
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_LOADER_TRANSFER_Y) > ( st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ) )
-			{
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_EPOXY_TRANSFER_X) < ( st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY] - st_motor[M_EPOXY_TRANSFER_X].mn_allow ) ||
-				COMI.Get_MotCurrentPos( M_EPOXY_TRANSFER_Y) > ( st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_SAFETY] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ))
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			{
 				break;
 			}
@@ -1326,9 +1251,30 @@ void CRun_UnPress_Robot::RunMove()
 			m_dwWaitUntil[1] = GetCurrentTime();
 			m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 			if( m_dwWaitUntil[2] <= 0 ) m_dwWaitUntil[0] = GetCurrentTime();
-			if( m_dwWaitUntil[2] > 1000 )
+			if( m_dwWaitUntil[2] > 2000 )//2017.0610
 			{
 				mn_RunStep = 3310; //Carrier X를 조금 두;로 뺀다. 실린더를 업하기 위해
+				mn_RunStep = 3301;
+			}
+			break;
+
+			//2017.0610
+		case 3301:
+			Run_Device_Carrier_Robot.Set_Device_Carrier_HolderPin_Fix(2, IO_ON);
+			mn_RunStep = 3302;
+			break;
+
+		case 3302:
+			nRet_1 = Run_Device_Carrier_Robot.Chk_Device_Carrier_HolderPin_Fix(2, IO_ON);
+			
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_RunStep = 3310;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				 CTL_Lib.Alarm_Error_Occurrence(7940, dWARNING, Run_Device_Carrier_Robot.m_strAlarmCode);
+				mn_RunStep = 3301;
 			}
 			break;
 
@@ -1355,7 +1301,7 @@ void CRun_UnPress_Robot::RunMove()
 			m_dwWaitUntil[1] = GetCurrentTime();
 			m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 			if( m_dwWaitUntil[2] <= 0 ) m_dwWaitUntil[0] = GetCurrentTime();
-			if( m_dwWaitUntil[2] < 500 ) break;
+			if( m_dwWaitUntil[2] < 1000 ) break;//2017.0610
 			//PRESS 실린더가 다운상태에서 Holder가 On되어 고정시킨다.
 
 			if( Chk_PressClamp_Safety(4) == RET_ERROR )
@@ -1364,7 +1310,6 @@ void CRun_UnPress_Robot::RunMove()
 				COMI.Set_MotStop( 0 , m_nPressAxisY);
 				break;
 			}
-<<<<<<< HEAD
 			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X) > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_INREADY_POS] + COMI.md_allow_value[M_EPOXY_TRANSFER_Y] ) )
 			{
 				break;
@@ -1384,18 +1329,6 @@ void CRun_UnPress_Robot::RunMove()
 				break;
 			}
 			if( COMI.Get_MotCurrentPos( M_HEATSINK_TRANSFER_Y) > ( st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS] + COMI.md_allow_value[M_HEATSINK_INSPECT_Y] ) )
-=======
-			if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X) > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_INREADY_POS] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ) )
-			{
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_LOADER_TRANSFER_Y) > ( st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ) )
-			{
-				break;
-			}
-			if( COMI.Get_MotCurrentPos( M_EPOXY_TRANSFER_X) < ( st_motor[M_EPOXY_TRANSFER_X].md_pos[P_EPOXY_TRANSFER_X_SAFETY] - st_motor[M_EPOXY_TRANSFER_X].mn_allow ) ||
-				COMI.Get_MotCurrentPos( M_EPOXY_TRANSFER_Y) > ( st_motor[M_EPOXY_TRANSFER_Y].md_pos[P_EPOXY_TRANSFER_Y_SAFETY] + st_motor[M_EPOXY_TRANSFER_Y].mn_allow ))
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			{
 				break;
 			}
@@ -1449,7 +1382,7 @@ void CRun_UnPress_Robot::RunMove()
 			{
 				if( nRet_4 == RET_ERROR) CTL_Lib.Alarm_Error_Occurrence(7140, dWARNING, Run_Device_Carrier_Robot.m_strAlarmCode);
 				else					 CTL_Lib.Alarm_Error_Occurrence(7141, dWARNING, m_strAlarmCode);
-				mn_RunStep = 0;
+				mn_RunStep = 3410;//2017.0610
 			}
 			break;
 
@@ -1589,11 +1522,7 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 	else if( nMode == 1)
 	{
 		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_ON && nRet[3] == IO_OFF && 
-<<<<<<< HEAD
 			nRet[4] == IO_OFF && nRet[5] == IO_ON && nRet[6] == IO_OFF && nRet[7] == IO_ON && /*nRet[8] == IO_ON &&*/
-=======
-			nRet[4] == IO_OFF && nRet[5] == IO_ON && nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_ON &&
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			nRet[9] == IO_ON && nRet[10] == IO_OFF && nRet[11] == IO_ON && nRet[12] == IO_OFF)
 		{
 			nFuncRet = RET_GOOD;
@@ -1614,18 +1543,9 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 			{
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Carrier_Holder_Up_Check);
 				CTL_Lib.Alarm_Error_Occurrence(7208, dWARNING, strTemp);					
-<<<<<<< HEAD
-=======
 			}
 			else if(nRet[5] != IO_ON || nRet[7] != IO_ON)
 			{
-				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Carrier_Holder_Down_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7210, dWARNING, strTemp);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
-			}
-			else if(nRet[5] != IO_ON || nRet[7] != IO_ON)
-			{
-<<<<<<< HEAD
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Carrier_Holder_Down_Check);
 				CTL_Lib.Alarm_Error_Occurrence(7210, dWARNING, strTemp);
 			}
@@ -1634,11 +1554,6 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 // 				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_UpDown_CellIn_Check);
 // 				CTL_Lib.Alarm_Error_Occurrence(7209, dWARNING, strTemp);					
 // 			}
-=======
-				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_UpDown_CellIn_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7209, dWARNING, strTemp);					
-			}
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			else if( nRet[9] != IO_ON || nRet[11] != IO_ON)
 			{
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Slide_Guide_X2_Up_Check);
@@ -1647,7 +1562,7 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 			else// if( nRet[10] != IO_OFF || nRet[12] != IO_OFF)
 			{
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Slide_Guide_X2_Down_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7213, dWARNING, strTemp);					
+				CTL_Lib.Alarm_Error_Occurrence(7263, dWARNING, strTemp);					
 			}
 
 			nFuncRet = RET_ERROR;
@@ -1750,96 +1665,6 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 		{
 			if( nRet[0] != IO_ON || nRet[2] != IO_ON)
 			{
-<<<<<<< HEAD
-				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Up_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7211, dWARNING, strTemp);
-=======
-				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_Up_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7216, dWARNING, strTemp);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
-			}
-			else if( nRet[1] != IO_OFF || nRet[3] != IO_OFF)
-			{
-				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_Down_Check);
-<<<<<<< HEAD
-				CTL_Lib.Alarm_Error_Occurrence(7212, dWARNING, strTemp);
-=======
-				CTL_Lib.Alarm_Error_Occurrence(7217, dWARNING, strTemp);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
-			}
-			else if( nRet[4] != IO_OFF || nRet[6] != IO_OFF)
-			{
-				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Carrier_Holder_Up_Check);
-<<<<<<< HEAD
-				CTL_Lib.Alarm_Error_Occurrence(7213, dWARNING, strTemp);					
-			}
-			else if(nRet[5] != IO_ON  || nRet[7] != IO_ON)
-			{
-				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Carrier_Holder_Down_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7215, dWARNING, strTemp);
-=======
-				CTL_Lib.Alarm_Error_Occurrence(7218, dWARNING, strTemp);					
-			}
-			else if(nRet[5] != IO_ON || nRet[7] != IO_OFF)
-			{
-				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_Carrier_Holder_Down_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7220, dWARNING, strTemp);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
-			}
-			else if( nRet[8] != IO_OFF )
-			{
-				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_UpDown_CellIn_Check);
-<<<<<<< HEAD
-				CTL_Lib.Alarm_Error_Occurrence(7214, dWARNING, strTemp);					
-			}
-			else if( nRet[9] != IO_OFF || nRet[12] != IO_ON)
-			{
-				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Slide_Guide_X2_Up_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7213, dWARNING, strTemp);					
-			}
-			else// if( nRet[10] != IO_OFF || nRet[11] != IO_OFF)
-			{
-				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Slide_Guide_X2_Down_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7213, dWARNING, strTemp);					
-			}
-			nFuncRet = RET_ERROR;
-		}
-	}
-	else if( nMode == 5)
-	{//Pusher가 되로 빠질떄는 
-		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_ON && nRet[3] == IO_OFF && 
-			/*nRet[4] == IO_OFF && nRet[5] == IO_ON && nRet[6] == IO_OFF && nRet[7] == IO_ON &&*/ nRet[8] == IO_OFF &&
-			nRet[9] == IO_ON && nRet[10] == IO_OFF && nRet[11] == IO_ON && nRet[12] == IO_OFF)
-		{
-			nFuncRet = RET_GOOD;
-		}
-		else
-		{
-			if( nRet[0] != IO_ON || nRet[2] != IO_ON)
-			{
-				strTemp.Format("8%d%04d", IO_ON, st_io.i_Press_Up_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7206, dWARNING, strTemp);
-			}
-			else if( nRet[1] != IO_OFF || nRet[3] != IO_OFF)
-			{
-=======
-				CTL_Lib.Alarm_Error_Occurrence(7219, dWARNING, strTemp);					
-			}
-			nFuncRet = RET_ERROR;
-		}
-	}
-	else if( nMode == 4 )// Press down 민상태에서 홀더 고정
-	{
-		if( nRet[0] == IO_ON && nRet[1] == IO_OFF && nRet[2] == IO_ON && nRet[3] == IO_OFF && 
-			nRet[4] == IO_OFF && nRet[5] == IO_ON && nRet[6] == IO_OFF && nRet[7] == IO_ON && nRet[8] == IO_OFF &&
-			nRet[9] == IO_OFF && nRet[10] == IO_ON && nRet[11] == IO_OFF && nRet[12] == IO_ON)
-		{
-			nFuncRet = RET_GOOD;
-		}
-		else
-		{
-			if( nRet[0] != IO_ON || nRet[2] != IO_ON)
-			{
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Up_Check);
 				CTL_Lib.Alarm_Error_Occurrence(7211, dWARNING, strTemp);
 			}
@@ -1893,7 +1718,6 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 			}
 			else if( nRet[1] != IO_OFF || nRet[3] != IO_OFF)
 			{
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Press_Down_Check);
 				CTL_Lib.Alarm_Error_Occurrence(7207, dWARNING, strTemp);
 			}

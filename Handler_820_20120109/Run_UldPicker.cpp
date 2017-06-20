@@ -54,6 +54,7 @@ CRun_UldPicker::CRun_UldPicker()
 	mn_Pick_Step = 0;
 	mn_Place_Step = 0;
 	mn_reinstate_step = 0;
+	m_bConnectAssemblyTimeOut = FALSE;
 
 }
 
@@ -74,14 +75,10 @@ void CRun_UldPicker::Thread_Run()
 			break;
 
 		case dRUN:
-<<<<<<< HEAD
 			nRet_1 = g_ioMgr.get_in_bit(st_io.i_case_assembler_status, IO_ON);
 			if( nRet_1 != IO_ON ) break;
 
 			RunMove();
-=======
-// 			RunMove();
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			break;
 
 		case dSTOP:
@@ -105,6 +102,8 @@ void CRun_UldPicker::Thread_Run()
 				{
 					m_nRobot_Z_Stop_Flag = 1;
 				}
+
+				//CTL_Lib.mn_single_motmove_step[m_nRobot_Z] = 0;
 // 			}
 
 			break;
@@ -335,13 +334,21 @@ void CRun_UldPicker::RunMove()
 			{
 				break;
 			}
-			if( st_handler.mn_lduld_safety != LD_MOVING_SAFETY )
+// 			if( st_handler.mn_lduld_safety != LD_MOVING_SAFETY )
+// 			{
+// 				st_sync.nLdUldSateyflag = ULD_MOVING_SAFETY;
+// 				mn_RunStep = 1300;
+// 			}
+			//2017.0614
+			//////////////////////////////////////////////////////////////
+			if( st_handler.mn_lduld_safety == LD_MOVING_SAFETY)
 			{
-				st_sync.nLdUldSateyflag = ULD_MOVING_SAFETY;
-				mn_RunStep = 1300;
+				break;
 			}
+			st_handler.mn_lduld_safety = ULD_MOVING_SAFETY;
+			st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] = -1;			
+			//////////////////////////////////////////////////////////////
 			mn_RunStep = 1300;
-			
 			break;
 
 		case 1300:
@@ -369,6 +376,34 @@ void CRun_UldPicker::RunMove()
 
 			if( Move_MakeSafetyPosBeforeWork( POS_MOV_PLACE ) == RET_GOOD )
 			{
+				m_bConnectAssemblyTimeOut = FALSE;
+
+// 				if( ( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[0] == BIN_GOOD ) ||
+// 					( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[1] == BIN_GOOD ) ||
+// 					( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[2] == BIN_GOOD ))
+// 				if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_YES ||
+// 					st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_YES ||
+// 					st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_YES )
+// 				{
+// 					//2017.0614
+// 					if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_NO && st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] == 0 )
+// 					{
+// 						st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][2+0] = CTL_CHANGE;
+// 					}
+// 					else if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_NO && st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] == 1 )
+// 					{
+// 						st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][2+1] = CTL_CHANGE;
+// 					}
+// 					else if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_NO && st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] == 2)
+// 					{
+// 						st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][2+2] = CTL_CHANGE;
+// 					}
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] = -1;
+// 					////////////////////////////////////////////////////////////////////////////////////////
+// 					
+// 				}
+
+
 				mn_RunStep = 2100;
 			}
 			break;
@@ -381,22 +416,47 @@ void CRun_UldPicker::RunMove()
 				COMI.Set_MotStop( 0 , m_nRobot_Y );
 				mn_RunSafetyStep = 2000;
 			}
-			if( st_handler.mn_lduld_safety != LD_MOVING_SAFETY )
+// 			if( st_handler.mn_lduld_safety != LD_MOVING_SAFETY )
+// 			{
+// 				if( st_sync.nLdUldSateyflag != MOVING_NOT_SAFETY)
+// 					st_sync.nLdUldSateyflag = MOVING_NOT_SAFETY;
+// 			}
+			//2017.0614
+			//////////////////////////////////////////////////////////////
+			if( st_handler.mn_lduld_safety == ULD_MOVING_SAFETY)
 			{
-				if( st_sync.nLdUldSateyflag != MOVING_NOT_SAFETY)
-					st_sync.nLdUldSateyflag = MOVING_NOT_SAFETY;
+				st_handler.mn_lduld_safety = MOVING_NOT_SAFETY;
 			}
+			//////////////////////////////////////////////////////////////
+
 			//signal to move transfer 
 			if( st_handler.n_CaseAssemblyUnloadingAbleOn != IO_ON ) break;
 
 			//signal to place DVC
 			if( st_handler.n_HSLowerPlaceAbleCheck == CTL_NO ) 
 			{
-				 if( mn_Place_Step >= 4000 && st_handler.m_nAssemblyAble == CTL_NO)
+				 if( mn_Place_Step >= 2000 && st_handler.m_nAssemblyAble == CTL_NO)
 				 {
 				 }
 				 else
 				 {
+					 if( m_bConnectAssemblyTimeOut == FALSE)
+					 {
+						 m_bConnectAssemblyTimeOut = TRUE;
+						 m_dwWaitTime[0] = GetCurrentTime();
+					 }
+					 else
+					 {
+						 m_dwWaitTime[1] = GetCurrentTime();
+						 m_dwWaitTime[2] = m_dwWaitTime[1] - m_dwWaitTime[0];
+						 if( m_dwWaitTime[2] <= 0 ) m_dwWaitTime[0] = GetCurrentTime();
+						 if( m_dwWaitTime[2] > 60000)//40초
+						 {
+							 m_bConnectAssemblyTimeOut = FALSE;
+							 //993000 0 A "Case Assembly장비에서 동작 가능상태(PS2102)가 아닙니다. 랏이 전달됐나요?"
+							 CTL_Lib.Alarm_Error_Occurrence(4499, dWARNING, "993000" );
+						 }
+					 }
 					 break;
 				 }
 			}
@@ -406,14 +466,13 @@ void CRun_UldPicker::RunMove()
 				break;
 			}
 
-			st_handler.m_nAssemblyAble = CTL_NO;
+			//2017.0613
+// 			st_handler.m_nAssemblyAble = CTL_NO;
 
 			nRet_1 = Process_DVC_Place( 0, THD_ULD_ALIGN_BUFF, g_lotMgr.GetLotAt(0).GetLotID() );
 			if(nRet_1 == RET_GOOD)
 			{
 				st_buffer_info[THD_ULD_ALIGN_BUFF].st_pcb_info[0].nYesNo = CTL_NO;
-				st_work.n_DataYes[0] = "YES";
-				st_handler.m_nAssemblyAble = CTL_YES;
 				mn_RunStep = 3000;
 			}
 			else if(nRet_1 == RET_PICKER_NOT_FIND)
@@ -429,19 +488,41 @@ void CRun_UldPicker::RunMove()
 		case 3000:
 			if( Move_MakeSafetyPosBeforeWork( POS_MOV_READY ) == RET_GOOD )
 			{
+				st_work.n_DataYes[0] = "YES";
+				st_handler.m_nAssemblyAble = CTL_YES;
 				mn_RunStep = 3100;
 			}
 			break;
 
 		case 3100:
+// 			if( ( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[0] == BIN_GOOD ) ||
+// 				( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[1] == BIN_GOOD ) ||
+// 				( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[2] == BIN_GOOD ))
 			if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_YES ||
 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_YES ||
 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_YES )
 			{
+// 				//2017.0614
+// 				if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_NO && st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] == 0 )
+// 				{
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][2+0] = CTL_CHANGE;
+// 				}
+// 				else if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_NO && st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] == 1 )
+// 				{
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][2+1] = CTL_CHANGE;
+// 				}
+// 				else if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_NO && st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] == 2)
+// 				{
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][2+2] = CTL_CHANGE;
+// 				}
+// 				st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] = -1;
+// 				////////////////////////////////////////////////////////////////////////////////////////
+
 				mn_RunStep = 1200;
 			}
 			else
 			{
+				//2017.0616
 				memset(&st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE]));
 				st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][0] = CTL_CHANGE;
 				st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][1] = WORK_PICK;
@@ -888,7 +969,7 @@ int CRun_UldPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLot
 			}
 			else if( nRet_1 == RET_ERROR)
 			{
-				CTL_Lib.Alarm_Error_Occurrence(4110, dWARNING, alarm.mstr_code);
+				CTL_Lib.Alarm_Error_Occurrence(4110, dWARNING, m_strAlarmCode);
 				mn_Pick_Step = 3200;
 			}
 			break;
@@ -1006,9 +1087,11 @@ int CRun_UldPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLot
 				{
 					m_dwWaitUntil[1] = GetCurrentTime();
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
+					if(m_dwWaitUntil[2] <= 0) m_dwWaitUntil[0] = GetCurrentTime();
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
 
 					CTL_Lib.Alarm_Error_Occurrence(4115, dWARNING, Func.m_strAlarmCode);
+					break;
 				}
 			}
 
@@ -1027,6 +1110,10 @@ int CRun_UldPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLot
 
 						Func.Data_Exchange_PickPlace(PICKER_PICK_MODE, 1, m_nRobotSite, nWorkSite, m_npSet_WorkPosYXCPB); //피커 및 트레이 정보 셋팅 함수	
 						
+						//2017.0614
+						st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] = m_npSet_WorkPosYXCPB[1];
+						////////////////////////////////////////////////////////////////////////////////////////////////////
+
 						if (m_strLotNo[1] == _T(""))
 						{
 							m_strLotNo[1]	= st_picker[THD_LOAD_WORK_RBT].st_pcb_info[i].strLotNo;
@@ -1106,6 +1193,13 @@ int CRun_UldPicker::Process_DVC_Place( int nMode, int nWorkSite, CString strLotN
 	int nRet_1, nRet_2, i, nFlag;
 
 	Func.ThreadFunctionStepTrace(32, mn_Place_Step);
+
+	//2017.0614
+	if( mn_Place_Step >= 2000 && mn_Place_Step < 6000 )
+	{
+		st_handler.m_nAssemblyAble = CTL_NO;
+		g_ioMgr.set_out_bit(st_io.o_Interface_Output_1, IO_OFF);
+	}
 
 	switch(mn_Place_Step)
 	{
@@ -1343,11 +1437,7 @@ int CRun_UldPicker::Process_DVC_Place( int nMode, int nWorkSite, CString strLotN
 		else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
 		{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 			CTL_Lib.Alarm_Error_Occurrence(4205, dWARNING, alarm.mstr_code);
-<<<<<<< HEAD
 			mn_Place_Step = 2100;
-=======
-			mn_Place_Step = 2200;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 		}
 		break; 	
 
@@ -1357,6 +1447,7 @@ int CRun_UldPicker::Process_DVC_Place( int nMode, int nWorkSite, CString strLotN
 		{
 			m_bDvcWaitChk_Falg =  false;
 			mn_Place_Step = 3000;
+
 		}
 		else if (nRet_1 == BD_RETRY)
 		{
@@ -2223,16 +2314,12 @@ int CRun_UldPicker::Move_ReadySafeyXY()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-<<<<<<< HEAD
 				m_nPickRetry_Cnt++;
 				if( m_nPickRetry_Cnt > st_basic.n_count_retry )
 				{
 					m_nPickRetry_Cnt = 0;
 					CTL_Lib.Alarm_Error_Occurrence(4401, dWARNING, alarm.mstr_code);
 				}
-=======
-				CTL_Lib.Alarm_Error_Occurrence(4401, dWARNING, alarm.mstr_code);
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 				mn_MoveStep = 1000;
 			}
 			break;
@@ -2258,7 +2345,6 @@ int CRun_UldPicker::Move_ReadySafeyXY()
 			}
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY || nRet_2 == BD_ERROR || nRet_2 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
-<<<<<<< HEAD
 				m_nPickRetry_Cnt++;
 				if( m_nPickRetry_Cnt > st_basic.n_count_retry )
 				{
@@ -2266,10 +2352,6 @@ int CRun_UldPicker::Move_ReadySafeyXY()
 					CTL_Lib.Alarm_Error_Occurrence(4402, dWARNING, alarm.mstr_code);
 				}
 				mn_MoveStep = 100;
-=======
-				CTL_Lib.Alarm_Error_Occurrence(4402, dWARNING, alarm.mstr_code);
-				mn_RunSafetyStep = 1100;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			}
 			break;
 

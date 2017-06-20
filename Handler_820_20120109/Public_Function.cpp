@@ -3333,7 +3333,9 @@ int CPublic_Function::Check_Robot_Buffer_Clash( int nRbtTHDSite, int BuffTHDSite
 			else if(BuffTHDSite == THD_LDULD_CARRIER_BUFF)
 			{
 				if(nBuffStartPos > i) continue; //버퍼 번호 순서로 작업할 영역보다 큰 위치 순서에 자재 있으면 충돌하다 // 방지해야 함 
-				if(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i] == CTL_YES)  
+				//if(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i] == CTL_YES)  
+				//2017.0616
+				if(nBuffStartPos == i && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i] == CTL_YES)  
 				{	//에러 , 버퍼의 디바이스와 피커의 자재가 충돌 함
 					nErrorInfoStatus[i] = CTL_YES; //에러 정보 셋팅
 					m_strAlarmCode.Format(_T("8%d500%d"), IO_ON,st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i]);//error 
@@ -3770,6 +3772,21 @@ int CPublic_Function::Data_Exchange_PickPlace(int nPickPlace, int nJobCnt, int n
 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[npWorkPos[1]] = -1;
 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBdNum[npWorkPos[1]] = -1;
 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nScrCode[npWorkPos[1]] = -1;
+
+				//2017.0616
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[npWorkPos[1]][0] = -1;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[npWorkPos[1]][1] = -1;
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[npWorkPos[1]][2] = -1;
+				memset( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[npWorkPos[1]], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[npWorkPos[1]]) );
+				memset( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chSerialNo[npWorkPos[1]], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chSerialNo[npWorkPos[1]]) );
+				memset( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[npWorkPos[1]], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[npWorkPos[1]]) );
+				memset( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_part_num[npWorkPos[1]], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_part_num[npWorkPos[1]]) );
+				memset( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chArrNo[npWorkPos[1]], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chArrNo[npWorkPos[1]]) );
+				memset( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chPPID[npWorkPos[1]], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chPPID[npWorkPos[1]]) );
+				memset( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chPSID[npWorkPos[1]], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chPSID[npWorkPos[1]]) );
+				memset( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chWWN[npWorkPos[1]], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chWWN[npWorkPos[1]]) );
+				memset( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chCSerialNo[npWorkPos[1]], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chCSerialNo[npWorkPos[1]]) );
+
 // 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[npWorkPos[1]]);
 // 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chCSerialNo[npWorkPos[1]]);
 // 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[npWorkPos[1]]);

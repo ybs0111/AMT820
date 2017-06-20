@@ -35,6 +35,7 @@ CRun_LdPicker::CRun_LdPicker()
 	m_dwCycleTime[1][0] = 0;
 	m_strLotNo[0] = m_strPartNo[0] = _T("");
 	m_strLotNo[1] = m_strPartNo[1] = _T("");
+	st_handler.mn_lduld_safety = MOVING_NOT_SAFETY;
 }
 
 CRun_LdPicker::~CRun_LdPicker()
@@ -47,7 +48,6 @@ CRun_LdPicker::~CRun_LdPicker()
 
 void CRun_LdPicker::Thread_Run()
 {
-
 	int nRet_1;
 	switch( st_work.mn_run_status)
 	{
@@ -56,7 +56,7 @@ void CRun_LdPicker::Thread_Run()
 		break;
 
 	case dRUN:
-// 		RunMove();
+		RunMove();
 		break;
 
 	case dSTOP:
@@ -260,13 +260,13 @@ void CRun_LdPicker::RunMove()
 			nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_2, IO_OFF);
 			nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_3, IO_OFF);
 			nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_sff_missalign_chk_4, IO_OFF);
-			if( nRet_1 == IO_OFF && nRet_1 == IO_OFF && nRet_1 == IO_OFF && nRet_1 == IO_OFF )
+			if( nRet_1 == IO_OFF && nRet_2 == IO_OFF && nRet_3 == IO_OFF && nRet_4 == IO_OFF )
 			{
 				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_OFF);
-				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_OFF);
-				nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_OFF);
-				nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_OFF);
-				if( nRet_1 == IO_OFF && nRet_1 == IO_OFF && nRet_1 == IO_OFF && nRet_1 == IO_OFF )
+				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_2, IO_OFF);
+				nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_3, IO_OFF);
+				nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_4, IO_OFF);
+				if( nRet_1 == IO_OFF && nRet_2 == IO_OFF && nRet_3 == IO_OFF && nRet_4 == IO_OFF )
 				{
 					mn_RunStep = 20;
 				}
@@ -860,16 +860,35 @@ void CRun_LdPicker::RunMove()
 			break;
 
 		case 4200:
-			nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
-			if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+			if( g_lotMgr.GetLotAt(0).GetDvcType() == "SFF")
 			{
-				break; 
-			} 
-			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+
+				nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
+				if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+				{
+					break; 
+				} 
+				else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+				{
+					m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
+					CTL_Lib.Alarm_Error_Occurrence(1108, dWARNING, m_strAlarmCode);
+					break;
+				}
+			}
+			else
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1108, dWARNING, m_strAlarmCode);
-				break;
+				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_tff_tilt_chk, IO_ON);
+				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_sff_tilt_chk, IO_ON);
+				if( nRet_1 == IO_OFF && nRet_2 == IO_OFF && st_basic.n_mode_device != WITHOUT_DVC)
+				{
+				}
+				else if( (nRet_1 == IO_ON || nRet_2 == IO_ON) && st_basic.n_mode_device != WITHOUT_DVC)
+				{
+					if( nRet_1 == IO_ON ) m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_tff_tilt_chk); 
+					else				  m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_sff_tilt_chk); 
+					CTL_Lib.Alarm_Error_Occurrence(1188, dWARNING, m_strAlarmCode);
+				}
+
 			}
 
 			mn_RunStep = 4300;
@@ -877,18 +896,36 @@ void CRun_LdPicker::RunMove()
 
 		case 4300:
 			//디바이스 픽업 센서체크함
-			nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
-			if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+			if( g_lotMgr.GetLotAt(0).GetDvcType() == "SFF")
 			{
-				break; 
-			} 
-			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
-			{
-				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
-				CTL_Lib.Alarm_Error_Occurrence(1109, dWARNING, m_strAlarmCode);
-				break;
-			}
 
+				nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
+				if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+				{
+					break; 
+				} 
+				else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+				{
+					m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
+					CTL_Lib.Alarm_Error_Occurrence(1109, dWARNING, m_strAlarmCode);
+					break;
+				}
+			}
+			else
+			{
+				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_tff_tilt_chk, IO_ON);
+				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_sff_tilt_chk, IO_ON);
+				if( nRet_1 == IO_OFF && nRet_2 == IO_OFF && st_basic.n_mode_device != WITHOUT_DVC)
+				{
+				}
+				else if( (nRet_1 == IO_ON || nRet_2 == IO_ON) && st_basic.n_mode_device != WITHOUT_DVC)
+				{
+					if( nRet_1 == IO_ON ) m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_tff_tilt_chk); 
+					else				  m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_sff_tilt_chk); 
+					CTL_Lib.Alarm_Error_Occurrence(1189, dWARNING, m_strAlarmCode);
+				}
+				
+			}
 			mn_RunStep = 4400;
 			break;
 
@@ -912,6 +949,31 @@ void CRun_LdPicker::RunMove()
 				st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] == WORK_PLACE )
 			{
 				mn_RunStep = 5100;
+			}
+			else
+			{
+				//2017.0614
+				///////////////////////////////////////////////////////////////////////////
+// 				if( st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][0] == CTL_READY &&
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][1] == WORK_PICK )
+// 				{
+// 					if( st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 0] == CTL_SORT)
+// 					{
+// 						st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 0] = CTL_NO;
+// 						mn_RunStep = 5100;
+// 					}
+// 					else if( st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 1] == CTL_SORT)
+// 					{
+// 						st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 1] = CTL_NO;
+// 						mn_RunStep = 5100;
+// 					}
+// 					else if( st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 2] == CTL_SORT)
+// 					{
+// 						st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 2] = CTL_NO;
+// 						mn_RunStep = 5100;
+// 					}
+// 				}
+				///////////////////////////////////////////////////////////////////////////
 			}
 			break;
 
@@ -1099,6 +1161,11 @@ void CRun_LdPicker::RunMove()
 			nRet_1 = COMI.Check_SingleMove( m_nRobot_Y, st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] );
 			if (nRet_1 == BD_GOOD) //좌측으로 이동
 			{
+				//2017.0614
+				if( st_handler.mn_lduld_safety == LD_MOVING_SAFETY)
+				{
+					st_handler.mn_lduld_safety = MOVING_NOT_SAFETY;
+				}
 				mn_RunStep = 6000;
 			}
 			else if (nRet_1 == BD_RETRY)
@@ -1113,9 +1180,9 @@ void CRun_LdPicker::RunMove()
 			break;
 
 		case 6000:
-			if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_YES &&
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_YES &&
-				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_YES )
+			if( ( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[0] == BIN_CDIMM ) &&
+				( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[1] == BIN_CDIMM ) &&
+				( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_YES && st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[2] == BIN_CDIMM ) )
 			{
 				st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][0] = CTL_FREE; 
 				st_sync.nCarrierRbt_Dvc_Req[THD_LOAD_WORK_RBT][1] = CTL_FREE;
@@ -1412,13 +1479,8 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 				//CTL_Lib.Alarm_Error_Occurrence(1205, dWARNING, alarm.mstr_code);
-<<<<<<< HEAD
 				//				COMI.Set_MotStop(0, m_nRobot_Y);
 				mn_Place_Step = 2010;
-=======
-//				COMI.Set_MotStop(0, m_nRobot_Y);
-				mn_Place_Step = 2000;
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			}
 			break; 	
 
@@ -1489,17 +1551,36 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 
 			if(nWork_Site == THD_LD_ALIGN_BUFF)
 			{
-				nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
-				if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+				if( g_lotMgr.GetLotAt(0).GetDvcType() == "SFF")
 				{
-					break; 
-				} 
-				else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+
+					nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
+					if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+					{
+						break; 
+					} 
+					else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+					{
+						m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
+						CTL_Lib.Alarm_Error_Occurrence(1208, dWARNING, m_strAlarmCode);
+						break;
+					}
+				}
+				else
 				{
-					m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
-					CTL_Lib.Alarm_Error_Occurrence(1208, dWARNING, m_strAlarmCode);
-					break;
-				} 
+					nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_tff_tilt_chk, IO_ON);
+					nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_sff_tilt_chk, IO_ON);
+					if( nRet_1 == IO_OFF && nRet_2 == IO_OFF && st_basic.n_mode_device != WITHOUT_DVC)
+					{
+					}
+					else if( (nRet_1 == IO_ON || nRet_2 == IO_ON) && st_basic.n_mode_device != WITHOUT_DVC)
+					{
+						if( nRet_1 == IO_ON ) m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_tff_tilt_chk); 
+						else				  m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_sff_tilt_chk); 
+						CTL_Lib.Alarm_Error_Occurrence(1191, dWARNING, m_strAlarmCode);
+					}
+					
+				}
 				m_dpTargetPosList[2] = st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_ALIGN_PLACE_POS];
 			}
 			else if(nWork_Site == THD_LDULD_CARRIER_BUFF)// TOP MIDDEL BTM
@@ -1762,7 +1843,6 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				{
 					mn_Place_Step = 4020;
 				}
-<<<<<<< HEAD
 				else
 				{
 					m_dwWaitUntil[1] = GetCurrentTime();
@@ -1777,11 +1857,6 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 					mn_Place_Step = 4015;
 				}
 			}
-=======
-				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loader_Transfer_Clamp_Off_Check); 
-				CTL_Lib.Alarm_Error_Occurrence(1219, dWARNING, m_strAlarmCode);
-			} 
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			break; 
 
 		case 4015:
@@ -1815,11 +1890,7 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 				CTL_Lib.Alarm_Error_Occurrence(1220, dWARNING, alarm.mstr_code);
-<<<<<<< HEAD
 				mn_Place_Step = 4020;	
-=======
-				mn_Place_Step = 4000;	
->>>>>>> c6e69b6ca871ea7a83253cb4bb4092c82b1ae2a4
 			}
 			break;
 
@@ -1866,7 +1937,10 @@ int CRun_LdPicker::Process_DVC_Place(int nMode, int nWork_Site/*, int nPosition*
 				{
 					m_dwWaitUntil[1] = GetCurrentTime();
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
+					if(m_dwWaitUntil[2] <= 0) m_dwWaitUntil[0] = GetCurrentTime();
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
+					CTL_Lib.Alarm_Error_Occurrence(1229, dWARNING, Func.m_strAlarmCode);
+					break;
 				}
 			}
 
@@ -2554,18 +2628,18 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 			else if( g_lotMgr.GetLotByLotID(m_strFindLotNo).GetDvcType() == "TFF" )
 			{
 				nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
-				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
-				nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
-				nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_1, IO_ON);
-				if( nRet_1 == IO_ON && nRet_2 == IO_ON && nRet_3 == IO_ON && nRet_4 == IO_ON)
+				nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_2, IO_ON);
+				nRet_3 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_3, IO_ON);
+				nRet_4 = g_ioMgr.get_in_bit( st_io.i_loading_rbt_glipper_tff_missalign_chk_4, IO_ON);
+				if( nRet_1 == IO_ON || nRet_2 == IO_ON || nRet_3 == IO_ON || nRet_4 == IO_ON)
 				{
 					mn_Pick_Step = 5000;
 				}
 				else
 				{
 					if	   ( nRet_1 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_1);
-					else if( nRet_2 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_1);
-					else if( nRet_3 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_1);
+					else if( nRet_2 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_2);
+					else if( nRet_3 != IO_ON ) m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_tff_missalign_chk_3);
 					else/* if( nRet_4 != IO_ON )*/ m_strAlarmCode.Format("8%d%04d", IO_ON, st_io.i_loading_rbt_glipper_sff_missalign_chk_4);
 					CTL_Lib.Alarm_Error_Occurrence(1371, dWARNING, m_strAlarmCode);
 				}
@@ -2594,7 +2668,10 @@ int CRun_LdPicker::Process_DVC_Pickup( int nMode, int nWorkSite, CString strLotN
 				{
 					m_dwWaitUntil[1] = GetCurrentTime();
 					m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
+					if(m_dwWaitUntil[2] <= 0) m_dwWaitUntil[0] = GetCurrentTime();
 					if(m_dwWaitUntil[2] < IO_STABLE_WAIT) break;
+					CTL_Lib.Alarm_Error_Occurrence(1372, dWARNING, Func.m_strAlarmCode);
+					break;
 				}
 			}
 
