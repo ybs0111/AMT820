@@ -230,7 +230,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 		char ch_temp[16];
 		m_grid_file->GetData(lpcc->Col,lpcc->Row,ch_temp);
 		mstr_device_name[1] = ch_temp;
-		
+	
 // 		if(OnBasic_Input_Device_Check(mstr_device_name[1]) == FALSE)  // 입력된 디바이스 이름 정상 유무 검사 함수
 // 		{
 // 			mstr_device_name[1] = mstr_device_name[0];
@@ -253,7 +253,7 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			st_basic.mstr_device_name = mstr_device_name[1];
 
 			
-			mcls_m_basic.OnBasic_Data_Load();
+			mcls_m_basic.OnBasic_Data_Load(1);
 			mcls_m_basic.On_Teach_Data_Load();
 			mcls_m_basic.OnMaintenance_Data_Load();
 			mcls_m_basic.OnWaitTime_Data_Load();
@@ -551,7 +551,31 @@ void CScreen_Basic::OnCell_L_Click(WPARAM wParam, LPARAM lParam)
 			m_n3874InspectAlarmSkipMode[1] = 1;
 			break;
 
+			//2017.0518
+		case 14:
+			if(m_nOnlyCarrierMove[1] == 0) return;
+			
+			m_p_grid.GridCellColor(m_grid_operate, 14, lpcc->Col, GREEN_C, BLACK_C);
+			m_p_grid.GridCellColor(m_grid_operate, 15, lpcc->Col, GREEN_D, BLACK_C);
+			m_nOnlyCarrierMove[1] = 0;
+			break;
+			
+		case 15:
+			if(m_nOnlyCarrierMove[1] == 1) return;
 
+			//2017.0518
+			if( g_lotMgr.GetLotCount() > 0 )
+			{
+				str_tmp = "진행중인 랏이 있습니다.";
+				if ( g_local.GetLocalType() == LOCAL_ENG ) str_tmp = "There is a Running LOT.";
+				DoModal_Msg( str_tmp );
+				return;
+			}
+			
+			m_p_grid.GridCellColor(m_grid_operate, 14, lpcc->Col, GREEN_D, BLACK_C);
+			m_p_grid.GridCellColor(m_grid_operate, 15, lpcc->Col, GREEN_C, BLACK_C);
+			m_nOnlyCarrierMove[1] = 1;
+			break;
 
 		default:
 			break;
@@ -850,6 +874,9 @@ void CScreen_Basic::OnBasic_Data_Set()
 	
 	m_n_count_retry[1]								= 	st_basic.n_count_retry;
 
+	//2017.0518
+	m_nOnlyCarrierMove[1]							=	st_work.n_OnlyCarrierMove;
+
 	//kwlee 2017.0406
 // 	m_dLoaderTransferTrayDeviceGap[1]             =  st_recipe.dLoaderTransferTrayDeviceGap;
 // 	m_dSatbleTime[1]							  =  st_recipe.dSatbleTime;
@@ -950,6 +977,10 @@ void CScreen_Basic::OnBasic_Data_Backup()
 	m_nEPoxyCleanTime[0]					= m_nEPoxyCleanTime[1];
 	m_nHardnessUseTime[0]					= m_nHardnessUseTime[1];
 
+	//2017.0518
+	m_nOnlyCarrierMove[0]					= m_nOnlyCarrierMove[1];
+
+
 	//kwlee 2017.0406
 // 	m_dLoaderTransferTrayDeviceGap[0]  = m_dLoaderTransferTrayDeviceGap[1];  
 // 	m_dSatbleTime[0]				   = m_dSatbleTime[1];					
@@ -1007,6 +1038,10 @@ void CScreen_Basic::OnBasic_Data_Apply()
 	st_basic.n_EPoxyCleanTime					= m_nEPoxyCleanTime[1];
 	st_basic.n_HardnessUseTime					= m_nHardnessUseTime[1];
 
+	//2017.0518
+	st_work.n_OnlyCarrierMove					= m_nOnlyCarrierMove[1];
+
+
 	//kwlee 2017.0406
 // 	st_recipe.dLoaderTransferTrayDeviceGap   = m_dLoaderTransferTrayDeviceGap[1];
 // 	st_recipe.dSatbleTime                    = m_dSatbleTime[1];
@@ -1062,7 +1097,8 @@ int CScreen_Basic::Data_Comparison()
 	if(dEpoxyYLineOffSet[0]					!= dEpoxyYLineOffSet[1])			return RET_ERROR;
 	if(m_nEPoxyCleanTime[0]					!= m_nEPoxyCleanTime[1])			return RET_ERROR;
 	if(m_nHardnessUseTime[0]				!= m_nHardnessUseTime[1])			return RET_ERROR;
-	
+	//2017.0518
+	if(m_nOnlyCarrierMove[0]				!= m_nOnlyCarrierMove[1])			return RET_ERROR;
 	
 	//kwlee 2017.0406
 	if(m_dLoaderTransferTrayDeviceGap[0]	!= m_dLoaderTransferTrayDeviceGap[1])   return RET_ERROR;
@@ -1119,6 +1155,9 @@ void CScreen_Basic::Data_Recovery()
 	
 	m_n_count_retry[1]						= m_n_count_retry[0];
 
+	//2017.0518
+	m_nOnlyCarrierMove[1]					= m_nOnlyCarrierMove[0];
+
 	//kwlee 2017.0406
 // 	m_dLoaderTransferTrayDeviceGap[1]   =   m_dLoaderTransferTrayDeviceGap[0];
 // 	m_dSatbleTime[1]				    =	 m_dSatbleTime[0];
@@ -1142,8 +1181,8 @@ void CScreen_Basic::Data_Recovery()
 BOOL CScreen_Basic::DestroyWindow() 
 {
 	// TODO: Add your specialized code here and/or call the base class
-	int nResponse;  // 대화 상자에 대한 리턴 값 저장 변수
-	int nRet;
+// 	int nResponse;  // 대화 상자에 대한 리턴 값 저장 변수
+// 	int nRet;
 	
 	st_handler.cwnd_basic = NULL;		// Shifter 화면에 대한 핸들 정보 설정 
 
@@ -1522,6 +1561,12 @@ void CScreen_Basic::OnBasic_Data_HisoryLog()
 	if(m_nHardnessUseTime[0] != m_nHardnessUseTime[1])
 	{
 		str_msg.Format( "[BASIC] Hardness Use Time Change %d -> %d", m_nHardnessUseTime[0], m_nHardnessUseTime[1]);
+		Func.On_LogFile_Add(0, str_msg);
+	}
+	//2017.0518
+	if(m_nOnlyCarrierMove[0] != m_nOnlyCarrierMove[1])
+	{
+		str_msg.Format( "[BASIC] Only Carrier Move Change %d -> %d", m_nOnlyCarrierMove[0], m_nOnlyCarrierMove[1]);
 		Func.On_LogFile_Add(0, str_msg);
 	}
 }
@@ -2171,7 +2216,7 @@ void CScreen_Basic::Init_Grid_Operate_1()
 	
 	m_p_grid.GridCellFont(m_grid_operate, 12, 1, "MS Sans Serif", 12);
 	m_p_grid.GridCellText(m_grid_operate, 12, 1, "Alarm Use");
-	
+
 	
 	if(m_n3874InspectAlarmSkipMode[1] == NOT_USE)
 	{
@@ -2183,9 +2228,32 @@ void CScreen_Basic::Init_Grid_Operate_1()
 		m_p_grid.GridCellColor(m_grid_operate, 11, 1, GREEN_D, BLACK_C);
 		m_p_grid.GridCellColor(m_grid_operate, 12, 1, GREEN_C, BLACK_C);
 	}
+
+	//2017.0518  st_work.n_OnlyCarrierMove = CTL_NO
+	m_p_grid.GridCellFont(m_grid_operate, 13, 1, "MS Sans Serif", 18);
 	m_p_grid.GridCellColor(m_grid_operate, 13, 1, BLACK_L, YELLOW_C);
- 	m_p_grid.GridCellColor(m_grid_operate, 14, 1, GREEN_C, YELLOW_C);
- 	m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_C, BLACK_C);
+	m_p_grid.GridCellText(m_grid_operate, 13, 1, "OnlyCarrierMove");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 14, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 14, 1, "OnlyCarrierMove OFF");
+	
+	m_p_grid.GridCellFont(m_grid_operate, 15, 1, "MS Sans Serif", 12);
+	m_p_grid.GridCellText(m_grid_operate, 15, 1, "OnlyCarrierMove ON");
+
+	if( m_nOnlyCarrierMove[1] == CTL_NO )
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 14, 1, GREEN_C, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_D, BLACK_C);
+	}
+	else
+	{
+		m_p_grid.GridCellColor(m_grid_operate, 14, 1, GREEN_D, BLACK_C);
+		m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_C, BLACK_C);
+	}
+
+// 	m_p_grid.GridCellColor(m_grid_operate, 13, 1, BLACK_L, YELLOW_C);
+//  	m_p_grid.GridCellColor(m_grid_operate, 14, 1, GREEN_C, YELLOW_C);
+//  	m_p_grid.GridCellColor(m_grid_operate, 15, 1, GREEN_C, BLACK_C);
  	m_p_grid.GridCellColor(m_grid_operate, 16, 1, BLACK_L, YELLOW_C);
  	m_p_grid.GridCellColor(m_grid_operate, 17, 1, GREEN_C, BLACK_C);
  	m_p_grid.GridCellColor(m_grid_operate, 18,1, GREEN_C, BLACK_C);

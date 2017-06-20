@@ -1388,7 +1388,7 @@ void CMyBasicData::On_Teach_Data_Load()
 
 }
 
-void CMyBasicData::OnBasic_Data_Load()
+void CMyBasicData::OnBasic_Data_Load(int nMode)
 {
 	CString str_load_device;	// 로딩 디바이스명 저장 변수
 	CString str_load_file;
@@ -1403,10 +1403,13 @@ void CMyBasicData::OnBasic_Data_Load()
     /*  데이터 로딩할 파일 설정한다 [파일 확장자 검사]                            */
     /* ************************************************************************** */
 	//kwlee 2017.0403
-	:: GetPrivateProfileString("BasicData", "Model_Name", "", chr_data, 20, st_path.mstr_basic);	// 20130822 kjh
-	st_basic.mstr_device_name = chr_data;
-	(st_basic.mstr_device_name).TrimLeft(' ');               
-	(st_basic.mstr_device_name).TrimRight(' ');
+	if (nMode == 0)
+	{	
+		:: GetPrivateProfileString("BasicData", "Model_Name", "", chr_data, 20, st_path.mstr_basic);	// 20130822 kjh
+		st_basic.mstr_device_name = chr_data;
+		(st_basic.mstr_device_name).TrimLeft(' ');               
+		(st_basic.mstr_device_name).TrimRight(' ');
+	}
 	//
 
 	//str_load_file = st_path.mstr_path_dvc + st_basic.mstr_device_name;  // 티칭 데이터 로딩 파일 설정
@@ -1421,7 +1424,9 @@ void CMyBasicData::OnBasic_Data_Load()
 		str_chk_ext = str_load_file.Mid(n_pos);  // 파일 확장자 설정
 		if (str_chk_ext != _T(".TXT"))  
 		{
-			str_load_file = st_path.mstr_path_dvc + _T("DEFAULT.TXT");  // 로딩 로봇 X축 티칭 데이터 로딩 새로운 파일 설정
+			//str_load_file = st_path.mstr_path_dvc + _T("DEFAULT.TXT");  // 로딩 로봇 X축 티칭 데이터 로딩 새로운 파일 설정
+			//2017.0617
+			str_load_file = st_path.mstr_path_Model + _T("DEFAULT.TXT");  // 로딩 로봇 X축 티칭 데이터 로딩 새로운 파일 설정
 
 			if (st_handler.cwnd_list != NULL)  // 리스트 바 화면 존재
 			{
@@ -1848,13 +1853,13 @@ void CMyBasicData::OnBasic_Data_Load()
 	}
 	else  st_recipe.nTrayX = mn_chk;
 
-	:: GetPrivateProfileString("RECIPE", "EPOXY_LIMIT_CNT", "0", chr_data, 10, str_load_file);
+	:: GetPrivateProfileString("RECIPE", "nEpoxyUseLimitCont", "0", chr_data, 10, str_load_file);
 	mn_chk = atoi(chr_data);
 	if (mn_chk < 0)
 	{
 		st_recipe.nEpoxyUseLimitCont = 0;
 		mstr_temp.Format("%d",st_recipe.nEpoxyUseLimitCont);
-		:: WritePrivateProfileString("RECIPE", "EPOXY_LIMIT_CNT", LPCTSTR(mstr_temp), st_path.mstr_basic);
+		:: WritePrivateProfileString("RECIPE", "nEpoxyUseLimitCont", LPCTSTR(mstr_temp), st_path.mstr_basic);
 	}
 	else  st_recipe.nEpoxyUseLimitCont = mn_chk;
 
@@ -2047,7 +2052,9 @@ void CMyBasicData::OnBasic_Data_Save()
 		str_chk_ext = str_save_file.Mid(n_pos);  // 파일 확장자 설정
 		if (str_chk_ext != _T(".TXT"))  
 		{
-			str_save_file = st_path.mstr_path_dvc + _T("DEFAULT.TXT");  // 티칭 데이터 저장 새로운 파일 설정
+			//str_save_file = st_path.mstr_path_dvc + _T("DEFAULT.TXT");  // 티칭 데이터 저장 새로운 파일 설정
+			//2017.0617
+			str_save_file = st_path.mstr_path_Model + _T("DEFAULT.TXT");  // 티칭 데이터 저장 새로운 파일 설정
 
 			if (st_handler.cwnd_list != NULL)	// 리스트 바 화면 존재
 			{

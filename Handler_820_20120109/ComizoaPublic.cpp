@@ -89,7 +89,7 @@ CComizoaPublic::CComizoaPublic()
 	{
 		mn_max_move_limit_time[i] = 10000; //1Ка
 	}
-	mn_max_move_limit_time[M_HEATSINK_PICKER_PITCH] = 2000;
+	mn_max_move_limit_time[M_HEATSINK_PICKER_PITCH] = 5000;
 	mn_max_home_limit_time = 60000; //1Ка 
 	mn_max_retry_cnt = 3;
 
@@ -1663,6 +1663,7 @@ int CComizoaPublic::Start_SingleMove(int n_Axis, double d_Distance, int n_SpeedR
 		{
 			cmmSxStopEmg(n_Axis);	
 			mn_retry_cnt[n_Axis]++;  
+			return BD_RETRY;
 		}
 	}
  

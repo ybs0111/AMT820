@@ -997,23 +997,106 @@ void CScreen_Main::OnMainTop_Loader_Recive_Info()
  	CString strTemp[4];
  	int nTmp[4] = {0,};
  	CString sTmp="";
+ 
+// 	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+// 	
+// // 	m_grid_Top->SetTypeStaticText(&CellType, SS_TEXT_LEFT | SS_TEXT_VCENTER | SS_TEXT_WORDWRAP);
+// 
+// 	for (int i = 0; i<3; i++)
+// 	{
+// // 		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[i]);
+// 		strTemp[i].Format("Bcr: %s Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[i],
+// 			st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[i]);
+// 		strTemp[i] += "\n\n";
+// 		sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[i]); 
+// 		strTemp[i] += sTmp;
+// 
+// 		
+// 
+// 		m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+// 		m_pGrid.GridCellColor(m_grid_Top, i+2, 7, GRAY, WHITE_C);
+// 		m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+// 
+// 		if(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[i] == CTL_YES)
+// 		{
+// 
+// 			if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_CDIMM)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, BLUE, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_EPOXY)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, NOR_L, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_HEATSINK)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, BLUE_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_VISION)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, GREEN_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);	
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_GOOD)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, OK_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_FAIL)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, NG_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_NONE)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 7, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 7, GRAY, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 7,strTemp[i]);
+// 			}
+// 		}
+// 
+// 	}
+// 
+// 	Invalidate(FALSE);
 
-	
-	//	m_grid_Top.SetItemFont(nRow, 0, &clsFunc.OnLogFont(16));
-	// 	m_grid_Info_HeatSink.SetItemText(nRow, 0,"HS BUFF PICK");
-	
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{
 	 // 		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[i]);
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[i],
-		st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[i]);
-	 	strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[i]); 
-	 	sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2]); 
-	 	strTemp[i] += sTmp;
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[i],
+// 		st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[i]);
+// 	 	strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[i]); 
+// 	 	sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2]); 
+// 	 	strTemp[i] += sTmp;
 	 	
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+		///////
 		m_grid_Info_Top.SetItemBkColour(i + 1, 6,GRAY);
 		m_grid_Info_Top.SetItemText(i + 1, 6,strTemp[i]);
 		m_grid_Info_Top.SetItemFgColour(i+1, 6,WHITE_C);
@@ -1039,11 +1122,23 @@ void CScreen_Main::OnMainTop_Loader_Recive_Info()
  			}
  			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_VISION)
  			{
+				//2017.0617
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2] = st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][1] - st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][0];
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2] <=0 ) st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][0] = GetCurrentTime();
+				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				m_grid_Info_Top.SetItemBkColour(i + 1, 6,GREEN_D);
 				m_grid_Info_Top.SetItemText(i + 1, 6,strTemp[i]);
  			}
  			else if (st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] == BIN_GOOD)
  			{
+				//2017.0617
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2] = st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][1] - st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][0];
+				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2] <=0 ) st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][0] = GetCurrentTime();
+				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				m_grid_Info_Top.SetItemBkColour(i + 1, 6,OK_C);
 				m_grid_Info_Top.SetItemText(i + 1, 6,strTemp[i]);
 				m_grid_Info_Top.SetItemFgColour(i+1, 6,BLACK_L);
@@ -1069,19 +1164,96 @@ void CScreen_Main::OnMainTop_Input_Loader_Info()
 	CString strTemp[4];
 	int nTmp[4] = {0,};
  	CString sTmp="";
-
+// 
+// 	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+// 	
+// 	for (int i = 0; i<3; i++)
+// 	{
+// 		// 		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].c_chBarcode[i]);
+// 		strTemp[i].Format("Bcr : %s Dvc : %d",st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_chBarcode[i],
+// 			st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[i]);
+// 		m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+// 		m_pGrid.GridCellColor(m_grid_Top, i+2, 6, GRAY, WHITE_C);	
+// 		m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+// 
+// 		if( st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER ].n_exist[i] == CTL_YES)
+// 		{
+// 			if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_CDIMM)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, BLUE, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2,6 ,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_EPOXY)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, NOR_L, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_HEATSINK)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, BLUE_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_VISION)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, GREEN_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);	
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_GOOD)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, OK_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_FAIL)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, NG_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_NONE)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 6, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 6, GRAY, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 6,strTemp[i]);
+// 			}
+// 		}
+// 
+// 	}
+// 
+// 	Invalidate(FALSE);
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{
 		
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].c_chBarcode[i],
-		st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].c_chBarcode[i],
+// 		st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+	
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
 		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+
 		m_grid_Info_Top.SetItemBkColour(i + 1, 5,GRAY);
 		m_grid_Info_Top.SetItemText(i + 1, 5,strTemp[i]);
 		m_grid_Info_Top.SetItemFgColour(i+1,5,WHITE_C);
@@ -1101,6 +1273,7 @@ void CScreen_Main::OnMainTop_Input_Loader_Info()
 				m_grid_Info_Top.SetItemFgColour(i + 1, 5,BLACK_L);
 
 			}
+
 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBin[i] == BIN_HEATSINK)
 			{
 				m_grid_Info_Top.SetItemBkColour(i + 1, 5,BLUE_D);
@@ -1139,17 +1312,97 @@ void CScreen_Main::OnMainTop_Epoxy_Info()
 	int nTmp[4] = {0,};
  	CString sTmp="";
 
+// 	CString strTemp[4];
+// 	int nTmp[4] = {0,};
+// 
+// 	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+// 	
+// 	for (int i = 0; i<3; i++)
+// 	{
+// // 		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_chBarcode[i]);
+// 		strTemp[i].Format("Bcr : %s Dvc : %d",st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_chBarcode[i],
+// 			st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBinNum[i]);
+// 		m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+// 		m_pGrid.GridCellColor(m_grid_Top, i+2, 5, GRAY, WHITE_C);
+// 		m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+// 
+// 		if( st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].n_exist[i] == CTL_YES )
+// 		{
+// 			if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_CDIMM)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, BLUE, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 5 ,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_EPOXY)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, NOR_L, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_HEATSINK)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, BLUE_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_VISION)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, GREEN_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);	
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_GOOD)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, OK_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_FAIL)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, NG_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[i] == BIN_NONE)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 5, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 5, GRAY, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 5,strTemp[i]);
+// 			}
+// 		}
+// 	
+// 	}
+// 	Invalidate(FALSE);
+
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_chBarcode[i],
-			st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_chBarcode[i],
+// 			st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
 		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+
 		m_grid_Info_Top.SetItemBkColour(i + 1, 4,GRAY);
 		m_grid_Info_Top.SetItemText(i + 1, 4,strTemp[i]);
 		m_grid_Info_Top.SetItemFgColour(i+1, 4,WHITE_C);
@@ -1203,16 +1456,100 @@ void CScreen_Main::OnMainTop_Wait_Index_Info()
 	int nTmp[4] = {0,};
  	CString sTmp="";
 
+// 	CString strTemp[4];
+// 	int nTmp[4] = {0,};
+// 
+// 	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+// 	
+// 	for (int i = 0; i<3; i++)
+// 	{
+// 		
+// //		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_chBarcode[i]);
+// 		strTemp[i].Format("Bcr : %s Dvc : %d",st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_chBarcode[i],
+// 			st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBinNum[i]);
+// 		m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+// 		m_pGrid.GridCellColor(m_grid_Top, i+2, 4, GRAY, WHITE_C);
+// 		m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+// 
+// 		if( st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX ].n_exist[i] == CTL_YES)
+// 		{
+// 
+// 			if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_CDIMM)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, BLUE, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 4 ,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_EPOXY)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, NOR_L, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_HEATSINK)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, BLUE_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_VISION)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, GREEN_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);	
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_GOOD)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, OK_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_FAIL)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, NG_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBin[i] == BIN_NONE)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 4, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 4, GRAY, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 4,strTemp[i]);
+// 			}
+// 		}
+// 			
+// 		
+// 	}
+// 
+// 	Invalidate(FALSE);
+
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_chBarcode[i],
-		st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_chBarcode[i],
+// 		st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
+		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
 		
 		m_grid_Info_Top.SetItemBkColour(i + 1, 3,GRAY);
 		m_grid_Info_Top.SetItemText(i + 1, 3,strTemp[i]);
@@ -1266,17 +1603,94 @@ void CScreen_Main::OnMainTop_Hs_Vision_Info()
 	int nTmp[4] = {0,};
  	CString sTmp="";
 
-
+// 	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+// 	
+// 	for (int i = 0; i<3; i++)
+// 	{
+// //		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[i]);
+// 		strTemp[i].Format("Bcr : %s Dvc : %d",st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[i],
+// 			st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBinNum[i]);
+// 		m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+// 		m_pGrid.GridCellColor(m_grid_Top, i+2, 3, GRAY, WHITE_C);
+// 		m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+// 
+// 		if( st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION ].n_exist[i] == CTL_YES )
+// 		{
+// 			if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_CDIMM)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, BLUE, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 3 ,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_EPOXY)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, NOR_L, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_HEATSINK)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, BLUE_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_VISION)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, GREEN_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);	
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_GOOD)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, OK_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_FAIL)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, NG_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_NONE)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 3, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 3, GRAY, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 3,strTemp[i]);
+// 			}
+// 		}
+// 			
+// 		
+// 	}
+// 
+// 	Invalidate(FALSE);
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[i],
-			st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[i],
+// 			st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
+		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
 		
 		m_grid_Info_Top.SetItemBkColour(i + 1, 2,GRAY);
 		m_grid_Info_Top.SetItemText(i + 1, 2,strTemp[i]);
@@ -1298,11 +1712,23 @@ void CScreen_Main::OnMainTop_Hs_Vision_Info()
 			}
 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_HEATSINK)
 			{
+				//2017.0617
+				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][2] = st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][1] - st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][0];
+				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][2] <=0 ) st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][0] = GetCurrentTime();
+				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				m_grid_Info_Top.SetItemBkColour(i + 1, 2,BLUE_D);
 				m_grid_Info_Top.SetItemText(i + 1, 2,strTemp[i]);
 			}
 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[i] == BIN_VISION)
 			{
+				//2017.0617
+				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][2] = st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][1] - st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][0];
+				st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][2] <=0 ) st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].dwBdTime[i][0] = GetCurrentTime();
+				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				m_grid_Info_Top.SetItemBkColour(i + 1, 2,GREEN_D);
 				m_grid_Info_Top.SetItemText(i + 1, 2,strTemp[i]);
 			}
@@ -1332,18 +1758,95 @@ void CScreen_Main::OnMainTop_OutSend_Info()
 	CString strTemp[4];
 	int nTmp[4] = {0,};
 	CString sTmp="";
-
+// 	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+// 
+// 	for (int i = 0; i<3; i++)
+// 	{
+// 		
+// //		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_chBarcode[i]);
+// 		strTemp[i].Format("Bcr : %s Dvc : %d",st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_chBarcode[i],
+// 			st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBinNum[i]);
+// 		m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+// 		m_pGrid.GridCellColor(m_grid_Top, i+2, 2, GRAY, WHITE_C);
+// 		m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);	
+// 		
+// 		if( st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND ].n_exist[i] == CTL_YES )
+// 		{
+// 			if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_CDIMM)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, BLUE, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 2 ,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_EPOXY)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, NOR_L, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_HEATSINK)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, BLUE_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_VISION)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, GREEN_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);	
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_GOOD)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, OK_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_FAIL)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, NG_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_NONE)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 2, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 2, GRAY, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 2,strTemp[i]);
+// 			}
+// 		}
+// 	}
+// 
+// 	Invalidate(FALSE);
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_chBarcode[i],
-			st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_chBarcode[i],
+// 			st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+		
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
 		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+		/////
+
 		m_grid_Info_Top.SetItemBkColour(i + 1, 1,GRAY);
 		m_grid_Info_Top.SetItemText(i + 1, 1,strTemp[i]);
 		m_grid_Info_Top.SetItemFgColour(i+1,1,WHITE_C);
@@ -1368,6 +1871,12 @@ void CScreen_Main::OnMainTop_OutSend_Info()
 			}
 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[i] == BIN_VISION)
 			{
+				//2017.0617
+				st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].dwBdTime[i][2] = st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].dwBdTime[i][1] - st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].dwBdTime[i][0];
+				st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].dwBdTime[i][2] <=0 ) st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].dwBdTime[i][0] = GetCurrentTime();
+				///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				m_grid_Info_Top.SetItemBkColour(i + 1, 1,GREEN_D);
 				m_grid_Info_Top.SetItemText(i + 1, 1,strTemp[i]);
 			}
@@ -1396,18 +1905,100 @@ void CScreen_Main::OnMainTop_Unloader_Info()
 	CString strTemp[4];
 	int nTmp[4] = {0,};
 	CString sTmp="";
-
+// 	m_grid_Top = (TSpread*)GetDlgItem(IDC_CUSTOM_TOP_INFO);
+// 	for (int i = 0; i<3; i++)
+// 	{	
+// 		
+// //		strTemp[i].Format("Bcr : %s",st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_chBarcode[i]);
+// 		strTemp[i].Format("Bcr : %s Dvc : %d",st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_chBarcode[i],
+// 			st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBinNum[i]);
+// 		m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+// 		m_pGrid.GridCellColor(m_grid_Top, i+2, 1, GRAY, WHITE_C);
+// 		m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+// 
+// 		if( st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER ].n_exist[i] == CTL_YES)
+// 		{
+// 			if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_CDIMM)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, BLUE, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 1 ,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_EPOXY)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, NOR_L, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_HEATSINK)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, BLUE_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_VISION)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, GREEN_D, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);	
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_GOOD)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, OK_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_FAIL)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, NG_C, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+// 			}
+// 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_NONE)
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, GRAY, YELLOW_C);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+// 			}
+// 			else
+// 			{
+// 				m_pGrid.GridCellFont(m_grid_Top, i+2, 1, "MS Sans Serif", 10);
+// 				m_pGrid.GridCellColor(m_grid_Top, i+2, 1, DVC_UNLOAD_C, BLACK);
+// 				m_pGrid.GridCellText(m_grid_Top, i+2, 1,strTemp[i]);
+// 			}
+// 		}
+// 
+// 	}
+// 
+// 	Invalidate(FALSE);
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_chBarcode[i],
-		st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBinNum[i]);
-		strTemp[i] += "\n";
-		///kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_chBarcode[i],
+// 		st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		///kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_lot_id[i],(int)st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
 		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+
 		m_grid_Info_Top.SetItemBkColour(i + 1, 0,GRAY);
 		m_grid_Info_Top.SetItemText(i + 1, 0,strTemp[i]);
 		m_grid_Info_Top.SetItemFgColour(i +1, 0,WHITE_C);
@@ -1433,6 +2024,13 @@ void CScreen_Main::OnMainTop_Unloader_Info()
 			}
 			else if (st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBin[i] == BIN_VISION)
 			{
+				//2017.0617
+				st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].dwBdTime[i][2] = st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].dwBdTime[i][1] - st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].dwBdTime[i][0];
+				st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].dwBdTime[i][2] <=0 ) st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].dwBdTime[i][0] = GetCurrentTime();
+				///////////////////////////////////////////////////////////
+				///////////////////////////////////////////////////////////////////////////////////////////////////////
 				m_grid_Info_Top.SetItemBkColour(i + 1, 0,GREEN_D);
 				m_grid_Info_Top.SetItemText(i + 1, 0,strTemp[i]);
 				
@@ -1497,14 +2095,32 @@ void CScreen_Main::OnMainBtm_Down_Info()
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].c_chBarcode[i],
-			st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].c_chBarcode[i],
+// 			st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+
+		
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
 		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+
 		m_grid_Info_Btm.SetItemBkColour(i + 1, 0,GRAY);
 		m_grid_Info_Btm.SetItemText(i + 1, 0,strTemp[i]);
 		m_grid_Info_Btm.SetItemFgColour(i+1,0,WHITE_C);
@@ -1516,7 +2132,17 @@ void CScreen_Main::OnMainBtm_Down_Info()
 				m_grid_Info_Btm.SetItemBkColour(i + 1, 0,DVC_UNLOAD_C);
 				m_grid_Info_Btm.SetItemText(i + 1, 0,strTemp[i]);
 				m_grid_Info_Btm.SetItemFgColour(i+1,0,BLACK_L);
-			}
+			}//2017.0617
+			else if (st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].nBin[i] == BIN_VISION)
+			{
+				
+				st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].dwBdTime[i][2] = st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].dwBdTime[i][1] - st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].dwBdTime[i][0];
+				st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].dwBdTime[i][2] <=0 ) st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].dwBdTime[i][0] = GetCurrentTime();
+				m_grid_Info_Btm.SetItemBkColour(i + 1, 0,GREEN_D);
+				m_grid_Info_Btm.SetItemText(i + 1, 0,strTemp[i]);
+			}		
 		} 
 	}
 }
@@ -1549,14 +2175,32 @@ void CScreen_Main::OnMainBtm_DownForward_Info()
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].c_chBarcode[i],
-			st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].c_chBarcode[i],
+// 			st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
 		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+		////
+
 		m_grid_Info_Btm.SetItemBkColour(i + 1, 1,GRAY);
 		m_grid_Info_Btm.SetItemText(i + 1, 1,strTemp[i]);
 		m_grid_Info_Btm.SetItemFgColour(i+1,1,WHITE_C);
@@ -1569,6 +2213,15 @@ void CScreen_Main::OnMainBtm_DownForward_Info()
 				m_grid_Info_Btm.SetItemText(i + 1, 1,strTemp[i]);
 				m_grid_Info_Btm.SetItemFgColour(i+1,1,BLACK_L);
 			}
+		}//2017.0617
+		else if (st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].nBin[i] == BIN_VISION)
+		{			
+			st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].dwBdTime[i][1] = GetCurrentTime();
+			st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].dwBdTime[i][2] = st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].dwBdTime[i][1] - st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].dwBdTime[i][0];
+			st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].dwBdTime[i][2] /= 1000;
+			if( st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].dwBdTime[i][2] <=0 ) st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].dwBdTime[i][0] = GetCurrentTime();
+			m_grid_Info_Btm.SetItemBkColour(i + 1, 1,GREEN_D);
+			m_grid_Info_Btm.SetItemText(i + 1, 1,strTemp[i]);
 		} 
 	}
 }
@@ -1601,14 +2254,31 @@ void CScreen_Main::OnMainBtm_Hs_Down_Info()
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].c_chBarcode[i],
-			st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].c_chBarcode[i],
+// 			st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
 		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+
 		m_grid_Info_Btm.SetItemBkColour(i + 1, 2,GRAY);
 		m_grid_Info_Btm.SetItemText(i + 1, 2,strTemp[i]);
 		m_grid_Info_Btm.SetItemFgColour(i+1,2,WHITE_C);
@@ -1620,6 +2290,16 @@ void CScreen_Main::OnMainBtm_Hs_Down_Info()
 				m_grid_Info_Btm.SetItemBkColour(i + 1, 2,DVC_UNLOAD_C);
 				m_grid_Info_Btm.SetItemText(i + 1, 2,strTemp[i]);
 				m_grid_Info_Btm.SetItemFgColour(i+1,2,BLACK_L);
+			}//2017.0617
+			else if (st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].nBin[i] == BIN_VISION)
+			{
+				
+				st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].dwBdTime[i][2] = st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].dwBdTime[i][1] - st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].dwBdTime[i][0];
+				st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].dwBdTime[i][2] <=0 ) st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].dwBdTime[i][0] = GetCurrentTime();
+				m_grid_Info_Btm.SetItemBkColour(i + 1, 2,GREEN_D);
+				m_grid_Info_Btm.SetItemText(i + 1, 2,strTemp[i]);
 			}
 		} 
 	}
@@ -1656,14 +2336,31 @@ void CScreen_Main::OnMainBtm_Index_Down_Info()
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].c_chBarcode[i],
-			st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].c_chBarcode[i],
+// 			st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
 		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+
 		m_grid_Info_Btm.SetItemBkColour(i + 1, 3,GRAY);
 		m_grid_Info_Btm.SetItemText(i + 1, 3,strTemp[i]);
 		m_grid_Info_Btm.SetItemFgColour(i+1,3,WHITE_C);
@@ -1675,6 +2372,16 @@ void CScreen_Main::OnMainBtm_Index_Down_Info()
 				m_grid_Info_Btm.SetItemBkColour(i + 1, 3,DVC_UNLOAD_C);
 				m_grid_Info_Btm.SetItemText(i + 1, 3,strTemp[i]);
 				m_grid_Info_Btm.SetItemFgColour(i+1,3,BLACK_L);
+			}//2017.0617
+			else if (st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].nBin[i] == BIN_VISION)
+			{
+				
+				st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].dwBdTime[i][2] = st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].dwBdTime[i][1] - st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].dwBdTime[i][0];
+				st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].dwBdTime[i][2] <=0 ) st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].dwBdTime[i][0] = GetCurrentTime();
+				m_grid_Info_Btm.SetItemBkColour(i + 1, 3,GREEN_D);
+				m_grid_Info_Btm.SetItemText(i + 1, 3,strTemp[i]);
 			}
 		} 
 	}
@@ -1709,13 +2416,31 @@ void CScreen_Main::OnMainBtm_Epoxy_Down_Info()
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].c_chBarcode[i],
-			st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].c_chBarcode[i],
+// 			st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
+		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+
 		
 		m_grid_Info_Btm.SetItemBkColour(i + 1, 4,GRAY);
 		m_grid_Info_Btm.SetItemText(i + 1, 4,strTemp[i]);
@@ -1728,6 +2453,16 @@ void CScreen_Main::OnMainBtm_Epoxy_Down_Info()
 				m_grid_Info_Btm.SetItemBkColour(i + 1, 4,DVC_UNLOAD_C);
 				m_grid_Info_Btm.SetItemText(i + 1, 4,strTemp[i]);
 				m_grid_Info_Btm.SetItemFgColour(i+1,4,BLACK_L);
+			}//2017.0617
+			else if (st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].nBin[i] == BIN_VISION)
+			{
+				
+				st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].dwBdTime[i][2] = st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].dwBdTime[i][1] - st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].dwBdTime[i][0];
+				st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].dwBdTime[i][2] <=0 ) st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].dwBdTime[i][0] = GetCurrentTime();
+				m_grid_Info_Btm.SetItemBkColour(i + 1, 4,GREEN_D);
+				m_grid_Info_Btm.SetItemText(i + 1, 4,strTemp[i]);
 			}
 		} 
 	}
@@ -1762,13 +2497,31 @@ void CScreen_Main::OnMainBtm_Input_Down_Info()
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].c_chBarcode[i],
-			st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].c_chBarcode[i],
+// 			st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+		
+
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
+		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
 		
 		m_grid_Info_Btm.SetItemBkColour(i + 1, 5,GRAY);
 		m_grid_Info_Btm.SetItemText(i + 1, 5,strTemp[i]);
@@ -1781,6 +2534,16 @@ void CScreen_Main::OnMainBtm_Input_Down_Info()
 				m_grid_Info_Btm.SetItemBkColour(i + 1, 5,DVC_UNLOAD_C);
 				m_grid_Info_Btm.SetItemText(i + 1, 5,strTemp[i]);
 				m_grid_Info_Btm.SetItemFgColour(i+1,5,BLACK_L);
+			}//2017.0617
+			else if (st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].nBin[i] == BIN_VISION)
+			{
+				
+				st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].dwBdTime[i][2] = st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].dwBdTime[i][1] - st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].dwBdTime[i][0];
+				st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].dwBdTime[i][2] <=0 ) st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].dwBdTime[i][0] = GetCurrentTime();
+				m_grid_Info_Btm.SetItemBkColour(i + 1, 5,GREEN_D);
+				m_grid_Info_Btm.SetItemText(i + 1, 5,strTemp[i]);
 			}
 		} 
 	}
@@ -1816,14 +2579,31 @@ void CScreen_Main::OnMainBtm_Loader_Down_Info()
 	//kwlee 2017.0428
 	for (int i = 0; i<3; i++)
 	{	
-		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].c_chBarcode[i],
-			st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].nBinNum[i]);
-		strTemp[i] += "\n";
-		//kwlee 2017.0428
-		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].c_lot_id[i]); 
-		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i].Format("Bcr: %s \t Dvc: %d ",st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].c_chBarcode[i],
+// 			st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].nBinNum[i]);
+// 		strTemp[i] += "\n";
+// 		//kwlee 2017.0428
+// 		//sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].c_lot_id[i]); 
+// 		sTmp.Format("Lot: %s \t Time: %d", st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].c_lot_id[i],(int)st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].dwBdTime[i][2]); 
+// 		strTemp[i] += sTmp;
+
+		//kwlee 2017.0614
+		sTmp.Format("Bcr: %s",st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].c_chBarcode[i]);
+		sTmp += "\n";
 		strTemp[i] += sTmp;
 		
+		sTmp.Format("Dvc: %d",st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].nBinNum[i]);
+		sTmp += "\n";
+		strTemp[i] += sTmp;
+		
+		
+		sTmp.Format("Lot: %s", st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].c_lot_id[i]); 
+		sTmp += "\n";
+		strTemp[i] +=sTmp;
+		
+		sTmp.Format("Time: %d", (int)st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].dwBdTime[i][2]); 
+		strTemp[i] +=sTmp;
+
 		m_grid_Info_Btm.SetItemBkColour(i + 1, 6,GRAY);
 		m_grid_Info_Btm.SetItemText(i + 1, 6,strTemp[i]);
 		m_grid_Info_Btm.SetItemFgColour(i+1,6,WHITE_C);
@@ -1835,6 +2615,16 @@ void CScreen_Main::OnMainBtm_Loader_Down_Info()
 				m_grid_Info_Btm.SetItemBkColour(i + 1, 6,DVC_UNLOAD_C);
 				m_grid_Info_Btm.SetItemText(i + 1, 6,strTemp[i]);
 				m_grid_Info_Btm.SetItemFgColour(i+1,6,BLACK_L);
+			}//2017.0617
+			else if (st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].nBin[i] == BIN_VISION)
+			{
+				
+				st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].dwBdTime[i][1] = GetCurrentTime();
+				st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].dwBdTime[i][2] = st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].dwBdTime[i][1] - st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].dwBdTime[i][0];
+				st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].dwBdTime[i][2] /= 1000;
+				if( st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].dwBdTime[i][2] <=0 ) st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].dwBdTime[i][0] = GetCurrentTime();
+				m_grid_Info_Btm.SetItemBkColour(i + 1, 6,GREEN_D);
+				m_grid_Info_Btm.SetItemText(i + 1, 6,strTemp[i]);
 			}
 		} 
 	}
@@ -2279,13 +3069,78 @@ void CScreen_Main::OnInitHeatSinkGrid()
 	int   i, j,nRow;
 	int	  max_row, max_col;
 	CString str_tmp;
-	SS_CELLTYPE CellType;
+// 	SS_CELLTYPE CellType;
 	
 	max_row =1;
 	max_col = 4;
 	
  	
+// 	
+// 	m_pGrid.GridReset(m_grid_HeatSink);
+// 	// 대문자 
+// 	m_pGrid.GridCellSelectDisplay(m_grid_HeatSink, FALSE);
+// 	m_pGrid.GridRowHeader(m_grid_HeatSink, FALSE);
+// 	m_pGrid.GridColHeader(m_grid_HeatSink, FALSE);
+// 	m_pGrid.GridHorizontal(m_grid_HeatSink, FALSE);
+// 	m_pGrid.GridVertical(m_grid_HeatSink, FALSE);
+// 	m_pGrid.GridAutoSize(m_grid_HeatSink, FALSE);
+// 	//m_pGrid.GridAutoSize(m_grid_Top, FALSE);
+// 	m_pGrid.GridCellRows(m_grid_HeatSink, max_row);
+// 	m_pGrid.GridCellCols(m_grid_HeatSink, max_col);
+ 	
+// 	
+// 	for(i=0; i<max_row+1; i++)
+// 	{
+// 		
+// 		if (i == 0)
+// 		{
+// 			m_pGrid.GridCellHeight(m_grid_HeatSink, i, 30);	 
+// 		}
+// 		else
+// 		{
+// 			m_pGrid.GridCellHeight(m_grid_HeatSink, i+ 1, 35);	 
+// 		}
+// 		for(j=0; j<max_col+1; j++)
+// 		{
+// 			
+// 			m_pGrid.GridCellWidth_L(m_grid_HeatSink, j, 13);
+// 			m_pGrid.GridCellFont(m_grid_HeatSink, i, j, "MS Sans Serif", 10);
+// 			m_pGrid.GridCellColor(m_grid_HeatSink, i, j, GRAY, WHITE_C);
+// 			
+// 		}
+// 		
+// 	}
+// 	
+ //	m_pGrid.GridCellMerge(m_grid_HeatSink, 1, 1, 1, 4);
+// 	m_pGrid.GridCellFont(m_grid_HeatSink, 1, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_HeatSink, 1, 1, BLUE, YELLOW_C);
+// 	m_pGrid.GridCellText(m_grid_HeatSink, 1, 1, "HEASINK");
+// 	m_pGrid.GridCellControlStatic(m_grid_HeatSink, 1, 1);
+// 
+// 	// 	m_pGrid.GridCellMerge(m_grid_Top, 2, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_HeatSink, 2, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_HeatSink, 2, 1, GRAY, WHITE_C);
+// 	m_pGrid.GridCellText(m_grid_HeatSink, 2, 1, "HS BUFF PICK");
+// 	// 	
+// 	// 	m_pGrid.GridCellMerge(m_grid_Top, 3, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_HeatSink, 2, 2, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_HeatSink, 2, 2, GRAY, WHITE_C);
+// 	m_pGrid.GridCellText(m_grid_HeatSink, 2, 2, "HS PLACE");
+// 	// 	
+// 	// 	m_pGrid.GridCellMerge(m_grid_Top, 4, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_HeatSink, 2, 3, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_HeatSink, 2, 3, GRAY, WHITE_C);
+// 	m_pGrid.GridCellText(m_grid_HeatSink, 2, 3, "DISP PICK");
+// 
+// 	m_pGrid.GridCellFont(m_grid_HeatSink, 2, 4, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_HeatSink, 2, 4, GRAY, WHITE_C);
+// 	m_pGrid.GridCellText(m_grid_HeatSink, 2, 4, "JIG PICK");
+// 	
+// 	Invalidate(FALSE);
+
 	//kwlee 2017.0428
+	//m_grid_HeatSink = (TSpread*)GetDlgItem(IDC_CUSTOM_HEATSINK);
+		
 	m_grid_HeatSink -> SetBool(SSB_HORZSCROLLBAR, FALSE);
 	m_grid_HeatSink -> SetBool(SSB_VERTSCROLLBAR, FALSE);
 	
@@ -2301,7 +3156,9 @@ void CScreen_Main::OnInitHeatSinkGrid()
 	m_grid_Info_HeatSink.SetColumnCount(max_col);
 	m_grid_Info_HeatSink.SetFixedRowCount(0);
 	m_grid_Info_HeatSink.SetFixedColumnCount(0);
-	
+	// 	m_grid_Top.SetFixedBkColor(RGB(0,0,200));
+	// 	m_grid_Top.SetFixedBkColor(RGB(200,200,255));
+	// 	m_grid_Top.SetTextBkColor(RGB(150,150,200));
 	//kwlee 2017.0428
 	m_grid_Info_HeatSink.SetFixedBkColor(RGB(0,0,255));
 	m_grid_Info_HeatSink.SetFixedBkColor(RGB(0,0,255));
@@ -2376,12 +3233,69 @@ void CScreen_Main::OnInitDeviceGrid()
 	int   i, j,nRow;
 	int	  max_row, max_col;
 	CString str_tmp;
-	SS_CELLTYPE CellType;
+// 	SS_CELLTYPE CellType;
 	
 	max_row = 1;
 	max_col = 3;
 	
  	
+// 	
+// 	m_pGrid.GridReset(m_grid_Device);
+// 	// 대문자 
+// 	m_pGrid.GridCellSelectDisplay(m_grid_Device, FALSE);
+// 	m_pGrid.GridRowHeader(m_grid_Device, FALSE);
+// 	m_pGrid.GridColHeader(m_grid_Device, FALSE);
+// 	m_pGrid.GridHorizontal(m_grid_Device, FALSE);
+// 	m_pGrid.GridVertical(m_grid_Device, FALSE);
+// 	m_pGrid.GridAutoSize(m_grid_Device, FALSE);
+// 	//m_pGrid.GridAutoSize(m_grid_Top, FALSE);
+// 	m_pGrid.GridCellRows(m_grid_Device, max_row);
+// 	m_pGrid.GridCellCols(m_grid_Device, max_col);
+// 	m_grid_HeatSink->SetTypeStaticText(&CellType, SS_TEXT_LEFT | SS_TEXT_VCENTER | SS_TT_MULTILINE_MULTI);
+// 	
+// 	for(i=0; i<max_row+1; i++)
+// 	{
+// 		
+// 		if (i == 0)
+// 		{
+// 			m_pGrid.GridCellHeight(m_grid_Device, i, 30);	 
+// 		}
+// 		else
+// 		{
+// 			m_pGrid.GridCellHeight(m_grid_Device, i+ 1, 35);	 
+// 		}
+// 		for(j=0; j<max_col+1; j++)
+// 		{
+// 			
+// 			m_pGrid.GridCellWidth_L(m_grid_Device, j, 17);
+// 			m_pGrid.GridCellFont(m_grid_Device, i, j, "MS Sans Serif", 10);
+// 			m_pGrid.GridCellColor(m_grid_Device, i, j, GRAY, WHITE_C);
+// 		}
+// 		
+// 	}
+// 	
+// 	m_pGrid.GridCellMerge(m_grid_Device, 1, 1, 1, 4);
+// 	m_pGrid.GridCellFont(m_grid_Device, 1, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Device, 1, 1, BLUE, YELLOW_C);
+// 	m_pGrid.GridCellControlStatic(m_grid_Device, 1, 1);
+// 	m_pGrid.GridCellText(m_grid_Device, 1, 1, "DEVICE");
+// 	
+// 	// 	m_pGrid.GridCellMerge(m_grid_Top, 2, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_Device, 2, 1, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Device, 2, 1, GRAY, WHITE_C);
+// 	m_pGrid.GridCellText(m_grid_Device, 2, 1, "DVC PICK" );
+// 	// 	
+// 	// 	m_pGrid.GridCellMerge(m_grid_Top, 3, 1, 1, 2);
+// 	m_pGrid.GridCellFont(m_grid_Device, 2, 2, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Device, 2, 2, GRAY, WHITE_C);
+// 	m_pGrid.GridCellText(m_grid_Device, 2, 2, "LOAD BUFF");
+// 	
+// 	m_pGrid.GridCellFont(m_grid_Device, 2, 3, "MS Sans Serif", 10);
+// 	m_pGrid.GridCellColor(m_grid_Device, 2, 3, GRAY, WHITE_C);
+// 	m_pGrid.GridCellText(m_grid_Device, 2, 3, "UNLOAD BUFF");
+// 	// 	
+// 	Invalidate(FALSE);
+
 	//kwlee 2017.0428
 	//m_grid_Device = (TSpread*)GetDlgItem(IDC_CUSTOM_DEVICE);
 
@@ -2477,14 +3391,14 @@ void CScreen_Main::OnInitDeviceGrid()
 void CScreen_Main::OnInitTopGrid()
 {
 	int   i, j;
-	int	  max_row, max_col,nRow,nCol;
+	int	  max_row, max_col,nRow;//,nCol;
 	
 	CString strTemp[4];
 	int nTmp[4] = {0,};
  	CString sTmp="";
 
 	CString strTmp;
-	SS_CELLTYPE CellType;
+// 	SS_CELLTYPE CellType;
 
 	max_row = 4;
 	max_col = 7;

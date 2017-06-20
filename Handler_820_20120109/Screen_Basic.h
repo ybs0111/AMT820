@@ -108,6 +108,9 @@ public:
 	int				m_n3874InspectMode[2];
 	int				n_Light_Curtain_Mode[2];
 	int				n_mode_case_assembly[2];
+
+	//2017.0518
+	int				m_nOnlyCarrierMove[2];
 	
 	int				m_n_count_retry[2];
 	int             m_nCountPickRetry[2];

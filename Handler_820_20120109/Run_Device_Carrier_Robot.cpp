@@ -43,13 +43,17 @@ CRun_Device_Carrier_Robot::CRun_Device_Carrier_Robot()
 
 	for ( i = 0; i < THREAD_MAX_SITE; i++ )
 	{
-		for ( j = 0; j < 5; j++ )
+		for ( j = 0; j < 6; j++ )//5->6
 		{
 			st_sync.nCarrierRbt_Dvc_Req[i][j] = CTL_NO;
 		}
 	}
 
 	m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
+
+	//2017.0617
+	dwMonitorWaitTime[0] = -1;
+	st_handler.mn_monitor_time = CTL_NO;
 
 }
 
@@ -81,6 +85,21 @@ void CRun_Device_Carrier_Robot::Thread_Run()
 
 	default:
 		break;
+	}
+
+	//2017.0617
+	if(st_handler.mn_monitor_time == CTL_YES )
+	{
+		dwMonitorWaitTime[1] = GetCurrentTime();
+		dwMonitorWaitTime[2] = dwMonitorWaitTime[1] - dwMonitorWaitTime[0];
+		if( dwMonitorWaitTime[2] <= 0 ) dwMonitorWaitTime[0] = GetCurrentTime();
+		if( dwMonitorWaitTime[2] > 1000)
+		{
+			st_handler.mn_monitor_time = CTL_NO;
+			Dvc_Carrier_Buffer_Event();
+			dwMonitorWaitTime[0] = GetCurrentTime();			
+		}
+		
 	}
 }
 
@@ -382,7 +401,7 @@ void CRun_Device_Carrier_Robot::RunInit()
 			st_sync.nCarrierSateyflag[i] = RET_GOOD;
 		}
 
-// 		st_work.n_OnlyCarrierMove = CTL_NO;
+		st_work.n_OnlyCarrierMove = CTL_NO;
 // 		st_basic.n_mode_device = WITHOUT_DVC;
 // 		st_basic.n_mode_bcr = CTL_YES;
 // 		st_basic.n_mode_7387 = CTL_NO;
@@ -690,6 +709,10 @@ void CRun_Device_Carrier_Robot::RunMove()
 		if( nRet_1 == RET_GOOD )
 		{
 			mn_RunMove = 1460;
+		}//2017.0617
+		else
+		{
+			st_handler.mn_monitor_time = CTL_YES;												
 		}
 		break;
 
@@ -791,6 +814,10 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 			mn_RunMove = 2100;
+		}//2017.0617
+		else
+		{
+			st_handler.mn_monitor_time = CTL_YES;												
 		}
 		break;
 		
@@ -1071,7 +1098,9 @@ void CRun_Device_Carrier_Robot::RunMove()
 							if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2] > (15*60*1000) )//15분 완료시간
 							{
 								mn_BufferPos = i;
-								mn_RunMove = 5000;//UNLOAD하자		
+								mn_RunMove = 5000;//UNLOAD하자
+								//kwlee 2017.0614
+								//st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_LOADER_RECEIVE, 0);
 							}
 							return;
 						}
@@ -1086,11 +1115,15 @@ void CRun_Device_Carrier_Robot::RunMove()
 								{
 									st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] = BIN_GOOD;
 								}
+								else//2017.0617
+								{
+									st_handler.mn_monitor_time = CTL_YES;
+								}								
 							}
 						}
-
+						
 					}
-// 				}
+					// 				}
 			}
 		}
 		if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_YES ||
@@ -1100,7 +1133,8 @@ void CRun_Device_Carrier_Robot::RunMove()
 			break;
 		}
 		else
-		{
+		{//2017.0617
+			dwMonitorWaitTime[0] = GetCurrentTime();
 			mn_RunMove = 4000;
 		}
 		break;
@@ -1146,6 +1180,10 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
 			mn_RunMove = 4100;
+		}//2017.0617
+		else
+		{
+			st_handler.mn_monitor_time = CTL_YES;												
 		}
 		break;
 
@@ -1159,6 +1197,10 @@ void CRun_Device_Carrier_Robot::RunMove()
 
 			m_nTransferJobFlag[0] = m_nTransferJobFlag[1] = CTL_NO;
 			mn_RunMove = 2000;
+		}//2017.0617
+		else
+		{
+			st_handler.mn_monitor_time = CTL_YES;							
 		}
 		break;
 
@@ -1166,7 +1208,7 @@ void CRun_Device_Carrier_Robot::RunMove()
 		//unpress 동작
 		st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][0] = CTL_REQ;
 		st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][1] = WORK_PICK;
-		st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][2] = mn_BufferPos;//Buffer position
+		//st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][2] = mn_BufferPos;//Buffer position
 		mn_RunMove = 5100;
 		break;
 
@@ -1175,6 +1217,10 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 // 			m_Thread_Flag[0] = m_Thread_Flag[1] = m_Thread_Flag[2] = m_Thread_Flag[3] = CTL_NO;
 			mn_RunMove = 5200;
+		}//2017.0617
+		else
+		{
+			st_handler.mn_monitor_time = CTL_YES;												
 		}
 		break;
 
@@ -1207,7 +1253,36 @@ void CRun_Device_Carrier_Robot::RunMove()
 		{
 			st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][0] = CTL_NO;
 			st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][1] = CTL_NO;
+			//2017.0614
+			st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][2] = CTL_NO;
+			st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][3] = CTL_NO;
+			st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][4] = CTL_NO;
+			st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][5] = CTL_NO;
 			mn_RunMove = 3100;
+		}
+		else//2017.0614
+		{
+// 			if( st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][0] == CTL_READY &&
+// 				st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][1] == WORK_PICK )
+// 			{
+// 				if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_NO && 
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 0] == CTL_CHANGE)
+// 				{//0번 로드
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 0] = CTL_SORT;
+// 				}
+// 				else if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_NO && 
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 1] == CTL_CHANGE)
+// 				{//1번 로드
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 1] = CTL_SORT;
+// 				}
+// 				else if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_NO && 
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 2] == CTL_CHANGE)
+// 				{//2번 로드
+// 					st_sync.nCarrierRbt_Dvc_Req[THD_UNLOAD_WORK_RBT][ 2 + 2] = CTL_SORT;
+// 				}
+// 			}
+			//2017.0617
+			st_handler.mn_monitor_time = CTL_YES;												
 		}
 		break;
 
@@ -1622,6 +1697,13 @@ void CRun_Device_Carrier_Robot::RunReadBcr()
 		break;
 
 	case 1000:
+		//2017.0610
+		if( st_basic.n_mode_bcr == CTL_NO)
+		{
+			st_sync.nCarrierBcr_Req = CTL_READY;
+			m_dwBcrWaitTime[0] = GetCurrentTime();
+			mn_RunBcrStep = 1100;
+		}
 		if( st_sync.nCarrierBcr_Req == CTL_REQ )
 		{
 			if( st_basic.n_mode_bcr == CTL_NO)
@@ -4799,9 +4881,75 @@ int CRun_Device_Carrier_Robot::Chk_Device_Carrier_HolderPin_Fix(int nMode, int n
 	return RET_PROCEED;
 }
 
-
-
-
-
-
-
+//2017.0617
+void CRun_Device_Carrier_Robot::Dvc_Carrier_Buffer_Event()
+{
+	if (st_handler.cwnd_main != NULL)
+	{
+		if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[0] == CTL_YES ||
+			st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[1] == CTL_YES ||
+			st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].n_exist[2] == CTL_YES )
+		{
+			st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_LOADER_RECEIVE, 0);
+		}
+		// 		st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_INPUT_LOADER, 0);
+		// 		st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_EPOXY, 0);
+		// 		st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_WAIT_INDEX, 0);
+		// 		st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_HEATSINK_VISION, 0);
+		if( st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].n_exist[0] == CTL_YES ||
+			st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].n_exist[1] == CTL_YES ||
+			st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].n_exist[2] == CTL_YES )
+		{
+			st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_OUTSEND, 0);
+		}
+		if( st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].n_exist[0] == CTL_YES ||
+			st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].n_exist[1] == CTL_YES ||
+			st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].n_exist[2] == CTL_YES )
+		{
+			st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_UNLOADER, 0);
+		}
+		if( st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].n_exist[0] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].n_exist[1] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].n_exist[2] == CTL_YES )
+		{
+			st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_DOWN, 0);
+		}
+		if( st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].n_exist[0] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].n_exist[1] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].n_exist[2] == CTL_YES )
+		{
+			st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_DOWNFORWARD, 0);
+		}
+		if( st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].n_exist[0] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].n_exist[1] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].n_exist[2] == CTL_YES )
+		{
+			st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_HEATSINK_DOWN, 0);
+		}
+		if( st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].n_exist[0] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].n_exist[1] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].n_exist[2] == CTL_YES )
+		{
+			st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_INDEX_DOWN, 0);
+		}
+		if( st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].n_exist[0] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].n_exist[1] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].n_exist[2] == CTL_YES )
+		{
+			st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_EPOXY_DOWN, 0);
+		}
+		if( st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].n_exist[0] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].n_exist[1] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].n_exist[2] == CTL_YES )
+		{
+			st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_INPUT_DOWN, 0);
+		}
+		if( st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].n_exist[0] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].n_exist[1] == CTL_YES ||
+			st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].n_exist[2] == CTL_YES )
+		{
+			st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_LOADER_DOWN, 0);
+		}
+	}
+	
+}

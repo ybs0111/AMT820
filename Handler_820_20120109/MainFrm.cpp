@@ -1176,7 +1176,9 @@ void CMainFrame::OnMain_Var_Default_Set()
 	OnMain_Path_Set();
 
 	st_basic.n_file_save = 1;
-	mcls_m_basic.OnBasic_Data_Load();
+	//mcls_m_basic.OnBasic_Data_Load();
+	//kwlee 2017.0617
+	mcls_m_basic.OnBasic_Data_Load(0);
 	st_basic.n_file_save = 1;
 	mcls_m_basic.On_Teach_Data_Load();
 	mcls_m_basic.OnMaintenance_Data_Load();

@@ -700,6 +700,8 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 			m_dwSatbleWaitTime[2] = m_dwSatbleWaitTime[1] - m_dwSatbleWaitTime[0];
 			if( m_dwSatbleWaitTime[2] <= 0 ) m_dwSatbleWaitTime[0] = GetCurrentTime();
 			if( m_dwSatbleWaitTime[2] < 1000 ) break;
+			//2017.0616
+			st_handler.m_nEpoxyCleanAlarm = CTL_NO;
 			mn_MoveStep = 1500;
 			break;
 
@@ -942,6 +944,8 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 				m_dwSatbleWaitTime[0] = GetCurrentTime();
 				st_work.nEpoxyBiliardThreadRunMode = dRUN;
 				mn_MoveStep = 2500;
+				//2017.0616
+				st_handler.m_nEpoxyCleanAlarm = CTL_NO;
 			}
 			else if (nRet_1 == BD_RETRY)
 			{

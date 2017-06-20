@@ -396,7 +396,7 @@ enum ENUM_WM_MESSAGE
 // RS-232C 시리얼 통신 시 사용되는 메시지 정의                                   
 // -> MAX_PORT : 기본 포트 2개로 구성되어 있다						             
 // *************************************************************************
-#define MAX_PORT				3	// 생성할 시리얼 포트 갯수
+#define MAX_PORT				2	// 생성할 시리얼 포트 갯수
 #define COM_ERROR				-1	// 에러 메시지
 #define LOT_BARCODE_PORT		1		// 현재 BCR READ 포트 번호
 #define DEVICE_BARCODE_PORT		2		// 현재 BCR READ 포트 번호
@@ -1307,6 +1307,9 @@ struct st_handler_param
 	DWORD m_dwHardnessUseWaitTime[3];
 	int m_nHardnessUseTime;
 
+	//2017.0617
+	int mn_monitor_time;
+
 };
 extern  st_handler_param  st_handler;
 // *****************************************************************************
@@ -2135,7 +2138,7 @@ struct st_sync_param
 	int nUldWorkRbt_Dvc_Req[THREAD_MAX_SITE][5];
 
 	//CARRIER ROBOT 동작
-	int nCarrierRbt_Dvc_Req[THREAD_MAX_SITE][5]; 
+	int nCarrierRbt_Dvc_Req[THREAD_MAX_SITE][6];//6에 바로 적업한 위치를 적는다
 	int nCarrierRbt_UpDnPress_Req[3];//[0]UP:LOAD Carrier [1]DOWN:UNLOAD Carrier [2]M_PRESS_Y
 	int nCarrierBcr_Req;
 

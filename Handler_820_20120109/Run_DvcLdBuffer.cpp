@@ -64,7 +64,7 @@ void CRun_DvcLdBuffer::OnRunInit()
 
 void CRun_DvcLdBuffer::OnRunMove()
 {
-	int i = 0, nRet_1, nCount = 0;
+	int i = 0, nRet_1, nRet_2, nCount = 0;
 
 	Func.ThreadFunctionStepTrace(5, mn_RunStep);
 	switch(mn_RunStep)
@@ -335,17 +335,34 @@ void CRun_DvcLdBuffer::OnRunMove()
 
 	case 2310:
 		//유무 체크
-		nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_ON, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
-		if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+		if( g_lotMgr.GetLotAt(0).GetDvcType() == "SFF")
 		{
-			break; 
-		} 
-		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+			nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_ON, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
+			if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+			{
+				break; 
+			} 
+			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+			{
+				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
+				CTL_Lib.Alarm_Error_Occurrence(5005, dWARNING, m_strAlarmCode);
+				break;
+			} 
+		}
+		else
 		{
-			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
-			CTL_Lib.Alarm_Error_Occurrence(5005, dWARNING, m_strAlarmCode);
-			break;
-		} 
+			nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_tff_tilt_chk, IO_ON);
+			nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_sff_tilt_chk, IO_ON);
+			if( nRet_1 == IO_OFF && nRet_2 == IO_OFF && st_basic.n_mode_device != WITHOUT_DVC)
+			{
+			}
+			else if( (nRet_1 == IO_ON || nRet_2 == IO_ON) && st_basic.n_mode_device != WITHOUT_DVC)
+			{
+				if( nRet_1 == IO_ON ) m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_tff_tilt_chk); 
+				else				  m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_sff_tilt_chk); 
+				CTL_Lib.Alarm_Error_Occurrence(5095, dWARNING, m_strAlarmCode);
+			}
+		}
 		mn_RunStep = 2320;
 		break;
 
@@ -370,18 +387,36 @@ void CRun_DvcLdBuffer::OnRunMove()
 
 	case  2340:
 		//유무 체크
-		nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_ON, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
-		if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+		if( g_lotMgr.GetLotAt(0).GetDvcType() == "SFF")
 		{
-			break; 
-		} 
-		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+			nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_ON, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
+			if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+			{
+				break; 
+			} 
+			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+			{
+				m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
+				CTL_Lib.Alarm_Error_Occurrence(5007, dWARNING, m_strAlarmCode);
+				break;
+			} 
+			mn_RunStep = 2400;
+		}
+		else
 		{
-			m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_Loading_Tr_Jig_Detect_Check);
-			CTL_Lib.Alarm_Error_Occurrence(5007, dWARNING, m_strAlarmCode);
-			break;
-		} 
-		mn_RunStep = 2400;
+			nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_tff_tilt_chk, IO_ON);
+			nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_sff_tilt_chk, IO_ON);
+			if( nRet_1 == IO_OFF && nRet_2 == IO_OFF && st_basic.n_mode_device != WITHOUT_DVC)
+			{
+			}
+			else if( (nRet_1 == IO_ON || nRet_2 == IO_ON) && st_basic.n_mode_device != WITHOUT_DVC)
+			{
+				if( nRet_1 == IO_ON ) m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_tff_tilt_chk); 
+				else				  m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_sff_tilt_chk); 
+				CTL_Lib.Alarm_Error_Occurrence(5096, dWARNING, m_strAlarmCode);
+			}
+			mn_RunStep = 2500;
+		}
 		break;
 
 	case 2400:
@@ -423,17 +458,36 @@ void CRun_DvcLdBuffer::OnRunMove()
 		break;
 
 	case 3100:
-		nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
-		if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+		if( g_lotMgr.GetLotAt(0).GetDvcType() == "SFF")
 		{
-			break; 
-		} 
-		else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+			nRet_1 = FAS_IO.Chk_IO_OnOff(st_io.i_Loading_Tr_Jig_Detect_Check, IO_OFF, IO_STABLE_WAIT, IO_STABLE_LIMIT); 
+			if(nRet_1 == RET_PROCEED && st_basic.n_mode_device != WITHOUT_DVC) //감지가 안되도 안전화 시간까지는 기다리자 
+			{
+				break; 
+			} 
+			else if(nRet_1 == RET_ERROR && st_basic.n_mode_device != WITHOUT_DVC)
+			{
+				m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
+				CTL_Lib.Alarm_Error_Occurrence(5009, dWARNING, m_strAlarmCode);
+				break;
+			} 
+
+		}
+		else
 		{
-			m_strAlarmCode.Format(_T("8%d%04d"), IO_OFF, st_io.i_Loading_Tr_Jig_Detect_Check);
-			CTL_Lib.Alarm_Error_Occurrence(5009, dWARNING, m_strAlarmCode);
-			break;
-		} 
+			nRet_1 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_tff_tilt_chk, IO_ON);
+			nRet_2 = g_ioMgr.get_in_bit( st_io.i_loading_buffer_sff_tilt_chk, IO_ON);
+			if( nRet_1 == IO_OFF && nRet_2 == IO_OFF && st_basic.n_mode_device != WITHOUT_DVC)
+			{
+			}
+			else if( (nRet_1 == IO_ON || nRet_2 == IO_ON) && st_basic.n_mode_device != WITHOUT_DVC)
+			{
+				if( nRet_1 == IO_ON ) m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_tff_tilt_chk); 
+				else				  m_strAlarmCode.Format(_T("8%d%04d"), IO_ON, st_io.i_loading_buffer_sff_tilt_chk); 
+				CTL_Lib.Alarm_Error_Occurrence(5097, dWARNING, m_strAlarmCode);
+			}
+
+		}
 		mn_RunStep = 3200;
 		break;
 

@@ -1807,8 +1807,17 @@ void CScreen_Set_Recipe::OnDgtCarrierBuffNum()
 void CScreen_Set_Recipe::OnButtonReset() 
 {
 	CDialog_Select	select_dlg;
-	st_other.str_confirm_msg = _T("Epoxy 사용회수을 리셋하시겠습니까?");
+	//kwlee 2017.0613
+	int nEpoxyCnt;
+	CString strTemp;
+	nEpoxyCnt = g_handler.GetEpoxyCnt();
+
 	
+	//st_other.str_confirm_msg = _T("Epoxy사용회수을 리셋하시겠습니까?");
+	//kwlee 2017.0613
+	strTemp.Format("Epoxy_%d 회 사용 하셨습니다. 사용회수을 리셋하시겠습니까?",nEpoxyCnt);
+	st_other.str_confirm_msg = strTemp;
+
 	int n_response = select_dlg.DoModal();
 	
 	if( n_response == IDOK)

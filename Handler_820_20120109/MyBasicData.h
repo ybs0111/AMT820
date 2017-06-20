@@ -34,7 +34,9 @@ public:
 	void OnDeviec_Folder_Load();
 	CString OnGet_File_Name();
 	void OnBasic_Data_Save();
-	void OnBasic_Data_Load();
+	//void OnBasic_Data_Load();
+	//kwlee 2017.0617
+	void OnBasic_Data_Load(int nMode);
 	void OnDaily_Count_Save();
 
 	void On_Teach_Data_Save();

@@ -47,6 +47,9 @@ void CRun_UnPress_Robot::Thread_Run()
 			break;
 
 		case dSTOP:
+
+			CTL_Lib.mn_single_motmove_step[M_CARRIER_X] = 0;
+			CTL_Lib.mn_single_motmove_step[M_PRESS_Y] = 0;
 			break;
 
 		case dWARNING:
@@ -402,6 +405,8 @@ void CRun_UnPress_Robot::RunMove()
 						if( st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2] > (15*60*1000) )//15분 완료시간
 						{
 							st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[i] = BIN_GOOD;
+							//kwlee 2017.0614
+						//	st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_LOADER_RECEIVE, 0);
 						}
 						else
 						{
@@ -1246,9 +1251,30 @@ void CRun_UnPress_Robot::RunMove()
 			m_dwWaitUntil[1] = GetCurrentTime();
 			m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 			if( m_dwWaitUntil[2] <= 0 ) m_dwWaitUntil[0] = GetCurrentTime();
-			if( m_dwWaitUntil[2] > 1000 )
+			if( m_dwWaitUntil[2] > 2000 )//2017.0610
 			{
 				mn_RunStep = 3310; //Carrier X를 조금 두;로 뺀다. 실린더를 업하기 위해
+				mn_RunStep = 3301;
+			}
+			break;
+
+			//2017.0610
+		case 3301:
+			Run_Device_Carrier_Robot.Set_Device_Carrier_HolderPin_Fix(2, IO_ON);
+			mn_RunStep = 3302;
+			break;
+
+		case 3302:
+			nRet_1 = Run_Device_Carrier_Robot.Chk_Device_Carrier_HolderPin_Fix(2, IO_ON);
+			
+			if( nRet_1 == RET_GOOD )
+			{
+				mn_RunStep = 3310;
+			}
+			else if( nRet_1 == RET_ERROR )
+			{
+				 CTL_Lib.Alarm_Error_Occurrence(7940, dWARNING, Run_Device_Carrier_Robot.m_strAlarmCode);
+				mn_RunStep = 3301;
 			}
 			break;
 
@@ -1275,7 +1301,7 @@ void CRun_UnPress_Robot::RunMove()
 			m_dwWaitUntil[1] = GetCurrentTime();
 			m_dwWaitUntil[2] = m_dwWaitUntil[1] - m_dwWaitUntil[0];
 			if( m_dwWaitUntil[2] <= 0 ) m_dwWaitUntil[0] = GetCurrentTime();
-			if( m_dwWaitUntil[2] < 500 ) break;
+			if( m_dwWaitUntil[2] < 1000 ) break;//2017.0610
 			//PRESS 실린더가 다운상태에서 Holder가 On되어 고정시킨다.
 
 			if( Chk_PressClamp_Safety(4) == RET_ERROR )
@@ -1356,7 +1382,7 @@ void CRun_UnPress_Robot::RunMove()
 			{
 				if( nRet_4 == RET_ERROR) CTL_Lib.Alarm_Error_Occurrence(7140, dWARNING, Run_Device_Carrier_Robot.m_strAlarmCode);
 				else					 CTL_Lib.Alarm_Error_Occurrence(7141, dWARNING, m_strAlarmCode);
-				mn_RunStep = 0;
+				mn_RunStep = 3410;//2017.0610
 			}
 			break;
 
@@ -1536,7 +1562,7 @@ int CRun_UnPress_Robot::Chk_PressClamp_Safety( int nMode)
 			else// if( nRet[10] != IO_OFF || nRet[12] != IO_OFF)
 			{
 				strTemp.Format("8%d%04d", IO_OFF, st_io.i_Slide_Guide_X2_Down_Check);
-				CTL_Lib.Alarm_Error_Occurrence(7213, dWARNING, strTemp);					
+				CTL_Lib.Alarm_Error_Occurrence(7263, dWARNING, strTemp);					
 			}
 
 			nFuncRet = RET_ERROR;

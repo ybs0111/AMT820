@@ -639,7 +639,7 @@ void CScreen_Initial::EIS_Start()
 		}
 	}
 	
-	mcls_m_basic.OnBasic_Data_Load();
+	mcls_m_basic.OnBasic_Data_Load(0);
 	
 	mn_pos_step = 9;
 	ml_init_step = 200;

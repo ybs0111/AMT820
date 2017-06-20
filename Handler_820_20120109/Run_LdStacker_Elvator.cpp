@@ -493,6 +493,7 @@ void CRun_LdStacker_Elvator::RunMove()
 		{
 			m_strAlarmCode.Format(_T("910003")); //910003 1 A "LOAD_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
 			CTL_Lib.Alarm_Error_Occurrence(3110, dWARNING, m_strAlarmCode);
+			mn_RunStep = 1000;
 			break;
 		}
 
@@ -655,7 +656,7 @@ void CRun_LdStacker_Elvator::RunMove()
 		if(nRet_1 == BD_ERROR) //로더 플레이트에 트레이가 감지 된 상태 
 		{
 			m_strAlarmCode.Format(_T("910003")); //910003 1 A "LOAD_STACKER_PLATE_SD_TRAY_OFF_CHECK_ERROR."
-			CTL_Lib.Alarm_Error_Occurrence(3110, dWARNING, m_strAlarmCode);
+			CTL_Lib.Alarm_Error_Occurrence(3111, dWARNING, m_strAlarmCode);
 			break;
 		}
 		

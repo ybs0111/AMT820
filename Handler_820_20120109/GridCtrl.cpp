@@ -594,7 +594,7 @@ void CGridCtrl::EraseBkgnd(CDC* pDC)
 
     if (pDC->GetClipBox(ClipRect) == ERROR)
         return;
-    GetVisibleNonFixedCellRange(VisRect);
+    	GetVisibleNonFixedCellRange(VisRect);
 
     int nFixedColumnWidth = GetFixedColumnWidth();
     int nFixedRowHeight = GetFixedRowHeight();
@@ -5547,9 +5547,9 @@ void CGridCtrl::OnMouseMove(UINT /*nFlags*/, CPoint point)
                         && pCell->GetTipTextRect( &TextRect)
                         && GetCellRect(idCurrentCell.row, idCurrentCell.col, CellRect) )
                     {
-						TRACE0("Showing TitleTip\n");
-						m_TitleTip.Show(TextRect, pCell->GetTipText(),  0, CellRect,
-                                        pCell->GetFont(),  GetTitleTipTextClr(), GetTitleTipBackClr());
+//						TRACE0("Showing TitleTip\n");
+//						m_TitleTip.Show(TextRect, pCell->GetTipText(),  0, CellRect,
+ //                                       pCell->GetFont(),  GetTitleTipTextClr(), GetTitleTipBackClr());
                     }
                 }
             }

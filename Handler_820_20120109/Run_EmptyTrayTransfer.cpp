@@ -771,7 +771,7 @@ int CRun_EmptyTrayTransfer::Chk_Tray_Grip_Vacuum_OnOff(int OnOff)
 
 			if (m_dwClampOnOff[0][2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.o_Tray_Guide_Clamp_Forward_Sol); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Tray_Vacuum_On_Check); 
 				clsLog.LogFunction(_T("EMPRT_TRAY_TRANSFER"),_T("VACUUMOFF"),1,_T("TRAY"),_T("VACUUM"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}
@@ -814,7 +814,7 @@ int CRun_EmptyTrayTransfer::Chk_Tray_Grip_Vacuum_OnOff(int OnOff)
 
 			if (m_dwClampOnOff[0][2] > (DWORD)st_wait.nLimitWaitTime[nWaitTime])
 			{
-				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.o_Tray_Guide_Clamp_Forward_Sol); 
+				m_strAlarmCode.Format(_T("8%d%04d"), OnOff, st_io.i_Tray_Vacuum_On_Check); 
 				clsLog.LogFunction(_T("EMPRT_TRAY_TRANSFER"),_T("VACUUMON"),1,_T("TRAY"),_T("VACUUM"),1,strLogKey,strLogData);
 				return RET_ERROR;
 			}

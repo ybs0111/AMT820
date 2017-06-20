@@ -114,7 +114,7 @@ void APartHandler::ClearEpoxyCnt()
 
 void APartHandler::ClearHardnessTime()
 {
-	m_nEpoxyCnt = 0;
+	m_nHardnessTime = 0;//2017.0610
 	AMTRegistry::RegWriteInt( REG_KEY_COUNT, REG_VAL_TIME_HARDNESS, m_nHardnessTime );
 }
 
@@ -357,7 +357,7 @@ void APartHandler::HsInterfaceChk()
 	if( st_handler.n_CaseAssemblyUnloadingAbleOn == IO_OFF &&
 		st_handler.n_HSAbleOn == 1 &&
 		st_work.mn_run_status == dRUN &&
-		( GetTickCount() > st_handler.nInterLockTimeCheck + 1000 * 60 * 5))
+		( GetTickCount() > ( ( st_handler.nInterLockTimeCheck + 1000) * 60 * 5 ) ) )
 	{
 		st_handler.nInterLockTimeCheck = GetCurrentTime();
 		CTL_Lib.Alarm_Error_Occurrence( 7899, dWARNING, "900013");		
@@ -607,6 +607,12 @@ void APartHandler::AlarmEpoxyCleanTime()
 			break;		
 
 		case 300:
+			if( st_handler.m_nEpoxyCleanAlarm == CTL_NO )
+			{
+				m_nEpoxyCleanTimeStep = 0;
+				break;
+			}
+
 			if( m_nChkEpoxyYes == CTL_YES )
 			{
 				st_handler.m_nEpoxyCleanAlarm = CTL_READY;
@@ -638,10 +644,6 @@ void APartHandler::AlarmEpoxyCleanTime()
 			{
 				m_dwEpoxyCheckTime[0] = GetCurrentTime();
 				m_nEpoxyCleanTimeStep = 210;
-			}
-			if( st_handler.m_nEpoxyCleanAlarm == CTL_NO )
-			{
-				m_nEpoxyCleanTimeStep = 0;
 			}
 			break;
 
@@ -1148,6 +1150,8 @@ int APartHandler::MoveEpoxyOut()
 
 
 			m_nEpoxyOutStep = 300;
+			//2017.0616
+			st_handler.m_nEpoxyCleanAlarm = CTL_NO;
 		}
 		else if( nRet_1 == BD_RETRY )
 		{

@@ -277,6 +277,11 @@ void CRun_Handler_Check::ButtonCheck_Start()
 		break;
 
 	case 800:
+		if( Run_Possible_Check() != TRUE ) 
+		{
+			StartStep = 0;
+			break;
+		}
 // 		if(st_work.mn_reinstate_xyz_robot == CTL_YES && st_work.mn_reinstate_reject_robot == CTL_YES &&
 // 			st_work.mn_reinstate_tester_robot[0] == CTL_YES && st_work.mn_reinstate_tester_robot[1] == CTL_YES && 
 // 			st_work.mn_reinstate_stacker_robot[0] == CTL_YES &&	st_work.mn_reinstate_stacker_robot[1] == CTL_YES && 
@@ -669,37 +674,91 @@ int CRun_Handler_Check::Run_Possible_Check()
 	}
 	//TRAY CHECK
 		
-	if(g_ioMgr.get_in_bit(st_io.i_HeatSink_Box1_OnOff_Check, IO_ON) == IO_ON)
+	if( st_basic.mstr_device_name == "SFF.TXT")
 	{
-		FAS_IO.Set_Out_Bit(st_io.o_HeatSink_Box1_Guide_PIN_Forward_Sol, IO_ON);
-		FAS_IO.Set_Out_Bit(st_io.o_HeatSink_Box1_Guide_PIN_Backward_Sol, IO_OFF);	
+		if(g_ioMgr.get_in_bit(st_io.i_HeatSink_Type1_SFF_Check, IO_ON) == IO_ON)
+		{
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box1_Guide_PIN_Forward_Sol, IO_ON);
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box1_Guide_PIN_Backward_Sol, IO_OFF);	
+		}
+		else
+		{
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box1_Guide_PIN_Forward_Sol, IO_OFF);
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box1_Guide_PIN_Backward_Sol, IO_ON);
+			
+			alarm.mstr_code.Format("8%d%04d", IO_OFF, st_io.i_HeatSink_Box1_OnOff_Check);
+			alarm.mn_count_mode = 0;
+			alarm.n_alarm_assign_section = 101;	
+			alarm.mn_type_mode = eWARNING;
+			st_work.mn_run_status = dWARNING;
+			CTL_Lib.Alarm_Error_Occurrence(3990, dWARNING, alarm.mstr_code);
+			return FALSE;
+		}
 	}
 	else
 	{
-		FAS_IO.Set_Out_Bit(st_io.o_HeatSink_Box1_Guide_PIN_Forward_Sol, IO_OFF);
-		FAS_IO.Set_Out_Bit(st_io.o_HeatSink_Box1_Guide_PIN_Backward_Sol, IO_ON);
-	
-		alarm.mstr_code.Format("8%d%04d", IO_OFF, st_io.i_HeatSink_Box1_OnOff_Check);
-		alarm.mn_count_mode = 0;
-		alarm.n_alarm_assign_section = 101;	
-		alarm.mn_type_mode = eWARNING;
-		st_work.mn_run_status = dWARNING;
+		//B접점
+		if(g_ioMgr.get_in_bit(st_io.i_HeatSink_Box1_OnOff_Check, IO_OFF) == IO_OFF)
+		{
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box1_Guide_PIN_Forward_Sol, IO_ON);
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box1_Guide_PIN_Backward_Sol, IO_OFF);	
+		}
+		else
+		{
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box1_Guide_PIN_Forward_Sol, IO_OFF);
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box1_Guide_PIN_Backward_Sol, IO_ON);
+			
+			alarm.mstr_code.Format("8%d%04d", IO_OFF, st_io.i_HeatSink_Box1_OnOff_Check);
+			alarm.mn_count_mode = 0;
+			alarm.n_alarm_assign_section = 101;	
+			alarm.mn_type_mode = eWARNING;
+			st_work.mn_run_status = dWARNING;
+			CTL_Lib.Alarm_Error_Occurrence(3991, dWARNING, alarm.mstr_code);
+			return FALSE;
+		}
 	}
 	
-	if(g_ioMgr.get_in_bit(st_io.i_HeatSink_Box2_OnOff_Check, IO_ON) == IO_ON )
+	if( st_basic.mstr_device_name == "SFF.TXT")
 	{
-		FAS_IO.Set_Out_Bit(st_io.o_HeatSink_Box2_Guide_PIN_Forward_Sol, IO_ON);
-		FAS_IO.Set_Out_Bit(st_io.o_HeatSink_Box2_Guide_PIN_Backward_Sol, IO_OFF);
+		//B접점
+		if(g_ioMgr.get_in_bit(st_io.i_HeatSink_Type2_SFF_Check, IO_ON) == IO_ON )
+		{
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box2_Guide_PIN_Forward_Sol, IO_ON);
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box2_Guide_PIN_Backward_Sol, IO_OFF);
+		}
+		else
+		{
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box2_Guide_PIN_Forward_Sol, IO_OFF);
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box2_Guide_PIN_Backward_Sol, IO_ON);
+			alarm.mstr_code.Format("8%d%04d", IO_OFF, st_io.i_HeatSink_Box2_OnOff_Check);
+			alarm.mn_count_mode = 0;
+			alarm.n_alarm_assign_section = 102;	
+			alarm.mn_type_mode = eWARNING;
+			st_work.mn_run_status = dWARNING;
+			CTL_Lib.Alarm_Error_Occurrence(3992, dWARNING, alarm.mstr_code);
+			return FALSE;
+		}
 	}
 	else
 	{
-		FAS_IO.Set_Out_Bit(st_io.o_HeatSink_Box2_Guide_PIN_Forward_Sol, IO_OFF);
-		FAS_IO.Set_Out_Bit(st_io.o_HeatSink_Box2_Guide_PIN_Backward_Sol, IO_ON);
-		alarm.mstr_code.Format("8%d%04d", IO_OFF, st_io.i_HeatSink_Box2_OnOff_Check);
-		alarm.mn_count_mode = 0;
-		alarm.n_alarm_assign_section = 102;	
-		alarm.mn_type_mode = eWARNING;
-		st_work.mn_run_status = dWARNING;
+		//B접점
+		if(g_ioMgr.get_in_bit(st_io.i_HeatSink_Box2_OnOff_Check, IO_OFF) == IO_OFF )
+		{
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box2_Guide_PIN_Forward_Sol, IO_ON);
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box2_Guide_PIN_Backward_Sol, IO_OFF);
+		}
+		else
+		{
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box2_Guide_PIN_Forward_Sol, IO_OFF);
+			g_ioMgr.set_out_bit(st_io.o_HeatSink_Box2_Guide_PIN_Backward_Sol, IO_ON);
+			alarm.mstr_code.Format("8%d%04d", IO_OFF, st_io.i_HeatSink_Box2_OnOff_Check);
+			alarm.mn_count_mode = 0;
+			alarm.n_alarm_assign_section = 102;	
+			alarm.mn_type_mode = eWARNING;
+			st_work.mn_run_status = dWARNING;
+			CTL_Lib.Alarm_Error_Occurrence(3993, dWARNING, alarm.mstr_code);
+			return FALSE;
+		}
 	}
 	return TRUE;
 }
@@ -1020,7 +1079,13 @@ void CRun_Handler_Check::ButtonSendData()
 	case 200:
 		if( g_lotMgr.GetLotAt(0).GetDvcType() == "SFF") nType = 1;
 		else if( g_lotMgr.GetLotAt(0).GetDvcType()  == "TFF") nType = 2;
-		else nType = -1;
+		else
+		{
+			nType = -1;
+			st_work.n_DataYes[0] = "NO";
+			mn_send_step = 0;
+			break;
+		}
 		strSendData.Format( "%s,%ld,%ld,%s,%s,%d,%s,%ld,%ld,%s,%s,%d,", g_lotMgr.GetLotAt(0).GetLotID(), g_lotMgr.GetLotAt(0).GetTotLotCount(), 
 			g_lotMgr.GetLotAt(0).GetPassCnt(PRIME),g_lotMgr.GetLotAt(0).GetStrLastModule(), g_lotMgr.GetLotAt(0).GetPartID(), 
 			nType, g_lotMgr.GetLotAt(1).GetLotID(), g_lotMgr.GetLotAt(1).GetTotLotCount(), 
