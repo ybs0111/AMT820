@@ -340,7 +340,7 @@ void CScreen_Set_Recipe::OnCellClick(WPARAM wParam, LPARAM lParam)
 			st_msg.mstr_keypad_msg = _T("UnPressPos°Å¸®");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
-			
+
 			mstr_temp = KeyPad.GetNumEditString_D(0, 10000, atof(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
 			m_dLoaderTransferTrayDeviceGap[1] = atof(mstr_temp);
 			//int iTemp = atoi(mstr_temp);
@@ -522,10 +522,13 @@ void CScreen_Set_Recipe::OnCellClick(WPARAM wParam, LPARAM lParam)
 			//////
 
 		case 21:
-			md_Temp = m_nHsTrayY[1];
+		//	md_Temp = m_nHsTrayY[1];
 			
 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%d",md_Temp);
+		//	mstr_temp.Format("%d",md_Temp);
+			//kwlee 2017.0620
+			mstr_temp.Format("%d",m_nHsTrayY[1]);
+
 			st_msg.mstr_keypad_msg = _T("HsTray_Y");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
@@ -540,10 +543,12 @@ void CScreen_Set_Recipe::OnCellClick(WPARAM wParam, LPARAM lParam)
 			
 			
 		case 22:
-			md_Temp = m_nHsTrayX[1];
+		//	md_Temp = m_nHsTrayX[1];
 			
 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%d",md_Temp);
+			//mstr_temp.Format("%d",md_Temp);
+			//kwlee 2017.0620
+			mstr_temp.Format("%d",m_nHsTrayX[1]);
 			st_msg.mstr_keypad_msg = _T("HsTray_X");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
@@ -557,10 +562,11 @@ void CScreen_Set_Recipe::OnCellClick(WPARAM wParam, LPARAM lParam)
 			break;
 
 		case 24:
-			md_Temp = m_nTrayY[1];
-			
+		//	md_Temp = m_nTrayY[1];
 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%d",md_Temp);
+			//mstr_temp.Format("%d",md_Temp);
+			//kwlee 2017.0620
+			mstr_temp.Format("%d",m_nTrayY[1]);
 			st_msg.mstr_keypad_msg = _T("Tray_Y");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
@@ -575,10 +581,12 @@ void CScreen_Set_Recipe::OnCellClick(WPARAM wParam, LPARAM lParam)
 			
 			
 		case 25:
-			md_Temp = m_nTrayX[1];
+		//	md_Temp = m_nTrayX[1];
 			
 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%d",md_Temp);
+			//mstr_temp.Format("%d",md_Temp);
+			//kwlee 2017.0620
+			mstr_temp.Format("%d",m_nTrayX[1]);
 			st_msg.mstr_keypad_msg = _T("Tray_X");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
@@ -592,10 +600,12 @@ void CScreen_Set_Recipe::OnCellClick(WPARAM wParam, LPARAM lParam)
 			break;
 		
 		case 27:
-			md_Temp = m_nEpoxyDotScrewCount[1];
+		//	md_Temp = m_nEpoxyDotScrewCount[1];
 			
 			//mstr_temp = LPCTSTR(_ltoa(md_X, chr_buf, 10));
-			mstr_temp.Format("%d",md_Temp);
+			//mstr_temp.Format("%d",md_Temp);
+			//kwlee 2017.06220
+			mstr_temp.Format("%d",m_nEpoxyDotScrewCount[1]);
 			st_msg.mstr_keypad_msg = _T("Screw Cnt");
 			
 			st_msg.mstr_keypad_val = mstr_temp;
@@ -1674,10 +1684,11 @@ void CScreen_Set_Recipe::OnDgtDispenservppma()
 	char chr_buf[20] ;
 	int mn_Cnt;
 	
-	mn_Cnt = m_dgt_DispenserVppmA.GetValue();
-	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
-	
-	st_msg.mstr_keypad_msg = _T("EPoxy Screw Cnt");
+// 	mn_Cnt = m_dgt_DispenserVppmA.GetValue();
+// 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	//kwlee 2017.0620
+	mstr_temp.Format("%d",m_nfDispenserVppmA[1]);
+	st_msg.mstr_keypad_msg = _T("Vppma");
     
 	st_msg.mstr_keypad_val = mstr_temp;
 	mstr_temp = KeyPad.GetNumEditString_I(1, 500, atoi(st_msg.mstr_keypad_val), st_msg.mstr_keypad_msg);
@@ -1692,9 +1703,11 @@ void CScreen_Set_Recipe::OnDgtEpoxyUsecnt()
 	char chr_buf[20] ;
 	int mn_Cnt;
 	
-	mn_Cnt = m_dgt_Epoxy_UseCnt.GetValue();
-	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
-	
+// 	mn_Cnt = m_dgt_Epoxy_UseCnt.GetValue();
+// 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	//kwlee 2017.0620
+	mstr_temp.Format("%d",m_nEpoxyLimitUseCont[1]);
+
 	st_msg.mstr_keypad_msg = _T("EPoxy Use Limit Cnt");
     
 	st_msg.mstr_keypad_val = mstr_temp;
@@ -1755,9 +1768,10 @@ void CScreen_Set_Recipe::OnDgtLdBufferNum()
 	char chr_buf[20] ;
 	int mn_Cnt;
 	
-	mn_Cnt = m_dgt_Ld_Buffer_Num.GetValue();
-	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
-	
+// 	mn_Cnt = m_dgt_Ld_Buffer_Num.GetValue();
+// 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	//kwlee 2017.0620
+	mstr_temp.Format("%d",m_nLdBufferNum[1]);
 	st_msg.mstr_keypad_msg = _T("Load Buffer Num");
     
 	st_msg.mstr_keypad_val = mstr_temp;
@@ -1773,9 +1787,11 @@ void CScreen_Set_Recipe::OnDgtTrayNum()
 	char chr_buf[20] ;
 	int mn_Cnt;
 	
-	mn_Cnt = m_dgt_tray_num.GetValue();
-	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
-	
+// 	mn_Cnt = m_dgt_tray_num.GetValue();
+// 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	//kwlee 2017.0620
+	mstr_temp.Format("%d",m_nTrayNum[1]);
+
 	st_msg.mstr_keypad_msg = _T("Load Buffer Num");
     
 	st_msg.mstr_keypad_val = mstr_temp;
@@ -1791,9 +1807,11 @@ void CScreen_Set_Recipe::OnDgtCarrierBuffNum()
 	char chr_buf[20] ;
 	int mn_Cnt;
 	
-	mn_Cnt = m_dgt_Carrier_Buff_Num.GetValue();
-	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
-	
+// 	mn_Cnt = m_dgt_Carrier_Buff_Num.GetValue();
+// 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	//kwlee 2017.0620
+	mstr_temp.Format("%d",m_nCarrierBufferNum[1]);
+
 	st_msg.mstr_keypad_msg = _T("Load Buffer Num");
     
 	st_msg.mstr_keypad_val = mstr_temp;
@@ -1830,3 +1848,4 @@ void CScreen_Set_Recipe::OnButtonReset()
 		}
 	}	
 }
+

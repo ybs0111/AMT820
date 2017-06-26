@@ -996,7 +996,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 		if( nRet_1 == RET_GOOD )
 		{
 			Btm_ShiftCarrierDataMoveRbt( 1, BTMSHIFT_BUFF_DOWN );//clear
-
 			mn_RunMove = 1000;
 		}
 		else if( nRet_1 == RET_ERROR )
@@ -1291,8 +1290,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 
 
 
-
-
 	case 8000:
 		for ( i = 0 ; i < 3; i++ )
 		{
@@ -1310,8 +1307,6 @@ void CRun_Device_Carrier_Robot::RunMove()
 
 			}
 		}
-
-
 		break;
 		
 
@@ -1833,6 +1828,7 @@ int CRun_Device_Carrier_Robot::Top_ShiftCarrierDataMoveRbt( int nMode, int nSift
 	int nFuncRet = CTL_GOOD;
 	int nFlag = 0;
 
+	
 	if( nSiftSide == TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE )
 	{
 		if( nMode == 0 )
@@ -1856,7 +1852,6 @@ int CRun_Device_Carrier_Robot::Top_ShiftCarrierDataMoveRbt( int nMode, int nSift
 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_count[MIDDLE] = ++mn_Count;
 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_count[BTM]	  = ++mn_Count;
 
-
 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].n_totalcnt = 1000;
 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nBin[TOP] = BIN_LDBUFFERBIN;
 				st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].nBin[MIDDLE] = BIN_LDBUFFERBIN;
@@ -1870,7 +1865,7 @@ int CRun_Device_Carrier_Robot::Top_ShiftCarrierDataMoveRbt( int nMode, int nSift
 				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_part_num[MIDDLE], "%s", g_lotMgr.GetLotAt(0).GetPartID());
 				sprintf(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE].c_part_num[BTM], "%s", g_lotMgr.GetLotAt(0).GetPartID());
 			}
-			memcpy(&st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE], &st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE], sizeof(st_carrier_buff_info)); //data copy
+			memcpy(&st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE], &st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE], sizeof(st_carrier_buffer_info_param)); //data copy
 			memset(&st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE], 0x00, sizeof(st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE])); //clear 
 			
 
@@ -2709,7 +2704,6 @@ int CRun_Device_Carrier_Robot::Btm_ShiftCarrierDataMoveRbt( int nMode, int nSift
 // 			st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_INPUT_DOWN, 0);
 		}
 	}
-
 	return nFuncRet;
 }
 

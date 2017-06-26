@@ -500,7 +500,6 @@ BOOL CPictureEx::Draw()
 			};
 		};
 	};
-
 	return FALSE;	
 }
 
@@ -937,8 +936,7 @@ void CPictureEx::ThreadAnimation()
 		m_nCurrFrame++;
 		if (m_nCurrFrame == m_arrFrames.size())
 		{
-			m_nCurrFrame
-				= 0; 
+			m_nCurrFrame	= 0; 
 		// init the screen for the first frame,
 			HBRUSH hBrush = CreateSolidBrush(m_clrBackground);
 			if (hBrush)

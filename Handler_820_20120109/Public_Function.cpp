@@ -74,7 +74,6 @@ int CPublic_Function::DoorOpenCheck()
 	int nDoorState = CTLBD_RET_PROCEED;
 	char Jamcode[10];
 	
-	
 	if( g_ioMgr.get_in_bit(st_io.i_DoorCheck1, IO_ON) == IO_OFF )
 	{
 		sprintf(Jamcode, "980000");

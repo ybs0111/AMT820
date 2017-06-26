@@ -525,6 +525,8 @@ void APartHandler::ClearStep()
 
 void APartHandler::AlarmEpoxyCleanTime()
 {
+
+
 	switch( m_nEpoxyCleanTimeStep )
 	{
 		case 0:
@@ -904,7 +906,6 @@ int APartHandler::MoveHardnessOut()
 				{
 					m_nHardnessStep = 1100;
 				}
-
 			}
 			break;
 
@@ -1186,6 +1187,8 @@ void APartHandler::AlarmHardnessExcessTimeEpoxyCnt()
 	int m_nRobotZ = M_EPOXY_TRANSFER_Z;
 	int m_nRobotS = M_EPOXY_SCREW;
 	
+
+
 	switch(m_nHardnessEpoxyStep)
 	{
 

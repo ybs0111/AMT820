@@ -76,8 +76,9 @@ BOOL CDialog_Select::OnInitDialog()
 
 void CDialog_Select::OnSelect_Picture_Set()
 {
-	if (m_gif_select.Load(MAKEINTRESOURCE(IDR_GIF_CHOICE),_T("GIF")))
-		m_gif_select.Draw();
+	
+ 	if (m_gif_select.Load(MAKEINTRESOURCE(IDR_GIF_CHOICE),_T("GIF")))
+ 		m_gif_select.Draw();
 }
 
 void CDialog_Select::OnSelect_Lable_Set()

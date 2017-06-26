@@ -61,6 +61,8 @@ CScreen_Main::CScreen_Main()
 	mp_main_big_font	= NULL;
 	mp_main_font1		= NULL;
 	mn_alarm_cnt = 0; //kwlee 2017.0425 test
+	m_ncnt = 0;
+	m_nDvcCnt =0;
 }
 
 CScreen_Main::~CScreen_Main()
@@ -1093,6 +1095,7 @@ void CScreen_Main::OnMainTop_Loader_Recive_Info()
 		sTmp.Format("Lot: %s", st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].c_lot_id[i]); 
 		sTmp += "\n";
 		strTemp[i] +=sTmp;
+		
 		
 		sTmp.Format("Time: %d", (int)st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].dwBdTime[i][2]); 
 		strTemp[i] +=sTmp;
@@ -3482,7 +3485,6 @@ void CScreen_Main::OnInitTopGrid()
 	m_grid_Top -> SetBool(SSB_HORZSCROLLBAR, FALSE);
 	m_grid_Top -> SetBool(SSB_VERTSCROLLBAR, FALSE);
 
-
 	m_grid_Info_Top.SetFrameFocusCell(FALSE);
 	m_grid_Info_Top.SetTrackFocusCell(FALSE);
 	m_grid_Info_Top.EnableSelection(FALSE);
@@ -4040,7 +4042,9 @@ void CScreen_Main::OnBtnDoorOpen()
 	CDialog_Select select_dlg;
 	CDialog_Pass_Check	pass_dlg;
 	int					n_response;
-	
+	CTL_Lib.Alarm_Error_Occurrence(201, dWARNING, "910004");
+	return;
+
 	if(st_work.mn_run_status == dRUN || st_work.mn_run_status == dINIT || st_work.mn_machine_mode == MACHINE_AUTO)
 	{
 		st_msg.mstr_event_msg[0] = _T("Door Open은 장비가 정지 상태 이고, Key 스위치가 Manual 상태에서만 가능합니다.");
@@ -4083,6 +4087,205 @@ void CScreen_Main::OnTray2Unlock()
 
 void CScreen_Main::OnTray1Lock() 
 {
+	
+	CString strTemp;
+	
+	
+	//kwlee 2017.0621
+// 	strTemp.Format("%d",m_ncnt);
+// 	AfxMessageBox(strTemp);
+ 	if (m_ncnt == 0)
+	{
+		Run_Device_Carrier_Robot.AllBufferClear();
+
+		Run_Device_Carrier_Robot.Top_ShiftCarrierDataMoveRbt( 0, TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE );	
+		st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_LOADER_PICKERDATA_RECEIVE, 0);
+		
+	}
+	else if (m_ncnt == 1)
+	{
+		st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[MIDDLE]= ++m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBinNum[BTM] = ++m_nDvcCnt;
+
+		st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[TOP]	= BIN_CDIMM;
+		st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[MIDDLE] = BIN_CDIMM;
+		st_carrier_buff_info[TOPSHIFT_BUFF_LOADER_RECEIVE].nBin[BTM]	= BIN_CDIMM;
+
+		Run_Device_Carrier_Robot.Top_ShiftCarrierDataMoveRbt( 0, TOPSHIFT_BUFF_LOADER_RECEIVE );	
+		//Run_Device_Carrier_Robot.Top_ShiftCarrierDataMoveRbt( 1, TOPSHIFT_BUFF_UNLOADER );
+		//st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_LOADER_RECEIVE, 0);
+
+	}
+	else if (m_ncnt == 2)
+	{
+		st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_INPUT_LOADER].nBinNum[BTM] = m_nDvcCnt;
+		Run_Device_Carrier_Robot.Top_ShiftCarrierDataMoveRbt( 0, TOPSHIFT_BUFF_INPUT_LOADER );	
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_INPUT_LOADER, 0);
+		
+	}
+	else if (m_ncnt == 3)
+	{
+		st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBinNum[BTM] = m_nDvcCnt;
+		
+		st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[TOP]	= BIN_EPOXY;
+		st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[MIDDLE] = BIN_EPOXY;
+		st_carrier_buff_info[TOPSHIFT_BUFF_EPOXY].nBin[BTM]	= BIN_EPOXY;
+	
+		Run_Device_Carrier_Robot.Top_ShiftCarrierDataMoveRbt( 0, TOPSHIFT_BUFF_EPOXY );	
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_EPOXY, 0);	
+	}
+	else if (m_ncnt == 4)
+	{
+		st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_WAIT_INDEX].nBinNum[BTM] = m_nDvcCnt;
+
+		Run_Device_Carrier_Robot.Top_ShiftCarrierDataMoveRbt( 0, TOPSHIFT_BUFF_WAIT_INDEX );	
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_WAIT_INDEX, 0);
+		
+	}
+	else if (m_ncnt == 5)
+	{	
+		st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBinNum[BTM] = m_nDvcCnt;
+
+		st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[TOP]	= BIN_HEATSINK;
+		st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[MIDDLE] = BIN_HEATSINK;
+		st_carrier_buff_info[TOPSHIFT_BUFF_HEATSINK_VISION].nBin[BTM]	= BIN_HEATSINK;
+
+		Run_Device_Carrier_Robot.Top_ShiftCarrierDataMoveRbt( 0, TOPSHIFT_BUFF_HEATSINK_VISION );
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_HEATSINK_VISION, 0);
+		
+	}
+	else if (m_ncnt == 6)
+	{
+		st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[TOP]	= BIN_VISION;
+		st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[MIDDLE] = BIN_VISION;
+		st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBin[BTM]	= BIN_VISION;
+
+		st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_OUTSEND].nBinNum[BTM]   = m_nDvcCnt;
+
+	
+		Run_Device_Carrier_Robot.Top_ShiftCarrierDataMoveRbt( 0, TOPSHIFT_BUFF_OUTSEND );
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_OUTSEND, 0);
+		
+	}
+	else if (m_ncnt == 7)
+	{
+		st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[TOPSHIFT_BUFF_UNLOADER].nBinNum[BTM] = m_nDvcCnt;
+
+		Run_Device_Carrier_Robot.Top_ShiftCarrierDataMoveRbt( 0, TOPSHIFT_BUFF_UNLOADER );
+		
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, TOPSHIFT_BUFF_UNLOADER, 0);
+	}
+	else if (m_ncnt == 8)
+	{
+		
+		//Run_Device_Carrier_Robot.AllBufferClear();
+		st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].nBinNum[BTM] = m_nDvcCnt;
+		
+		st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].nBin[TOP]	= BIN_VISION;
+		st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].nBin[MIDDLE] = BIN_VISION;
+		st_carrier_buff_info[BTMSHIFT_BUFF_DOWN].nBin[BTM]	= BIN_VISION;
+
+		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 0, BTMSHIFT_BUFF_DOWN );
+// 		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 1, BTMSHIFT_BUFF_INDEX_DOWN );
+// 		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 1, BTMSHIFT_BUFF_EPOXY_DOWN );
+// 		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 1, BTMSHIFT_BUFF_INPUT_DOWN );
+// 		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 1, BTMSHIFT_BUFF_LOADER_DOWN );
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_DOWN, 0);	
+	}
+	else if (m_ncnt == 9)
+	{
+		st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_DOWNFORWARD].nBinNum[BTM] = m_nDvcCnt;
+		
+		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 0, BTMSHIFT_BUFF_DOWNFORWARD );
+		
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_DOWNFORWARD, 0);
+	}
+	else if (m_ncnt == 10)
+	{
+		st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_HEATSINK_DOWN].nBinNum[BTM] = m_nDvcCnt;
+
+		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 0, BTMSHIFT_BUFF_HEATSINK_DOWN );
+		
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_HEATSINK_DOWN, 0);
+		
+	}
+	else if (m_ncnt == 11)
+	{
+		st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_INDEX_DOWN].nBinNum[BTM] = m_nDvcCnt;
+
+		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 0, BTMSHIFT_BUFF_INDEX_DOWN );
+		
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_INDEX_DOWN, 0);
+		
+	}
+	else if (m_ncnt == 12)
+	{
+		st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_EPOXY_DOWN].nBinNum[BTM] = m_nDvcCnt;
+
+		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 0, BTMSHIFT_BUFF_EPOXY_DOWN );
+		
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_EPOXY_DOWN, 0);
+		
+	}
+	else if (m_ncnt == 13)
+	{
+		st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_INPUT_DOWN].nBinNum[BTM] = m_nDvcCnt;
+		
+		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 0, BTMSHIFT_BUFF_INPUT_DOWN );
+		
+		//st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_INPUT_DOWN, 0);
+		
+	}
+	else if (m_ncnt == 14)
+	{
+		st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].nBinNum[TOP]	= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].nBinNum[MIDDLE]= m_nDvcCnt;
+		st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].nBinNum[BTM] = m_nDvcCnt;
+
+		st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].nBin[TOP]	= BIN_GOOD;
+		st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].nBin[MIDDLE] = BIN_GOOD;
+		st_carrier_buff_info[BTMSHIFT_BUFF_LOADER_DOWN].nBin[BTM]	= BIN_GOOD;
+		
+		Run_Device_Carrier_Robot.Btm_ShiftCarrierDataMoveRbt( 0, BTMSHIFT_BUFF_LOADER_DOWN );
+		//Run_Device_Carrier_Robot.AllBufferClear();
+	//	st_handler.cwnd_main->PostMessage(WM_WORK_END, BTMSHIFT_BUFF_LOADER_DOWN, 0);
+	}
+	m_nDvcCnt++;
+	if (m_ncnt > 14)
+	{
+		m_ncnt = 1;
+	}
+	else
+	{
+		m_ncnt++;
+	}
+	return;
+	
 
 	if(st_work.mn_run_status == dRUN) return;
 	g_ioMgr.set_out_bit( st_io.o_Loading_Stacker_Tray_Lock_Sol, IO_ON );
@@ -4113,6 +4316,7 @@ void CScreen_Main::OnTray1Lock()
 
 void CScreen_Main::OnTray1Unlock() 
 {
+
 	if(st_work.mn_run_status == dRUN) return;
 	g_ioMgr.set_out_bit( st_io.o_Loading_Stacker_Tray_Lock_Sol, IO_OFF );
 	g_ioMgr.set_out_bit( st_io.o_Loading_Stacker_Tray_Unlock_Sol, IO_ON );

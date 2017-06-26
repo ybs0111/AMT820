@@ -83,6 +83,8 @@ int countflag = 0;
 // ******************************************************************************
 UINT OnThread_Handler_Check(LPVOID lParam)  // m_Thread[10]
 {
+
+
 	CSingleLock sing(&mutex);
 
 	while (!All_Stop)
@@ -116,6 +118,7 @@ UINT OnThread_Handler_Check(LPVOID lParam)  // m_Thread[10]
 // ******************************************************************************
 UINT OnThread_Tower_Lamp_Check(LPVOID lParam)  // m_Thread[11]
 {
+	return TRUE;
 	CSingleLock sing(&mutex) ;
 
 	while(!All_Stop)
@@ -156,10 +159,12 @@ UINT OnThread_Tower_Lamp_Check(LPVOID lParam)  // m_Thread[11]
 // ******************************************************************************
 UINT OnThread_Alarm_Display(LPVOID lParam)
 {
+
 	CSingleLock sing(&mutex);
 
 	while(!All_Stop)
 	{
+	
 		sing.Lock() ;
 		
 		mcls_alarm_disp.On_Alarm_Display(); // 알람 발생한 경우 알람 화면 출력 함수
@@ -190,7 +195,7 @@ UINT OnThread_IO_Check(LPVOID lParam)
 	return TRUE;
 }
 
-UINT	OnThread_Motors(LPVOID lParam)					// m_thread[4]
+UINT OnThread_Motors(LPVOID lParam)					// m_thread[4]
 {
 	CSingleLock sing(&mutex);
 	

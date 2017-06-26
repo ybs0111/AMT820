@@ -228,7 +228,7 @@ void CDialog_Alarm::OnDestroy()
 
 	m_image_alarm.ClearDrawing();
 	m_image_alarm.Delete();
-
+	
 	// RUN중에 알람화면을 확인했을 경우에는 STOP시키지 않는다.
 	if (st_work.mn_run_status != dRUN)
 	{
@@ -263,8 +263,9 @@ void CDialog_Alarm::OnCancel()
 
 void CDialog_Alarm::OnAlarm_Picture_Set()
 {
+
 	if (m_gif_alarm.Load(MAKEINTRESOURCE(IDR_GIF_ALARM),_T("GIF")))
-		m_gif_alarm.Draw();
+		m_gif_alarm.Draw(); 
 }
 
 void CDialog_Alarm::OnAlarm_GroupBox_Set()
@@ -395,7 +396,7 @@ void CDialog_Alarm::OnAlarm_Picker_Change()
 void CDialog_Alarm::OnAlarm_SkipPickerDisplay()
 {
 	int n_alarm_code;
-	
+
 	m_group_picker_skip.ShowWindow(FALSE);
 	n_alarm_code = atoi(alarm.mstr_code);
 

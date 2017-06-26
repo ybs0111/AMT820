@@ -2383,11 +2383,13 @@ void CScreen_Basic::OnDgtEpoxyCleanTime()
 {	
 	CString mstr_temp;
 	char chr_buf[20] ;
-	int mn_Cnt;
+//	int mn_Cnt;
 	
-	mn_Cnt = m_dgt_epoxy_clean_time.GetValue();
-	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
-	
+// 	mn_Cnt = m_dgt_epoxy_clean_time.GetValue();
+// 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	//kwlee 2017.0620
+	mstr_temp.Format("%d",m_nEPoxyCleanTime[1]);
+
 	st_msg.mstr_keypad_msg = _T("Epoxy Clean time(분)");
     
 	st_msg.mstr_keypad_val = mstr_temp;
@@ -2405,9 +2407,11 @@ void CScreen_Basic::OnDgtRubb()
 	char chr_buf[20] ;
 	int mn_Cnt;
 	
-	mn_Cnt = m_dgt_Rubb.GetValue();
-	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
-	
+// 	mn_Cnt = m_dgt_Rubb.GetValue();
+// 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	//kwlee 2017.0620
+	mstr_temp.Format("%d",n_rubb_count[1]);
+
 	st_msg.mstr_keypad_msg = _T("Rubb Cnt(홀수)");
     
 	st_msg.mstr_keypad_val = mstr_temp;
@@ -2478,9 +2482,11 @@ void CScreen_Basic::OnDgtPartialCnt()
 	char chr_buf[20] ;
 	int mn_Cnt;
 	
-	mn_Cnt = m_dgt_Partial_Cnt.GetValue();
-	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
-	
+// 	mn_Cnt = m_dgt_Partial_Cnt.GetValue();
+// 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	//kwlee 2017.0620
+	mstr_temp.Format("%d",m_nCountPartial[1]);
+
 	st_msg.mstr_keypad_msg = _T("Partial Cnt");
     
 	st_msg.mstr_keypad_val = mstr_temp;
@@ -2496,8 +2502,10 @@ void CScreen_Basic::OnDgtRetryCnt()
 	char chr_buf[20] ;
 	int mn_Cnt;
 	
-	mn_Cnt = m_dgt_Retry_Cnt.GetValue();
-	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+// 	mn_Cnt = m_dgt_Retry_Cnt.GetValue();
+// 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	//kwlee 2017.0620
+	mstr_temp.Format("%d",m_n_count_retry[1]);
 	
 	st_msg.mstr_keypad_msg = _T("Retry Cnt");
     
@@ -2658,9 +2666,10 @@ void CScreen_Basic::OnDgtHardnessTime()
 	char chr_buf[20] ;
 	int mn_Cnt;
 	
-	mn_Cnt = m_dgt_hardness_time.GetValue();
-	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
-	
+// 	mn_Cnt = m_dgt_hardness_time.GetValue();
+// 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
+	//kwlee 2017.0620
+	mstr_temp.Format("%d",m_nHardnessUseTime[1]);
 	st_msg.mstr_keypad_msg = _T("경화제 사용 시간(분)");
     
 	st_msg.mstr_keypad_val = mstr_temp;

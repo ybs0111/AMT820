@@ -68,6 +68,7 @@ public:
 	int mn_BcrNum;
 	int mn_Count;
 
+
 	int m_nTransferJobFlag[2];
 	//work 트랜스퍼에 동작을 요청한다 , [0]:요청정보, [1]:1:트레이를 집기, 2:트레이를 놓기	
 	char cJamcode[10];

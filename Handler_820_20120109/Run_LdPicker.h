@@ -30,6 +30,8 @@ public:
 	void Thread_Run();
 	void RunMove();
 	void RunInit();
+	
+	void Run_ReinState(); //kwlee 2017.0623
 
 	int mn_RunStep;
 	int mn_InitStep;
@@ -47,7 +49,6 @@ public:
 	int mn_clamp_retry_cnt;
 	DWORD m_dwCycleTime[2][3];
 	
-
 	int m_nFindLotNo_Flag;
 	CString m_strFindLotNo;
 	
@@ -55,9 +56,12 @@ public:
 
 	bool m_bInitVarBackward;
 
-	double m_dcurr_pos[3];
+	//kwlee 2017.0626
+	double m_dcurr_pos[3]; 
 	int	mn_reinstate_pos[3];
-
+	DWORD m_dwReinstate_time[3];
+	int m_nChange[3];
+	
 	CString m_strAlarmCode;
 
 	int m_nPickerPara;
@@ -96,7 +100,7 @@ public:
 	bool m_bDvcWaitChk_Falg;// if DVC is exist, or not, It will check.
 
 	//Process_DVC_PLACE
-	int					m_nClash_ErrorInfoStatus[4];
+	int				m_nClash_ErrorInfoStatus[4];
 	double          m_dTemp_CalTargetPos_X;
 	double          m_dTemp_CalTargetPos_Y;
 	double			m_dpTargetPosList[4];		   //최대 4 포인트를 한번에 이동가능하다 
@@ -124,6 +128,11 @@ public:
 
 
 	int Check_DVC_Model(int nModel, int nYESNO, int* nSNum);
+	//kwlee 2017.0623
+	void OnLdPicker_FinalPos();
+	void Robot_BackupPos_Check();
+	int GetMotorPosY(double dPos);
+	int GetMotorPosZ(double dPos);
 
 
 // Implementation

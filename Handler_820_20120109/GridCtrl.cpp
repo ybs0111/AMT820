@@ -563,7 +563,7 @@ END_MESSAGE_MAP()
 void CGridCtrl::OnPaint()
 {
     CPaintDC dc(this);      // device context for painting
-
+	
     if (m_bDoubleBuffer)    // Use a memory DC to remove flicker
     {
         CMemDC MemDC(&dc);
@@ -584,6 +584,7 @@ BOOL CGridCtrl::OnEraseBkgnd(CDC* /*pDC*/)
 // selected bitmap with colour, then all sorts of vis problems would occur
 void CGridCtrl::EraseBkgnd(CDC* pDC)
 {
+	
     CRect  VisRect, ClipRect, rect;
     CBrush FixedRowColBack(GetDefaultCell(TRUE, TRUE)->GetBackClr()),
            FixedRowBack(GetDefaultCell(TRUE, FALSE)->GetBackClr()),

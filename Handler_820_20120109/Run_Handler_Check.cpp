@@ -42,6 +42,7 @@ CRun_Handler_Check::~CRun_Handler_Check()
 
 void CRun_Handler_Check::ButtonCheck_Start()
 {
+	int i;
 	// **************************************************************************
     // 화면 뷰 전환 불가능한 정보 검사한다.                                      
     // **************************************************************************
@@ -247,12 +248,6 @@ void CRun_Handler_Check::ButtonCheck_Start()
 // 		st_work.md_reinstatement_pos[1] = CTL_NO;
 // 		st_work.md_reinstatement_pos[2] = CTL_NO;
 
-		if(st_handler.cwnd_title != NULL)
-		{
-			st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MACHINE_STATUS, COMI.mn_run_status);
-		}
-
-
 // 		if(st_handler.mn_virtual_supply)
 // 		{
 //  			st_work.mn_reinstate_stacker_robot[0] = CTL_YES;
@@ -273,7 +268,30 @@ void CRun_Handler_Check::ButtonCheck_Start()
 // 		{
 // 			st_work.mn_run_status					= dREINSTATE;
 // 		}
+
+		/*StartStep = 800;*/ //kwlee 2017.0623 del
+
+		st_work.mn_run_status = dREINSTATE;
+		st_handler.n_sync_reinstate = READY;
+		
+		st_work.nLd_Picker_ReinstateMent_Ok = NO;
+		st_work.nUld_Picker_ReinstateMent_Ok = NO;
+		st_work.nEpoxy_ReinstateMent_Ok = NO;
+		st_work.nHeatSink_ReinstateMent_Ok = NO;
+		
+		st_work.nLd_Picker_ReinstateMent_Ready = NO;
+		st_work.nUld_Picker_ReinstateMent_Ready = NO;
+		st_work.nEpoxy_ReinstateMent_Ready = NO;
+		st_work.nHeatSink_ReinstateMent_Ready = NO;
+		
+		
+		if(st_handler.cwnd_title != NULL)
+		{
+			st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MACHINE_STATUS, COMI.mn_run_status);
+		}
+
 		StartStep = 800;
+
 		break;
 
 	case 800:
@@ -282,12 +300,52 @@ void CRun_Handler_Check::ButtonCheck_Start()
 			StartStep = 0;
 			break;
 		}
+		//StartStep = 900;
+
+		//kwlee 2017.0623
+		st_msg.mstr_event_msg[0] = "Recovery Mode.......";
+		::PostMessage(st_handler.hWnd, WM_MAIN_EVENT, CTL_YES, 0);
+
+		if (st_work.nLd_Picker_ReinstateMent_Ok == YES && st_work.nUld_Picker_ReinstateMent_Ok == YES &&
+			st_work.nEpoxy_ReinstateMent_Ok == YES && st_work.nHeatSink_ReinstateMent_Ok == YES)
+		{
+			st_handler.n_sync_reinstate = YES;
+		}
+		
+		if (st_handler.n_sync_reinstate == YES)
+		{
+			for (i =0; i< 10; i++ )
+			{
+				st_work.nReinstatement_mode[i] = 0;
+			}
+			StartStep = 900;
+		}
+		else if(st_handler.n_sync_reinstate == NO)	//복귀동작 실패!
+		{
+			st_work.mn_run_status = dSTOP;
+			//st_work.mn_run_EpoxyStatus = dSTOP;
+			
+			StartStep = 850;
+		}
+		else
+		{
+			if (st_work.mn_run_status != dREINSTATE)
+			{
+				st_work.mn_run_status = dSTOP;
+				if(st_handler.cwnd_title != NULL)
+				{
+					st_handler.cwnd_title->PostMessage(WM_STATUS_CHANGE, MACHINE_STATUS, st_work.mn_run_status);
+				}
+				StartStep = 0;
+			}
+		}
+
 // 		if(st_work.mn_reinstate_xyz_robot == CTL_YES && st_work.mn_reinstate_reject_robot == CTL_YES &&
 // 			st_work.mn_reinstate_tester_robot[0] == CTL_YES && st_work.mn_reinstate_tester_robot[1] == CTL_YES && 
 // 			st_work.mn_reinstate_stacker_robot[0] == CTL_YES &&	st_work.mn_reinstate_stacker_robot[1] == CTL_YES && 
 // 			st_work.mn_reinstate_stacker_robot[2] == CTL_YES)
 // 		{
-			StartStep = 900;
+		//	StartStep = 900;
 // 		}
 // 		else
 // 		{
@@ -301,6 +359,13 @@ void CRun_Handler_Check::ButtonCheck_Start()
 // 				StartStep = 0;
 // 			}
 // 		}
+		break;
+
+		//kwlee 2017.0626
+	case 850:
+		::PostMessage(st_handler.hWnd, WM_MAIN_EVENT, CTL_NO, 0);
+		CTL_Lib.Alarm_Error_Occurrence(3003, dWARNING, alarm.mstr_code); 
+		StartStep = 0;
 		break;
 
 	case 900:
@@ -327,10 +392,13 @@ void CRun_Handler_Check::ButtonCheck_Start()
 			break;
 		}
 
-
-
-
-		Func.OnSet_IO_Port_Run();									// 장비 상태 : 동작 상태인 경우 I/O 출력 내보내는 함수
+		Func.OnSet_IO_Port_Run();
+		// 장비 상태 : 동작 상태인 경우 I/O 출력 내보내는 함수
+		// 2017.0626
+		for(i = 0; i < 9; i++)
+		{
+			st_work.nReinstatement_mode[i] = 0;
+		}
 		alarm.mn_emo_alarm = FALSE;
 		n_emo_chk = FALSE;
 		n_air_chk = FALSE;

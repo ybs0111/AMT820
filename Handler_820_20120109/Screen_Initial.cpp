@@ -170,7 +170,7 @@ void CScreen_Initial::OnTimer(UINT nIDEvent)
 	if(nIDEvent == TMR_INIT)  
 	{
 		if (st_handler.n_menu_lock != TRUE)  st_handler.n_menu_lock = TRUE;			// 메뉴 사용 불가능 상태 플래그 설정 
-		
+	
 		// **********************************************************************
 		// 초기화 작업을 진행한다.                                               
 		// **********************************************************************
@@ -444,7 +444,9 @@ void CScreen_Initial::OnInitial_Initial_Ready()
 	char chr_data[25];	
 	CString str_lock_check;
 	
+
 	st_init.n_initial_error = READY;
+
 
 	// Lock상태 였는지 확인을 한다.
 	:: GetPrivateProfileString("Password", "SysLockStatus", "NO", chr_data, 20, st_path.mstr_basic);
@@ -534,6 +536,8 @@ void CScreen_Initial::OnInitial_Initial_Ready()
 
 int CScreen_Initial::OnInitial_Init_Excution()
 {
+	
+
 	mn_init_flag = RET_PROCEED;
 	
 	if (COMI.mn_run_status != dINIT && bRecoveryInit != true )
@@ -544,7 +548,8 @@ int CScreen_Initial::OnInitial_Init_Excution()
 		}
 		return mn_init_flag;
 	}
-	
+
+
 	switch (ml_init_step)
 	{
 	case 0:			EIS_Start();			break;

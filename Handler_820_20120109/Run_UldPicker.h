@@ -45,7 +45,6 @@ public:
 	double	m_dpTargetPosList[4];
 	double	m_dpSpdRatio[3];
 
-
 	int m_nPickerPara;
 	int m_nRobotSite;
 	int m_nRobot_Z_Stop_Flag;
@@ -90,6 +89,12 @@ public:
 	CString m_strAlarmCode;
 	DWORD m_dwWaitTime[3];
 	BOOL m_bConnectAssemblyTimeOut;
+	
+	//kwlee 2017.0626
+	double m_dcurr_pos[3]; 
+	int	mn_reinstate_pos[3];
+	DWORD m_dwReinstate_time[3];
+	int m_nChange[4];
 
 // Operations
 public:
@@ -97,6 +102,14 @@ public:
 	void RunMove();
 	void RunInit();
 
+	//kwlee 2017.0626
+	void Run_ReinState();
+	void OnUldPicker_FinalPos();
+	void Robot_BackupPos_Check();
+
+	int GetMotorPosX(double dPos);
+	int GetMotorPosY(double dPos);
+	int GetMotorPosZ(double dPos);
 
 	void Set_UnLoader_Transfer_Clamp_OnOff(int OnOff);
 	int Chk_UnLoader_Transfer_Clamp_OnOff( int nOnOff );
@@ -106,7 +119,6 @@ public:
 
 	int Move_ReadySafeyXY();
 	int Move_MakeSafetyPosBeforeWork( int nMode );
-
 };
 
 /////////////////////////////////////////////////////////////////////////////

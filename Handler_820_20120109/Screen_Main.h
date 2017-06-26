@@ -34,10 +34,14 @@
 #include "MatrixStatic.h"
 #include "BitmapSlider.h"
 #include "GridCtrl.h"
+
+
 /* ****************************************************************************** */
 /* 쓰레드 동작 관련 클래스 추가                                                   */
 /* ****************************************************************************** */
 #include "ssdllmfc.h"
+
+#include "Thread.h"					// 쓰레드 생성 클래스 추가 
 /* ****************************************************************************** */
 
 
@@ -50,6 +54,7 @@
 #define WM_EPOXY_OUT		 792
 
 class AModule;
+
 /////////////////////////////////////////////////////////////////////////////
 // CScreen_Main form view
 
@@ -121,6 +126,8 @@ public:
 
 	int mn_discharge_step;
 	int mn_time_select;
+	int m_ncnt;
+	int m_nDvcCnt;
 
 	//kwlee 2017.0413
 	TSpread			*m_grid_Top;

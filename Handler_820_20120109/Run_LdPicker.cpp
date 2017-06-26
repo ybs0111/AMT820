@@ -88,7 +88,26 @@ void CRun_LdPicker::Thread_Run()
 	case dWARNING:
 		break;
 
+		//kwlee 2017.0623
+	case dREINSTATE:
+		Run_ReinState();
+		break;
 	default:
+		//kwlee 2017.0623
+		if (st_work.mn_run_status != dRUN || st_work.mn_run_status != dREINSTATE)
+		{
+			OnLdPicker_FinalPos();
+		}
+
+		if (st_handler.mn_menu_num == 501) return;
+
+		COMI.Set_MotStop(0, M_LOADER_TRANSFER_Z);
+		COMI.Set_MotStop(0, M_LOADER_TRANSFER_Y);
+
+		CTL_Lib.mn_single_motmove_step[M_LOADER_TRANSFER_Z] = 0;
+		CTL_Lib.mn_single_motmove_step[M_LOADER_TRANSFER_Y] = 0;
+		mn_InitStep = 0;
+		mn_reinstate_step = 0;
 		break;
 	}
 }
@@ -417,7 +436,6 @@ void CRun_LdPicker::RunMove()
 							m_nFindLotNo_Flag = 1;
 							mn_RunStep = 1000;
 						}
-
 					}
 					else
 					{
@@ -3172,4 +3190,454 @@ int CRun_LdPicker::Check_DVC_Model(int nModel, int nYESNO, int* nSNum)
 	}
 
 	return nFuncRet;
+}
+
+int CRun_LdPicker::GetMotorPosY(double dPos)
+{
+	int nPos = -1;
+
+	if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+		dPos <= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS] + COMI.md_allow_value[m_nRobot_Y])
+	{
+		nPos= P_LOADER_TRANSFER_Y_INIT_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+		dPos <= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_READY_POS] + COMI.md_allow_value[m_nRobot_Y])
+	{
+		nPos= P_LOADER_TRANSFER_Y_READY_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_PICK_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+		dPos <= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_PICK_POS] + COMI.md_allow_value[m_nRobot_Y])
+	{
+		nPos= P_LOADER_TRANSFER_Y_PICK_POS;
+	}	
+	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[p_LOADER_TRANSFER_Y_ALIGN_PLACE_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+		dPos <= st_motor[m_nRobot_Y].md_pos[p_LOADER_TRANSFER_Y_ALIGN_PLACE_POS] + COMI.md_allow_value[m_nRobot_Y])
+	{
+		nPos= p_LOADER_TRANSFER_Y_ALIGN_PLACE_POS;
+	}	
+	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_ALIGN_PICK_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+		dPos <= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_ALIGN_PICK_POS] + COMI.md_allow_value[m_nRobot_Y])
+	{
+		nPos= P_LOADER_TRANSFER_Y_ALIGN_PICK_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_PLACE_TOP_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+		dPos <= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_PLACE_TOP_POS] + COMI.md_allow_value[m_nRobot_Y])
+	{
+		nPos= P_LOADER_TRANSFER_Y_PLACE_TOP_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_PLACE_MID_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+		dPos <= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_PLACE_MID_POS] + COMI.md_allow_value[m_nRobot_Y])
+	{
+		nPos= P_LOADER_TRANSFER_Y_PLACE_MID_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_PLACE_BOT_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+		dPos <= st_motor[m_nRobot_Y].md_pos[P_LOADER_TRANSFER_Y_PLACE_BOT_POS] + COMI.md_allow_value[m_nRobot_Y])
+	{
+		nPos= P_LOADER_TRANSFER_Y_PLACE_BOT_POS;
+	}
+	
+	return nPos;
+}
+
+int CRun_LdPicker::GetMotorPosZ(double dPos)
+{
+	int nPos = -1;
+	
+	if ( dPos >= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] - COMI.md_allow_value[m_nRobot_Z] &&
+		dPos <= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_Z])
+	{
+		nPos= P_LOADER_TRANSFER_Z_INIT_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_UP_POS] - COMI.md_allow_value[m_nRobot_Z] &&
+		dPos <= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_UP_POS] + COMI.md_allow_value[m_nRobot_Z])
+	{
+		nPos= P_LOADER_TRANSFER_Z_UP_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_ALIGN_PLACE_POS] - COMI.md_allow_value[m_nRobot_Z] &&
+		dPos <= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_ALIGN_PLACE_POS] + COMI.md_allow_value[m_nRobot_Z])
+	{
+		nPos= P_LOADER_TRANSFER_Z_ALIGN_PLACE_POS;
+	}	
+	else if ( dPos >= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_ALIGN_PICKPOS] - COMI.md_allow_value[m_nRobot_Z] &&
+		dPos <= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_ALIGN_PICKPOS] + COMI.md_allow_value[m_nRobot_Z])
+	{
+		nPos= P_LOADER_TRANSFER_Z_ALIGN_PICKPOS;
+	}	
+	else if ( dPos >= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_TRAY_POS] - COMI.md_allow_value[m_nRobot_Z] &&
+		dPos <= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_TRAY_POS] + COMI.md_allow_value[m_nRobot_Z])
+	{
+		nPos= P_LOADER_TRANSFER_Z_TRAY_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_CARRIER_PLACE_POS] - COMI.md_allow_value[m_nRobot_Z] &&
+		dPos <= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_CARRIER_PLACE_POS] + COMI.md_allow_value[m_nRobot_Z])
+	{
+		nPos= P_LOADER_TRANSFER_Z_CARRIER_PLACE_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_LASER_CHKPOS] - COMI.md_allow_value[m_nRobot_Z] &&
+		dPos <= st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_LASER_CHKPOS] + COMI.md_allow_value[m_nRobot_Z])
+	{
+		nPos= P_LOADER_TRANSFER_Z_LASER_CHKPOS;
+	}
+	
+	
+	return nPos;
+}
+
+void CRun_LdPicker::OnLdPicker_FinalPos()
+{
+	if (st_work.nReinstatement_mode[LD_PICKER] == 0)
+	{
+
+		st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y] = COMI.md_cmdpos_backup[M_LOADER_TRANSFER_Y];
+		st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Z] = COMI.md_cmdpos_backup[M_LOADER_TRANSFER_Z];
+
+		//kwlee 2017.0626
+		st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y] = GetMotorPosY(COMI.md_cmdpos_backup[M_LOADER_TRANSFER_Y]);
+		st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Z] = GetMotorPosZ(COMI.md_cmdpos_backup[M_LOADER_TRANSFER_Z]);
+
+		st_work.nPickerClampState[0] = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_On_Sol, IO_OFF);
+		st_work.nPickerClampState[1] = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_Off_Sol, IO_ON);
+
+		st_work.nRestState_LdUldSafety = st_handler.mn_lduld_safety;
+		st_work.nReinstatement_mode[LD_PICKER] = 1;
+	}
+}
+
+void CRun_LdPicker::Robot_BackupPos_Check()
+{
+	st_work.dReinstatement_pos[1][M_LOADER_TRANSFER_Y] = st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y];
+	st_work.dReinstatement_pos[1][M_LOADER_TRANSFER_Z] = st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Z];
+}
+
+void CRun_LdPicker::Run_ReinState()
+{
+	int i;
+	int nRet_1,nRet_2;
+
+	//int nChangePos[2];
+	double dCurrPos[4];
+	double dTargetPos;
+
+	if (st_work.nLd_Picker_ReinstateMent_Ok == YES) return;
+	
+	switch(mn_reinstate_step)
+	{
+	case 0:
+		
+// 		st_handler.m_nAssemblyAble = CTL_NO;
+// 		g_ioMgr.set_out_bit(st_io.o_Interface_Output_1, IO_OFF);
+		mn_reinstate_step = 10;
+		break;
+
+	case 10:
+		m_dcurr_pos[0] = COMI.Get_MotCurrentPos(M_LOADER_TRANSFER_Y);
+	//	m_dcurr_pos[1] = COMI.Get_MotCurrentPos(M_LOADER_TRANSFER_Z);
+	//	m_dcurr_pos[2] = COMI.Get_MotCurrentPos(M_UNLOADER_TRANSFER_X);
+
+		if( st_handler.mn_lduld_safety == ULD_MOVING_SAFETY)
+		{
+			//if( dCurrentPos <== sfty &&  st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y] <= sfty)
+			if( m_dcurr_pos[0] <= st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS] &&  
+				st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y] <= st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS])
+			{
+				mn_reinstate_step = 1000;
+			}
+			else
+			{
+				//if( dCurrentPos > sfty + allow)
+				if (m_dcurr_pos[0] > st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS]  + COMI.md_allow_value[M_LOADER_TRANSFER_Y])
+				{
+					//알람 
+					alarm.mstr_code.Format("%02d0008",M_LOADER_TRANSFER_Y);
+					mn_reinstate_step = 20000;	
+				}		
+				else
+				{
+					//알람 
+					alarm.mstr_code.Format("%02d0008",M_LOADER_TRANSFER_Y);
+					//if(st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y] > safety + allow )
+					//알람 버그 reset  step저장
+					mn_reinstate_step = 20000;
+				}
+			}
+			break;
+		}
+		else
+		{
+			//if( dCurrentPos > sfty || st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y] > sfty)
+			if( m_dcurr_pos[0] > st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS] || 
+				st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y] > st_motor[M_LOADER_TRANSFER_Y].md_pos[P_LOADER_TRANSFER_Y_INIT_POS])
+			{
+				if( COMI.Get_MotCurrentPos( M_UNLOADER_TRANSFER_X )  > ( st_motor[M_UNLOADER_TRANSFER_X].md_pos[P_UNLOADER_TRANSFER_X_READY_POS] + COMI.md_allow_value[M_UNLOADER_TRANSFER_X] ) )
+				{
+					//나올수 없는 상황 setep reset alarm
+					alarm.mstr_code.Format("%02d0008",M_UNLOADER_TRANSFER_X);
+					mn_reinstate_step = 20000;
+				}
+				else
+				{
+					mn_reinstate_step = 1000;
+				}
+			}
+			else
+			{
+				mn_reinstate_step = 1000;
+			}
+		}
+		break;
+
+	case 1000:
+		m_dcurr_pos[0] = COMI.Get_MotCurrentPos(M_LOADER_TRANSFER_Y);
+		m_dcurr_pos[1] = COMI.Get_MotCurrentPos(M_LOADER_TRANSFER_Z);
+
+		for (i = 0; i< 3; i++)
+		{
+			m_nChange[i] = 0;
+		}
+
+		if (m_dcurr_pos[0] > st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y] +  COMI.md_allow_value[m_nRobot_Y] ||
+			m_dcurr_pos[0] < st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y] - COMI.md_allow_value[m_nRobot_Y])
+		{
+			m_nChange[0]++;
+			sprintf(st_msg.c_abnormal_msg, "Ld Picker Robot Y POS [OLD] : %ld -> [NOW] : %ld [GAP] : %ld", (long)st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y], (long)m_dcurr_pos[0], (long)COMI.md_allow_value[m_nRobot_Y]);	
+		}
+		
+		if (m_dcurr_pos[1] > st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Z] +  COMI.md_allow_value[m_nRobot_Z] ||
+			m_dcurr_pos[1] < st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Z] - COMI.md_allow_value[m_nRobot_Z])
+		{
+			m_nChange[1]++;
+			sprintf(st_msg.c_abnormal_msg, "Ld Picker Robot Z POS [OLD] : %ld -> [NOW] : %ld [GAP] : %ld", (long)st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Z], (long)m_dcurr_pos[1], (long)COMI.md_allow_value[m_nRobot_Z]);
+		}
+		
+		//피커 확인
+		nRet_1 = g_ioMgr.get_in_bit( st_io.i_Loader_Transfer_Clamp_On_Check, IO_ON);
+		nRet_2 = g_ioMgr.get_in_bit( st_io.i_Loader_Transfer_Clamp_Off_Check, IO_OFF);
+
+		if( nRet_1 == st_work.nPickerClampState[0] && nRet_2 == st_work.nPickerClampState[1])
+		{
+			m_nChange[2] = 1; 
+		}
+	
+		if (m_nChange[0] > 0 || m_nChange[1] > 0)
+		{
+			//m_nChange[2] == 1 : Picker 동작 변화 없음.
+// 			if( m_nChange[2] == 1)
+// 			{
+// 				mn_reinstate_step = 2000; // 위치 몇 동작 변화.
+// 			}
+//  		else
+//  		{
+//  			
+//  		}
+			mn_reinstate_step = 2000; // 위치 몇 동작 변화.
+		}
+		else
+		{
+			mn_reinstate_step = 1100; // 위치 몇 동작 변화 없음.
+		}
+		break;
+
+		
+	case 1100:
+		m_dwReinstate_time[0] = GetCurrentTime();
+		mn_reinstate_step = 1200;
+		break;
+
+	case 1200:
+		m_dwReinstate_time[1] = GetCurrentTime();
+		m_dwReinstate_time[2] = m_dwReinstate_time[1] - m_dwReinstate_time[0];
+		
+		if (m_dwReinstate_time[2] < 0)
+		{
+			m_dwReinstate_time[0] = GetCurrentTime();
+			break;
+		}
+
+		if (m_dwReinstate_time[2] >= 100)
+		{
+			//m_nChange[2] == 1 : Picker 동작 변화 없음.
+			if( m_nChange[2] == 1)
+				mn_reinstate_step = 5000;
+			else
+				mn_reinstate_step = 4800;
+		}
+		break;
+
+
+	case 2000:
+		Robot_BackupPos_Check();
+		COMI.Set_MotPower(M_LOADER_TRANSFER_Y, TRUE);
+		COMI.Set_MotPower(M_LOADER_TRANSFER_Z, TRUE);
+		mn_reinstate_step = 2100;
+		break;
+
+	case 2100:
+		//z가 틀리면 Up후에 y 동작
+		if( st_work.dReinstatement_pos[1][M_LOADER_TRANSFER_Y] == st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y]])
+		{ 
+// 			if( m_nChange[2] == 1)
+// 			{
+// 				mn_reinstate_step = 5000;
+// 			}
+// 			else
+// 			{
+// 				mn_reinstate_step = 4800;
+// 			}
+			//kwlee 2017.0626
+			mn_reinstate_step = 2300;
+		}
+		else
+		{
+			//z축 home 후
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD)
+			{
+				mn_reinstate_step = 2300;
+			}
+			else if(nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+				//alarm.mstr_code.Format("%02d0008",m_nRobot_Z);
+			}
+			//mn_reinstate_step = 2300;
+		}
+		break;
+
+	case 2300:
+		if( st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y] == -1 )
+		{
+			dTargetPos = st_work.dReinstatement_pos[1][M_LOADER_TRANSFER_Y]; //이동 
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, dTargetPos, COMI.mn_runspeed_rate);
+
+			if (nRet_1 == BD_GOOD)
+			{
+// 				if( m_nChange[2] == 1)
+// 				{
+// 					mn_reinstate_step = 5000;
+// 				}
+// 				else
+// 				{
+// 					mn_reinstate_step = 4800;
+// 				}
+				//kwlee 2017.0626
+				mn_reinstate_step = 2400;
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+				//alarm.mstr_code.Format("%02d0008",m_nRobot_Z);
+			}
+		}
+		else
+		{
+			//st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y] = 작업 위치.
+			dTargetPos = st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y]]; //이동
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, dTargetPos, COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD)
+			{
+// 				if( m_nChange[2] == 1)
+// 				{
+// 					mn_reinstate_step = 5000;
+// 				}
+// 				else
+// 				{
+// 					mn_reinstate_step = 4800;
+// 				}
+				//kwlee 2017.0626
+				mn_reinstate_step = 2400;
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
+		}
+		break;
+
+
+	  // Z축 이동
+	case 2400:
+		if( st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Z] == -1 )
+		{
+			dTargetPos = st_work.dReinstatement_pos[1][M_LOADER_TRANSFER_Z]; //이동 
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, dTargetPos, COMI.mn_runspeed_rate);
+			
+			if (nRet_1 == BD_GOOD)
+			{
+				if( m_nChange[2] == 1)
+				{
+					mn_reinstate_step = 5000;
+				}
+				else
+				{
+					mn_reinstate_step = 4800;
+				}
+		
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
+		}
+		else
+		{
+			//st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y] = 작업 위치.
+			dTargetPos = st_motor[m_nRobot_Z].md_pos[st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Z]]; //이동
+				
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, dTargetPos, COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD)
+			{
+				if( m_nChange[2] == 1)
+				{
+					mn_reinstate_step = 5000;
+				}
+				else
+				{
+					mn_reinstate_step = 4800;
+				}
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
+		}
+		break;
+		
+
+   case 4800:
+// 	   g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_On_Sol, st_work.nPickerClampState[0]);
+// 	   g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_Off_Sol, st_work.nPickerClampState[1]);
+	   //kwlee 2017.0626
+	   	Set_Loader_Transfer_Clamp_OnOff(st_work.nPickerClampState[0]); 
+	   mn_reinstate_step = 4900;
+	   break;
+
+   case 4900:
+	   //확인 
+	   nRet_1 = Chk_Loader_Transfer_Clamp_OnOff(st_work.nPickerClampState[0]);
+
+	   if (nRet_1 == RET_GOOD)
+	   {
+		   mn_reinstate_step = 5000;
+	   }
+		else if (nRet_1 == RET_ERROR)
+	   {
+			mn_reinstate_step = 20000;
+	   }
+	   break;
+
+	case 5000:
+		st_work.nLd_Picker_ReinstateMent_Ready = YES;
+		st_work.nLd_Picker_ReinstateMent_Ok = YES;//20121126
+		mn_reinstate_step = 0;
+		break;
+
+	case 20000:
+		st_handler.n_sync_reinstate = NO;
+		mn_reinstate_step = 0;
+		break;
+	}
+
+
+	
 }

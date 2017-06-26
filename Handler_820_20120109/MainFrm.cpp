@@ -227,7 +227,6 @@ CMainFrame::CMainFrame()
 	COMI.mn_simulation_mode = 0;
 	FAS_IO.mn_simulation_mode = 0;
 
-
 	Func.PublicVariableDataInitialize();	// 장비 동작 제어 플래그 초기화 함수
 	Func.On_IOFlagReset();					// 동작시 사용하는 IO 관련 Flag 초기화 함수 2K4/12/10/ViboX
 	mcls_frm_alarm.On_Alarm_Info_Load();	// 파일에 저장된 모든 알람 정보 전역 변수에 설정하는 함수
@@ -1826,6 +1825,8 @@ LRESULT CMainFrame::OnCommand_Server_1(WPARAM wParam, LPARAM lParam)
 	CString str_rev;
 	CString str_tmp;
 	int		count;
+
+
 
 	st_server[0].n_port = 20000;
 	switch(wParam)

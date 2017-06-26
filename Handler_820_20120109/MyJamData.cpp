@@ -305,6 +305,7 @@ CString CMyJamData::On_Alarm_Repair_Data_Load(CString strPath, CString strAction
 // ******************************************************************************
 void CMyJamData::On_Alarm_Display()
 {
+
 	CString str_cnt, str_temp;
 	char temp_code[10], temp_cnt[10], chr_buf[20]={0,};
 	
@@ -549,6 +550,7 @@ void CMyJamData::On_Occured_Alarm_Saving_to_File()
 	fprintf(fp, "[%s] %s : %s \r\n", str_title_time, str_alarm_code, str_alarm_msg);	
 	fclose(fp);
 	// 일 데이타 기록
+
 	if ((fp = fopen(str_day_path, "a+")) == NULL)  
 	{
 		AfxMessageBox("The failure because we open the file.");
@@ -582,6 +584,7 @@ void CMyJamData::On_Occured_Alarm_Saving_to_File()
 	// **************************************************************************
 //	mcls_alarm_list.On_Lot_ListFile_Add(str_alarm_code, str_display_time);  // LOT별 알람 발생 횟수 정보 임시 파일에 추가 함수
 	// **************************************************************************
+
 }
 // ******************************************************************************
 

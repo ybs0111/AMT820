@@ -778,7 +778,8 @@ int CRun_Epoxy_Transfer_Robot::Move_Billiard_Epoxy( int nMode, int nSite)//, int
 				mn_FirstSecond = 0;
 				mn_dotPos = 0;
 				mn_MoveStep = 2000;
-				st_recipe.nEpoxyDotScrewCount = 20;
+				//2017.0619
+				//st_recipe.nEpoxyDotScrewCount = 20;
 			}
 			else
 			{

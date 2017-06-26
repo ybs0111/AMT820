@@ -2046,6 +2046,25 @@ struct st_work_param
 
 	int n_OnlyCarrierMove;
 	CString n_DataYes[10];
+
+	//kwlee 2017.0623
+	int nLd_Picker_ReinstateMent_Ok;
+	int nUld_Picker_ReinstateMent_Ok;
+	int nEpoxy_ReinstateMent_Ok;
+	int nHeatSink_ReinstateMent_Ok;
+
+	int nLd_Picker_ReinstateMent_Ready;
+	int nUld_Picker_ReinstateMent_Ready;
+	int nEpoxy_ReinstateMent_Ready;
+	int nHeatSink_ReinstateMent_Ready;
+	
+	int nPickerClampState[2];
+
+	int    nReinstatement_mode[10];
+	double dReinstatement_pos[2][MAXMOTOR];
+	
+	int nReinst_MotorPos[2][MAXMOTOR];
+	int nRestState_LdUldSafety;
 };
 extern  st_work_param  st_work;
 
@@ -3154,6 +3173,13 @@ enum HEATSINK_INSPECT_Z
 #define  BIN_VISION		4
 #define  BIN_GOOD		5 //kwlee 2017.0414
 #define  BIN_FAIL		6
+
+//kwlee 2017.0623
+#define  LD_PICKER		0
+#define  ULD_PICKER     1
+#define  EPOXY          2
+#define  HEATSINK       3
+
 
 // #define  TOPSHIFT_BUFF_LOADER_RECEIVE				0
 // #define  TOPSHIFT_BUFF_INPUT_LOADER					1			
