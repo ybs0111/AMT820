@@ -3554,7 +3554,6 @@ void CRun_LdPicker::Run_ReinState()
 		}
 		break;
 
-
 	  // Z√‡ ¿Ãµø
 	case 2400:
 		if( st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Z] == -1 )
