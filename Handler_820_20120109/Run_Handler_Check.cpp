@@ -272,6 +272,7 @@ void CRun_Handler_Check::ButtonCheck_Start()
 		/*StartStep = 800;*/ //kwlee 2017.0623 del
 
 		st_work.mn_run_status = dREINSTATE;
+		st_work.mn_run_EpoxyStatus = dREINSTATE; //kwlee 2017.0627
 		st_handler.n_sync_reinstate = READY;
 		
 		st_work.nLd_Picker_ReinstateMent_Ok = NO;
@@ -329,7 +330,9 @@ void CRun_Handler_Check::ButtonCheck_Start()
 		}
 		else
 		{
-			if (st_work.mn_run_status != dREINSTATE)
+			//if (st_work.mn_run_status != dREINSTATE)
+			//kwlee 2017.0627
+			if (st_work.mn_run_status != dREINSTATE || st_work.mn_run_EpoxyStatus != dREINSTATE)
 			{
 				st_work.mn_run_status = dSTOP;
 				if(st_handler.cwnd_title != NULL)

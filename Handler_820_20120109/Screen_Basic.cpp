@@ -2382,7 +2382,7 @@ void CScreen_Basic::OnDgtEpoxyY()
 void CScreen_Basic::OnDgtEpoxyCleanTime() 
 {	
 	CString mstr_temp;
-	char chr_buf[20] ;
+//	char chr_buf[20] ;
 //	int mn_Cnt;
 	
 // 	mn_Cnt = m_dgt_epoxy_clean_time.GetValue();
@@ -2404,8 +2404,8 @@ void CScreen_Basic::OnDgtRubb()
 	// TODO: Add your control notification handler code here
 	// TODO: Add your control notification handler code here
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	int mn_Cnt;
+//	char chr_buf[20] ;
+//	int mn_Cnt;
 	
 // 	mn_Cnt = m_dgt_Rubb.GetValue();
 // 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
@@ -2479,8 +2479,8 @@ void CScreen_Basic::OnDgtPartialCnt()
 {
 	// TODO: Add your control notification handler code here
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	int mn_Cnt;
+//	char chr_buf[20] ;
+//	int mn_Cnt;
 	
 // 	mn_Cnt = m_dgt_Partial_Cnt.GetValue();
 // 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
@@ -2499,8 +2499,8 @@ void CScreen_Basic::OnDgtRetryCnt()
 {
 	// TODO: Add your control notification handler code here
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	int mn_Cnt;
+//	char chr_buf[20] ;
+//	int mn_Cnt;
 	
 // 	mn_Cnt = m_dgt_Retry_Cnt.GetValue();
 // 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
@@ -2663,8 +2663,8 @@ void CScreen_Basic::OnButtonHardnessReset()
 void CScreen_Basic::OnDgtHardnessTime() 
 {
 	CString mstr_temp;
-	char chr_buf[20] ;
-	int mn_Cnt;
+//	char chr_buf[20] ;
+//	int mn_Cnt;
 	
 // 	mn_Cnt = m_dgt_hardness_time.GetValue();
 // 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));

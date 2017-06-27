@@ -1681,8 +1681,8 @@ void CScreen_Set_Recipe::OnDgtDispenservppma()
 {
 	// TODO: Add your control notification handler code here
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	int mn_Cnt;
+//	char chr_buf[20] ;
+//	int mn_Cnt;
 	
 // 	mn_Cnt = m_dgt_DispenserVppmA.GetValue();
 // 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
@@ -1700,8 +1700,8 @@ void CScreen_Set_Recipe::OnDgtEpoxyUsecnt()
 {
 	// TODO: Add your control notification handler code here
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	int mn_Cnt;
+//	char chr_buf[20] ;
+//	int mn_Cnt;
 	
 // 	mn_Cnt = m_dgt_Epoxy_UseCnt.GetValue();
 // 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
@@ -1765,8 +1765,8 @@ void CScreen_Set_Recipe::OnDgtHsRubYOffset()
 void CScreen_Set_Recipe::OnDgtLdBufferNum() 
 {
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	int mn_Cnt;
+//	char chr_buf[20] ;
+//	int mn_Cnt;
 	
 // 	mn_Cnt = m_dgt_Ld_Buffer_Num.GetValue();
 // 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
@@ -1784,8 +1784,8 @@ void CScreen_Set_Recipe::OnDgtLdBufferNum()
 void CScreen_Set_Recipe::OnDgtTrayNum() 
 {
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	int mn_Cnt;
+//	char chr_buf[20] ;
+//	int mn_Cnt;
 	
 // 	mn_Cnt = m_dgt_tray_num.GetValue();
 // 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));
@@ -1804,8 +1804,8 @@ void CScreen_Set_Recipe::OnDgtTrayNum()
 void CScreen_Set_Recipe::OnDgtCarrierBuffNum() 
 {
 	CString mstr_temp;  // 저장할 정보 임시 저장 변수 
-	char chr_buf[20] ;
-	int mn_Cnt;
+//	char chr_buf[20] ;
+//	int mn_Cnt;
 	
 // 	mn_Cnt = m_dgt_Carrier_Buff_Num.GetValue();
 // 	mstr_temp = LPCTSTR(_itoa(mn_Cnt, chr_buf, 10));

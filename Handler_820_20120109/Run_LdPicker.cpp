@@ -3298,7 +3298,7 @@ void CRun_LdPicker::OnLdPicker_FinalPos()
 
 		st_work.nPickerClampState[0] = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_On_Sol, IO_OFF);
 		st_work.nPickerClampState[1] = g_ioMgr.get_out_bit(st_io.o_Loader_Transfer_Clamp_Off_Sol, IO_ON);
-
+		
 		st_work.nRestState_LdUldSafety = st_handler.mn_lduld_safety;
 		st_work.nReinstatement_mode[LD_PICKER] = 1;
 	}
@@ -3571,7 +3571,6 @@ void CRun_LdPicker::Run_ReinState()
 				{
 					mn_reinstate_step = 4800;
 				}
-		
 			}
 			else if (nRet_1 == BD_ERROR)
 			{

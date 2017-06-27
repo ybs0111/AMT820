@@ -36,18 +36,14 @@ public:
 
 	long m_dwInitWaitTime[3];
 
-	
 	int mn_retry_cnt;
 	long ml_retry_wait[3];
-	
 
 	bool m_bClampOnOffFlag[2];
 	DWORD m_dwClampOnOff[2][3];
 	int 	m_nTransferJobFlag[2];
 	//work 트랜스퍼에 동작을 요청한다 , [0]:요청정보, [1]:1:트레이를 집기, 2:트레이를 놓기	
 	char cJamcode[10];
-
-
 	int m_nTransfer_WaitPosMove_Flag;
 
 	double m_dcurr_pos[3];
@@ -67,9 +63,6 @@ public:
 	long	m_lpAxisNum[4];
 	double	m_dpTargetPosList[4];
 	double	m_dpSpdRatio[3];	
-
-
-
 
 	double md_TargetAxisXValue[2][2];//double ldEpoxyTransferXDispenserFirstStartPos;[0][0] first start [0][1] first end [1][0] second first [1][1] second end
 	double md_TargetAxisYValue[2][2];//double ldEpoxyTransferYDispenserFirstStartPos;
@@ -93,10 +86,23 @@ public:
 	double dp_SpdRatio[3];
 	int mn_dotPos;
 
+	//kwlee 2017.0627
+	DWORD m_dwReinstate_time[3];
+	int m_nChange[3];
 public:
 	void Thread_Run();
 	void RunMove();
 	void RunInit();
+	//kwlee 2017.0627
+	void Run_ReinState();
+	void OnEpoxy_FinalPos();
+	void Robot_BackupPos_Check();
+	double OnEpoxyPosX();
+	double OnEpoxyPosY();
+	//
+	int GetMotorPosX(double dPos);
+	int GetMotorPosY(double dPos);
+	int GetMotorPosZ(double dPos);
 
 	int Move_Billiard_Epoxy( int nMode, int nSite);
 	int Robot_Move_Safety_Zone( int nMode, int n_site, int n_flag);

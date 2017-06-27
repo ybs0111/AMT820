@@ -139,7 +139,7 @@ public:
 	void VppmOff();
 	void SaveHeatSinkBoxPos();
 	int Calculate_MovePos_Find(int nMode, int nMotNum, int nSite, int nWorkPart, int *npFindWorkPosYXCPB, double *dpGetTargetPos);
-
+	
 	void OnBcrReader(); //kwlee 2017.0412
 	BOOL SendLocalMsg(RCV_STRUCT msg);
 	BOOL Send7387MeasureStart();
@@ -149,6 +149,9 @@ public:
 	BOOL SendHeatSinkPosStart();
 	BOOL SendInspectOsView();
 	BOOL SendInspectOsDisable();
+
+	//kwlee 2017.0627
+	int OnReinstate_Move_Safety(int nSite);
 
 };
 extern CPublic_Function  Func;

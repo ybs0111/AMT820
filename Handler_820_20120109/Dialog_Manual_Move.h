@@ -128,6 +128,8 @@ public:
 	int	m_npBuff_Status[4];
 	int	m_npBuff_OutputStatus[4];
 
+	//kwlee 2017.0627
+	double m_dcurr_pos[3];
 
 	void Init_Data();
 	void Init_Show();

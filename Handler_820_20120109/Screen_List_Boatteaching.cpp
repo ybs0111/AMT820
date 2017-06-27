@@ -2061,7 +2061,9 @@ LONG CScreen_List_BoatTeacing::OnUserLButtonDown(WPARAM wParam, LPARAM lParam)
 	}
 	else if (pButton->GetTag() == IDC_BTN_LEFT_Z)
 	{
-		if (m_n_move_mode_Y == 0)
+		//if (m_n_move_mode_Y == 0)
+		//kwlee 2017.0627
+		if (m_n_move_mode_Z == 0)
 		{
 			nRet = CTL_Lib.Motor_SafetyCheck(0, M_HEATSINK_TRANSFER_Z, 0);
 			
@@ -2099,7 +2101,9 @@ LONG CScreen_List_BoatTeacing::OnUserLButtonDown(WPARAM wParam, LPARAM lParam)
 	}
 	else if (pButton->GetTag() == IDC_BTN_RIGHT_Z)
 	{
-		if (m_n_move_mode_Y == 0)
+		//if (m_n_move_mode_Y == 0)
+		//kwlee 2017.0627
+		if (m_n_move_mode_Z == 0)
 		{
 			nRet = CTL_Lib.Motor_SafetyCheck(0, M_HEATSINK_TRANSFER_Z, 0);
 			

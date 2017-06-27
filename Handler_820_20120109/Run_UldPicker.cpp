@@ -110,8 +110,9 @@ void CRun_UldPicker::Thread_Run()
 
 		case dWARNING:
 			break;
+
 		//kwlee 2017.0626
-		case dREINSTATE :
+		case dREINSTATE:
 			Run_ReinState();
 			break;
 
@@ -128,6 +129,7 @@ void CRun_UldPicker::Thread_Run()
 			COMI.Set_MotStop(0, M_UNLOADER_TRANSFER_Y);
 			COMI.Set_MotStop(0, M_UNLOADER_TRANSFER_Z);
 			
+
 			CTL_Lib.mn_single_motmove_step[M_UNLOADER_TRANSFER_X] = 0;
 			CTL_Lib.mn_single_motmove_step[M_UNLOADER_TRANSFER_Y] = 0;
 			CTL_Lib.mn_single_motmove_step[M_UNLOADER_TRANSFER_Z] = 0;
@@ -2659,7 +2661,7 @@ void CRun_UldPicker::OnUldPicker_FinalPos()
 		st_work.dReinstatement_pos[0][M_UNLOADER_TRANSFER_Z] = COMI.md_cmdpos_backup[M_UNLOADER_TRANSFER_Z];
 		
 		//kwlee 2017.0626
-		st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_X] = GetMotorPosY(COMI.md_cmdpos_backup[M_UNLOADER_TRANSFER_X]);
+		st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_X] = GetMotorPosX(COMI.md_cmdpos_backup[M_UNLOADER_TRANSFER_X]);
 		st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Y] = GetMotorPosY(COMI.md_cmdpos_backup[M_UNLOADER_TRANSFER_Y]);
 		st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Z] = GetMotorPosZ(COMI.md_cmdpos_backup[M_UNLOADER_TRANSFER_Z]);
 		
@@ -2689,9 +2691,9 @@ void CRun_UldPicker::Run_ReinState()
 	case 10:
 		if( st_handler.mn_lduld_safety == LD_MOVING_SAFETY)
 		{
-			m_dcurr_pos[0] = COMI.Get_MotCurrentPos(M_LOADER_TRANSFER_Y);
-			m_dcurr_pos[1] = COMI.Get_MotCurrentPos(M_LOADER_TRANSFER_Z);
-			m_dcurr_pos[2] = COMI.Get_MotCurrentPos(M_UNLOADER_TRANSFER_X);
+			m_dcurr_pos[0] = COMI.Get_MotCurrentPos(M_UNLOADER_TRANSFER_X);
+		//	m_dcurr_pos[1] = COMI.Get_MotCurrentPos(M_UNLOADER_TRANSFER_Y);
+		//	m_dcurr_pos[2] = COMI.Get_MotCurrentPos(M_UNLOADER_TRANSFER_Z);
 			
 			if( m_dcurr_pos[0] <= st_motor[m_nRobot_X].md_pos[P_UNLOADER_TRANSFER_X_INIT_POS] &&  
 				st_work.dReinstatement_pos[0][m_nRobot_X] <= st_motor[m_nRobot_X].md_pos[P_UNLOADER_TRANSFER_X_INIT_POS])
@@ -2911,9 +2913,9 @@ void CRun_UldPicker::Run_ReinState()
 
 	  // Z축 이동
 	case 2400:
-		if( st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Z] == -1 )
+		if( st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Z] == -1 )
 		{
-			dTargetPos = st_work.dReinstatement_pos[1][M_LOADER_TRANSFER_Z]; //이동 
+			dTargetPos = st_work.dReinstatement_pos[1][M_UNLOADER_TRANSFER_Z]; //이동 
 			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, dTargetPos, COMI.mn_runspeed_rate);
 			
 			if (nRet_1 == BD_GOOD)
@@ -2935,7 +2937,7 @@ void CRun_UldPicker::Run_ReinState()
 		}
 		else
 		{
-			dTargetPos = st_motor[m_nRobot_Z].md_pos[st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Z]]; //이동
+			dTargetPos = st_motor[m_nRobot_Z].md_pos[st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Z]]; //이동
 				
 			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, dTargetPos, COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD)

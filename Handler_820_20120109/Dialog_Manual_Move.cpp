@@ -4175,7 +4175,9 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			else
 			{
-				mn_MoveStep = 1000;
+				//mn_MoveStep = 1000;
+				//kwlee 2017.0627
+				mn_MoveStep = 900;
 			}
 			break;
 
@@ -4196,6 +4198,34 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			}
 			break;
 
+			//kwlee 2017.0627
+		case 900:
+			Run_Epoxy_Transfer_Robot.Get_Billard_Pos( nSite);
+			
+			m_dpTargetPosList[0] = Run_Epoxy_Transfer_Robot.md_TargetAxisXValue[mn_FirstSecond][0];
+			m_dpTargetPosList[1] = Run_Epoxy_Transfer_Robot.md_TargetAxisYValue[mn_FirstSecond][0];
+			
+			dp_SpdRatio[0] = (double)COMI.mn_runspeed_rate;//40;////st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)COMI.mn_runspeed_rate;//300;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)COMI.mn_runspeed_rate;//300;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			
+			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio );		
+			if( nRet_1 == BD_GOOD)
+			{
+				//st_work.nEpoxyBiliardThreadRunMode = dRUN;
+				mn_MoveStep = 1000;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_MoveStep = 900;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(9103, dWARNING, alarm.mstr_code);
+				mn_MoveStep = 900;
+			}
+			break;
+
 		case 1000:
 			//if( st_recipe.dLoaderTransferTrayDeviceGap <= 0 ) st_recipe.dLoaderTransferTrayDeviceGap = 100.0;
 			Run_Epoxy_Transfer_Robot.Get_Billard_Pos( nSite);
@@ -4203,10 +4233,13 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			m_dpTargetPosList[0] = Run_Epoxy_Transfer_Robot.md_TargetAxisXValue[mn_FirstSecond][0];
 			m_dpTargetPosList[1] = Run_Epoxy_Transfer_Robot.md_TargetAxisYValue[mn_FirstSecond][0];
 
-			dp_SpdRatio[0] = (double)70;////st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
-			dp_SpdRatio[1] = (double)300;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
-			dp_SpdRatio[2] = (double)300;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
-
+// 			dp_SpdRatio[0] = (double)70;////st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+// 			dp_SpdRatio[1] = (double)300;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+// 			dp_SpdRatio[2] = (double)300;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			//kwlee 2017.0627
+			dp_SpdRatio[0] = (double)30;////st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)100;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)100;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio );		
 			if( nRet_1 == BD_GOOD)
@@ -4250,6 +4283,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			if( m_dwSatbleWaitTime[2] > st_recipe.dSatbleTime )
 			{
 				//st_work.nEpoxyBiliardThreadRunMode = dRUN;
+				Func.VppmSet();//kwlee 2017.0627
 				mn_MoveStep = 1210;
 			}
 			break;
@@ -4297,6 +4331,7 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 
 			if( nRet_1 == BD_GOOD) 
 			{
+				m_dwSatbleWaitTime[0] = GetCurrentTime(); //kwlee 2017.0627
 				COMI.Set_MotStop(0, m_nRobot_S);
 				mn_MoveStep = 1400;
 			}
@@ -4314,6 +4349,12 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 		case 1400:
 			Func.VppmOff();			
 			COMI.Set_MotStop(0, m_nRobot_S);
+			//kwlee 2017.0627
+			m_dwSatbleWaitTime[1] = GetCurrentTime();
+			m_dwSatbleWaitTime[2] = m_dwSatbleWaitTime[1] - m_dwSatbleWaitTime[0];
+			if (m_dwSatbleWaitTime[2]<=0)m_dwSatbleWaitTime[0] = GetCurrentTime();
+			if (m_dwSatbleWaitTime[2]<1000) break;
+			/////
 			mn_MoveStep = 1500;
 			break;
 
@@ -4324,10 +4365,16 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			{
 				COMI.Set_MotStop(0, m_nRobot_S);
 				//st_work.nEpoxyBiliardThreadRunMode = dSTOP;
-				cmmStSetPosition(m_nRobot_S, cmCNT_COMM, (double)0.0);
-				cmmStSetPosition(m_nRobot_S, cmCNT_FEED, (double)0.0);
-				m_dwSatbleWaitTime[0] = GetCurrentTime();
-				mn_MoveStep = 1600;
+// 				cmmStSetPosition(m_nRobot_S, cmCNT_COMM, (double)0.0);
+// 				cmmStSetPosition(m_nRobot_S, cmCNT_FEED, (double)0.0);
+// 				m_dwSatbleWaitTime[0] = GetCurrentTime();
+// 				mn_MoveStep = 1600;
+
+				//kwlee 2017.0627
+				cmmStGetPosition(m_nRobot_S, cmCNT_FEED, &m_dcurr_pos[0]);	//현재 Feedback 위치 
+				mn_MoveStep = 1510;
+
+
 			}
 			else if (nRet_1 == BD_RETRY)
 			{
@@ -4337,6 +4384,30 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
 				CTL_Lib.Alarm_Error_Occurrence(10606, dWARNING, alarm.mstr_code);
 				mn_MoveStep = 1500;
+			}
+			break;
+
+			//kwlee 2017.0627
+		case 1510:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_S, m_dcurr_pos[0] - 2 , st_recipe.nEpoxyRunSpeed);
+			if( nRet_1 == BD_GOOD)
+			{
+				COMI.Set_MotStop(0, m_nRobot_S);
+				cmmStSetPosition(m_nRobot_S, cmCNT_COMM, (double)0.0);
+				cmmStSetPosition(m_nRobot_S, cmCNT_FEED, (double)0.0);
+				m_dwSatbleWaitTime[0] = GetCurrentTime();
+			//	st_work.nEpoxyBiliardThreadRunMode = dRUN;
+				mn_MoveStep = 1600;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				mn_MoveStep = 1510;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(9196, dWARNING, alarm.mstr_code);
+			//	st_work.nEpoxyBiliardThreadRunMode = dSTOP;
+				mn_MoveStep = 1510;
 			}
 			break;
 
@@ -4396,9 +4467,13 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			m_dpTargetPosList[0] = Run_Epoxy_Transfer_Robot.md_TargetDotXValue[mn_dotPos];
 			m_dpTargetPosList[1] = Run_Epoxy_Transfer_Robot.md_TargetDotYValue[mn_dotPos];
 
-			dp_SpdRatio[0] = (double)50;//st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
-			dp_SpdRatio[1] = (double)300;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
-			dp_SpdRatio[2] = (double)300;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+// 			dp_SpdRatio[0] = (double)50;//st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+// 			dp_SpdRatio[1] = (double)300;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+// 			dp_SpdRatio[2] = (double)300;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
+			//kwlee 2017.0627
+			dp_SpdRatio[0] = (double)30;//st_recipe.nEpoxyXYRunSpeed[0];	//work 속도 
+			dp_SpdRatio[1] = (double)100;//st_recipe.nEpoxyXYRunSpeed[1];	// 가속 
+			dp_SpdRatio[2] = (double)100;//st_recipe.nEpoxyXYRunSpeed[2];	// 감속 
 
 			nRet_1 = CTL_Lib.Linear_Move( m_nLinearMove_Index, m_lAxisCnt, m_lpAxisNum, m_dpTargetPosList, dp_SpdRatio );		
 			if( nRet_1 == BD_GOOD)
@@ -4510,7 +4585,9 @@ int CDialog_Manual_Move::Move_Billiard_Epoxy( int nMode, int nSite)//, int nStar
 			break;
 
 		case 2400:
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_S, st_recipe.nEpoxyDotScrewCount-1 , st_recipe.nEpoxyRunSpeed);
+			//nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_S, st_recipe.nEpoxyDotScrewCount-1 , st_recipe.nEpoxyRunSpeed);
+			//kwlee 2017.0627
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_S, st_recipe.nEpoxyDotScrewCount-2 , st_recipe.nEpoxyRunSpeed);
 			if( nRet_1 == BD_GOOD)
 			{
 				COMI.Set_MotStop(0, m_nRobot_S);
