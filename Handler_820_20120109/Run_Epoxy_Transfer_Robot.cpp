@@ -74,7 +74,7 @@ void CRun_Epoxy_Transfer_Robot::Thread_Run()
 
 		break;
 
-		//kwlee 2017.0627
+	//kwlee 2017.0628 
 	case dREINSTATE:
 		Run_ReinState();
 		break;
@@ -83,7 +83,10 @@ void CRun_Epoxy_Transfer_Robot::Thread_Run()
 		break;
 
 	default:
-		//kwlee 2017.0627
+
+		//kwlee 2017.0628 
+		 return; //2017.0628 복귀 동작 막아 놓음.
+
 		if (st_work.mn_run_EpoxyStatus != dRUN || st_work.mn_run_EpoxyStatus != dREINSTATE)
 		{
 			OnEpoxy_FinalPos();	
@@ -91,23 +94,26 @@ void CRun_Epoxy_Transfer_Robot::Thread_Run()
 
 		if (st_handler.mn_menu_num == 501) return;
 		
-		COMI.Set_MotStop(0, M_EPOXY_TRANSFER_X);
-		COMI.Set_MotStop(0, M_EPOXY_TRANSFER_Y);
-		COMI.Set_MotStop(0, M_EPOXY_TRANSFER_Z);
-		COMI.Set_MotStop(0, M_EPOXY_SCREW);
+		if (st_work.mn_run_EpoxyStatus == dSTOP)
+		{
+			COMI.Set_MotStop(0, M_EPOXY_TRANSFER_X);
+			COMI.Set_MotStop(0, M_EPOXY_TRANSFER_Y);
+			COMI.Set_MotStop(0, M_EPOXY_TRANSFER_Z);
+			COMI.Set_MotStop(0, M_EPOXY_SCREW);
 
-		CTL_Lib.mn_single_motmove_step[M_EPOXY_TRANSFER_X] = 0;
-		CTL_Lib.mn_single_motmove_step[M_EPOXY_TRANSFER_Y] = 0;
-		CTL_Lib.mn_single_motmove_step[M_EPOXY_TRANSFER_Z] = 0;
-		CTL_Lib.mn_single_motmove_step[M_EPOXY_SCREW] = 0;
+			CTL_Lib.mn_single_motmove_step[M_EPOXY_TRANSFER_X] = 0;
+			CTL_Lib.mn_single_motmove_step[M_EPOXY_TRANSFER_Y] = 0;
+			CTL_Lib.mn_single_motmove_step[M_EPOXY_TRANSFER_Z] = 0;
+			CTL_Lib.mn_single_motmove_step[M_EPOXY_SCREW] = 0;
 
-		mn_InitStep = 0;
-		mn_reinstate_step = 0;
-
+			mn_InitStep = 0;
+			mn_reinstate_step = 0;
+		}
 		break;
 	}
 
 	st_work.mn_run_EpoxyStatus = st_work.mn_run_status;
+
 	if( st_work.mn_run_status != dRUN )
 	{
 		if( st_work.nEpoxyBiliardThreadRunMode == dRUN ) st_work.mn_run_EpoxyStatus = dRUN;
@@ -122,6 +128,8 @@ void CRun_Epoxy_Transfer_Robot::Thread_Run()
 //kwlee 2017.0627
 void CRun_Epoxy_Transfer_Robot::Run_ReinState()
 {
+	return; //2017.0628 복귀 동작 막아 놓음.
+
 	int i, nRet_1, nRet_2;
 	double dTargetPos;
 	if (st_work.nEpoxy_ReinstateMent_Ok == YES) return;
@@ -275,30 +283,67 @@ void CRun_Epoxy_Transfer_Robot::Run_ReinState()
 
 
 	case 2320:
-		dTargetPos = OnEpoxyPosX();
-		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X,dTargetPos, COMI.mn_runspeed_rate);
-		if (nRet_1 == BD_GOOD)
+		if (st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_X] == -1)
 		{
-			//kwlee 2017.0626
-			mn_reinstate_step = 2330;
+			dTargetPos = st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_FIRST_START_POS];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, dTargetPos, COMI.mn_runspeed_rate);
+			
+			if (nRet_1 == BD_GOOD)
+			{
+				//kwlee 2017.0626
+				mn_reinstate_step = 2330;
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
 		}
-		else if (nRet_1 == BD_ERROR)
+		else
 		{
-			mn_reinstate_step = 20000;
- 		}
+			//dTargetPos = OnEpoxyPosX();
+			dTargetPos = st_motor[m_nRobot_X].md_pos[st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_X]];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X,dTargetPos, COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD)
+			{
+				//kwlee 2017.0626
+				mn_reinstate_step = 2330;
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+ 			}
+		}
 		break;
 
 	case 2330:
-		dTargetPos = OnEpoxyPosY();
-		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y,dTargetPos, COMI.mn_runspeed_rate);
-		if (nRet_1 == BD_GOOD)
+		//dTargetPos = OnEpoxyPosY();
+		if (st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_Y] == -1)
 		{
-			//kwlee 2017.0626
-			mn_reinstate_step = 2400;
+			dTargetPos = st_work.dReinstatement_pos[1][m_nRobot_Y]; //이동;
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y,dTargetPos, COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD)
+			{
+				//kwlee 2017.0626
+				mn_reinstate_step = 2400;
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
 		}
-		else if (nRet_1 == BD_ERROR)
+		else
 		{
-			mn_reinstate_step = 20000;
+			dTargetPos = st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_Y]];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y,dTargetPos, COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD)
+			{
+				//kwlee 2017.0626
+				mn_reinstate_step = 2400;
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
 		}
 		break;
 		// Z축 이동
@@ -333,7 +378,6 @@ void CRun_Epoxy_Transfer_Robot::Run_ReinState()
 // 		}
 		//kwlee 2017.0627
 		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_work.dReinstatement_pos[1][M_EPOXY_TRANSFER_Z], COMI.mn_runspeed_rate);
-		
 		if (nRet_1 == BD_GOOD)
 		{
 			mn_reinstate_step = 5000;
@@ -445,41 +489,41 @@ int CRun_Epoxy_Transfer_Robot::GetMotorPosX(double dPos)
 	{
 		nPos = P_EPOXY_TRANSFER_X_FIRST_START_POS;
 	}	
-	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_FIRST_END_POS] - COMI.md_allow_value[m_nRobot_X] &&
-		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_FIRST_END_POS] + COMI.md_allow_value[m_nRobot_X])
-	{
-		nPos= P_EPOXY_TRANSFER_X_FIRST_END_POS;
-	}	
-	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SECOND_START_POS] - COMI.md_allow_value[m_nRobot_X] &&
-		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SECOND_START_POS] + COMI.md_allow_value[m_nRobot_X])
-	{
-		nPos= P_EPOXY_TRANSFER_X_SECOND_START_POS;
-	}
-	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SECOND_END_POS] - COMI.md_allow_value[m_nRobot_X] &&
-		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SECOND_END_POS] + COMI.md_allow_value[m_nRobot_X])
-	{
-		nPos= P_EPOXY_TRANSFER_X_SECOND_END_POS;
-	}
-	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS1] - COMI.md_allow_value[m_nRobot_X] &&
-		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS1] + COMI.md_allow_value[m_nRobot_X])
-	{
-		nPos= P_EPOXY_TRANSFER_X_DOT_POS1;
-	}
-	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS2] - COMI.md_allow_value[m_nRobot_X] &&
-		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS2] + COMI.md_allow_value[m_nRobot_X])
-	{
-		nPos= P_EPOXY_TRANSFER_X_DOT_POS2;
-	}
-	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS3] - COMI.md_allow_value[m_nRobot_X] &&
-		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS3] + COMI.md_allow_value[m_nRobot_X])
-	{
-		nPos= P_EPOXY_TRANSFER_X_DOT_POS3;
-	}
-	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS4] - COMI.md_allow_value[m_nRobot_X] &&
-		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS4] + COMI.md_allow_value[m_nRobot_X])
-	{
-		nPos= P_EPOXY_TRANSFER_X_DOT_POS4;
-	}
+// 	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_FIRST_END_POS] - COMI.md_allow_value[m_nRobot_X] &&
+// 		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_FIRST_END_POS] + COMI.md_allow_value[m_nRobot_X])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_X_FIRST_END_POS;
+// 	}	
+// 	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SECOND_START_POS] - COMI.md_allow_value[m_nRobot_X] &&
+// 		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SECOND_START_POS] + COMI.md_allow_value[m_nRobot_X])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_X_SECOND_START_POS;
+// 	}
+// 	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SECOND_END_POS] - COMI.md_allow_value[m_nRobot_X] &&
+// 		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_SECOND_END_POS] + COMI.md_allow_value[m_nRobot_X])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_X_SECOND_END_POS;
+// 	}
+// 	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS1] - COMI.md_allow_value[m_nRobot_X] &&
+// 		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS1] + COMI.md_allow_value[m_nRobot_X])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_X_DOT_POS1;
+// 	}
+// 	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS2] - COMI.md_allow_value[m_nRobot_X] &&
+// 		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS2] + COMI.md_allow_value[m_nRobot_X])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_X_DOT_POS2;
+// 	}
+// 	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS3] - COMI.md_allow_value[m_nRobot_X] &&
+// 		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS3] + COMI.md_allow_value[m_nRobot_X])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_X_DOT_POS3;
+// 	}
+// 	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS4] - COMI.md_allow_value[m_nRobot_X] &&
+// 		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DOT_POS4] + COMI.md_allow_value[m_nRobot_X])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_X_DOT_POS4;
+// 	}
 	else if ( dPos >= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DISCHARGE_POS] - COMI.md_allow_value[m_nRobot_X] &&
 		dPos <= st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_DISCHARGE_POS] + COMI.md_allow_value[m_nRobot_X])
 	{
@@ -502,46 +546,46 @@ int CRun_Epoxy_Transfer_Robot::GetMotorPosY(double dPos)
 	{
 		nPos= P_EPOXY_TRANSFER_Y_SAFETY;
 	}
-	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_FIRST_START_POS] - COMI.md_allow_value[m_nRobot_Y] &&
-		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_FIRST_START_POS] + COMI.md_allow_value[m_nRobot_Y])
-	{
-		nPos = P_EPOXY_TRANSFER_Y_FIRST_START_POS;
-	}	
-	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_FIRST_END_POS] - COMI.md_allow_value[m_nRobot_Y] &&
-		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_FIRST_END_POS] + COMI.md_allow_value[m_nRobot_Y])
-	{
-		nPos= P_EPOXY_TRANSFER_Y_FIRST_END_POS;
-	}	
-	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SECOND_START_POS] - COMI.md_allow_value[m_nRobot_Y] &&
-		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SECOND_START_POS] + COMI.md_allow_value[m_nRobot_Y])
-	{
-		nPos= P_EPOXY_TRANSFER_Y_SECOND_START_POS;
-	}
-	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SECOND_END_POS] - COMI.md_allow_value[m_nRobot_Y] &&
-		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SECOND_END_POS] + COMI.md_allow_value[m_nRobot_Y])
-	{
-		nPos= P_EPOXY_TRANSFER_Y_SECOND_END_POS;
-	}
-	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS1] - COMI.md_allow_value[m_nRobot_Y] &&
-		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS1] + COMI.md_allow_value[m_nRobot_Y])
-	{
-		nPos= P_EPOXY_TRANSFER_Y_DOT_POS1;
-	}
-	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS2] - COMI.md_allow_value[m_nRobot_Y] &&
-		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS2] + COMI.md_allow_value[m_nRobot_Y])
-	{
-		nPos= P_EPOXY_TRANSFER_Y_DOT_POS2;
-	}
-	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS3] - COMI.md_allow_value[m_nRobot_Y] &&
-		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS3] + COMI.md_allow_value[m_nRobot_Y])
-	{
-		nPos= P_EPOXY_TRANSFER_Y_DOT_POS3;
-	}
-	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS4] - COMI.md_allow_value[m_nRobot_Y] &&
-		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS4] + COMI.md_allow_value[m_nRobot_Y])
-	{
-		nPos= P_EPOXY_TRANSFER_Y_DOT_POS4;
-	}
+// 	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_FIRST_START_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+// 		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_FIRST_START_POS] + COMI.md_allow_value[m_nRobot_Y])
+// 	{
+// 		nPos = P_EPOXY_TRANSFER_Y_FIRST_START_POS;
+// 	}	
+// 	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_FIRST_END_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+// 		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_FIRST_END_POS] + COMI.md_allow_value[m_nRobot_Y])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_Y_FIRST_END_POS;
+// 	}	
+// 	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SECOND_START_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+// 		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SECOND_START_POS] + COMI.md_allow_value[m_nRobot_Y])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_Y_SECOND_START_POS;
+// 	}
+// 	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SECOND_END_POS] - COMI.md_allow_value[m_nRobot_Y] &&
+// 		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_SECOND_END_POS] + COMI.md_allow_value[m_nRobot_Y])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_Y_SECOND_END_POS;
+// 	}
+// 	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS1] - COMI.md_allow_value[m_nRobot_Y] &&
+// 		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS1] + COMI.md_allow_value[m_nRobot_Y])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_Y_DOT_POS1;
+// 	}
+// 	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS2] - COMI.md_allow_value[m_nRobot_Y] &&
+// 		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS2] + COMI.md_allow_value[m_nRobot_Y])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_Y_DOT_POS2;
+// 	}
+// 	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS3] - COMI.md_allow_value[m_nRobot_Y] &&
+// 		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS3] + COMI.md_allow_value[m_nRobot_Y])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_Y_DOT_POS3;
+// 	}
+// 	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS4] - COMI.md_allow_value[m_nRobot_Y] &&
+// 		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DOT_POS4] + COMI.md_allow_value[m_nRobot_Y])
+// 	{
+// 		nPos= P_EPOXY_TRANSFER_Y_DOT_POS4;
+// 	}
 	else if ( dPos >= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DISCHARGE_POS] - COMI.md_allow_value[m_nRobot_Y] &&
 		dPos <= st_motor[m_nRobot_Y].md_pos[P_EPOXY_TRANSFER_Y_DISCHARGE_POS] + COMI.md_allow_value[m_nRobot_Y])
 	{

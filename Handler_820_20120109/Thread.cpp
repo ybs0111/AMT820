@@ -83,8 +83,6 @@ int countflag = 0;
 // ******************************************************************************
 UINT OnThread_Handler_Check(LPVOID lParam)  // m_Thread[10]
 {
-
-
 	CSingleLock sing(&mutex);
 
 	while (!All_Stop)

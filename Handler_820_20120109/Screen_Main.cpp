@@ -4312,7 +4312,6 @@ void CScreen_Main::OnTray1Lock()
 
 void CScreen_Main::OnTray1Unlock() 
 {
-
 	if(st_work.mn_run_status == dRUN) return;
 	g_ioMgr.set_out_bit( st_io.o_Loading_Stacker_Tray_Lock_Sol, IO_OFF );
 	g_ioMgr.set_out_bit( st_io.o_Loading_Stacker_Tray_Unlock_Sol, IO_ON );

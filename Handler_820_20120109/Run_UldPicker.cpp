@@ -81,6 +81,7 @@ void CRun_UldPicker::Thread_Run()
 			RunMove();
 			break;
 
+			
 		case dSTOP:
 // 			if(m_nRobot_Z_Stop_Flag == 0)
 // 			{
@@ -111,12 +112,36 @@ void CRun_UldPicker::Thread_Run()
 		case dWARNING:
 			break;
 
-		//kwlee 2017.0626
+		//kwlee 2017.0628
 		case dREINSTATE:
 			Run_ReinState();
 			break;
 
 		default:
+			
+			return; //2017.0628 복귀 동작 막아 놓음.
+			
+			if (st_work.mn_run_status == dSTOP)
+			{
+				nRet_1 = COMI.Check_Motion_State(m_nRobot_Z, cmMST_STOP);//20150427 nRet_1 = cmmSxIsDone(n_MotorNum, &dwMotionDone);
+				if (nRet_1 != BD_GOOD) 
+				{//모터 상태가 mMST_STOP 이다 
+					if(CTL_Lib.mn_single_motmove_step[m_nRobot_Z] > 0)
+					{
+						COMI.Set_MotStop(1, m_nRobot_Z) ; //긴급정지 
+						CTL_Lib.mn_single_motmove_step[m_nRobot_Z] = 0;
+						m_nRobot_Z_Stop_Flag = 100; 
+					}
+					else
+					{
+						m_nRobot_Z_Stop_Flag = 1;
+					}					
+				}
+				else
+				{
+					m_nRobot_Z_Stop_Flag = 1;
+				}
+			}
 			//kwlee 2017.0626
 			if (st_work.mn_run_status != dRUN || st_work.mn_run_status != dREINSTATE)
 			{
@@ -2676,7 +2701,8 @@ void CRun_UldPicker::OnUldPicker_FinalPos()
 
 void CRun_UldPicker::Run_ReinState()
 {
-	
+	return; //2017.0628 복귀 동작 막아 놓음.
+
 	int i, nRet_1, nRet_2;
 	double dTargetPos;
 

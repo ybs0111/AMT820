@@ -54,10 +54,10 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//CAMERA
-	bool m_bCameraFwdBwdFlag;
+	bool  m_bCameraFwdBwdFlag;
 	DWORD m_dwCameraFwdBwd[3];
 
-	bool m_bCameraUpDnFlag;
+	bool  m_bCameraUpDnFlag;
 	DWORD m_dwCameraUpDn[3];
 	//////////////////////////////////////////////////////////////////////////
 	bool m_bWorkHeat;//Is there a device that working heatsink
@@ -77,8 +77,6 @@ public:
 	long	m_lpAxisNum[4];
 	double	m_dpTargetPosList[4];
 	double	m_dpSpdRatio[3];
-
-
 	int		m_nMove_Flag[3];
 
 	//////////////////////////////////////////////////////////////////////////
@@ -118,20 +116,26 @@ public:
 	DWORD	m_dwReverse[3];
 	//////////////////////////////////////////////////////////////////////////
 	
-	int m_nFindLotNo_Flag;
+	int		m_nFindLotNo_Flag;
 	CString m_strLotNo[2];
 	CString m_strPartNo[2];
 	CString m_strAlarmCode;
 
 	//////////////////////////////////////////////////////////////////////////
 	//Measure Vision
-	DWORD m_dwMCameraResWaitTime[3];
-	int m_nContinusVError;
-	int m_nTotalVError;
+	
+	int		m_nContinusVError;
+	int		m_nTotalVError;
 	bool	m_bVisionFwdBwdFlag;
 	DWORD	m_dwVisionwdFwdBwd[3];
+	DWORD	m_dwMCameraResWaitTime[3];
 
-
+	//kwlee 2017.0628
+	double  m_dcurr_pos[3]; 
+	int	    mn_reinstate_pos[3];
+	DWORD   m_dwReinstate_time[3];
+	int     m_nChange[4];
+	
 // Operations
 public:
 
@@ -141,6 +145,17 @@ public:
 	void RunMoveDispensor();
 	void RunInit();
 	void RunMoveBuffDispensor();
+
+	//kwlee 2017.0628
+	void Run_ReinState();
+	void OnHeatSink_FinalPos();
+	void Robot_BackupPos_Check();
+	
+	int GetMotorPosX(double dPos);
+	int GetMotorPosY(double dPos);
+	int GetMotorPosZ(double dPos);
+	int GetMotorPosP(double dPos);
+	////
 
 	int Process_Measure_Vision();
 	int Process_Dvc_Pickup(int nMode, int nWork_Site);

@@ -465,6 +465,7 @@ void CDialog_Manual_Move::Init_Timer()
 		m_nTransferJobFlag[i] = CTL_NO;
 		nCarrierSateyflag[i] = CTL_NO;
 	}
+
 	for ( i = 0; i < THREAD_MAX_SITE; i++)
 	{
 		for( j = 0; j < MAX_BUF_SIZE; j++ )
@@ -480,8 +481,6 @@ void CDialog_Manual_Move::Init_Timer()
 		}
 
 	}
-
-
 }
 
 int CDialog_Manual_Move::Move_TrayElv1()
