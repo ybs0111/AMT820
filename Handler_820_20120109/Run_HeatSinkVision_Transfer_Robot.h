@@ -131,10 +131,10 @@ public:
 	DWORD	m_dwMCameraResWaitTime[3];
 
 	//kwlee 2017.0628
-	double  m_dcurr_pos[3]; 
+	double  m_dcurr_pos[10]; 
 	int	    mn_reinstate_pos[3];
 	DWORD   m_dwReinstate_time[3];
-	int     m_nChange[4];
+	int     m_nChange[5];
 	
 // Operations
 public:
@@ -150,11 +150,17 @@ public:
 	void Run_ReinState();
 	void OnHeatSink_FinalPos();
 	void Robot_BackupPos_Check();
+	int OnSafetyCheck();
 	
 	int GetMotorPosX(double dPos);
 	int GetMotorPosY(double dPos);
 	int GetMotorPosZ(double dPos);
 	int GetMotorPosP(double dPos);
+
+	int GetMotorDisPos(double dPos);
+	int GetMotorInspY(double dPos);
+	int GetMotorInspZ(double dPos);
+
 	////
 
 	int Process_Measure_Vision();

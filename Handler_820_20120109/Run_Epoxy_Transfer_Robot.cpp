@@ -70,23 +70,20 @@ void CRun_Epoxy_Transfer_Robot::Thread_Run()
 		RunMove();
 		break;
 
-	case dSTOP:
+	//kwlee 2017.0629
+// 	case dSTOP:
+// 		break;
+// 
+// 	case dWARNING:
+// 		break;
 
-		break;
-
-	//kwlee 2017.0628 
+		//kwlee 2017.0628 
 	case dREINSTATE:
 		Run_ReinState();
 		break;
 
-	case dWARNING:
-		break;
 
-	default:
-
-		//kwlee 2017.0628 
-		 return; //2017.0628 복귀 동작 막아 놓음.
-
+	default: 
 		if (st_work.mn_run_EpoxyStatus != dRUN || st_work.mn_run_EpoxyStatus != dREINSTATE)
 		{
 			OnEpoxy_FinalPos();	
@@ -128,8 +125,6 @@ void CRun_Epoxy_Transfer_Robot::Thread_Run()
 //kwlee 2017.0627
 void CRun_Epoxy_Transfer_Robot::Run_ReinState()
 {
-	return; //2017.0628 복귀 동작 막아 놓음.
-
 	int i, nRet_1, nRet_2;
 	double dTargetPos;
 	if (st_work.nEpoxy_ReinstateMent_Ok == YES) return;

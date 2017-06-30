@@ -58,43 +58,42 @@ void CRun_LdPicker::Thread_Run()
 	case dRUN:
 		RunMove();
 		break;
-	
-	case dSTOP:
-		if(m_nRobot_Z_Stop_Flag == 0)
-		{
-			nRet_1 = COMI.Check_Motion_State(M_LOADER_TRANSFER_Z, cmMST_STOP);//20150427 nRet_1 = cmmSxIsDone(n_MotorNum, &dwMotionDone);
-			if (nRet_1 != BD_GOOD) 
-			{//모터 상태가 mMST_STOP 이다 
-				if(CTL_Lib.mn_single_motmove_step[M_LOADER_TRANSFER_Z] > 0)
-				{
-					COMI.Set_MotStop(1, M_LOADER_TRANSFER_Z) ; //긴급정지 
-					CTL_Lib.mn_single_motmove_step[M_LOADER_TRANSFER_Z] = 0;
-					m_nRobot_Z_Stop_Flag = 100; 
-				}
-				else
-				{
-					m_nRobot_Z_Stop_Flag = 1;
-				}					
-			}
-			else
-			{
-				m_nRobot_Z_Stop_Flag = 1;
-			}
-		}
 
-		m_dwWaitTime[0] = GetCurrentTime();
-		break;
+	//kwlee 2017.0629
+// 	case dSTOP:
+// 		if(m_nRobot_Z_Stop_Flag == 0)
+// 		{
+// 			nRet_1 = COMI.Check_Motion_State(M_LOADER_TRANSFER_Z, cmMST_STOP);//20150427 nRet_1 = cmmSxIsDone(n_MotorNum, &dwMotionDone);
+// 			if (nRet_1 != BD_GOOD) 
+// 			{//모터 상태가 mMST_STOP 이다 
+// 				if(CTL_Lib.mn_single_motmove_step[M_LOADER_TRANSFER_Z] > 0)
+// 				{
+// 					COMI.Set_MotStop(1, M_LOADER_TRANSFER_Z) ; //긴급정지 
+// 					CTL_Lib.mn_single_motmove_step[M_LOADER_TRANSFER_Z] = 0;
+// 					m_nRobot_Z_Stop_Flag = 100; 
+// 				}
+// 				else
+// 				{
+// 					m_nRobot_Z_Stop_Flag = 1;
+// 				}					
+// 			}
+// 			else
+// 			{
+// 				m_nRobot_Z_Stop_Flag = 1;
+// 			}
+// 		}
+// 
+// 		m_dwWaitTime[0] = GetCurrentTime();
+// 		break;
+// 
+// 	case dWARNING:
+// 		break;
 
-	case dWARNING:
-		break;
-
-		//kwlee 2017.0628 복귀 동작 막아 놓음.
 	case dREINSTATE:
 		Run_ReinState();
 		break;
 
 	default:
-		return; //2017.0628 복귀 동작 막아 놓음.
 		if (st_work.mn_run_status == dSTOP)
 		{
 			if(m_nRobot_Z_Stop_Flag == 0)
@@ -3341,11 +3340,10 @@ void CRun_LdPicker::Robot_BackupPos_Check()
 
 void CRun_LdPicker::Run_ReinState()
 {
-	return; //2017.0628복귀 동작 막아 놓음.
-
 	int i;
 	int nRet_1,nRet_2;
 
+	
 	//int nChangePos[2];
 	double dCurrPos[4];
 	double dTargetPos;

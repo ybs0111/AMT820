@@ -2060,6 +2060,8 @@ struct st_work_param
 	
 	int nPickerClampState[2];
 
+	int nPadCylinderState[2];
+
 	int    nReinstatement_mode[10];
 	double dReinstatement_pos[2][MAXMOTOR];
 	

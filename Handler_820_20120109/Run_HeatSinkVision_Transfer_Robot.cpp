@@ -105,12 +105,12 @@ void CRun_HeatSinkVision_Transfer_Robot::Thread_Run()
 			RunMoveBuffDispensor();
 			break;
 			
-		
-		case dSTOP:
-			break;
-			
-		case dWARNING:
-			break;
+		//kwlee 2017.0629
+// 		case dSTOP:
+// 			break;
+// 			
+// 		case dWARNING:
+// 			break;
 
 			//kwlee 2017.0628 복귀 동작 막아 놓음.
 		case dREINSTATE:
@@ -118,7 +118,6 @@ void CRun_HeatSinkVision_Transfer_Robot::Thread_Run()
 			break;
 			
 		default:
-			return; //2017.0628 복귀 동작 막아 놓음.
 			if (st_work.mn_run_HeatSinkStatus != dRUN || st_work.mn_run_HeatSinkStatus != dREINSTATE)
 			{
 				OnHeatSink_FinalPos();	
@@ -5879,7 +5878,7 @@ int CRun_HeatSinkVision_Transfer_Robot::Chk_HeatSink_Reverse_UpDown( int OnOff )
 		if (m_bReverseUpDnFlag == false && g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_Up_Check, IO_OFF) == IO_OFF &&
 			g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_Down_Check, IO_ON) == IO_ON )
 		{
-			m_bReverseUpDnFlag		= true;
+			m_bReverseUpDnFlag	= true;
 			m_dwReverseUpDn[0]	= GetCurrentTime();
 		}
 		else if (m_bReverseUpDnFlag == true && g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_Up_Check, IO_OFF) == IO_OFF &&
@@ -6099,7 +6098,6 @@ int CRun_HeatSinkVision_Transfer_Robot::Chk_HeatSink_Reverse_Clamp_ForwardBackwa
 
 void CRun_HeatSinkVision_Transfer_Robot::Set_Dispenser_Air_Blow(int OnOff)
 {
-
 	if (OnOff == IO_OFF)
 	{
 		if(st_basic.n_mode_7387 == CTL_YES)
@@ -6111,7 +6109,6 @@ void CRun_HeatSinkVision_Transfer_Robot::Set_Dispenser_Air_Blow(int OnOff)
 			g_ioMgr.set_out_bit(st_io.o_Dispenser_1_Liquide_Off_Sol, IO_ON);
 			g_ioMgr.set_out_bit(st_io.o_Dispenser_Air_Timer_Start, IO_OFF);	
 			g_ioMgr.set_out_bit(st_io.o_Dispenser_Air_Timer_Reset, IO_ON);
-
 			g_ioMgr.set_out_bit(st_io.o_Dispenser_Air_Timer_Reset, IO_OFF);
 			st_work.n7387BlowCheck = 0;
 		}
@@ -6644,7 +6641,6 @@ int CRun_HeatSinkVision_Transfer_Robot::Chk_Device_CameraY_Jig_Press_ForwardBack
 			}
 		}
 	}
-
 	return RET_PROCEED;
 }
 
@@ -6700,11 +6696,9 @@ void CRun_HeatSinkVision_Transfer_Robot::Set_Device_Carrier_Camera_LED_LAMP_OnOf
 //kwlee 2017.0628
 void CRun_HeatSinkVision_Transfer_Robot::Run_ReinState()
 {
-	return; //2017.0628 복귀 동작 막아 놓음.
-
-	int i,nRet_1,nRet_2;
-//	double dTarget;
-	double dCurrHeatSinkX, dCurrHeatSinkY;
+	int i,nRet_1;
+	double dTarget;
+	//double dCurrHeatSinkX, dCurrHeatSinkY,dCurrDispensor;
 
 	switch(mn_reinstate_step)
 	{
@@ -6713,33 +6707,40 @@ void CRun_HeatSinkVision_Transfer_Robot::Run_ReinState()
 		break;
 
 	case 100:
-		dCurrHeatSinkX = COMI.Get_MotCurrentPos( M_HEATSINK_TRANSFER_X );
-		dCurrHeatSinkY = COMI.Get_MotCurrentPos( M_HEATSINK_TRANSFER_Y );
-		if( ( dCurrHeatSinkX > (st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRASNFER_X_TURN_READY_POS] + COMI.md_allow_value[M_HEATSINK_TRANSFER_X]) ) &&
-			( dCurrHeatSinkY < (st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRASNFER_Y_TURN_READY_POS] - COMI.md_allow_value[M_HEATSINK_TRANSFER_Y]) ) )
-		{
-			nRet_1 = g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_0_Check, IO_OFF);
-			nRet_2 = g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_180_Check, IO_ON);
-			
-			if (nRet_1 == IO_OFF && nRet_2 == IO_ON)
-			{
-				mn_reinstate_step = 20000;
-			}
-			else
-			{
-				mn_reinstate_step = 1000;
-			}
-		}
-		else
-		{
-			mn_reinstate_step = 1000;
-		}
+// 		dCurrHeatSinkX = COMI.Get_MotCurrentPos( M_HEATSINK_TRANSFER_X );
+// 		dCurrHeatSinkY = COMI.Get_MotCurrentPos( M_HEATSINK_TRANSFER_Y );
+// 
+// 		if( ( dCurrHeatSinkX > (st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRASNFER_X_TURN_READY_POS] + COMI.md_allow_value[M_HEATSINK_TRANSFER_X]) ) &&
+// 			( dCurrHeatSinkY < (st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRASNFER_Y_TURN_READY_POS] - COMI.md_allow_value[M_HEATSINK_TRANSFER_Y]) ) )
+// 		{
+// 			nRet_1 = g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_0_Check, IO_OFF);
+// 			nRet_2 = g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_180_Check, IO_ON);
+// 			
+// 			if (nRet_1 == IO_OFF && nRet_2 == IO_ON)
+// 			{
+// 				mn_reinstate_step = 20000;
+// 			}
+// 			else
+// 			{
+// 				mn_reinstate_step = 1000;
+// 			}
+// 		}
+// 		else
+// 		{
+// 			mn_reinstate_step = 1000;
+// 		}
+		
+		mn_reinstate_step = 1000;
 		break;
 			
 	case 1000:
-		m_dcurr_pos[0] = COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_X);
-		m_dcurr_pos[1] = COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_Y);
-		m_dcurr_pos[2] = COMI.Get_MotCurrentPos(M_EPOXY_TRANSFER_Z);
+		m_dcurr_pos[0] = COMI.Get_MotCurrentPos(M_HEATSINK_TRANSFER_X);
+		m_dcurr_pos[1] = COMI.Get_MotCurrentPos(M_HEATSINK_TRANSFER_Y);
+		m_dcurr_pos[2] = COMI.Get_MotCurrentPos(M_HEATSINK_TRANSFER_Z);
+		m_dcurr_pos[3] = COMI.Get_MotCurrentPos(M_DISPENSER_Y);
+		
+		m_dcurr_pos[4] = COMI.Get_MotCurrentPos(M_HEATSINK_INSPECT_Y);
+		m_dcurr_pos[5] = COMI.Get_MotCurrentPos(M_HEATSINK_INSPECT_Z);
 
 		for (i = 0; i<4; i++)
 		{
@@ -6774,6 +6775,12 @@ void CRun_HeatSinkVision_Transfer_Robot::Run_ReinState()
 			sprintf(st_msg.c_abnormal_msg, "HeatSink Robot P POS [OLD] : %ld -> [NOW] : %ld [GAP] : %ld", (long)st_work.dReinstatement_pos[0][m_nRobot_Z], (long)m_dcurr_pos[2], (long)COMI.md_allow_value[m_nRobot_Z]);
 		}
 		
+		if (st_work.nPadCylinderState[0] != g_ioMgr.get_in_bit(st_io.i_HeatSink_Transfer_Pad_Up_Check, IO_ON) || 
+			st_work.nPadCylinderState[1] != g_ioMgr.get_in_bit(st_io.i_HeatSink_Transfer_Pad_Down_Check, IO_OFF))
+		{
+			m_nChange[4]++;
+		}
+
 		if (m_nChange[0] > 0 || m_nChange[1] > 0 || m_nChange[2] > 0 || m_nChange[3] > 0)
 		{
 			mn_reinstate_step = 2000;
@@ -6801,7 +6808,14 @@ void CRun_HeatSinkVision_Transfer_Robot::Run_ReinState()
 		
 		if (m_dwReinstate_time[2] >= 100)
 		{
-			mn_reinstate_step = 5000;
+			if (m_nChange[4] > 0)
+			{
+				mn_reinstate_step = 4800;
+			}
+			else
+			{
+				mn_reinstate_step = 5000;
+			}
 		}
 		break;
 
@@ -6811,13 +6825,183 @@ void CRun_HeatSinkVision_Transfer_Robot::Run_ReinState()
 		COMI.Set_MotPower(M_HEATSINK_TRANSFER_Y, TRUE);
 		COMI.Set_MotPower(M_HEATSINK_TRANSFER_Z, TRUE);
 		COMI.Set_MotPower(M_HEATSINK_PICKER_PITCH, TRUE);
+		COMI.Set_MotPower(M_DISPENSER_Y, TRUE);
+
+		COMI.Set_MotPower(M_HEATSINK_INSPECT_Y, TRUE);
+		COMI.Set_MotPower(M_HEATSINK_INSPECT_Z, TRUE);
+
 		mn_reinstate_step = 2100;
 		break;
 
 	case 2100:
-
+		if( st_work.dReinstatement_pos[1][m_nRobot_X] != st_motor[m_nRobot_X].md_pos[st_work.nReinst_MotorPos[0][M_HEATSINK_TRANSFER_X]] || 
+			st_work.dReinstatement_pos[1][m_nRobot_Y] != st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_HEATSINK_TRANSFER_Y]])
+		{ 
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_P, st_motor[m_nRobot_P].md_pos[P_HEATSINK_PICKER_PITCH_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD)
+			{
+				mn_reinstate_step = 2110;
+			}
+			else if(nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;	
+			}
+		}
+		else
+		{
+			mn_reinstate_step = 2110;
+		}
+		break;
+		
+	case 2110:
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_HEATSINK_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD)
+		{
+			mn_reinstate_step = 2200;
+		}
+		else if(nRet_1 == BD_ERROR)
+		{
+			mn_reinstate_step = 20000;	
+		}
 		break;
 
+	case 2200:
+		if (st_work.nReinst_MotorPos[0][m_nRobot_X] == -1)
+		{
+			dTarget = st_work.dReinstatement_pos[1][m_nRobot_X];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH,m_nRobot_X,dTarget,COMI.mn_runspeed_rate);
+
+			if (nRet_1 == BD_GOOD)
+			{
+				mn_reinstate_step = 2300;
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
+		}
+		else
+		{
+			dTarget = st_motor[m_nRobot_X].md_pos[st_work.nReinst_MotorPos[0][M_HEATSINK_TRANSFER_X]];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X,dTarget,COMI.mn_runspeed_rate);
+
+			if (nRet_1 == BD_GOOD)
+			{
+				mn_reinstate_step = 2300;
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
+		}
+		break;
+	
+	case 2300:
+		if (st_work.nReinst_MotorPos[0][m_nRobot_Y] == -1)
+		{
+			dTarget = st_work.dReinstatement_pos[1][m_nRobot_Y];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH,m_nRobot_Y,dTarget,COMI.mn_runspeed_rate);
+			
+			if (nRet_1 == BD_GOOD)
+			{
+				mn_reinstate_step = 2310;
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
+		}
+		else
+		{
+			dTarget = st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_HEATSINK_TRANSFER_Y]];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y,dTarget,COMI.mn_runspeed_rate);
+			
+			if (nRet_1 == BD_GOOD)
+			{
+				mn_reinstate_step = 2310;
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
+		}
+		break;
+
+	case 2310:
+		nRet_1 = OnSafetyCheck();
+		if (nRet_1 == BD_GOOD)
+		{
+			mn_reinstate_step = 2400;
+		}
+		else
+		{
+			mn_reinstate_step = 20000;
+		}
+		break;
+
+	case 2400:
+		if (st_work.nReinst_MotorPos[0][m_nRobot_Z] == -1)
+		{
+			dTarget = st_work.dReinstatement_pos[1][m_nRobot_Z];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH,m_nRobot_Z,dTarget,COMI.mn_runspeed_rate);
+			
+			if (nRet_1 == BD_GOOD)
+			{
+				if (m_nChange[4] > 0)
+				{
+					mn_reinstate_step = 4800;
+				}
+				else
+				{
+					mn_reinstate_step = 5000;
+				}
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
+		}
+		else
+		{
+			dTarget = st_motor[m_nRobot_Z].md_pos[st_work.nReinst_MotorPos[0][M_HEATSINK_TRANSFER_Z]];
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z,dTarget,COMI.mn_runspeed_rate);
+			
+			if (nRet_1 == BD_GOOD)
+			{
+				if (m_nChange[4] > 0)
+				{
+					mn_reinstate_step = 4800;
+				}
+				else
+				{
+					mn_reinstate_step = 5000;
+				}
+			}
+			else if (nRet_1 == BD_ERROR)
+			{
+				mn_reinstate_step = 20000;
+			}
+		}
+		break;
+
+
+	case 4800:
+		Set_HeatSink_Transfer_Pad_UpDown(st_work.nPadCylinderState[0]);
+		mn_reinstate_step = 4900;
+		break;
+
+	case 4900:
+		nRet_1 = Chk_HeatSink_Transfer_Pad_UpDown(st_work.nPadCylinderState[0]);
+		if (nRet_1 == RET_GOOD)
+		{
+			mn_reinstate_step = 5000;
+		}
+		else if (nRet_1 == RET_ERROR)
+		{
+			alarm.mstr_code = m_strAlarmCode;
+			mn_reinstate_step = 20000;
+		}
+		break;
 	case 5000:
 		st_work.nHeatSink_ReinstateMent_Ready = YES;
 		st_work.nHeatSink_ReinstateMent_Ok = YES;//20121126
@@ -6839,12 +7023,23 @@ void CRun_HeatSinkVision_Transfer_Robot::OnHeatSink_FinalPos()
 		st_work.dReinstatement_pos[0][M_HEATSINK_TRANSFER_Y] = COMI.md_cmdpos_backup[M_HEATSINK_TRANSFER_Y];
 		st_work.dReinstatement_pos[0][M_HEATSINK_TRANSFER_Z] = COMI.md_cmdpos_backup[M_HEATSINK_TRANSFER_Z];
 		st_work.dReinstatement_pos[0][M_HEATSINK_PICKER_PITCH] = COMI.md_cmdpos_backup[M_HEATSINK_PICKER_PITCH];
-		
+		st_work.dReinstatement_pos[0][M_DISPENSER_Y] = COMI.md_cmdpos_backup[M_DISPENSER_Y];
+
+		st_work.dReinstatement_pos[0][M_HEATSINK_INSPECT_Y] = COMI.md_cmdpos_backup[M_HEATSINK_INSPECT_Y];
+		st_work.dReinstatement_pos[0][M_HEATSINK_INSPECT_Z] = COMI.md_cmdpos_backup[M_HEATSINK_INSPECT_Z];
+
 		st_work.nReinst_MotorPos[0][M_HEATSINK_TRANSFER_X] = GetMotorPosX(COMI.md_cmdpos_backup[M_HEATSINK_TRANSFER_X]);
 		st_work.nReinst_MotorPos[0][M_HEATSINK_TRANSFER_Y] = GetMotorPosY(COMI.md_cmdpos_backup[M_HEATSINK_TRANSFER_Y]);
 		st_work.nReinst_MotorPos[0][M_HEATSINK_TRANSFER_Z] = GetMotorPosZ(COMI.md_cmdpos_backup[M_HEATSINK_TRANSFER_Z]);
 		st_work.nReinst_MotorPos[0][M_HEATSINK_PICKER_PITCH] = GetMotorPosP(COMI.md_cmdpos_backup[M_HEATSINK_PICKER_PITCH]);
-		
+		st_work.nReinst_MotorPos[0][M_DISPENSER_Y]			= GetMotorDisPos(COMI.md_cmdpos_backup[M_DISPENSER_Y]);
+
+		st_work.nReinst_MotorPos[0][M_HEATSINK_INSPECT_Y] = GetMotorInspY(COMI.md_cmdpos_backup[M_HEATSINK_INSPECT_Y]);
+		st_work.nReinst_MotorPos[0][M_HEATSINK_INSPECT_Z] = GetMotorInspZ(COMI.md_cmdpos_backup[M_HEATSINK_INSPECT_Z]);
+
+		st_work.nPadCylinderState[0] = g_ioMgr.get_in_bit(st_io.i_HeatSink_Transfer_Pad_Up_Check, IO_ON);
+		st_work.nPadCylinderState[1] = g_ioMgr.get_in_bit(st_io.i_HeatSink_Transfer_Pad_Down_Check, IO_OFF);
+
 		st_work.nReinstatement_mode[HEATSINK] = 1;
 	}
 }
@@ -6854,6 +7049,10 @@ void CRun_HeatSinkVision_Transfer_Robot::Robot_BackupPos_Check()
 	st_work.dReinstatement_pos[1][M_HEATSINK_TRANSFER_Y] = st_work.dReinstatement_pos[0][M_HEATSINK_TRANSFER_Y];
 	st_work.dReinstatement_pos[1][M_HEATSINK_TRANSFER_Z] = st_work.dReinstatement_pos[0][M_HEATSINK_TRANSFER_Z];
 	st_work.dReinstatement_pos[1][M_HEATSINK_PICKER_PITCH] = st_work.dReinstatement_pos[0][M_HEATSINK_PICKER_PITCH];
+	st_work.dReinstatement_pos[1][M_DISPENSER_Y] = st_work.dReinstatement_pos[0][M_DISPENSER_Y];
+
+	st_work.dReinstatement_pos[1][M_HEATSINK_INSPECT_Y] = st_work.dReinstatement_pos[0][M_HEATSINK_INSPECT_Y];
+	st_work.dReinstatement_pos[1][M_HEATSINK_INSPECT_Z] = st_work.dReinstatement_pos[0][M_HEATSINK_INSPECT_Z];	
 }
 
 int CRun_HeatSinkVision_Transfer_Robot::GetMotorPosX(double dPos)
@@ -7150,4 +7349,183 @@ int CRun_HeatSinkVision_Transfer_Robot::GetMotorPosP(double dPos)
 	}	
 	
 	return nPos;
+}
+
+int CRun_HeatSinkVision_Transfer_Robot::GetMotorDisPos(double dPos)
+{
+	int nPos = -1;
+	
+	if ( dPos >= st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_INIT_POS] - COMI.md_allow_value[m_nRobot_DisY] &&
+		dPos <= st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_INIT_POS] + COMI.md_allow_value[m_nRobot_DisY])
+	{
+		nPos= P_DISPENSOR_Y_INIT_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_HEATSINK_POS] - COMI.md_allow_value[m_nRobot_DisY] &&
+		dPos <= st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_HEATSINK_POS] + COMI.md_allow_value[m_nRobot_DisY])
+	{
+		nPos= P_DISPENSOR_Y_HEATSINK_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_DISPENSING_END_POS] - COMI.md_allow_value[m_nRobot_DisY] &&
+		dPos <= st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_DISPENSING_END_POS] + COMI.md_allow_value[m_nRobot_DisY])
+	{
+		nPos = P_DISPENSOR_Y_DISPENSING_END_POS;
+	}	
+	
+	else if ( dPos >= st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_LIQUID_CHECK_POS] - COMI.md_allow_value[m_nRobot_DisY] &&
+		dPos <= st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_LIQUID_CHECK_POS] + COMI.md_allow_value[m_nRobot_DisY])
+	{
+		nPos = P_DISPENSOR_Y_LIQUID_CHECK_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_GABAGE_POS] - COMI.md_allow_value[m_nRobot_DisY] &&
+		dPos <= st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_GABAGE_POS] + COMI.md_allow_value[m_nRobot_DisY])
+	{
+		nPos = P_DISPENSOR_Y_GABAGE_POS;
+	}	
+	return nPos;
+}
+
+int CRun_HeatSinkVision_Transfer_Robot::GetMotorInspY(double dPos)
+{
+	int nPos = -1;
+	
+	if ( dPos >= st_motor[m_nRobot_DisY].md_pos[P_HEATSINK_INSPECT_Y_INIT_POS] - COMI.md_allow_value[m_nRobot_DisY] &&
+		dPos <= st_motor[m_nRobot_DisY].md_pos[P_HEATSINK_INSPECT_Y_INIT_POS] + COMI.md_allow_value[m_nRobot_DisY])
+	{
+		nPos= P_HEATSINK_INSPECT_Y_INIT_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_DisY].md_pos[P_HEATSINK_INSPECT_Y_PRESS_START_POS] - COMI.md_allow_value[m_nRobot_DisY] &&
+		dPos <= st_motor[m_nRobot_DisY].md_pos[P_HEATSINK_INSPECT_Y_PRESS_START_POS] + COMI.md_allow_value[m_nRobot_DisY])
+	{
+		nPos= P_HEATSINK_INSPECT_Y_PRESS_START_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_DisY].md_pos[P_HEATSINK_INSPECT_Y_PRESS_END_POS] - COMI.md_allow_value[m_nRobot_DisY] &&
+		dPos <= st_motor[m_nRobot_DisY].md_pos[P_HEATSINK_INSPECT_Y_PRESS_END_POS] + COMI.md_allow_value[m_nRobot_DisY])
+	{
+		nPos = P_HEATSINK_INSPECT_Y_PRESS_END_POS;
+	}	
+	
+	else if ( dPos >= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_TOP_POS] - COMI.md_allow_value[m_nRobot_VisY] &&
+		dPos <= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_TOP_POS] + COMI.md_allow_value[m_nRobot_VisY])
+	{
+		nPos = P_HEATSINK_INSPECT_Y_VISION_TOP_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_MID_POS] - COMI.md_allow_value[m_nRobot_VisY] &&
+		dPos <= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_MID_POS] + COMI.md_allow_value[m_nRobot_VisY])
+	{
+		nPos = P_HEATSINK_INSPECT_Y_VISION_MID_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_BOT_POS] - COMI.md_allow_value[m_nRobot_VisY] &&
+		dPos <= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_BOT_POS] + COMI.md_allow_value[m_nRobot_VisY])
+	{
+		nPos = P_HEATSINK_INSPECT_Y_VISION_BOT_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_TOP2_POS] - COMI.md_allow_value[m_nRobot_VisY] &&
+		dPos <= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_TOP2_POS] + COMI.md_allow_value[m_nRobot_VisY])
+	{
+		nPos = P_HEATSINK_INSPECT_Y_VISION_TOP2_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_MID2_POS] - COMI.md_allow_value[m_nRobot_VisY] &&
+		dPos <= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_MID2_POS] + COMI.md_allow_value[m_nRobot_VisY])
+	{
+		nPos = P_HEATSINK_INSPECT_Y_VISION_MID2_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_BOT2_POS] - COMI.md_allow_value[m_nRobot_VisY] &&
+		dPos <= st_motor[m_nRobot_VisY].md_pos[P_HEATSINK_INSPECT_Y_VISION_BOT2_POS] + COMI.md_allow_value[m_nRobot_VisY])
+	{
+		nPos = P_HEATSINK_INSPECT_Y_VISION_BOT2_POS;
+	}
+	return nPos;
+}
+
+int CRun_HeatSinkVision_Transfer_Robot::GetMotorInspZ(double dPos)
+{
+	int nPos = -1;
+	
+	if ( dPos >= st_motor[m_nRobot_VisZ].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS] - COMI.md_allow_value[m_nRobot_VisZ] &&
+		dPos <= st_motor[m_nRobot_VisZ].md_pos[P_HEATSINK_INSPECT_Z_INIT_POS] + COMI.md_allow_value[m_nRobot_VisZ])
+	{
+		nPos= P_HEATSINK_INSPECT_Z_INIT_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_VisZ].md_pos[P_HEATSINK_INSPECT_Z_VISION_POS] - COMI.md_allow_value[m_nRobot_VisZ] &&
+		dPos <= st_motor[m_nRobot_VisZ].md_pos[P_HEATSINK_INSPECT_Z_VISION_POS] + COMI.md_allow_value[m_nRobot_VisZ])
+	{
+		nPos= P_HEATSINK_INSPECT_Z_VISION_POS;
+	}
+	else if ( dPos >= st_motor[m_nRobot_VisZ].md_pos[P_HEATSINK_INSPECT_Z_VISION_2_POS] - COMI.md_allow_value[m_nRobot_VisZ] &&
+		dPos <= st_motor[m_nRobot_VisZ].md_pos[P_HEATSINK_INSPECT_Z_VISION_2_POS] + COMI.md_allow_value[m_nRobot_VisZ])
+	{
+		nPos = P_HEATSINK_INSPECT_Z_VISION_2_POS;
+	}	
+	return nPos;
+}
+
+int CRun_HeatSinkVision_Transfer_Robot::OnSafetyCheck()
+{
+	int nRet_1, nRet_2;
+	int nFucn;
+
+	nFucn = BD_GOOD;
+	if( COMI.Get_MotCurrentPos(M_HEATSINK_TRANSFER_Y) > ( st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS] + 5 ) )
+	{
+		if( ( COMI.Get_MotCurrentPos(M_HEATSINK_INSPECT_Y)  > ( st_motor[M_HEATSINK_INSPECT_Y].md_pos[P_HEATSINK_INSPECT_Y_INIT_POS] + 50*COMI.md_allow_value[M_HEATSINK_INSPECT_Y] ) ) )
+		{
+			alarm.mstr_code.Format("%02d0008", M_HEATSINK_INSPECT_Y);
+			nFucn = RET_ERROR;
+			return nFucn;
+		}
+	}
+	
+	if( COMI.Get_MotCurrentPos(M_HEATSINK_TRANSFER_X) > ( st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRANSFER_X_INIT_POS] + 5 ) )
+	{
+		nRet_1 = g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_0_Check, IO_OFF);
+		nRet_2 = g_ioMgr.get_in_bit(st_io.i_HeatSink_Reverse_180_Check, IO_ON);
+		
+		if (nRet_1 == IO_OFF && nRet_2 == IO_ON)			
+		{
+			alarm.mstr_code.Format("%02d0008", M_HEATSINK_TRANSFER_X);
+			nFucn = RET_ERROR;
+			return nFucn;
+		}
+	}
+	
+	if( m_dcurr_pos[1] == st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRASNFER_Y_TURN_PLACE_POS] ||
+		m_dcurr_pos[1] == st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRASNFER_Y_TURN_PICK_POS] ||
+		m_dcurr_pos[1] == st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRASNFER_Y_TURN_READY_POS] ||
+		m_dcurr_pos[1] == st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRASNFER_Y_DISPENSER_POS] )
+	{
+		if( COMI.Get_MotCurrentPos( M_DISPENSER_Y) > ( st_motor[M_DISPENSER_Y].md_pos[P_DISPENSOR_Y_INIT_POS] + 5) )
+		{
+			alarm.mstr_code.Format("%02d0008", M_DISPENSER_Y);
+			nFucn = RET_ERROR;
+			return nFucn;
+			
+		}
+	}
+	
+	if (m_dcurr_pos[0] == st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRANSFER_X_PLACE_TOPPOS] || 
+		m_dcurr_pos[0] == st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRANSFER_X_PLACE_MIDPOS] || 
+		m_dcurr_pos[0] == st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRANSFER_X_PLACE_BOTPOS])
+	{
+		if (m_dcurr_pos[1] == st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRANSFER_Y_PLACE_TOPPOS] || 
+			m_dcurr_pos[1] == st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRANSFER_Y_PLACE_MIDPOS] || 
+			m_dcurr_pos[1]== st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRANSFER_Y_PLACE_BOTPOS])
+		{
+			if (m_dcurr_pos[0] != st_work.dReinstatement_pos[1][M_HEATSINK_TRANSFER_X] || 
+				m_dcurr_pos[1] != st_work.dReinstatement_pos[1][M_HEATSINK_TRANSFER_Y])
+			{
+				if (m_dcurr_pos[0] != st_work.dReinstatement_pos[1][M_HEATSINK_TRANSFER_X])
+				{
+					alarm.mstr_code.Format("%02d0008", M_HEATSINK_TRANSFER_X);
+				}
+				
+				else if (m_dcurr_pos[1] != st_work.dReinstatement_pos[1][M_HEATSINK_TRANSFER_Y])
+				{
+					alarm.mstr_code.Format("%02d0008", M_HEATSINK_TRANSFER_Y);
+				}
+				nFucn = BD_ERROR;
+				return nFucn;
+			}
+		}
+	}
+	return nFucn;
 }

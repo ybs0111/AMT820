@@ -261,7 +261,6 @@ struct st_io_param
 	int i_HeatSink_Reverse_Type1_Check;
 	int i_HeatSink_Reverse_Type2_Check;
 
-
 	int	o_PCB_Cleanning_Forward_Sol;
 	int	o_PCB_Cleanning_Backward_Sol;
 	int	o_PCB_Cleanning_Up_Sol;
@@ -280,7 +279,6 @@ struct st_io_param
 	int o_Cleaner_Maint_Forward_Sol;
 	int o_Cleaner_Maint_Backward_Sol;
 
-
 	int i_Auto_SwitchCheck;								///PS1400
 	int i_Manual_SwitchCheck;							///PS1401
 	int i_Start_SwitchCheck;							///PS1402
@@ -295,6 +293,7 @@ struct st_io_param
 	int o_Stop_SwitchLamp;								///S1401
 	int o_AlarmClear_SwitchLamp;						///S1402
 	int o_Buzzer_SwitchLamp;							///S1403
+
 //	int o_Auto_SwitchLamp;								///
 //	int o_Manual_SwitchLamp;							///
 	int o_Tower_GreenLamp;								///S1412		
@@ -306,7 +305,6 @@ struct st_io_param
 	int o_Buzzer2;										///S2005	
 	int o_Buzzer3;										///S2006					
 	int o_Buzzer4;										///S2007
-
 
 
 	int	i_Light1_Curtain_Check;							///PS1500
@@ -327,7 +325,6 @@ struct st_io_param
 	int i_DoorCheck10;									///PS1515
 
 	int i_door_openclose_chk[10];
-
 
 	int	i_LoadingOn_SW_Check;							///PS1602
 	int	i_LoadingOff_SW_Check;							///PS1603
