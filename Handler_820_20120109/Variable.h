@@ -2053,14 +2053,25 @@ struct st_work_param
 	int nEpoxy_ReinstateMent_Ok;
 	int nHeatSink_ReinstateMent_Ok;
 
+	//kwlee 2017.0702
+	int nHeatSink_Disp_ReinstateMent_Ok;
+	int nHeatSink_Vis_ReinstateMent_Ok;
+
 	int nLd_Picker_ReinstateMent_Ready;
 	int nUld_Picker_ReinstateMent_Ready;
 	int nEpoxy_ReinstateMent_Ready;
 	int nHeatSink_ReinstateMent_Ready;
-	
-	int nPickerClampState[2];
 
+	//kwlee 2017.0702
+	int nHeatSink_Disp_ReinstateMent_Ready;
+	int nHeatSink_Vis_ReinstateMent_Ready;
+
+	int nPickerClampState[2];
 	int nPadCylinderState[2];
+	//kwlee 2017.0702
+	int nReverse_Clamp_State[2];
+	int nReverse_UpDn_State[2];
+	int nReverse_Turn_State[2];
 
 	int    nReinstatement_mode[10];
 	double dReinstatement_pos[2][MAXMOTOR];

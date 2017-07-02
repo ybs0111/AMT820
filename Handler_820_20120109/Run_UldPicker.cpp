@@ -2727,12 +2727,14 @@ void CRun_UldPicker::Run_ReinState()
 				{
 					//알람 
 					alarm.mstr_code.Format("%02d0008",m_nRobot_X);
+					CTL_Lib.Alarm_Error_Occurrence(1330, dWARNING, alarm.mstr_code);
 					mn_reinstate_step = 20000;	
 				}		
 				else
 				{
 					//알람 
 					alarm.mstr_code.Format("%02d0008",m_nRobot_X);
+					CTL_Lib.Alarm_Error_Occurrence(1331, dWARNING, alarm.mstr_code);
 					//if(st_work.dReinstatement_pos[0][M_LOADER_TRANSFER_Y] > safety + allow )
 					//알람 버그 reset  step저장
 					mn_reinstate_step = 20000;
@@ -2748,6 +2750,7 @@ void CRun_UldPicker::Run_ReinState()
 				{
 					//나올수 없는 상황 setep reset alarm
 					alarm.mstr_code.Format("%02d0008",M_LOADER_TRANSFER_Y);
+					CTL_Lib.Alarm_Error_Occurrence(1332, dWARNING, alarm.mstr_code);
 					mn_reinstate_step = 20000;
 				}
 				else
@@ -2858,7 +2861,8 @@ void CRun_UldPicker::Run_ReinState()
 			}
 			else if(nRet_1 == BD_ERROR)
 			{
-				mn_reinstate_step = 20000;	
+				CTL_Lib.Alarm_Error_Occurrence(1333, dWARNING, alarm.mstr_code);
+				mn_reinstate_step = 20000;
 			}
 		}
 		else
@@ -2870,112 +2874,138 @@ void CRun_UldPicker::Run_ReinState()
 	case 2300:
 		if( st_work.nReinst_MotorPos[0][m_nRobot_X] == -1 )
 		{
-			dTargetPos = st_work.dReinstatement_pos[1][m_nRobot_X]; //이동 
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, dTargetPos, COMI.mn_runspeed_rate);
-
-			if (nRet_1 == BD_GOOD)
-			{
-				//kwlee 2017.0626
-				mn_reinstate_step = 2310;
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-			}
+			mn_reinstate_step = 2310;
 		}
 		else
 		{
-			dTargetPos = st_motor[m_nRobot_X].md_pos[st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_X]]; //이동
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, dTargetPos, COMI.mn_runspeed_rate);
-			if (nRet_1 == BD_GOOD)
-			{
-				//kwlee 2017.0626
-				mn_reinstate_step = 2310;
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-			}
+			mn_reinstate_step = 2320;
 		}
 		break;
-
 
 	case 2310:
-		if( st_work.nReinst_MotorPos[0][m_nRobot_Y] == -1 )
+		dTargetPos = st_work.dReinstatement_pos[1][m_nRobot_X]; //이동 
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, dTargetPos, COMI.mn_runspeed_rate);
+		
+		if (nRet_1 == BD_GOOD)
 		{
-			dTargetPos = st_work.dReinstatement_pos[1][m_nRobot_Y];//이동 
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, dTargetPos, COMI.mn_runspeed_rate);
-			
-			if (nRet_1 == BD_GOOD)
-			{
-				//kwlee 2017.0626
-				mn_reinstate_step = 2400;
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-			}
+			//kwlee 2017.0626
+			mn_reinstate_step = 2400;
 		}
-		else
+		else if (nRet_1 == BD_ERROR)
 		{
-			dTargetPos = st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Y]]; //이동
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, dTargetPos, COMI.mn_runspeed_rate);
-			if (nRet_1 == BD_GOOD)
-			{
-				//kwlee 2017.0626
-				mn_reinstate_step = 2400;
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-			}
+			CTL_Lib.Alarm_Error_Occurrence(1334, dWARNING, alarm.mstr_code);
+			mn_reinstate_step = 20000;
 		}
 		break;
 
-	  // Z축 이동
-	case 2400:
-		if( st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Z] == -1 )
+	case 2320:
+		dTargetPos = st_motor[m_nRobot_X].md_pos[st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_X]]; //이동
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, dTargetPos, COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD)
 		{
-			dTargetPos = st_work.dReinstatement_pos[1][M_UNLOADER_TRANSFER_Z]; //이동 
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, dTargetPos, COMI.mn_runspeed_rate);
-			
-			if (nRet_1 == BD_GOOD)
-			{
-				if( m_nChange[3] == 1)
-				{
-					mn_reinstate_step = 5000;
-				}
-				else
-				{
-					mn_reinstate_step = 4800;
-				}
-		
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-			}
+			//kwlee 2017.0626
+			mn_reinstate_step = 2400;
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1335, dWARNING, alarm.mstr_code);
+			mn_reinstate_step = 20000;
+		}
+		break;
+
+	case 2400:
+		if( st_work.nReinst_MotorPos[0][m_nRobot_Y] == -1 )
+		{
+			mn_reinstate_step = 2410;
 		}
 		else
 		{
-			dTargetPos = st_motor[m_nRobot_Z].md_pos[st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Z]]; //이동
-				
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, dTargetPos, COMI.mn_runspeed_rate);
-			if (nRet_1 == BD_GOOD)
+			mn_reinstate_step = 2420;
+		}
+		break;
+
+	case 2410:
+		dTargetPos = st_work.dReinstatement_pos[1][m_nRobot_Y];//이동 
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, dTargetPos, COMI.mn_runspeed_rate);
+		
+		if (nRet_1 == BD_GOOD)
+		{
+			//kwlee 2017.0626
+			mn_reinstate_step = 2500;
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1336, dWARNING, alarm.mstr_code);
+			mn_reinstate_step = 20000;
+		}
+		break;
+	
+	case 2420:
+		dTargetPos = st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Y]]; //이동
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, dTargetPos, COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD)
+		{
+			//kwlee 2017.0626
+			mn_reinstate_step = 2500;
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1337, dWARNING, alarm.mstr_code);
+			mn_reinstate_step = 20000;
+		}
+		break;
+	  // Z축 이동
+	case 2500:
+		if( st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Z] == -1 )
+		{
+			mn_reinstate_step = 2510;
+		}
+		else
+		{
+			mn_reinstate_step = 2520;
+		}
+		break;
+
+	case 2510:
+		dTargetPos = st_work.dReinstatement_pos[1][M_UNLOADER_TRANSFER_Z]; //이동 
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, dTargetPos, COMI.mn_runspeed_rate);
+		
+		if (nRet_1 == BD_GOOD)
+		{
+			if( m_nChange[3] == 1)
 			{
-				if( m_nChange[3] == 1)
-				{
-					mn_reinstate_step = 5000;
-				}
-				else
-				{
-					mn_reinstate_step = 4800;
-				}
+				mn_reinstate_step = 5000;
 			}
-			else if (nRet_1 == BD_ERROR)
+			else
 			{
-				mn_reinstate_step = 20000;
+				mn_reinstate_step = 4800;
 			}
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1338, dWARNING, alarm.mstr_code);
+			mn_reinstate_step = 20000;
+		}
+		break;
+
+	case 2520:
+		dTargetPos = st_motor[m_nRobot_Z].md_pos[st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Z]]; //이동
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, dTargetPos, COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD)
+		{
+			if( m_nChange[3] == 1)
+			{
+				mn_reinstate_step = 5000;
+			}
+			else
+			{
+				mn_reinstate_step = 4800;
+			}
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1339, dWARNING, alarm.mstr_code);
+			mn_reinstate_step = 20000;
 		}
 		break;
 
@@ -2994,6 +3024,7 @@ void CRun_UldPicker::Run_ReinState()
 		}
 		else if (nRet_1 == RET_ERROR)
 		{
+			CTL_Lib.Alarm_Error_Occurrence(1340, dWARNING, m_strAlarmCode);
 			mn_reinstate_step = 20000;
 		}
 		break;

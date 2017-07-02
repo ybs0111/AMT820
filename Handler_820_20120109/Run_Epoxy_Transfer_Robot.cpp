@@ -210,15 +210,16 @@ void CRun_Epoxy_Transfer_Robot::Run_ReinState()
 		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_EPOXY_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
 		if (nRet_1 == BD_GOOD)
 		{
-			mn_reinstate_step = 2300;
+			mn_reinstate_step = 2200;
 		}
 		else if(nRet_1 == BD_ERROR)
 		{
+			CTL_Lib.Alarm_Error_Occurrence(1241, dWARNING, alarm.mstr_code); 
 			mn_reinstate_step = 20000;	
 		}
 		break;
 
-	case 2300:
+	case 2200:
 // 		if( st_work.nReinst_MotorPos[0][m_nRobot_X] == -1 )
 // 		{
 // 			dTargetPos = st_work.dReinstatement_pos[1][m_nRobot_X]; //이동 
@@ -254,95 +255,119 @@ void CRun_Epoxy_Transfer_Robot::Run_ReinState()
 		if (nRet_1 == BD_GOOD)
 		{
 		 	//kwlee 2017.0626
-			mn_reinstate_step = 2310;
+			mn_reinstate_step = 2300;
 		}
 		else if (nRet_1 == BD_ERROR)
 		{
+			CTL_Lib.Alarm_Error_Occurrence(1242, dWARNING, alarm.mstr_code);
 			mn_reinstate_step = 20000;
+			 
  		}
 		break;
 
 		
-	case 2310:
+	case 2300:
 		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_Y_INIT_POS], COMI.mn_runspeed_rate);
 		if (nRet_1 == BD_GOOD)
 		{
 			//kwlee 2017.0626
-			mn_reinstate_step = 2320;
+			mn_reinstate_step = 2400;
 		}
 		else if (nRet_1 == BD_ERROR)
 		{
+			CTL_Lib.Alarm_Error_Occurrence(1243, dWARNING, alarm.mstr_code);
 			mn_reinstate_step = 20000;
 		}
 		break;
 
 
-	case 2320:
+	case 2400:
 		if (st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_X] == -1)
 		{
-			dTargetPos = st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_FIRST_START_POS];
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, dTargetPos, COMI.mn_runspeed_rate);
-			
-			if (nRet_1 == BD_GOOD)
-			{
-				//kwlee 2017.0626
-				mn_reinstate_step = 2330;
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-			}
+
+			mn_reinstate_step = 2410;
 		}
 		else
 		{
-			//dTargetPos = OnEpoxyPosX();
-			dTargetPos = st_motor[m_nRobot_X].md_pos[st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_X]];
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X,dTargetPos, COMI.mn_runspeed_rate);
-			if (nRet_1 == BD_GOOD)
-			{
-				//kwlee 2017.0626
-				mn_reinstate_step = 2330;
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
- 			}
+			mn_reinstate_step = 2420;
 		}
 		break;
 
-	case 2330:
+	case 2410:
+		dTargetPos = st_motor[m_nRobot_X].md_pos[P_EPOXY_TRANSFER_X_FIRST_START_POS];
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X, dTargetPos, COMI.mn_runspeed_rate);
+		
+		if (nRet_1 == BD_GOOD)
+		{
+			//kwlee 2017.0626
+			mn_reinstate_step = 2500;
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1244, dWARNING, alarm.mstr_code);
+			mn_reinstate_step = 20000;
+		}
+		break;
+	
+	case 2420:
+		//dTargetPos = OnEpoxyPosX();
+		dTargetPos = st_motor[m_nRobot_X].md_pos[st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_X]];
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_X,dTargetPos, COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD)
+		{
+			//kwlee 2017.0626
+			mn_reinstate_step = 2500;
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1245, dWARNING, alarm.mstr_code);
+			mn_reinstate_step = 20000;
+ 		}
+		break;
+
+	case 2500:
 		//dTargetPos = OnEpoxyPosY();
 		if (st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_Y] == -1)
 		{
-			dTargetPos = st_work.dReinstatement_pos[1][m_nRobot_Y]; //이동;
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y,dTargetPos, COMI.mn_runspeed_rate);
-			if (nRet_1 == BD_GOOD)
-			{
-				//kwlee 2017.0626
-				mn_reinstate_step = 2400;
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-			}
+			mn_reinstate_step = 2510;
 		}
 		else
 		{
-			dTargetPos = st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_Y]];
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y,dTargetPos, COMI.mn_runspeed_rate);
-			if (nRet_1 == BD_GOOD)
-			{
-				//kwlee 2017.0626
-				mn_reinstate_step = 2400;
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-			}
+			mn_reinstate_step = 2520;
+		}
+		break;
+
+	case 2510:
+		dTargetPos = st_work.dReinstatement_pos[1][m_nRobot_Y]; //이동;
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y,dTargetPos, COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD)
+		{
+			//kwlee 2017.0626
+			mn_reinstate_step = 2600;
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1246, dWARNING, alarm.mstr_code);
+			mn_reinstate_step = 20000;
+		}
+		break;
+
+	case 2520:
+		dTargetPos = st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_Y]];
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y,dTargetPos, COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD)
+		{
+			//kwlee 2017.0626
+			mn_reinstate_step = 2600;
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			CTL_Lib.Alarm_Error_Occurrence(1247, dWARNING, alarm.mstr_code);
+			mn_reinstate_step = 20000;
 		}
 		break;
 		// Z축 이동
-	case 2400:
+	case 2600:
 // 		if( st_work.nReinst_MotorPos[0][M_EPOXY_TRANSFER_Z] == -1 )
 // 		{
 // 			dTargetPos = st_work.dReinstatement_pos[1][M_EPOXY_TRANSFER_Z]; //이동 
@@ -379,6 +404,7 @@ void CRun_Epoxy_Transfer_Robot::Run_ReinState()
 		}
 		else if (nRet_1 == BD_ERROR)
 		{
+			CTL_Lib.Alarm_Error_Occurrence(1248, dWARNING, alarm.mstr_code);
 			mn_reinstate_step = 20000;
 		}
 		break;

@@ -280,11 +280,17 @@ void CRun_Handler_Check::ButtonCheck_Start()
 		st_work.nUld_Picker_ReinstateMent_Ok = NO;
 		st_work.nEpoxy_ReinstateMent_Ok = NO;
 		st_work.nHeatSink_ReinstateMent_Ok = NO;
-		
+		//kwlee 2017.0702
+		st_work.nHeatSink_Disp_ReinstateMent_Ok = NO;
+		st_work.nHeatSink_Vis_ReinstateMent_Ok = NO;
+
 		st_work.nLd_Picker_ReinstateMent_Ready = NO;
 		st_work.nUld_Picker_ReinstateMent_Ready = NO;
 		st_work.nEpoxy_ReinstateMent_Ready = NO;
 		st_work.nHeatSink_ReinstateMent_Ready = NO;
+		//kwlee 2017.0702
+		st_work.nHeatSink_Disp_ReinstateMent_Ready = NO;
+		st_work.nHeatSink_Vis_ReinstateMent_Ready = NO;
 		/////
 
 		
@@ -308,7 +314,8 @@ void CRun_Handler_Check::ButtonCheck_Start()
 		::PostMessage(st_handler.hWnd, WM_MAIN_EVENT, CTL_YES, 0);
 
 		if (st_work.nLd_Picker_ReinstateMent_Ok == YES && st_work.nUld_Picker_ReinstateMent_Ok == YES &&
-			st_work.nEpoxy_ReinstateMent_Ok == YES && st_work.nHeatSink_ReinstateMent_Ok == YES)
+			st_work.nEpoxy_ReinstateMent_Ok == YES && st_work.nHeatSink_ReinstateMent_Ok == YES &&
+			st_work.nHeatSink_Disp_ReinstateMent_Ok == YES && st_work.nHeatSink_Vis_ReinstateMent_Ok == YES)
 		{
 			st_handler.n_sync_reinstate = YES;
 		}
@@ -367,7 +374,7 @@ void CRun_Handler_Check::ButtonCheck_Start()
 		//kwlee 2017.0626
 	case 850:
 		::PostMessage(st_handler.hWnd, WM_MAIN_EVENT, CTL_NO, 0);
-		CTL_Lib.Alarm_Error_Occurrence(3003, dWARNING, alarm.mstr_code); 
+		/*CTL_Lib.Alarm_Error_Occurrence(3003, dWARNING, alarm.mstr_code); */
 		StartStep = 0;
 		break;
 
