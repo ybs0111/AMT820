@@ -3403,6 +3403,7 @@ void CRun_LdPicker::Run_ReinState()
 					//나올수 없는 상황 setep reset alarm
 					alarm.mstr_code.Format("%02d0008",M_UNLOADER_TRANSFER_X);
 					mn_reinstate_step = 20000;
+					CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
 				}
 				else
 				{
@@ -3518,68 +3519,82 @@ void CRun_LdPicker::Run_ReinState()
 		}
 		else
 		{
-			//z축 home 후
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
-			if (nRet_1 == BD_GOOD)
-			{
-				mn_reinstate_step = 2300;
-			}
-			else if(nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-				//alarm.mstr_code.Format("%02d0008",m_nRobot_Z);
-			}
-			//mn_reinstate_step = 2300;
+			mn_reinstate_step = 2200;
 		}
 		break;
+
+	case 2200:
+		//z축 home 후
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_LOADER_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD)
+		{
+			mn_reinstate_step = 2300;
+		}
+		else if(nRet_1 == BD_ERROR)
+		{
+			mn_reinstate_step = 20000;
+			CTL_Lib.Alarm_Error_Occurrence(1396, dWARNING, alarm.mstr_code);
+		}
+		//mn_reinstate_step = 2300;
+		break;
+
 
 	case 2300:
 		if( st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y] == -1 )
 		{
-			dTargetPos = st_work.dReinstatement_pos[1][M_LOADER_TRANSFER_Y]; //이동 
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, dTargetPos, COMI.mn_runspeed_rate);
+			mn_reinstate_step = 2310;
 
-			if (nRet_1 == BD_GOOD)
-			{
-// 				if( m_nChange[2] == 1)
-// 				{
-// 					mn_reinstate_step = 5000;
-// 				}
-// 				else
-// 				{
-// 					mn_reinstate_step = 4800;
-// 				}
-				//kwlee 2017.0626
-				mn_reinstate_step = 2400;
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-				//alarm.mstr_code.Format("%02d0008",m_nRobot_Z);
-			}
 		}
 		else
 		{
-			//st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y] = 작업 위치.
-			dTargetPos = st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y]]; //이동
-			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, dTargetPos, COMI.mn_runspeed_rate);
-			if (nRet_1 == BD_GOOD)
-			{
-// 				if( m_nChange[2] == 1)
-// 				{
-// 					mn_reinstate_step = 5000;
-// 				}
-// 				else
-// 				{
-// 					mn_reinstate_step = 4800;
-// 				}
-				//kwlee 2017.0626
-				mn_reinstate_step = 2400;
-			}
-			else if (nRet_1 == BD_ERROR)
-			{
-				mn_reinstate_step = 20000;
-			}
+			mn_reinstate_step = 2320;
+		}
+		break;
+
+	case 2310:
+		dTargetPos = st_work.dReinstatement_pos[1][M_LOADER_TRANSFER_Y]; //이동 
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, dTargetPos, COMI.mn_runspeed_rate);
+		
+		if (nRet_1 == BD_GOOD)
+		{
+			// 				if( m_nChange[2] == 1)
+			// 				{
+			// 					mn_reinstate_step = 5000;
+			// 				}
+			// 				else
+			// 				{
+			// 					mn_reinstate_step = 4800;
+			// 				}
+			//kwlee 2017.0626
+			mn_reinstate_step = 2400;
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			mn_reinstate_step = 20000;
+			//alarm.mstr_code.Format("%02d0008",m_nRobot_Z);
+		}
+		break;
+
+	case 2320:
+		//st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y] = 작업 위치.
+		dTargetPos = st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_LOADER_TRANSFER_Y]]; //이동
+		nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Y, dTargetPos, COMI.mn_runspeed_rate);
+		if (nRet_1 == BD_GOOD)
+		{
+			// 				if( m_nChange[2] == 1)
+			// 				{
+			// 					mn_reinstate_step = 5000;
+			// 				}
+			// 				else
+			// 				{
+			// 					mn_reinstate_step = 4800;
+			// 				}
+			//kwlee 2017.0626
+			mn_reinstate_step = 2400;
+		}
+		else if (nRet_1 == BD_ERROR)
+		{
+			mn_reinstate_step = 20000;
 		}
 		break;
 
@@ -3650,6 +3665,7 @@ void CRun_LdPicker::Run_ReinState()
 		else if (nRet_1 == RET_ERROR)
 	   {
 			mn_reinstate_step = 20000;
+			CTL_Lib.Alarm_Error_Occurrence(1398, dWARNING, m_strAlarmCode);
 	   }
 	   break;
 
