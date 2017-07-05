@@ -29,7 +29,9 @@ public:
 	int mn_PlaceStep;
 	int mn_MoveStep;
 	int mn_SafetyStep;
-	int mn_reinstate_step;
+	int mn_reinstate_HeatSink_step;
+	int mn_reinstate_Dispens_step;
+	int mn_reinstate_HeatSink_Vis_step;
 	int mn_InitStep;
 	int mn_BufferPos;
 	int mn_MoveMeasureStep;
@@ -131,10 +133,15 @@ public:
 	DWORD	m_dwMCameraResWaitTime[3];
 
 	//kwlee 2017.0628
-	double  m_dcurr_pos[10]; 
+	double  m_dHeatSink_curr_pos[10]; 
+	double  m_dDispens_curr_pos[10];
+	double  m_dHeatSink_Vis_curr_pos[10];
 	int	    mn_reinstate_pos[3];
 	DWORD   m_dwReinstate_time[3];
-	int     m_nChange[5];
+	//kwlee 2017.0702
+	int     m_nHeatSinkChange[10];
+	int     m_nHeatSinkVisChange[10];
+	int     m_nDispensChange[10];
 	
 // Operations
 public:
@@ -147,9 +154,16 @@ public:
 	void RunMoveBuffDispensor();
 
 	//kwlee 2017.0628
-	void Run_ReinState();
+	void Run_HeatSink_ReinState();
+	void Run_HeatSink_Vis_ReinState();
+	void Run_DisPens_ReinState();
+	//
+
 	void OnHeatSink_FinalPos();
-	void Robot_BackupPos_Check();
+	//kwlee 2017.0702
+	void HeatSink_Rbt_BackupPos_Check();
+	void Dispensor_BackupPos_Check();
+	void HeatSink_Vis_BackupPos_Check();
 	int OnSafetyCheck();
 	
 	int GetMotorPosX(double dPos);
