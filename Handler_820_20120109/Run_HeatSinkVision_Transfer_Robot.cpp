@@ -7174,14 +7174,14 @@ void CRun_HeatSinkVision_Transfer_Robot::Run_DisPens_ReinState()
 		break;
 
 	case 2300:
-		Run_HeatSinkVision_Transfer_Robot.Set_HeatSink_Reverse_UpDown(st_work.nReverse_UpDn_State[0]);
-		Run_HeatSinkVision_Transfer_Robot.Set_HeatSink_Reverse_Clamp_ForwardBackward(st_work.nReverse_Clamp_State[0]);
+		Set_HeatSink_Reverse_UpDown(st_work.nReverse_UpDn_State[0]);
+		Set_HeatSink_Reverse_Clamp_ForwardBackward(st_work.nReverse_Clamp_State[0]);
 		mn_reinstate_Dispens_step = 2400;
 		break;
 		
 	case 2400:
-		nRet_1 = Run_HeatSinkVision_Transfer_Robot.Chk_HeatSink_Reverse_UpDown(st_work.nReverse_UpDn_State[0]);
-		nRet_2 = Run_HeatSinkVision_Transfer_Robot.Chk_HeatSink_Reverse_Clamp_ForwardBackward(st_work.nReverse_Clamp_State[0]);
+		nRet_1 = Chk_HeatSink_Reverse_UpDown(st_work.nReverse_UpDn_State[0]);
+		nRet_2 = Chk_HeatSink_Reverse_Clamp_ForwardBackward(st_work.nReverse_Clamp_State[0]);
 
 		if( nRet_1 == RET_GOOD && nRet_2 == RET_GOOD )
 		{
