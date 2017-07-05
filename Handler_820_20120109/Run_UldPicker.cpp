@@ -2853,6 +2853,15 @@ void CRun_UldPicker::Run_ReinState()
 		if( st_work.dReinstatement_pos[1][m_nRobot_X] != st_motor[m_nRobot_X].md_pos[st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_X]] || 
 			st_work.dReinstatement_pos[1][m_nRobot_Y] != st_motor[m_nRobot_Y].md_pos[st_work.nReinst_MotorPos[0][M_UNLOADER_TRANSFER_Y]])
 		{ 
+			mn_reinstate_step = 2110;
+		}
+		else
+		{
+			mn_reinstate_step = 2300;
+		}
+		break;
+
+		case 2110:
 			//z√‡ home »ƒ
 			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_Z, st_motor[m_nRobot_Z].md_pos[P_UNLOADER_TRANSFER_Z_INIT_POS], COMI.mn_runspeed_rate);
 			if (nRet_1 == BD_GOOD)
@@ -2864,12 +2873,7 @@ void CRun_UldPicker::Run_ReinState()
 				CTL_Lib.Alarm_Error_Occurrence(1333, dWARNING, alarm.mstr_code);
 				mn_reinstate_step = 20000;
 			}
-		}
-		else
-		{
-			mn_reinstate_step = 2300;
-		}
-		break;
+			break;
 
 	case 2300:
 		if( st_work.nReinst_MotorPos[0][m_nRobot_X] == -1 )
