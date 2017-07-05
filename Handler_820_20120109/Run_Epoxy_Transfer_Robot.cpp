@@ -127,6 +127,7 @@ void CRun_Epoxy_Transfer_Robot::Run_ReinState()
 {
 	int i, nRet_1, nRet_2;
 	double dTargetPos;
+
 	if (st_work.nEpoxy_ReinstateMent_Ok == YES) return;
 
 	switch(mn_reinstate_step)

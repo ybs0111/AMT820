@@ -1293,14 +1293,6 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 			break;
 		
 		case M_HEATSINK_INSPECT_Y:
-// 			if( g_ioMgr.get_in_bit(st_io.i_camera_unclamp_chk, IO_ON) == IO_OFF ||
-// 				g_ioMgr.get_in_bit(st_io.i_camera_clamp_chk, IO_OFF) == IO_OFF )
-// 			{
-// 				COMI.Set_MotStop( 0, n_axis);
-// 				sprintf(cJamcode, "%02d0008", n_axis);
-// 				Alarm_Error_Occurrence(0, CTL_dWARNING, cJamcode);
-// 				return RET_ERROR;
-// 			}
 
 			if( ( d_targetpos > ( st_motor[n_axis].md_pos[P_HEATSINK_INSPECT_Y_INIT_POS] + 100*COMI.md_allow_value[n_axis] ) ) ||
 				( COMI.Get_MotCurrentPos(n_axis)  > ( st_motor[n_axis].md_pos[P_HEATSINK_INSPECT_Y_INIT_POS] + 100*COMI.md_allow_value[n_axis] ) ) )
@@ -1326,6 +1318,7 @@ int CCtlBd_Library::Motor_SafetyCheck(int n_mode, int n_axis, double d_targetpos
 					return RET_ERROR;
 				}
 			}
+
 			if( COMI.Get_MotCurrentPos( M_HEATSINK_TRANSFER_Y) > ( st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRANSFER_Y_CARRIER_SAFETY_POS] + 10*COMI.md_allow_value[M_HEATSINK_TRANSFER_Y]) )
 			{
 				COMI.Set_MotStop( 0, n_axis);

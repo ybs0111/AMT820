@@ -2073,6 +2073,9 @@ struct st_work_param
 	int nReverse_UpDn_State[2];
 	int nReverse_Turn_State[2];
 
+	int nCamera_Jig_State[2];
+	
+
 	int    nReinstatement_mode[10];
 	double dReinstatement_pos[2][MAXMOTOR];
 	

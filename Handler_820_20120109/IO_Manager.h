@@ -364,7 +364,6 @@ struct st_io_param
 	int	o_Loading_Switch_HeatSink;
 	int	o_Unloading_Switch_HeatSink;
 
-
 	int	i_Ionizer1_On_Check;							///PS2000
 	int	i_Ionizer1_Tip_Check;							///PS2001
 	int	i_Ionizer2_On_Check;							///PS2002
