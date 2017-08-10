@@ -2275,7 +2275,7 @@ int CRun_Device_Carrier_Robot::Top_Carrierbuffer_sensor_flag_status_check(int n_
 		}
 	}
 		
-	if		(n_check_site == TOPSHIFT_IDBUFF_SEALING_SITE_ALL_CHK) 
+	if	(n_check_site == TOPSHIFT_IDBUFF_SEALING_SITE_ALL_CHK) 
 	{
 		for ( i = 0; i < 40; i++)
 		{
