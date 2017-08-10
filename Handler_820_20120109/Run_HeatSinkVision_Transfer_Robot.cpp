@@ -7285,6 +7285,7 @@ void CRun_HeatSinkVision_Transfer_Robot::Run_HeatSink_ReinState()
 	m_dHeatSink_curr_pos[1] = COMI.Get_MotCurrentPos(M_HEATSINK_TRANSFER_Y);
 	m_dHeatSink_curr_pos[2] = COMI.Get_MotCurrentPos(M_HEATSINK_TRANSFER_Z);
 
+	if( st_work.nHeatSink_ReinstateMent_Ok == YES)  return;
 	switch(mn_reinstate_HeatSink_step)
 	{
 	case 0:

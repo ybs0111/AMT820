@@ -3406,6 +3406,7 @@ void CRun_LdPicker::Run_ReinState()
 					alarm.mstr_code.Format("%02d0008",M_UNLOADER_TRANSFER_X);
 					CTL_Lib.Alarm_Error_Occurrence(1232, dWARNING, alarm.mstr_code);
 					mn_reinstate_step = 20000;
+					CTL_Lib.Alarm_Error_Occurrence(1103, dWARNING, alarm.mstr_code);
 				}
 				else
 				{
@@ -3513,9 +3514,9 @@ void CRun_LdPicker::Run_ReinState()
 		}
 		else
 		{
-			mn_reinstate_step = 2110;
-			
+			mn_reinstate_step = 2110;			
 		}
+		//mn_reinstate_step = 2300;
 		break;
 
 	case 2110:
@@ -3543,7 +3544,6 @@ void CRun_LdPicker::Run_ReinState()
 			mn_reinstate_step = 2320;
 		}
 		break;
-		
 
 	case 2310:
 		dTargetPos = st_work.dReinstatement_pos[1][M_LOADER_TRANSFER_Y]; //¿Ãµø 
@@ -3556,7 +3556,6 @@ void CRun_LdPicker::Run_ReinState()
 		}
 		else if (nRet_1 == BD_ERROR)
 		{
-			CTL_Lib.Alarm_Error_Occurrence(1234, dWARNING, alarm.mstr_code);
 			mn_reinstate_step = 20000;
 		}
 		break;
