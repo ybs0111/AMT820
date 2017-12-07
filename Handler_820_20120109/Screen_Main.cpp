@@ -144,6 +144,7 @@ BEGIN_MESSAGE_MAP(CScreen_Main, CFormView)
 	ON_BN_CLICKED(IDC_EPOXY_OUT2, OnEpoxyOut2)
 	ON_BN_CLICKED(IDC_BUTTON_CLEAN_RESET, OnButtonCleanReset)
 	ON_BN_CLICKED(IDC_BUTTON_HARDNESS_RESET, OnButtonHardnessReset)
+	ON_BN_CLICKED(IDC_HARDNESS_TESTOUT, OnHardnessTestout)
 	//}}AFX_MSG_MAP
 	ON_MESSAGE(WM_WORK_END, OnMain_Work_Info_Display)  // 테스트 결과 정보 화면에 출력하기 위한 사용자 정의 메시지 추가 
 	ON_MESSAGE(SSM_CLICK  , OnCellClick) //kwlee 2017.0425
@@ -840,6 +841,14 @@ void CScreen_Main::OnTimer(UINT nIDEvent)
 	else if( nIDEvent == WM_HARDNEDD_OUT )
 	{
 		nRet_1 = g_handler.MoveHardnessOut();
+		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
+		{
+			KillTimer( nIDEvent );
+		}
+	}
+	else if( nIDEvent == WM_HARDNEDD_TESTOUT )
+	{
+		nRet_1 = g_handler.MoveHardnessTestOut();
 		if( nRet_1 == RET_GOOD || nRet_1 == RET_ERROR )
 		{
 			KillTimer( nIDEvent );
@@ -4828,4 +4837,18 @@ void CScreen_Main::OnButtonHardnessReset()
 			st_handler.cwnd_list->PostMessage( WM_LIST_DATA, 0, NORMAL_MSG);
 		}
 	}		
+}
+
+void CScreen_Main::OnHardnessTestout() 
+{
+	if(st_work.mn_run_status == dRUN) return;
+	CDialog_Select select_dlg;
+	st_other.str_confirm_msg = _T("Warning : 경화제를 토출테스트(1회)를 하시겠습니까?");
+	
+	int iResponse = select_dlg.DoModal();
+	if(iResponse == IDOK)
+	{
+		g_handler.ClearStep();
+		SetTimer( WM_HARDNEDD_TESTOUT, 100, NULL );	
+	}	
 }

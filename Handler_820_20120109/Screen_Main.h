@@ -52,6 +52,7 @@
 #define WM_MAIN_UI			 790
 #define WM_HARDNEDD_OUT		 791
 #define WM_EPOXY_OUT		 792
+#define WM_HARDNEDD_TESTOUT	 793
 
 class AModule;
 
@@ -253,6 +254,7 @@ protected:
 	afx_msg void OnEpoxyOut2();
 	afx_msg void OnButtonCleanReset();
 	afx_msg void OnButtonHardnessReset();
+	afx_msg void OnHardnessTestout();
 	//}}AFX_MSG
 	afx_msg LRESULT OnMain_Work_Info_Display(WPARAM wParam,LPARAM lParam);  // 테스트 결과 정보 화면에 출력하기 위한 사용자 정의 메시지 추가 
 	afx_msg void OnCellClick(WPARAM wParam, LPARAM lParam); //kwlee 2017.0425

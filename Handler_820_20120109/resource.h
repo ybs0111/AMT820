@@ -5275,6 +5275,7 @@
 #define IDC_EPOXY_OUT                   3829
 #define IDC_EPOXY_SAFETY                3830
 #define IDC_EPOXY_OUT2                  3831
+#define IDC_HARDNESS_TESTOUT            3832
 #define ID_EMPTY                        32771
 #define ID_MAIN                         32772
 #define ID_BASIC                        32773

@@ -50,6 +50,7 @@ APartHandler::APartHandler()
 	m_nEpoxySafetyStep = 0;
 	m_nEpoxyCleanTimeStep= 0;
 	m_nHardnessStep = 0;
+	m_nHardnessTestStep = 0;
 	m_nEpoxyOutStep = 0;
 	m_nChkEpoxyYes = CTL_NO;
 	st_handler.m_nAssemblyAble = CTL_YES;
@@ -521,6 +522,7 @@ void APartHandler::ClearStep()
 	m_nHardnessStep = 0;
 	m_nHardnessOut = 0;
 	m_nEpoxyCleanTimeStep = 0;
+	m_nHardnessTestStep = 0;
 }
 
 void APartHandler::AlarmEpoxyCleanTime()
@@ -899,7 +901,7 @@ int APartHandler::MoveHardnessOut()
 				{
 					if( nRet_2 != IO_ON ) strAlarm.Format("8%d%04d", IO_ON, st_io.i_HeatSink_Reverse_0_Check);
 					else				  strAlarm.Format("8%d%04d", IO_OFF, st_io.i_HeatSink_Reverse_180_Check);						
-					CTL_Lib.Alarm_Error_Occurrence(10720, dWARNING, strAlarm);
+					CTL_Lib.Alarm_Error_Occurrence(9779, dWARNING, strAlarm);
 					nFunRet = RET_ERROR;
 				}
 				else
@@ -1268,5 +1270,300 @@ void APartHandler::AlarmHardnessExcessTimeEpoxyCnt()
 			break;
 			
 	}
+
+}
+
+//2017.1207
+int APartHandler::MoveHardnessTestOut()
+{
+	int nRet_1 = 0, nRet_2 = 0, nRet_3 = 0;
+	int nFunRet = RET_PROCEED;
+	int m_nAxisNum = M_DISPENSER_Y;
+	int m_nRobot_DisY = M_DISPENSER_Y;
+	CString strAlarm = _T("");
+	
+	double dCurrDisY, dCurrHeatSinkX, dCurrHeatSinkY;
+	
+	dCurrHeatSinkX = COMI.Get_MotCurrentPos( M_HEATSINK_TRANSFER_X );
+	dCurrHeatSinkY = COMI.Get_MotCurrentPos( M_HEATSINK_TRANSFER_Y );
+	
+	switch( m_nHardnessTestStep )
+	{
+		case 0:
+			m_nHardnessTestStep = 5;
+			break;
+
+		case 5:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_DisY, st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				m_nHardnessTestStep = 10;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				m_nHardnessTestStep = 0;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(9781, dWARNING, alarm.mstr_code);
+				nFunRet = RET_ERROR;
+			}
+			break;
+
+		case 10:
+			dCurrDisY = COMI.Get_MotCurrentPos(m_nRobot_DisY);
+			if( dCurrDisY > st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_INIT_POS] + COMI.md_allow_value[m_nRobot_DisY] )
+			{
+				m_nHardnessTestStep = 0;
+			}
+			else
+			{
+				m_nHardnessTestStep = 100;
+			}
+			break;			
+			
+		case 100:
+			m_nHardnessTestStep = 1000;
+			break;
+
+		case 1000://Picker ask disponsor if picker could place device
+			//dispensor가 요청하면 heatsink는 투입한다.
+			if( COMI.Get_MotCurrentPos(M_DISPENSER_Y) > st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_INIT_POS] + COMI.md_allow_value[m_nRobot_DisY] )
+			{
+				m_nHardnessTestStep = 10;
+			}
+			else
+			{				
+				nRet_2 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_0_Check, IO_ON);
+				nRet_3 = g_ioMgr.get_in_bit( st_io.i_HeatSink_Reverse_180_Check, IO_OFF);
+				if( nRet_2 != IO_ON || nRet_3 != IO_OFF)
+				{
+					if( nRet_2 != IO_ON ) strAlarm.Format("8%d%04d", IO_ON, st_io.i_HeatSink_Reverse_0_Check);
+					else				  strAlarm.Format("8%d%04d", IO_OFF, st_io.i_HeatSink_Reverse_180_Check);						
+					CTL_Lib.Alarm_Error_Occurrence(9872, dWARNING, strAlarm);
+					nFunRet = RET_ERROR;
+				}
+				else
+				{
+					m_nHardnessTestStep = 1100;
+				}
+			}
+			break;
+
+		case 1100:
+			m_nHardnessTestStep = 1110;
+			break;
+			
+		case 1110:
+			if( ( dCurrHeatSinkX > (st_motor[M_HEATSINK_TRANSFER_X].md_pos[P_HEATSINK_TRASNFER_X_TURN_READY_POS] + COMI.md_allow_value[M_HEATSINK_TRANSFER_X]) ) &&
+				( dCurrHeatSinkY < (st_motor[M_HEATSINK_TRANSFER_Y].md_pos[P_HEATSINK_TRASNFER_Y_TURN_READY_POS] - COMI.md_allow_value[M_HEATSINK_TRANSFER_Y]) ) )
+			{
+				strAlarm.Format("%02d0008", m_nRobot_DisY );
+				CTL_Lib.Alarm_Error_Occurrence(9873, dWARNING, strAlarm);
+				m_nHardnessTestStep = 0;
+				nFunRet = RET_ERROR;
+				break;
+			}
+			
+			
+			nRet_1 = g_ioMgr.get_in_bit(st_io.i_Dispenser_Color_Check, IO_ON);
+			if( st_basic.n_mode_7387 == CTL_NO) nRet_1 = IO_ON;
+			if( nRet_1 == IO_ON)
+			{
+				m_nHardnessTestStep = 1200;
+			}
+			else
+			{
+				strAlarm.Format("8%d%04d", IO_ON, st_io.i_Dispenser_Color_Check);
+				CTL_Lib.Alarm_Error_Occurrence(9874, dWARNING, strAlarm);
+				m_nHardnessTestStep = 0;
+				nFunRet = RET_ERROR;
+			}
+			break;
+
+		case 1200:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_DisY, st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_GABAGE_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				m_nHardnessTestStep = 1300;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				m_nHardnessTestStep = 1200;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(9875, dWARNING, alarm.mstr_code);
+				m_nHardnessTestStep = 1200;
+			}
+			break;
+
+		case 1300:
+			Run_HeatSinkVision_Transfer_Robot.Set_Dispenser_Air_Blow(IO_ON);
+			m_dwHardnessWaitTime[0] = GetCurrentTime();
+			m_nHardnessTestStep = 1310;
+			break;
+
+		case 1310:
+			m_dwHardnessWaitTime[1] = GetCurrentTime();
+			m_dwHardnessWaitTime[2] = m_dwHardnessWaitTime[1] - m_dwHardnessWaitTime[0];
+			if( m_dwHardnessWaitTime[2] <= 0 ) m_dwHardnessWaitTime[0] = GetCurrentTime();
+			if( m_dwHardnessWaitTime[2] > st_wait.nOnWaitTime[WAIT_DISPENSOR_AIRBLOW] ) 
+			{
+				Run_HeatSinkVision_Transfer_Robot.Set_Dispenser_Air_Blow(IO_OFF);
+				m_nHardnessTestStep = 2000;
+			}
+			break;
+
+		case 2000:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_DisY, st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_HEATSINK_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				Run_HeatSinkVision_Transfer_Robot.Set_Dispenser_Air_Blow(IO_ON);
+				m_dwHardnessWaitTime[0] = GetCurrentTime();
+				m_nHardnessTestStep = 2100;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				m_nHardnessTestStep = 2000;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(9876, dWARNING, alarm.mstr_code);
+				m_nHardnessTestStep = 2000;
+			}
+			break;
+
+		case 2100:
+			m_dwHardnessWaitTime[1] = GetCurrentTime();
+			m_dwHardnessWaitTime[2] = m_dwHardnessWaitTime[1] - m_dwHardnessWaitTime[0];
+			if( m_dwHardnessWaitTime[2] <= 0 ) m_dwHardnessWaitTime[0] = GetCurrentTime();
+			if( m_dwHardnessWaitTime[2] > st_wait.nOnWaitTime[WAIT_DISPENSOR_AIRBLOW] ) 
+			{
+				Run_HeatSinkVision_Transfer_Robot.Set_Dispenser_Air_Blow(IO_OFF);
+				m_nHardnessTestStep = 2200;
+			}
+			break;
+
+		case 2200:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_DisY, st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_DISPENSING_END_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				Run_HeatSinkVision_Transfer_Robot.Set_Dispenser_Air_Blow(IO_ON);
+				m_dwHardnessWaitTime[0] = GetCurrentTime();
+				m_nHardnessTestStep = 2300;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				m_nHardnessTestStep = 2200;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(9877, dWARNING, alarm.mstr_code);
+				m_nHardnessTestStep = 2200;
+			}
+			break;
+
+		case 2300:
+			m_dwHardnessWaitTime[1] = GetCurrentTime();
+			m_dwHardnessWaitTime[2] = m_dwHardnessWaitTime[1] - m_dwHardnessWaitTime[0];
+			if( m_dwHardnessWaitTime[2] <= 0 ) m_dwHardnessWaitTime[0] = GetCurrentTime();
+			if( m_dwHardnessWaitTime[2] > st_wait.nOnWaitTime[WAIT_DISPENSOR_AIRBLOW] ) 
+			{
+				Run_HeatSinkVision_Transfer_Robot.Set_Dispenser_Air_Blow(IO_OFF);
+				m_nHardnessTestStep = 3000;
+			}
+			break;
+
+		case 3000:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_DisY, st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_DISPENSING_END_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				m_dwHardnessWaitTime[0] = GetCurrentTime();
+				m_nHardnessTestStep = 3100;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				m_nHardnessTestStep = 3000;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(9878, dWARNING, alarm.mstr_code);
+				m_nHardnessTestStep = 3000;
+			}
+			break;
+
+		case 3100:
+			m_dwHardnessWaitTime[1] = GetCurrentTime();
+			m_dwHardnessWaitTime[2] = m_dwHardnessWaitTime[1] - m_dwHardnessWaitTime[0];
+			if( m_dwHardnessWaitTime[2] <= 0 ) m_dwHardnessWaitTime[0] = GetCurrentTime();
+			if( m_dwHardnessWaitTime[2] > st_wait.nOnWaitTime[WAIT_DISPENSOR_AIRBLOW] ) 
+			{
+				Run_HeatSinkVision_Transfer_Robot.Set_Dispenser_Air_Blow(IO_OFF);
+				m_nHardnessTestStep = 3200;
+			}
+			break;
+
+		case 3200:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_DisY, st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_LIQUID_CHECK_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				m_nHardnessTestStep = 3300;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				m_nHardnessTestStep = 3200;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(10717, dWARNING, alarm.mstr_code);
+				m_nHardnessTestStep = 3200;
+			}
+			break;
+
+		case 3300:
+			nRet_1 = CTL_Lib.Single_Move(BOTH_MOVE_FINISH, m_nRobot_DisY, st_motor[m_nRobot_DisY].md_pos[P_DISPENSOR_Y_INIT_POS], COMI.mn_runspeed_rate);
+			if (nRet_1 == BD_GOOD) //좌측으로 이동
+			{
+				m_nHardnessTestStep = 3400;
+			}
+			else if (nRet_1 == BD_RETRY)
+			{
+				m_nHardnessTestStep = 3300;
+			}
+			else if (nRet_1 == BD_ERROR || nRet_1 == BD_SAFETY)
+			{//모터 알람은 이미 처리했으니 이곳에서는 런 상태만 바꾸면 된다
+				CTL_Lib.Alarm_Error_Occurrence(10718, dWARNING, alarm.mstr_code);
+				m_nHardnessTestStep = 3300;
+			}
+			break;
+
+		case 3400:
+			nRet_1 = g_ioMgr.get_in_bit(st_io.i_Dispenser_Color_Check, IO_ON);
+			if( st_basic.n_mode_7387 == CTL_NO) nRet_1 = IO_ON;
+			if( nRet_1 == IO_ON)
+			{
+				m_nHardnessTestStep = 4000;
+			}
+			else
+			{
+				strAlarm.Format("8%d%04d", IO_ON, st_io.i_Dispenser_Color_Check);
+				CTL_Lib.Alarm_Error_Occurrence(10719, dWARNING, strAlarm);
+			}
+			break;
+
+
+		case 4000:
+			m_nHardnessTestStep = 0;
+			nFunRet = RET_GOOD;
+			break;			
+
+	}
+
+	if( st_work.mn_run_status == dWARNING )
+		nFunRet = RET_ERROR;
+
+
+	return nFunRet;
 
 }

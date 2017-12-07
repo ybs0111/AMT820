@@ -54,6 +54,7 @@ public:
 	int MoveCleanEpoxy();
 	int MoveSafetyEpoxy();
 	int MoveHardnessOut();
+	int MoveHardnessTestOut();
 	int MoveEpoxyOut();
 	void AlarmEpoxyCleanTime();
 	void AlarmHardnessExcessTimeEpoxyCnt();
@@ -64,6 +65,7 @@ public:
 	int m_nEpoxyCleanTimeStep;
 	int m_nEpoxySafetyStep;
 	int m_nHardnessStep;
+	int m_nHardnessTestStep;
 	int m_nEpoxyOutStep;
 	int m_nHardnessEpoxyStep;
 	int nLightCurtainMutingOnStep;
